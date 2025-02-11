@@ -11,6 +11,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  config:
+    import: myinfo.yml
 #  data:
 #    redis:
 #      port: ${redis.port}
@@ -33,3 +35,5 @@ jwt:
 #    password: ${redis.password}
 #    host: ${redis.host}
 #    port: ${redis.port}
+
+
