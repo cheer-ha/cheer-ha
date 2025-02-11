@@ -3,6 +3,7 @@ package com.project.cheerha.common.util;
 import com.project.cheerha.common.properties.JwtSecurityProperties;
 import com.project.cheerha.domain.user.entity.User.Role;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -46,13 +47,16 @@ public class JwtUtil {
     }
 
     public String createToken(Long userId, String email, Role role) {
-        Date date = new Date();
-        String prefix = securityProperties.getToken().getPrefix();
-        long tokenTime = securityProperties.getToken().getExpiration();
-        return prefix + Jwts.builder().setSubject(String.valueOf(userId))
-            .claim("email", email).claim("userRole", role)
-            .setExpiration(new Date(date.getTime() + tokenTime)).setIssuedAt(date)
-            .signWith(key, signatureAlgorithm).compact();
+        return generateJwt(userId, email, role,
+            securityProperties.getToken().getPrefix(),
+            securityProperties.getToken().getExpiration());
+    }
+
+    //refreshToken 에는 userId만
+    public String createRefreshToken(Long userId) {
+        return generateJwt(userId, null, null,
+            securityProperties.getToken().getRefreshPrefix(),
+            securityProperties.getToken().getRefreshExpiration());
     }
 
     public String substringToken(String tokenValue) {
@@ -76,5 +80,20 @@ public class JwtUtil {
             log.error("Failed to parse JWT token: {}", e.getMessage());
             throw new IllegalArgumentException("Invalid or expired JWT token");
         }
+    }
+
+    //helper
+    private String generateJwt(Long userId, String email, Role role, String prefix, long expiration) {
+        Date now = new Date();
+        JwtBuilder jwtBuilder = Jwts.builder()
+            .setSubject(String.valueOf(userId))
+            .setExpiration(new Date(now.getTime() + expiration))
+            .setIssuedAt(now)
+            .signWith(key, signatureAlgorithm);
+
+        if (email != null) jwtBuilder.claim("email", email);
+        if (role != null) jwtBuilder.claim("userRole", role);
+
+        return prefix + jwtBuilder.compact();
     }
 }
