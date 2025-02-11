@@ -1,4 +1,4 @@
-package com.project.cheerha.common.exeption;
+package com.project.cheerha.common.exception;
 
 import org.springframework.http.HttpStatus;
 

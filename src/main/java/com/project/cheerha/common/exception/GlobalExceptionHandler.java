@@ -1,4 +1,4 @@
-package com.project.cheerha.common.exeption;
+package com.project.cheerha.common.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
