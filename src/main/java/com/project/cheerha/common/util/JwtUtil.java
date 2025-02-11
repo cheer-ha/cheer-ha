@@ -30,7 +30,6 @@ public class JwtUtil {
 
     @PostConstruct
     public void init() {
-        // securityProperties 에서 값 초기화 (의존성 주입 후 실행)
         String secretKey = securityProperties.getSecret().getKey();
         if (!StringUtils.hasText(secretKey)) {
             log.error("JWT secret key is null or empty");
