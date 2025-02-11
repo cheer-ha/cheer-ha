@@ -5,7 +5,7 @@ public record CreateLoginResponseDto(
     String token
 ) {
 
-    public static CreateLoginResponseDto of(String token, String message) {
-        return new CreateLoginResponseDto(token, message);
+    public static CreateLoginResponseDto of(String token) {
+        return new CreateLoginResponseDto(token, "로그인 성공");
     }
 }

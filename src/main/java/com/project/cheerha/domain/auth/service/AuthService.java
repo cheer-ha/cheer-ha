@@ -6,6 +6,7 @@ import com.project.cheerha.common.util.PasswordEncoder;
 import com.project.cheerha.domain.auth.dto.request.CreateLoginRequestDto;
 import com.project.cheerha.domain.auth.dto.request.CreateUserRequestDto;
 import com.project.cheerha.domain.auth.dto.response.CreateLoginResponseDto;
+import com.project.cheerha.domain.auth.dto.response.CreateLogoutResponseDto;
 import com.project.cheerha.domain.auth.dto.response.CreateUserResponseDto;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.repository.UserRepository;
@@ -33,7 +34,7 @@ public class AuthService {
             encodedPassword
         );
         userRepository.save(user);
-        return CreateUserResponseDto.of("회원가입 완료");
+        return CreateUserResponseDto.of();
     }
 
     public CreateLoginResponseDto login(CreateLoginRequestDto dto) {
@@ -43,6 +44,10 @@ public class AuthService {
             throw new CustomException(ErrorCode.WRONG_EMAIL_OR_PASSWORD);
         }
         String token = "토큰";
-        return CreateLoginResponseDto.of(token, "로그인 성공");
+        return CreateLoginResponseDto.of(token);
+    }
+
+    public CreateLogoutResponseDto logout() {
+        return CreateLogoutResponseDto.of();
     }
 }

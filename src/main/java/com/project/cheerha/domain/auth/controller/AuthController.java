@@ -3,6 +3,7 @@ package com.project.cheerha.domain.auth.controller;
 import com.project.cheerha.domain.auth.dto.request.CreateLoginRequestDto;
 import com.project.cheerha.domain.auth.dto.request.CreateUserRequestDto;
 import com.project.cheerha.domain.auth.dto.response.CreateLoginResponseDto;
+import com.project.cheerha.domain.auth.dto.response.CreateLogoutResponseDto;
 import com.project.cheerha.domain.auth.dto.response.CreateUserResponseDto;
 import com.project.cheerha.domain.auth.service.AuthService;
 import jakarta.validation.Valid;
@@ -33,5 +34,12 @@ public class AuthController {
         @Valid @RequestBody CreateLoginRequestDto dto
     ){
         return ResponseEntity.status(HttpStatus.OK).body(authService.login(dto));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<CreateLogoutResponseDto> logout(
+
+    ){
+        return ResponseEntity.status(HttpStatus.OK).body(authService.logout());
     }
 }
