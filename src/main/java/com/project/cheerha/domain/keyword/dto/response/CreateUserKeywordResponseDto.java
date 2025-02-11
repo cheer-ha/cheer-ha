@@ -1,10 +1,10 @@
 package com.project.cheerha.domain.keyword.dto.response;
 
-import com.project.cheerha.domain.keyword.entity.UserKeyword;
+import java.util.List;
 
-public record CreateUserKeywordResponseDto(Long keywordId) {
+public record CreateUserKeywordResponseDto(List<Long> keywordIdList) {
 
-    public static CreateUserKeywordResponseDto of(UserKeyword userKeyword) {
-        return new CreateUserKeywordResponseDto(userKeyword.getKeyword().getId());
+    public static CreateUserKeywordResponseDto of(List<Long> keywordIdList) {
+        return new CreateUserKeywordResponseDto(keywordIdList);
     }
 }
