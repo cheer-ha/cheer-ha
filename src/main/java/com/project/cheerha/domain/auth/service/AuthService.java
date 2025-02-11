@@ -26,6 +26,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
+    //TODO: signUp도 login 처럼 사용자 차단 고려
     public CreateSignupResponseDto signup(CreateSignupRequestDto dto) {
         if (userRepository.existsByEmail(dto.email())) {
             throw new CustomException(ErrorCode.ALREADY_EXIST_EMAIL);
@@ -42,7 +43,7 @@ public class AuthService {
         return CreateSignupResponseDto.of();
     }
 
-    //TODO: aop 기능 : 사용자 ip 추출 하고, 한 ip 에서 같은 email 로 5번 이상 로그인 실패 시 해당 아이디에 대한 로그인 일시 차단
+    //TODO: aop 기능 : 사용자 ip 추출 하고, 한 ip 에서 같은 email 로 n번 이상 로그인 실패 시 해당 아이디에 대한 로그인 일시 차단
     public CreateLoginResponseDto login(CreateLoginRequestDto dto) {
         User user = userRepository.findByEmail(dto.email())
             .orElseThrow(() -> new CustomException(ErrorCode.WRONG_EMAIL_OR_PASSWORD));
