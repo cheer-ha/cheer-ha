@@ -1,7 +1,10 @@
 package com.project.cheerha.domain.auth.service;
 
-import com.project.cheerha.common.exeption.CustomException;
-import com.project.cheerha.common.exeption.ErrorCode;
+import static com.project.cheerha.common.util.JwtUtil.expiredTokenSet;
+
+import com.project.cheerha.common.exception.CustomException;
+import com.project.cheerha.common.exception.ErrorCode;
+import com.project.cheerha.common.util.JwtUtil;
 import com.project.cheerha.common.util.PasswordEncoder;
 import com.project.cheerha.domain.auth.dto.request.CreateLoginRequestDto;
 import com.project.cheerha.domain.auth.dto.request.CreateUserRequestDto;
@@ -13,6 +16,7 @@ import com.project.cheerha.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +24,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     public CreateUserResponseDto signup(CreateUserRequestDto dto) {
         if (userRepository.existsByEmail(dto.email())) {
@@ -43,11 +48,20 @@ public class AuthService {
         if (!passwordEncoder.matches(dto.password(), user.getPassword())) {
             throw new CustomException(ErrorCode.WRONG_EMAIL_OR_PASSWORD);
         }
-        String token = "토큰";
+        String token = jwtUtil.createToken(user.getId(), user.getEmail(), user.getRole());
         return CreateLoginResponseDto.of(token);
     }
 
-    public CreateLogoutResponseDto logout() {
+    public CreateLogoutResponseDto logout(String authHeader) {
+        if (!StringUtils.hasText(authHeader) || !authHeader.startsWith("Bearer ")) {
+            throw new CustomException(ErrorCode.TOKEN_NOT_FOUND);
+        }
+        String token = jwtUtil.substringToken(authHeader);
+
+        if (expiredTokenSet.contains(token)) {
+            throw new CustomException(ErrorCode.TOKEN_NOT_FOUND);
+        }
+        expiredTokenSet.add(token);
         return CreateLogoutResponseDto.of();
     }
 }
