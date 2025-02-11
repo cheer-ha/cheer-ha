@@ -24,6 +24,8 @@ public class DataService {
         }
 
         System.out.println("🔍 최종 리다이렉트 URL: " + url);
+        data.upCnt(); //todo:아직 혹시모를 cnt 관련 예외처리 하나도 안 했음.
+        dataRepository.save(data);
         return url;
     }
 }
