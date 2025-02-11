@@ -52,11 +52,11 @@ public class UserKeywordService {
 
     private User findUserById(Long userId) {
         return userRepository.findById(userId)
-            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+            .orElseThrow();
     }
 
     private Keyword findKeywordById(Long keywordId) {
         return keywordRepository.findById(keywordId)
-            .orElseThrow(() -> new CustomException(ErrorCode.KEYWORD_NOT_FOUND));
+            .orElseThrow();
     }
 }
