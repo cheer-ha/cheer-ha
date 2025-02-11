@@ -21,4 +21,9 @@ public class Keyword {
 
     @Column(length = 50, nullable = false)
     private String name;
+
+    // String을 인자로 받는 생성자 추가
+    public Keyword(String name) {
+        this.name = name;
+    }
 }

@@ -32,4 +32,9 @@ public class DataKeyword {
     @JoinColumn(name = "data_id")
     private Data data;
 
+    // Data와 Keyword를 매개변수로 받는 생성자 추가
+    public DataKeyword(Data data, Keyword keyword) {
+        this.data = data;
+        this.keyword = keyword;
+    }
 }
