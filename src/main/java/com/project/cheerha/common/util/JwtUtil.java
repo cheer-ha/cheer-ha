@@ -1,5 +1,6 @@
 package com.project.cheerha.common.util;
 
+import com.project.cheerha.common.properties.JwtSecurityProperties;
 import com.project.cheerha.domain.user.entity.User.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -11,23 +12,23 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 @Slf4j(topic = "JwtUtil")
 @Component
+@RequiredArgsConstructor
 public class JwtUtil {
 
-    private static final String BEARER_PREFIX = "Bearer ";  //TODO: 전역변수로 관리할 것
-    private static final long TOKEN_TIME = 60 * 60 * 1000L; //TODO: 전역변수로 관리할 것
+    private final JwtSecurityProperties securityProperties;
     public static final Set<String> expiredTokenSet = new HashSet<>(); //TODO: redis 로 옮겨야 됨
 
-    @Value("${jwt.secret.key}")
-    private String secretKey;
-
     private Key key;
+    private final String secretKey = securityProperties.getSecret().getKey();
+    private final String prefix = securityProperties.getToken().getPrefix();
+    private final long tokenTime = securityProperties.getToken().getExpiration();
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
     @PostConstruct
@@ -48,10 +49,9 @@ public class JwtUtil {
 
     public String createToken(Long userId, String email, Role role) {
         Date date = new Date();
-
-        return BEARER_PREFIX + Jwts.builder().setSubject(String.valueOf(userId))
+        return prefix + Jwts.builder().setSubject(String.valueOf(userId))
             .claim("email", email).claim("userRole", role)
-            .setExpiration(new Date(date.getTime() + TOKEN_TIME)).setIssuedAt(date)
+            .setExpiration(new Date(date.getTime() + tokenTime)).setIssuedAt(date)
             .signWith(key, signatureAlgorithm).compact();
     }
 
@@ -59,10 +59,10 @@ public class JwtUtil {
         if (!StringUtils.hasText(tokenValue)) {
             throw new IllegalArgumentException("Token must not be null or empty");
         }
-        if (!tokenValue.startsWith(BEARER_PREFIX)) {
+        if (!tokenValue.startsWith(prefix)) {
             throw new IllegalArgumentException("Token does not start with Bearer");
         }
-        if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) {
+        if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(prefix)) {
             return tokenValue.substring(7);
         }
         throw new IllegalArgumentException("Not Found Token");

@@ -1,15 +1,19 @@
 package com.project.cheerha.common.util;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
+import com.project.cheerha.common.properties.BcryptSecurityProperties;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class PasswordEncoder {
 
-    private static final int BCRYPT_COST = 12;  //TODO: 전역변수로 관리
+    private final BcryptSecurityProperties securityProperties;
+    private final int cost = securityProperties.getBcrypt().getCost();
 
     public String encode(String rawPassword) {
-        return BCrypt.withDefaults().hashToString(BCRYPT_COST, rawPassword.toCharArray());
+        return BCrypt.withDefaults().hashToString(cost, rawPassword.toCharArray());
     }
 
     public boolean matches(String rawPassword, String encodedPassword) {
