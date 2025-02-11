@@ -1,5 +1,7 @@
 package com.project.cheerha.domain.keyword.service;
 
+import com.project.cheerha.common.exception.CustomException;
+import com.project.cheerha.common.exception.ErrorCode;
 import com.project.cheerha.domain.keyword.dto.request.CreateUserKeywordRequestDto;
 import com.project.cheerha.domain.keyword.dto.response.CreateUserKeywordResponseDto;
 import com.project.cheerha.domain.keyword.entity.Keyword;
@@ -11,9 +13,11 @@ import com.project.cheerha.domain.user.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserKeywordService {
@@ -24,29 +28,44 @@ public class UserKeywordService {
 
     @Transactional
     public List<CreateUserKeywordResponseDto> createUserKeyword(
+        Long userId,
         List<CreateUserKeywordRequestDto> requestDtoList
     ) {
-       // todo dev git pull한 다음 수정 예정
-        long userId = 1L;
+        // todo 유저 정보 불러오는 로직 완성되면 수정 에정
+        userId = 1L;
 
-        User foundUser = userRepository.findById(userId).orElseThrow();
+        log.info("userId: {}", userId);
+
+        User foundUser = findUserById(userId);
 
         List<CreateUserKeywordResponseDto> responseDtoList = new ArrayList<>();
 
         responseDtoList = requestDtoList.stream()
             .map(dto ->
                 {
-                    Keyword foundKeyword = keywordRepository.findById(dto.keywordId()).orElseThrow();
+                    Keyword foundKeyword = findKeywordById(dto);
 
-                    UserKeyword userKeyword = UserKeyword.of(foundUser, foundKeyword);
+                    UserKeyword newUserKeyword = UserKeyword.of(
+                        foundUser,
+                        foundKeyword
+                    );
 
-                    userKeywordRepository.save(userKeyword);
+                    userKeywordRepository.save(newUserKeyword);
 
-                    return CreateUserKeywordResponseDto.of(userKeyword);
-
+                    return CreateUserKeywordResponseDto.of(newUserKeyword);
                 }
             ).toList();
 
         return responseDtoList;
+    }
+
+    private User findUserById(Long userId) {
+        return userRepository.findById(userId)
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    private Keyword findKeywordById(CreateUserKeywordRequestDto requestDto) {
+        return keywordRepository.findById(requestDto.keywordId())
+            .orElseThrow(() -> new CustomException(ErrorCode.KEYWORD_NOT_FOUND));
     }
 }
