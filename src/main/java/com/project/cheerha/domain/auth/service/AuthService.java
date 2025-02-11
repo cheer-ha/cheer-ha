@@ -1,10 +1,35 @@
 package com.project.cheerha.domain.auth.service;
 
+import com.project.cheerha.common.exeption.CustomException;
+import com.project.cheerha.common.exeption.ErrorCode;
+import com.project.cheerha.domain.auth.dto.request.CreateUserRequestDto;
+import com.project.cheerha.domain.auth.dto.response.CreateUserResponseDto;
+import com.project.cheerha.domain.user.entity.User;
+import com.project.cheerha.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    public CreateUserResponseDto signup(CreateUserRequestDto dto) {
+        if (userRepository.existsByEmail(dto.email())) {
+            throw new CustomException(ErrorCode.ALREADY_EXIST_EMAIL);
+        }
+        String encodedPassword = passwordEncoder.encode(dto.password());
+
+        User user = User.of(
+            dto.email(),
+            dto.name(),
+            dto.career(),
+            encodedPassword
+        );
+        userRepository.save(user);
+        return CreateUserResponseDto.of("회원가입 완료");
+    }
 }

@@ -27,9 +27,22 @@ public class User {
     @Column(length = 50, nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private int career;
+
     @Column(length = 255, nullable = false )
     private String password;
 
     @Column(length = 5, nullable = false )
     private Role role;
+
+    public static User of(String email, String name, int career, String password) {
+        User user = new User();
+        user.email = email;
+        user.name = name;
+        user.career = career;
+        user.password = password;
+        user.role = Role.USER;
+        return user;
+    }
 }

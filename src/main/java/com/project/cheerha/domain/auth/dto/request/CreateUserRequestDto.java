@@ -8,7 +8,7 @@ public record CreateUserRequestDto(
     @NotBlank String password,
     @NotBlank String name,
     @NotBlank int age,
-    String career
+    @NotBlank int career
 ) {
 
 }
