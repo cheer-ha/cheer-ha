@@ -35,12 +35,6 @@ jwt:
 #      springframework:
 #        security=DEBUG:
 
-data:
-  redis:
-    password: ${redis.password}
-    host: ${redis.host}
-    port: ${redis.port}
-
 security:
   bcrypt:
     cost: ${security.cost}
