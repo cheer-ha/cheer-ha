@@ -65,6 +65,12 @@ dependencies {
 
 	// bcrypt
 	implementation 'at.favre.lib:bcrypt:0.10.2'
+
+	// redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// redis-lettuce
+	implementation 'io.lettuce.core:lettuce-core'
 }
 
 tasks.named('test') {
