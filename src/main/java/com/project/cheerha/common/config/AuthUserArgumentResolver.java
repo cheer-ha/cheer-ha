@@ -31,19 +31,17 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 
         //jwt 에서 추출한 값으로 사용자 정보 가져오기
         Object userIdObj = request.getAttribute("userId");
-        Object emailObj = request.getAttribute("email");
         Object roleObj = request.getAttribute("userRole");
 
         //사용자 정보 없으면 에러 반환
-        if (userIdObj == null || emailObj == null || roleObj == null) {
+        if (userIdObj == null || roleObj == null) {
             throw new CustomException(ErrorCode.LOGIN_REQUIRED);
         }
 
         //string 으로 변환
         Long userId = Long.parseLong(userIdObj.toString());
-        String email = emailObj.toString();
         Role userRole = Role.valueOf(roleObj.toString());
 
-        return new AuthUser(userId, email, userRole);
+        return new AuthUser(userId, userRole);
     }
 }

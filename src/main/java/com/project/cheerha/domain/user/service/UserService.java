@@ -16,7 +16,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     public ReadUserResponseDto readUser(AuthUser authUser) {
-        User user = userRepository.findByEmail(authUser.email())
+        User user = userRepository.findById(authUser.id())
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         return ReadUserResponseDto.of(user.getEmail(), user.getName(), user.getCareer());
     }
