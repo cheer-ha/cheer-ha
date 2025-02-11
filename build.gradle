@@ -63,9 +63,8 @@ dependencies {
 	//AOP
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
 
-	//Spring security
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	testImplementation 'org.springframework.security:spring-security-test'
+	// bcrypt
+	implementation 'at.favre.lib:bcrypt:0.10.2'
 }
 
 tasks.named('test') {

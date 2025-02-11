@@ -2,6 +2,7 @@ package com.project.cheerha.domain.auth.service;
 
 import com.project.cheerha.common.exeption.CustomException;
 import com.project.cheerha.common.exeption.ErrorCode;
+import com.project.cheerha.common.util.PasswordEncoder;
 import com.project.cheerha.domain.auth.dto.request.CreateLoginRequestDto;
 import com.project.cheerha.domain.auth.dto.request.CreateUserRequestDto;
 import com.project.cheerha.domain.auth.dto.response.CreateLoginResponseDto;
@@ -9,7 +10,7 @@ import com.project.cheerha.domain.auth.dto.response.CreateUserResponseDto;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.stereotype.Service;
 
 @Service
