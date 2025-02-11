@@ -23,5 +23,6 @@ public class JwtSecurityProperties {
     public static class Token {
         private String prefix;
         private long expiration;
+        private long refreshExpiration;
     }
 }

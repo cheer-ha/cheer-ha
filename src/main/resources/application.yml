@@ -25,6 +25,7 @@ jwt:
     key: ${jwt.key}
   token:
     prefix: ${jwt.prefix}
+    refreshExpiration: ${jwt.refreshExpiration}
     expiration: ${jwt.expiration}
 
 #logging:
