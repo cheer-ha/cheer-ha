@@ -33,22 +33,25 @@ public class UserKeywordService {
 
         User foundUser = findUserById(userId);
 
-        // 요청 DTO에서 키워드 ID 목록을 가져옴
         List<Long> keywordIdList = requestDto.keywordIdList();
 
         keywordIdList.forEach(
             keywordId -> {
-                // 키워드 ID로 키워드 엔티티 조회
                 Keyword foundKeyword = findKeywordById(keywordId);
 
-                // 사용자가 선택한 키워드와 사용자 간의 관계를 나타내는 UserKeyword 엔티티 생성
-                UserKeyword newUserKeyword = UserKeyword.of(
+                boolean isKeywordAlreadyChosen = userKeywordRepository.existsByUserAndKeyword(
                     foundUser,
                     foundKeyword
                 );
 
-                // 생성된 UserKeyword 엔티티를 데이터베이스에 저장
-                userKeywordRepository.save(newUserKeyword);
+                if (!isKeywordAlreadyChosen) {
+                    UserKeyword newUserKeyword = UserKeyword.of(
+                        foundUser,
+                        foundKeyword
+                    );
+
+                    userKeywordRepository.save(newUserKeyword);
+                }
             }
         );
 
