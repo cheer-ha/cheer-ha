@@ -10,7 +10,6 @@ import com.project.cheerha.domain.keyword.repository.KeywordRepository;
 import com.project.cheerha.domain.keyword.repository.UserKeywordRepository;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.repository.UserRepository;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +28,7 @@ public class UserKeywordService {
     @Transactional
     public List<CreateUserKeywordResponseDto> createUserKeyword(
         Long userId,
-        List<CreateUserKeywordRequestDto> requestDtoList
+        CreateUserKeywordRequestDto requestDto
     ) {
         // todo 유저 정보 불러오는 로직 완성되면 수정 에정
         userId = 1L;
@@ -38,25 +37,17 @@ public class UserKeywordService {
 
         User foundUser = findUserById(userId);
 
-        List<CreateUserKeywordResponseDto> responseDtoList = new ArrayList<>();
+        List<Long> keywordIdList = requestDto.keywordIdList();
 
-        responseDtoList = requestDtoList.stream()
-            .map(dto ->
-                {
-                    Keyword foundKeyword = findKeywordById(dto);
-
-                    UserKeyword newUserKeyword = UserKeyword.of(
-                        foundUser,
-                        foundKeyword
-                    );
-
+        return keywordIdList.stream()
+            .map(keywordId -> {
+                    Keyword foundKeyword = findKeywordById(keywordId);
+                    UserKeyword newUserKeyword = UserKeyword.of(foundUser, foundKeyword);
                     userKeywordRepository.save(newUserKeyword);
 
                     return CreateUserKeywordResponseDto.of(newUserKeyword);
                 }
             ).toList();
-
-        return responseDtoList;
     }
 
     private User findUserById(Long userId) {
@@ -64,8 +55,8 @@ public class UserKeywordService {
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
-    private Keyword findKeywordById(CreateUserKeywordRequestDto requestDto) {
-        return keywordRepository.findById(requestDto.keywordId())
+    private Keyword findKeywordById(Long keywordId) {
+        return keywordRepository.findById(keywordId)
             .orElseThrow(() -> new CustomException(ErrorCode.KEYWORD_NOT_FOUND));
     }
 }

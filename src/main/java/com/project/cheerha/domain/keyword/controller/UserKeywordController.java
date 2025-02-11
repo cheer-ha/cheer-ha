@@ -25,7 +25,7 @@ public class UserKeywordController {
 
     @PostMapping("/user/keywords")
     public ResponseEntity<List<CreateUserKeywordResponseDto>> registerUserKeywordList(
-        @RequestBody List<CreateUserKeywordRequestDto> requestDtoList,
+        @RequestBody CreateUserKeywordRequestDto requestDto,
         HttpServletRequest request
     ) {
         Long userId = getUserIdFromToken(request);
@@ -36,7 +36,7 @@ public class UserKeywordController {
 
         responseDtoList = userKeywordService.createUserKeyword(
             userId,
-            requestDtoList
+            requestDto
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDtoList);
