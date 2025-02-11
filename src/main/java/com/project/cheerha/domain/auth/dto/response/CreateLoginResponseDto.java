@@ -5,4 +5,7 @@ public record CreateLoginResponseDto(
     String token
 ) {
 
+    public static CreateLoginResponseDto of(String token, String message) {
+        return new CreateLoginResponseDto(token, message);
+    }
 }
