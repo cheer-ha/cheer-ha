@@ -1,10 +1,10 @@
 package com.project.cheerha.domain.auth.controller;
 
 import com.project.cheerha.domain.auth.dto.request.CreateLoginRequestDto;
-import com.project.cheerha.domain.auth.dto.request.CreateUserRequestDto;
+import com.project.cheerha.domain.auth.dto.request.CreateSignupRequestDto;
 import com.project.cheerha.domain.auth.dto.response.CreateLoginResponseDto;
 import com.project.cheerha.domain.auth.dto.response.CreateLogoutResponseDto;
-import com.project.cheerha.domain.auth.dto.response.CreateUserResponseDto;
+import com.project.cheerha.domain.auth.dto.response.CreateSignupResponseDto;
 import com.project.cheerha.domain.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +24,8 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<CreateUserResponseDto> signup(
-        @Valid @RequestBody CreateUserRequestDto dto
+    public ResponseEntity<CreateSignupResponseDto> signup(
+        @Valid @RequestBody CreateSignupRequestDto dto
     ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.signup(dto));
     }

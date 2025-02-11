@@ -7,10 +7,10 @@ import com.project.cheerha.common.exception.ErrorCode;
 import com.project.cheerha.common.util.JwtUtil;
 import com.project.cheerha.common.util.PasswordEncoder;
 import com.project.cheerha.domain.auth.dto.request.CreateLoginRequestDto;
-import com.project.cheerha.domain.auth.dto.request.CreateUserRequestDto;
+import com.project.cheerha.domain.auth.dto.request.CreateSignupRequestDto;
 import com.project.cheerha.domain.auth.dto.response.CreateLoginResponseDto;
 import com.project.cheerha.domain.auth.dto.response.CreateLogoutResponseDto;
-import com.project.cheerha.domain.auth.dto.response.CreateUserResponseDto;
+import com.project.cheerha.domain.auth.dto.response.CreateSignupResponseDto;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    public CreateUserResponseDto signup(CreateUserRequestDto dto) {
+    public CreateSignupResponseDto signup(CreateSignupRequestDto dto) {
         if (userRepository.existsByEmail(dto.email())) {
             throw new CustomException(ErrorCode.ALREADY_EXIST_EMAIL);
         }
@@ -39,7 +39,7 @@ public class AuthService {
             encodedPassword
         );
         userRepository.save(user);
-        return CreateUserResponseDto.of();
+        return CreateSignupResponseDto.of();
     }
 
     public CreateLoginResponseDto login(CreateLoginRequestDto dto) {
