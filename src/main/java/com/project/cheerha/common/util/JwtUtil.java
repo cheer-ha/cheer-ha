@@ -52,7 +52,7 @@ public class JwtUtil {
             securityProperties.getToken().getExpiration());
     }
 
-    //refreshToken 에는 userId만
+    //refreshToken 에는 userId만 (보안 상의 이유)
     public String createRefreshToken(Long userId) {
         return generateJwt(userId, null, null,
             securityProperties.getToken().getRefreshPrefix(),
