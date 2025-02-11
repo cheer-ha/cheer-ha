@@ -62,7 +62,7 @@ public class JwtUtil {
             throw new IllegalArgumentException("Token must not be null or empty");
         }
         if (!tokenValue.startsWith(prefix)) {
-            throw new IllegalArgumentException("Token does not start with Bearer");
+            throw new IllegalArgumentException("Token does not start with prefix");
         }
         if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(prefix)) {
             return tokenValue.substring(7);
