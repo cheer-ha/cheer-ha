@@ -21,14 +21,12 @@ public class UserKeywordController {
     private final UserKeywordService userKeywordService;
 
     @PostMapping("/user/keywords")
-    public ResponseEntity<CreateUserKeywordResponseDto> registerUserKeywordList(
+    public ResponseEntity<CreateUserKeywordResponseDto> createUserKeywordList(
         @RequestBody CreateUserKeywordRequestDto requestDto,
         @Auth AuthUser authUser
     ) {
-        Long userId = authUser.id();
-
         CreateUserKeywordResponseDto responseDto = userKeywordService.createUserKeyword(
-            userId,
+            authUser,
             requestDto
         );
 

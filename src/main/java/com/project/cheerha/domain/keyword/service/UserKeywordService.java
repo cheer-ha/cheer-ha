@@ -1,5 +1,6 @@
 package com.project.cheerha.domain.keyword.service;
 
+import com.project.cheerha.common.dto.AuthUser;
 import com.project.cheerha.common.exception.CustomException;
 import com.project.cheerha.common.exception.ErrorCode;
 import com.project.cheerha.domain.keyword.dto.request.CreateUserKeywordRequestDto;
@@ -25,9 +26,10 @@ public class UserKeywordService {
 
     @Transactional
     public CreateUserKeywordResponseDto createUserKeyword(
-        Long userId,
+        AuthUser authUser,
         CreateUserKeywordRequestDto requestDto
     ) {
+        Long userId = authUser.id();
 
         User foundUser = findUserById(userId);
 
