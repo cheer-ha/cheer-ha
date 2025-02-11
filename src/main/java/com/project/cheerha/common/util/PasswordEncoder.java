@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 public class PasswordEncoder {
 
     private final BcryptSecurityProperties securityProperties;
-    private final int cost = securityProperties.getBcrypt().getCost();
 
     public String encode(String rawPassword) {
+        int cost = securityProperties.getBcrypt().getCost();
         return BCrypt.withDefaults().hashToString(cost, rawPassword.toCharArray());
     }
 

@@ -26,13 +26,12 @@ public class JwtUtil {
     public static final Set<String> expiredTokenSet = new HashSet<>(); //TODO: redis 로 옮겨야 됨
 
     private Key key;
-    private final String secretKey = securityProperties.getSecret().getKey();
-    private final String prefix = securityProperties.getToken().getPrefix();
-    private final long tokenTime = securityProperties.getToken().getExpiration();
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
     @PostConstruct
     public void init() {
+        // securityProperties 에서 값 초기화 (의존성 주입 후 실행)
+        String secretKey = securityProperties.getSecret().getKey();
         if (!StringUtils.hasText(secretKey)) {
             log.error("JWT secret key is null or empty");
             throw new IllegalArgumentException("JWT secret key must not be null or empty");
@@ -49,6 +48,8 @@ public class JwtUtil {
 
     public String createToken(Long userId, String email, Role role) {
         Date date = new Date();
+        String prefix = securityProperties.getToken().getPrefix();
+        long tokenTime = securityProperties.getToken().getExpiration();
         return prefix + Jwts.builder().setSubject(String.valueOf(userId))
             .claim("email", email).claim("userRole", role)
             .setExpiration(new Date(date.getTime() + tokenTime)).setIssuedAt(date)
@@ -56,6 +57,7 @@ public class JwtUtil {
     }
 
     public String substringToken(String tokenValue) {
+        String prefix = securityProperties.getToken().getPrefix();
         if (!StringUtils.hasText(tokenValue)) {
             throw new IllegalArgumentException("Token must not be null or empty");
         }
