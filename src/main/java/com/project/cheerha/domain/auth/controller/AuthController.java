@@ -25,22 +25,19 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<CreateSignupResponseDto> signup(
-        @Valid @RequestBody CreateSignupRequestDto dto
-    ) {
+        @Valid @RequestBody CreateSignupRequestDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.signup(dto));
     }
 
     @PostMapping("/login")
     public ResponseEntity<CreateLoginResponseDto> login(
-        @Valid @RequestBody CreateLoginRequestDto dto
-    ){
+        @Valid @RequestBody CreateLoginRequestDto dto) {
         return ResponseEntity.status(HttpStatus.OK).body(authService.login(dto));
     }
 
     @PostMapping("/logout")
     public ResponseEntity<CreateLogoutResponseDto> logout(
-        @RequestHeader("Authorization") String authHeader
-    ){
+        @RequestHeader("Authorization") String authHeader) {
         return ResponseEntity.status(HttpStatus.OK).body(authService.logout(authHeader));
     }
 

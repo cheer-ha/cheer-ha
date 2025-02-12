@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.data.controller;
+package com.project.cheerha.domain.keyword.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping
 @RestController
 @RequiredArgsConstructor
-public class DataController {
+public class JobOpeningKeywordController {
 
 }

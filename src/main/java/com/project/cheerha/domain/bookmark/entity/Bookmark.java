@@ -1,6 +1,6 @@
 package com.project.cheerha.domain.bookmark.entity;
 
-import com.project.cheerha.domain.data.entity.Data;
+import com.project.cheerha.domain.jobOpening.entity.JobOpening;
 import com.project.cheerha.domain.user.entity.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -18,8 +18,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Table(name = "bookmark", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"user_id", "data_id"})}
-)  // user_id와 data_id의 복합 유니크 제약)
+    @UniqueConstraint(columnNames = {"user_id", "job_opening_id"})}
+)  // user_id와 job_opening_id의 복합 유니크 제약)
 public class Bookmark {
 
     @Id
@@ -31,6 +31,6 @@ public class Bookmark {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "data_id")
-    private Data data;
+    @JoinColumn(name = "job_opening_id")
+    private JobOpening jobOpening;
 }
