@@ -23,11 +23,11 @@ public class Keyword {
     @Column(length = 50, nullable = false)
     private String name;
 
-    // String을 인자로 받는 생성자 추가
-    public Keyword(String name) {
-        this.name = name;
+    public static Keyword toEntity(String name) {
+        Keyword keyword = new Keyword();
+        keyword.name = name;
+        return keyword;
     }
-}
 
     // 키워드 객체 목록에서 이름을 추출하는 메서드
     public static List<String> extractNameFromEntity(List<Keyword> keywordList) {
