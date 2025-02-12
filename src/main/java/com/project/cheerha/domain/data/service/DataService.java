@@ -1,6 +1,7 @@
 package com.project.cheerha.domain.data.service;
 
 import com.project.cheerha.common.exception.BaseException;
+import com.project.cheerha.common.exception.CustomException;
 import com.project.cheerha.common.exception.ErrorCode;
 import com.project.cheerha.domain.data.entity.Data;
 import com.project.cheerha.domain.data.repository.DataRepository;
@@ -16,7 +17,9 @@ public class DataService {
     private final DataRepository dataRepository;
 
     public String urlFindById(Long id) {
-        Data data = dataRepository.findById(id).orElseThrow();
+        Data data = dataRepository.findById(id).orElseThrow(
+            () -> new CustomException(ErrorCode.URL_NOT_FOUND)
+        );
         String url = data.getUrl();
 
         if (!url.startsWith("http")) {

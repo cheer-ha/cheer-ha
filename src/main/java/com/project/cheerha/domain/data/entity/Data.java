@@ -39,8 +39,6 @@ public class Data {
     private String url;
 
     // todo LocalDateTime으로 바뀔 수 있음
-    private LocalDate hiringStartPeriod;
-
     private LocalDate hiringEndPeriod;
 
     @Column(length = 50, nullable = false)
