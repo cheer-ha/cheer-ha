@@ -23,7 +23,9 @@ public class JwtSecurityProperties {
     public static class Token {
         private String prefix;
         private String refreshPrefix;
+        private String blackListPrefix;
         private long expiration;
         private long refreshExpiration;
+        private long blackListExpiration;
     }
 }
