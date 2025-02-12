@@ -2,8 +2,14 @@ package com.project.cheerha.domain.bookmark.controller;
 
 import com.project.cheerha.common.annotation.Auth;
 import com.project.cheerha.common.dto.AuthUser;
+import com.project.cheerha.common.exception.CustomException;
+import com.project.cheerha.common.exception.ErrorCode;
+import com.project.cheerha.domain.bookmark.dto.CreateBookmarkRequestDto;
 import com.project.cheerha.domain.bookmark.dto.ReadBookmarkResponseDto;
 import com.project.cheerha.domain.bookmark.service.BookmarkService;
+import com.project.cheerha.domain.user.entity.User;
+import com.project.cheerha.domain.user.repository.UserRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +23,19 @@ import java.util.List;
 public class BookmarkController {
 
     private final BookmarkService bookmarkService;
+    private final UserRepository userRepository;
 
     // 로그인된 사용자의 즐겨찾기 추가
-    @PostMapping("/{dataId}")
+    @PostMapping
     public ResponseEntity<Void> createBookmark(
-            @PathVariable Long dataId,  // dataId는 URL에서 받음
-            @Auth AuthUser authUser     // userId는 로그인된 유저에서 받음
+            @Valid @RequestBody CreateBookmarkRequestDto dto,
+            @Auth AuthUser authUser
     ) {
-        bookmarkService.createBookmark(authUser, dataId);
+        // 유저 정보 조회
+        User user = getUserById(authUser.id());
+
+        // 북마크 생성
+        bookmarkService.createBookmark(user, dto.dataId());
 
         // 즐겨찾기 추가 시 201 응답 코드 리턴
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -33,23 +44,37 @@ public class BookmarkController {
     // 로그인된 사용자의 모든 즐겨찾기 조회
     @GetMapping
     public ResponseEntity<List<ReadBookmarkResponseDto>> readBookmarkList(
-            @Auth AuthUser authUser
+            @Auth AuthUser authUser,
+            @RequestParam int page,
+            @RequestParam int size
     ) {
-        List<ReadBookmarkResponseDto> response = bookmarkService.readBookmarkList(authUser);
+        // 유저 정보 조회
+        User user = getUserById(authUser.id());
+
+        List<ReadBookmarkResponseDto> response = bookmarkService.readBookmarkList(user, page - 1, size);
 
         // 즐겨찾기 조회 시 200 응답 코드 리턴
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     // 로그인된 사용자의 즐겨찾기 삭제
-    @DeleteMapping("/{dataId}")
+    @DeleteMapping
     public ResponseEntity<Void> deleteBookmark(
-            @PathVariable Long dataId,
+            @Valid @RequestBody  CreateBookmarkRequestDto dto,
             @Auth AuthUser authUser
     ) {
-        bookmarkService.deleteBookmark(authUser, dataId);
+        // 유저 정보 조회
+        User user = getUserById(authUser.id());
+
+        bookmarkService.deleteBookmark(user, dto.dataId());
 
         // 즐겨찾기 삭제 시 204 응답 코드 리턴
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    // 유저 정보 조회를 위한 프라이빗 메서드
+    private User getUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 }
