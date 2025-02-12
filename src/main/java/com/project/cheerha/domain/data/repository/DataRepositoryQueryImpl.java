@@ -26,10 +26,10 @@ public class DataRepositoryQueryImpl implements DataRepositoryQuery{
 
     @Override
     public Page<Data> findAllByCondition(
-            String education, LocalDateTime hiringStartPeriod,
-            LocalDateTime hiringEndPeriod, String location,
-            Integer career, String jobType, String requiredSkill,
-            Pageable pageable
+        String education, LocalDateTime hiringStartPeriod,
+        LocalDateTime hiringEndPeriod, String location,
+        Integer career, String jobType,
+        String requiredSkill, Pageable pageable
     ) {
         List<Data> dataList = queryFactory
             .selectFrom(data)
@@ -38,6 +38,7 @@ public class DataRepositoryQueryImpl implements DataRepositoryQuery{
             .where(
                 containsKeywords(requiredSkill),
                 eqEducation(education),
+                geoHiringStartPeriod(hiringStartPeriod),
                 leoHiringEndPeriod(hiringEndPeriod),
                 eqLocation(location),
                 leoCareer(career),
@@ -54,12 +55,13 @@ public class DataRepositoryQueryImpl implements DataRepositoryQuery{
                 .leftJoin(data.dataKeywords, dataKeyword)
                 .leftJoin(dataKeyword.keyword, keyword)
                 .where(
-                        containsKeywords(requiredSkill),
-                        eqEducation(education),
-                        leoHiringEndPeriod(hiringEndPeriod),
-                        eqLocation(location),
-                        leoCareer(career),
-                        eqJobType(jobType)
+                    containsKeywords(requiredSkill),
+                    eqEducation(education),
+                    geoHiringStartPeriod(hiringStartPeriod),
+                    leoHiringEndPeriod(hiringEndPeriod),
+                    eqLocation(location),
+                    leoCareer(career),
+                    eqJobType(jobType)
                 ).fetchOne())
                 .orElse(0L);
 
@@ -75,6 +77,11 @@ public class DataRepositoryQueryImpl implements DataRepositoryQuery{
     // 입력된 학력과 같은 데이터만 가져오도록 하는 메서드
     private BooleanExpression eqEducation(String education) {
         return education != null ? data.education.eq(education) : null;
+    }
+
+    // 입력된 시작 날짜보다 큰 데이터만 가져오도록 하는 메서드
+    private BooleanExpression geoHiringStartPeriod(LocalDateTime hiringStartPeriod) {
+        return hiringStartPeriod != null ? data.hiringStartPeriod.loe(hiringStartPeriod) : null;
     }
 
     // 입력된 마감 날짜보다 작은 데이터만 가져오도록 하는 메서드
