@@ -83,12 +83,12 @@ public class UserKeywordService {
 
         userKeywordIdList.forEach(userKeywordId -> {
 
-                boolean isUserKeywordNotExist = !userKeywordRepository.existsByUserIdAndId(
+                boolean isUserKeywordExist = userKeywordRepository.existsByUserIdAndId(
                     userId,
                     userKeywordId
                 );
 
-                if (isUserKeywordNotExist) {
+                if (!isUserKeywordExist) {
                     return;
                 }
 
