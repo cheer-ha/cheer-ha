@@ -15,8 +15,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "jobopening_keyword", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"keyword_id", "jobopening_id"})}
+@Table(name = "job_opening_keyword", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"keyword_id", "job_opening_id"})}
 )
 public class JobOpeningKeyword {
 
@@ -29,7 +29,7 @@ public class JobOpeningKeyword {
     private Keyword keyword;
 
     @ManyToOne
-    @JoinColumn(name = "jobopening_id")
+    @JoinColumn(name = "job_opening_id")
     private JobOpening jobOpening;
 
 }
