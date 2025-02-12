@@ -1,7 +1,11 @@
 package com.project.cheerha.domain.data.repository;
 
-import com.project.cheerha.domain.data.entity.Data;
+import com.project.cheerha.domain.data.dto.response.ReadDataResponseDto;
+import com.project.cheerha.domain.keyword.entity.QDataKeyword;
+import com.project.cheerha.domain.keyword.entity.QKeyword;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -25,14 +29,28 @@ public class DataRepositoryQueryImpl implements DataRepositoryQuery{
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<Data> findAllByCondition(
+    public Page<ReadDataResponseDto> findAllByCondition(
         String education, LocalDateTime hiringStartPeriod,
         LocalDateTime hiringEndPeriod, String location,
         Integer career, String jobType,
         String requiredSkill, Pageable pageable
     ) {
-        List<Data> dataList = queryFactory
-            .selectFrom(data)
+        List<ReadDataResponseDto> dtoList = queryFactory
+            .select(Projections.constructor(
+                ReadDataResponseDto.class,
+                data.company,
+                data.hiringStartPeriod,
+                data.hiringEndPeriod,
+                data.position,
+                // 키워드 리스트 -> 서브쿼리 사용
+                //transform 메서드가 존재 -> 사용하면 group by를 한 것처럼 데이터 id로 그룹화를 한 것처럼 만들어준다.
+                // 해결책 1: 서브 쿼리 사용 -> 성능은 떨어지게 된다. 어려울 수도 있다. -> 네이티브 쿼리 작성 후 변경
+
+                // 해결책 2: keyword를 조회하는 로직을 따로 둔다. 여기서는 dataId를 찾고 키워드를 조회하는 로직을 따로 만든다.
+                // dataKeyword에서 keyword를 찾아와서 dto에서 합쳐준다..
+
+            ))
+            .from(data)
             .leftJoin(data.dataKeywords, dataKeyword)
             .leftJoin(dataKeyword.keyword, keyword)
             .where(
@@ -44,7 +62,7 @@ public class DataRepositoryQueryImpl implements DataRepositoryQuery{
                 leoCareer(career),
                 eqJobType(jobType)
             )
-            .distinct()
+            .groupBy(data.id)
             .limit(pageable.getPageSize())
             .offset(pageable.getOffset())
             .fetch();
@@ -65,7 +83,7 @@ public class DataRepositoryQueryImpl implements DataRepositoryQuery{
                 ).fetchOne())
                 .orElse(0L);
 
-        return new PageImpl<>(dataList, pageable, totalCount);
+        return new PageImpl<>(dtoList, pageable, totalCount);
     }
 
     // 입력된 자격 요건이 포함된 데이터만 가져오도록 하는 메서드
