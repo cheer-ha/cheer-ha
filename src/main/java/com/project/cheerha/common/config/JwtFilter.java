@@ -62,11 +62,6 @@ public class JwtFilter implements Filter {
             return;
         }
 
-        if (JwtUtil.expiredTokenSet.contains(token)) {
-            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "토큰이 유효하지 않습니다.");
-            return;
-        }
-
         try {
             Claims claims = jwtUtil.extractClaims(jwtUtil.substringToken(bearerJwt));
             if (claims == null) {

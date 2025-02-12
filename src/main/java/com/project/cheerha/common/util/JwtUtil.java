@@ -11,8 +11,6 @@ import jakarta.annotation.PostConstruct;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -24,7 +22,6 @@ import org.springframework.util.StringUtils;
 public class JwtUtil {
 
     private final JwtSecurityProperties securityProperties;
-    public static final Set<String> expiredTokenSet = new HashSet<>(); //TODO: redis 로 옮겨야 됨
 
     private Key key;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
