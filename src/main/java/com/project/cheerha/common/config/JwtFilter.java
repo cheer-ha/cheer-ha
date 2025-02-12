@@ -1,5 +1,6 @@
 package com.project.cheerha.common.config;
 
+import com.project.cheerha.common.properties.JwtSecurityProperties;
 import com.project.cheerha.common.util.JwtUtil;
 import com.project.cheerha.domain.user.entity.User.Role;
 import io.jsonwebtoken.Claims;
@@ -24,6 +25,7 @@ import org.springframework.util.PatternMatchUtils;
 public class JwtFilter implements Filter {
 
     private static final String[] WHITE_LIST = {"/auth/signup", "/auth/login"};
+    private final JwtSecurityProperties securityProperties;
     private final JwtUtil jwtUtil;
 
     @Override
@@ -66,10 +68,18 @@ public class JwtFilter implements Filter {
             }
 
             httpRequest.setAttribute("userId", Long.parseLong(claims.getSubject()));
-            httpRequest.setAttribute("email", claims.get("email"));
-            String userRoleString = claims.get("userRole").toString();
-            Role role = Role.valueOf(userRoleString);
-            httpRequest.setAttribute("userRole", role);
+
+            //accessToken 일 때만 email, userRole 저장
+            if (bearerJwt.startsWith(securityProperties.getToken().getPrefix())) {
+                String email = claims.get("email", String.class);
+                String userRoleString = claims.get("userRole", String.class);
+                Role role = Role.valueOf(userRoleString);
+
+                if (email != null && userRoleString != null) {
+                    httpRequest.setAttribute("email", email);
+                    httpRequest.setAttribute("userRole", role);
+                }
+            }
 
             chain.doFilter(request, response);
         } catch (SecurityException | MalformedJwtException e) {
