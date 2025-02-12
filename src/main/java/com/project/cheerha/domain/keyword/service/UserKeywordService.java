@@ -1,6 +1,5 @@
 package com.project.cheerha.domain.keyword.service;
 
-import com.project.cheerha.common.dto.AuthUser;
 import com.project.cheerha.common.exception.CustomException;
 import com.project.cheerha.common.exception.ErrorCode;
 import com.project.cheerha.domain.keyword.dto.request.CreateUserKeywordRequestDto;
@@ -28,10 +27,9 @@ public class UserKeywordService {
     // todo 테스트 코드 작성 필요
     @Transactional
     public CreateUserKeywordResponseDto createUserKeyword(
-        AuthUser authUser,
+        Long userId,
         CreateUserKeywordRequestDto requestDto
     ) {
-        Long userId = authUser.id();
         List<Long> idList = requestDto.keywordIdList();
 
         List<Keyword> keywordList = createNewUserKeywordIfNotExist(userId, idList);

@@ -25,8 +25,10 @@ public class UserKeywordController {
         @RequestBody CreateUserKeywordRequestDto requestDto,
         @Auth AuthUser authUser
     ) {
+        Long userId = authUser.id();
+
         CreateUserKeywordResponseDto responseDto = userKeywordService.createUserKeyword(
-            authUser,
+            userId,
             requestDto
         );
 
