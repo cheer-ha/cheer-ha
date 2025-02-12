@@ -1,14 +1,14 @@
 package com.project.cheerha.domain.data.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import java.time.LocalDate;
+import com.project.cheerha.domain.keyword.entity.DataKeyword;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -48,4 +48,30 @@ public class Data {
 
     // todo tinyint일 때 뭘 써야 좋을지 추후 수정 예정
     private int career;
+
+    @Column(length = 255, nullable = false)
+    private String position;  // 포지션 (직무명 예시: SW개발)
+
+    // Data와 Keyword를 연결하는 DataKeyword 중간 테이블을 사용하여 자격 요건 관리
+    @OneToMany(mappedBy = "data", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<DataKeyword> dataKeywords = new HashSet<>();  // 자격 요건(키워드 리스트)
+
+    // 자격 요건 키워드 리스트 반환
+    public Set<String> getRequiredSkills() {
+        Set<String> skills = new HashSet<>();
+        for (DataKeyword dataKeyword : dataKeywords) {
+            skills.add(dataKeyword.getKeyword().getName());
+        }
+        return skills;
+    }
+
+    // 채용 기간을 문자열로 반환하는 메서드
+    public String getHiringPeriod() {
+        if (hiringStartPeriod != null && hiringEndPeriod != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            return hiringStartPeriod.format(formatter) + " ~ " + hiringEndPeriod.format(formatter);
+        } else {
+            return "채용 기간 정보 없음";
+        }
+    }
 }
