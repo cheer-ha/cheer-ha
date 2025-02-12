@@ -20,16 +20,15 @@ public class DataService {
     @Transactional(readOnly = true)
     public Page<ReadDataResponseDto> readData(
             String education, LocalDate hiringStartPeriod,
-            LocalDate hiringEndPeriod,
-            String location, int career,
-            String jobType, String requiredSkill,
-            Pageable pageable
+            LocalDate hiringEndPeriod, String location,
+            int career, String jobType,
+            String requiredSkill, Pageable pageable
     ) {
         Page<Data> dataPage = dataRepository.findAllByCondition(
                 education, hiringStartPeriod,
-                hiringEndPeriod, location, career,
-                jobType, requiredSkill,
-                pageable);
+                hiringEndPeriod, location,
+                career, jobType,
+                requiredSkill, pageable);
 
         Page<ReadDataResponseDto> dtoPage = dataPage.map(ReadDataResponseDto::toDto);
 
