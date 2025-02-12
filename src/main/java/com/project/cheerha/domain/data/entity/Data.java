@@ -48,4 +48,10 @@ public class Data {
 
     // todo tinyint일 때 뭘 써야 좋을지 추후 수정 예정
     private int career;
+
+    private int count;
+
+    public void upCnt(){
+        this.count++;
+    }
 }
