@@ -1,6 +1,5 @@
 package com.project.cheerha.domain.data.dto.response;
 
-import com.project.cheerha.domain.data.entity.Data;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
@@ -11,31 +10,28 @@ import java.util.List;
 @Getter
 public class ReadDataResponseDto {
 
+    private final Long id;
     private final String company;
     private final LocalDateTime hiringStartsAt;
     private final LocalDateTime hiringEndsAt;
     private final String position;
-    private final List<String> requiredSkills;
+
+    private List<String> requiredSkills;
 
     @QueryProjection
     public ReadDataResponseDto(
-            String company, LocalDateTime hiringStartsAt,
-            LocalDateTime hiringEndsAt, String position,
-            List<String> requiredSkills
+            Long id, String company,
+            LocalDateTime hiringStartsAt, LocalDateTime hiringEndsAt,
+            String position
     ) {
+        this.id = id;
         this.company = company;
         this.hiringStartsAt = hiringStartsAt;
         this.hiringEndsAt = hiringEndsAt;
         this.position = position;
-        this.requiredSkills = requiredSkills;
     }
 
-    public static ReadDataResponseDto toDto(Data data) {
-        return new ReadDataResponseDto(
-                data.getCompany(),
-                data.getHiringStartPeriod(),
-                data.getHiringEndPeriod(),
-                data.getPosition(),
-                data.getRequiredSkills());
+    public void addRequiredSkills(List<String> requiredSkills) {
+        this.requiredSkills = requiredSkills;
     }
 }

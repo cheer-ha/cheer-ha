@@ -1,5 +1,6 @@
 package com.project.cheerha.domain.data.service;
 
+import com.project.cheerha.domain.data.dto.request.ReadDataRequestDto;
 import com.project.cheerha.domain.data.dto.response.ReadDataResponseDto;
 import com.project.cheerha.domain.data.repository.DataRepository;
 import lombok.RequiredArgsConstructor;
@@ -7,8 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -18,16 +17,11 @@ public class DataService {
 
     @Transactional
     public Page<ReadDataResponseDto> readData(
-            String education, LocalDateTime hiringStartPeriod,
-            LocalDateTime hiringEndPeriod, String location,
-            Integer career, String jobType,
-            String requiredSkill, Pageable pageable
+            ReadDataRequestDto requestDto,
+            Pageable pageable
     ) {
         Page<ReadDataResponseDto> dtoPage = dataRepository.findAllByCondition(
-                education, hiringStartPeriod,
-                hiringEndPeriod, location,
-                career, jobType,
-                requiredSkill, pageable);
+                requestDto, pageable);
 
         return dtoPage;
     }

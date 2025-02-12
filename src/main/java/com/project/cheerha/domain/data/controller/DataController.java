@@ -29,14 +29,7 @@ public class DataController {
         Pageable pageable = validatePageSize(page, size);
 
         Page<ReadDataResponseDto> dtoPage = dataService.readData(
-            requestDto.getEducation(),
-            requestDto.getHiringStartPeriod(),
-            requestDto.getHiringEndPeriod(),
-            requestDto.getLocation(),
-            requestDto.getCareer(),
-            requestDto.getJobType(),
-            requestDto.getRequiredSkill(),
-            pageable
+            requestDto, pageable
             );
 
         return ResponseEntity.status(HttpStatus.OK).body(dtoPage);
