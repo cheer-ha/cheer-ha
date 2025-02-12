@@ -1,10 +1,9 @@
 package com.project.cheerha.domain.auth.service;
 
-import static com.project.cheerha.common.util.JwtUtil.expiredTokenSet;
-
 import com.project.cheerha.common.exception.CustomException;
 import com.project.cheerha.common.exception.ErrorCode;
 import com.project.cheerha.common.properties.JwtSecurityProperties;
+import com.project.cheerha.common.redis.RedisBlackListService;
 import com.project.cheerha.common.redis.RedisRefreshTokenService;
 import com.project.cheerha.common.util.JwtUtil;
 import com.project.cheerha.common.util.PasswordEncoder;
@@ -31,6 +30,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final JwtSecurityProperties jwtSecurityProperties;
     private final RedisRefreshTokenService redisRefreshTokenService;
+    private final RedisBlackListService redisBlackListService;
 
     //TODO: signUp도 login 처럼 사용자 차단 고려
     public CreateSignupResponseDto signup(CreateSignupRequestDto dto) {
@@ -72,11 +72,13 @@ public class AuthService {
         }
 
         String token = jwtUtil.substringToken(authHeader);
-        if (expiredTokenSet.contains(token)) {
-            throw new CustomException(ErrorCode.TOKEN_NOT_FOUND);
-        }
 
-        expiredTokenSet.add(token);
+        Claims claims = jwtUtil.extractClaims(token);
+        long expirationMillis = claims.getExpiration().getTime() - System.currentTimeMillis();
+
+        if (expirationMillis > 0) {
+            redisBlackListService.addToBlackList(token);
+        }
 
         Long userId = Long.parseLong(jwtUtil.extractClaims(token).getSubject());
         redisRefreshTokenService.deleteRefreshToken(userId);

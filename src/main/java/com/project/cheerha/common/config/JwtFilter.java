@@ -1,6 +1,7 @@
 package com.project.cheerha.common.config;
 
 import com.project.cheerha.common.properties.JwtSecurityProperties;
+import com.project.cheerha.common.redis.RedisBlackListService;
 import com.project.cheerha.common.util.JwtUtil;
 import com.project.cheerha.domain.user.entity.User.Role;
 import io.jsonwebtoken.Claims;
@@ -26,6 +27,7 @@ public class JwtFilter implements Filter {
 
     private static final String[] WHITE_LIST = {"/auth/signup", "/auth/login"};
     private final JwtSecurityProperties securityProperties;
+    private final RedisBlackListService redisBlackListService;
     private final JwtUtil jwtUtil;
 
     @Override
@@ -54,6 +56,11 @@ public class JwtFilter implements Filter {
         }
 
         String token = jwtUtil.substringToken(bearerJwt);
+
+        if (redisBlackListService.isBlacklisted(token)) {
+            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "블랙리스트된 토큰입니다.");
+            return;
+        }
 
         if (JwtUtil.expiredTokenSet.contains(token)) {
             httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "토큰이 유효하지 않습니다.");
