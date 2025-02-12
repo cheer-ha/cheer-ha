@@ -1,6 +1,6 @@
 package com.project.cheerha.domain.keyword.entity;
 
-import com.project.cheerha.domain.data.entity.Data;
+import com.project.cheerha.domain.jobOpening.entity.JobOpening;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,6 +30,6 @@ public class DataKeyword {
 
     @ManyToOne
     @JoinColumn(name = "data_id")
-    private Data data;
+    private JobOpening jobOpening;
 
 }

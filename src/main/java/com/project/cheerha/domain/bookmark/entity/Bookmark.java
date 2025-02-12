@@ -1,6 +1,6 @@
 package com.project.cheerha.domain.bookmark.entity;
 
-import com.project.cheerha.domain.data.entity.Data;
+import com.project.cheerha.domain.jobOpening.entity.JobOpening;
 import com.project.cheerha.domain.user.entity.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -32,5 +32,5 @@ public class Bookmark {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "data_id")
-    private Data data;
+    private JobOpening jobOpening;
 }

@@ -1,8 +1,7 @@
-package com.project.cheerha.domain.data.controller;
+package com.project.cheerha.domain.jobOpening.controller;
 
-import com.project.cheerha.domain.data.entity.Data;
-import com.project.cheerha.domain.data.repository.DataRepository;
-import com.project.cheerha.domain.data.service.DataService;
+
+import com.project.cheerha.domain.jobOpening.service.JobOpeningService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,13 +12,13 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequestMapping("/data")
 @RestController
 @RequiredArgsConstructor
-public class DataController {
+public class JobOpeningController {
 
-    private final DataService dataService;
+    private final JobOpeningService jobOpeningService;
 
     @GetMapping("/{id}")
-    public RedirectView redirectView (@PathVariable Long id) {
-        String url = dataService.urlFindById(id);
+    public RedirectView getRedirectView (@PathVariable Long id) {
+        String url = jobOpeningService.getJobOpeningUrlAndIncreaseViewCount(id);
         return new RedirectView(url);
     }
 }
