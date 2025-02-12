@@ -79,9 +79,9 @@ public class UserKeywordService {
         Long userId,
         DeleteUserKeywordRequestDto requestDto
     ) {
-        List<Long> idList = requestDto.idList();
+        List<Long> userKeywordIdList = requestDto.userKeywordIdList();
 
-        idList.forEach(userKeywordId -> {
+        userKeywordIdList.forEach(userKeywordId -> {
 
                 boolean isUserKeywordNotExist = !userKeywordRepository.existsByUserIdAndId(
                     userId,
