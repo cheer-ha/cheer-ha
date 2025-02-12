@@ -8,14 +8,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "data")
 public class Data {
 
@@ -95,5 +93,11 @@ public class Data {
         } else {
             return "채용 기간 정보 없음";
         }
+    }
+
+    private int count;
+
+    public void upCnt(){
+        this.count++;
     }
 }
