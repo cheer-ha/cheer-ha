@@ -3,6 +3,7 @@ package com.project.cheerha.domain.keyword.service;
 import com.project.cheerha.common.exception.CustomException;
 import com.project.cheerha.common.exception.ErrorCode;
 import com.project.cheerha.domain.keyword.dto.request.CreateUserKeywordRequestDto;
+import com.project.cheerha.domain.keyword.dto.request.DeleteUserKeywordRequestDto;
 import com.project.cheerha.domain.keyword.dto.response.CreateUserKeywordResponseDto;
 import com.project.cheerha.domain.keyword.entity.Keyword;
 import com.project.cheerha.domain.keyword.entity.UserKeyword;
@@ -71,5 +72,28 @@ public class UserKeywordService {
     // 키워드가 이미 선택되었는지 확인하는 메서드
     private boolean isKeywordAlreadyChosen(Long userId, Long keywordId) {
         return userKeywordRepository.existsByUserIdAndKeywordId(userId, keywordId);
+    }
+
+    @Transactional
+    public void deleteUserKeyword(
+        Long userId,
+        DeleteUserKeywordRequestDto requestDto
+    ) {
+        List<Long> idList = requestDto.idList();
+
+        idList.forEach(userKeywordId -> {
+
+                boolean isUserKeywordNotExist = !userKeywordRepository.existsByUserIdAndId(
+                    userId,
+                    userKeywordId
+                );
+
+                if (isUserKeywordNotExist) {
+                    return;
+                }
+
+                userKeywordRepository.deleteById(userKeywordId);
+            }
+        );
     }
 }
