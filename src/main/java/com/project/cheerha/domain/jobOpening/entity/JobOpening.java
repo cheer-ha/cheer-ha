@@ -15,10 +15,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(name = "job_opening")
 public class JobOpening {
-
-    public enum EducationLevel {};
-    public enum EmploymentType {};
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -63,3 +59,5 @@ public class JobOpening {
     }
 }
 
+;
+;
