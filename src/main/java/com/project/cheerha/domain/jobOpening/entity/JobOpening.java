@@ -49,8 +49,8 @@ public class JobOpening {
     private Integer maxExperienceYears;
 
     //해외 사이트 적용을 생각해서 ZonedDateTime 사용
-    private ZonedDateTime hiringStartsAt;
-    private ZonedDateTime hiringEndsAt;
+    private ZonedDateTime hiringStartAt;
+    private ZonedDateTime hiringEndAt;
 
     private int viewCount;
 

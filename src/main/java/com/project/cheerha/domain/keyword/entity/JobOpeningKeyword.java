@@ -15,10 +15,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "data_keyword", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"keyword_id", "data_id"})}
+@Table(name = "jobopening_keyword", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"keyword_id", "jobopening_id"})}
 )
-public class DataKeyword {
+public class JobOpeningKeyword {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +29,7 @@ public class DataKeyword {
     private Keyword keyword;
 
     @ManyToOne
-    @JoinColumn(name = "data_id")
+    @JoinColumn(name = "jobopening_id")
     private JobOpening jobOpening;
 
 }
