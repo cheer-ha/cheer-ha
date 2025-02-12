@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,4 +22,18 @@ public class Keyword {
 
     @Column(length = 50, nullable = false)
     private String name;
+
+
+
+
+
+
+
+
+    // 키워드 객체 목록에서 이름을 추출하는 메서드
+    public static List<String> extractNameListFromEntityList(List<Keyword> keywordList) {
+        return keywordList.stream()
+            .map(Keyword::getName)
+            .toList();
+    }
 }
