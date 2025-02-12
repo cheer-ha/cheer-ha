@@ -17,7 +17,7 @@ public class JobOpeningController {
     private final JobOpeningService jobOpeningService;
 
     @GetMapping("/{id}")
-    public RedirectView getRedirectView (@PathVariable Long id) {
+    public RedirectView getRedirectedView (@PathVariable Long id) {
         String url = jobOpeningService.getJobOpeningUrlAndIncreaseViewCount(id);
         return new RedirectView(url);
     }

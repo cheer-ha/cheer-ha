@@ -26,7 +26,7 @@ public class JobOpeningService {
         }
 
         log.info("최종 리다이렉트 URL: {}", url);
-        jobOpening.increaseCount();
+        jobOpening.increaseViewCount();
         jobOpeningRepository.save(jobOpening);
         return url;
     }
