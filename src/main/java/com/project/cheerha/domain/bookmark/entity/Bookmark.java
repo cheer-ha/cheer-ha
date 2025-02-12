@@ -1,9 +1,6 @@
 package com.project.cheerha.domain.bookmark.entity;
 
-import com.project.cheerha.common.exception.CustomException;
-import com.project.cheerha.common.exception.ErrorCode;
-import com.project.cheerha.domain.bookmark.repository.BookmarkRepository;
-import com.project.cheerha.domain.data.entity.Data;
+import com.project.cheerha.domain.jobOpening.entity.JobOpening;
 import com.project.cheerha.domain.user.entity.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -21,8 +18,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Table(name = "bookmark", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"user_id", "data_id"})}
-)  // user_id와 data_id의 복합 유니크 제약)
+    @UniqueConstraint(columnNames = {"user_id", "job_opening_id"})}
+)  // user_id와 job_opening_id의 복합 유니크 제약)
 public class Bookmark {
 
     @Id
@@ -34,20 +31,20 @@ public class Bookmark {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "data_id")
-    private Data data;
+    @JoinColumn(name = "job_opening_id")
+    private JobOpening jobOpening;
 
-    public Bookmark(Data data) {
-        this.data = data;
+    public Bookmark(JobOpening jobOpening) {
+        this.jobOpening = jobOpening;
     }
 
-    public Bookmark(User user, Data data) {
+    public Bookmark(User user, JobOpening jobOpening) {
         this.user = user;
-        this.data = data;
+        this.jobOpening = jobOpening;
     }
 
     // userId로 User를 찾아서 Bookmark 엔티티 생성
-    public static Bookmark toEntity(User user, Data data) {
-        return new Bookmark(user, data);  // user와 data를 이용해 Bookmark 엔티티 생성
+    public static Bookmark toEntity(User user, JobOpening jobOpening) {
+        return new Bookmark(user, jobOpening);  // user와 data를 이용해 Bookmark 엔티티 생성
     }
 }
