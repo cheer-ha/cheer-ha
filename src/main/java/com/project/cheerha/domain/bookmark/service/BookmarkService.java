@@ -7,7 +7,6 @@ import com.project.cheerha.domain.bookmark.entity.Bookmark;
 import com.project.cheerha.domain.bookmark.repository.BookmarkRepository;
 import com.project.cheerha.domain.data.entity.Data;
 import com.project.cheerha.domain.user.entity.User;
-import com.project.cheerha.domain.user.repository.UserRepository;
 import com.project.cheerha.domain.data.repository.DataRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
