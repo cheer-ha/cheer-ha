@@ -46,18 +46,8 @@ public class Bookmark {
         this.data = data;
     }
 
-    // 북마크가 이미 존재하는지 확인하는 메서드
-    public void validateDuplicateBookmark(BookmarkRepository bookmarkRepository) {
-        if (bookmarkRepository.findByUserAndData(user, data).isPresent()) {
-            throw new CustomException(ErrorCode.DUPLICATE_BOOKMARK);
-        }
-    }
-
-    // 북마크를 저장하기 전에 유효성 검증을 수행
-    public static Bookmark create(Data data, BookmarkRepository bookmarkRepository) {
-        // 중복된 북마크가 있는지 확인
-        Bookmark bookmark = new Bookmark(data);
-        bookmark.validateDuplicateBookmark(bookmarkRepository);
-        return bookmark;
+    // userId로 User를 찾아서 Bookmark 엔티티 생성
+    public static Bookmark toEntity(User user, Data data) {
+        return new Bookmark(user, data);  // user와 data를 이용해 Bookmark 엔티티 생성
     }
 }

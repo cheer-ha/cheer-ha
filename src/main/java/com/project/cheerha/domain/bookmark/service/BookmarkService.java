@@ -9,66 +9,64 @@ import com.project.cheerha.domain.data.entity.Data;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.repository.UserRepository;
 import com.project.cheerha.domain.data.repository.DataRepository;
-import com.project.cheerha.common.dto.AuthUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class BookmarkService {
 
     private final BookmarkRepository bookmarkRepository;
-    private final UserRepository userRepository;
     private final DataRepository dataRepository;
 
-    // 로그인된 사용자의 즐겨찾기 추가
     @Transactional
-    public void createBookmark(AuthUser authUser, Long dataId) {
-        // AuthUser로 유저 검증
-        User user = userRepository.findById(authUser.id())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    public void createBookmark(User user, Long dataId) {
+        // 데이터 조회: 주어진 dataId에 해당하는 Data를 조회
+        Data data = getDataById(dataId);
 
-        // 데이터 조회
-        Data data = dataRepository.findById(dataId)
-                .orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+        // 이미 존재하는 북마크가 있는지 확인
+        Optional<Bookmark> existingBookmark = bookmarkRepository.findByUserAndDataId(user, dataId);
+        if (existingBookmark.isPresent()) {
+            // 이미 존재하면 그냥 리턴
+            return;
+        }
 
         // 북마크 생성 후 저장
         Bookmark bookmark = new Bookmark(user, data);
         bookmarkRepository.save(bookmark);
     }
 
-    // 로그인된 사용자의 모든 즐겨찾기 조회
-    public List<ReadBookmarkResponseDto> readBookmarkList(AuthUser authUser) {
-        // AuthUser로 유저 조회
-        User user = userRepository.findById(authUser.id())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        // 해당 사용자의 북마크 목록 조회
-        List<Bookmark> bookmarks = bookmarkRepository.findAllByUser(user);
+    // 로그인된 사용자의 모든 즐겨찾기 조회 (페이징 처리)
+    @Transactional
+    public List<ReadBookmarkResponseDto> readBookmarkList(User user, int page, int size) {
+        // 북마크 목록을 가져올 때 페이지네이션 처리
+        Pageable pageable = PageRequest.of(page, size);
+        List<Bookmark> bookmarks = bookmarkRepository.findByUser(user, pageable);
+
+        // Bookmark -> ReadBookmarkResponseDto로 변환
         return bookmarks.stream()
-                .map(ReadBookmarkResponseDto::fromEntity)
-                .toList();
+                .map(ReadBookmarkResponseDto::toDto)
+                .collect(Collectors.toList());
     }
 
     // 로그인된 사용자의 즐겨찾기 삭제
     @Transactional
-    public void deleteBookmark(AuthUser authUser, Long dataId) {
-        // AuthUser로 유저 조회
-        User user = userRepository.findById(authUser.id())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    public void deleteBookmark(User user, Long dataId) {
+        // userId와 dataId로 북마크 삭제하고 성공 여부 확인
+        bookmarkRepository.deleteByUserAndDataId(user, dataId);
+    }
 
-        // 데이터 조회
-        Data data = dataRepository.findById(dataId)
+    // 데이터 조회를 위한 private 메서드
+    private Data getDataById(Long dataId) {
+        return dataRepository.findById(dataId)
                 .orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-
-        // 북마크 조회
-        Bookmark bookmark = bookmarkRepository.findByUserAndData(user, data)
-                .orElseThrow(() -> new CustomException(ErrorCode.BOOKMARK_NOT_FOUND));
-
-        // 북마크 삭제
-        bookmarkRepository.delete(bookmark);
     }
 }
