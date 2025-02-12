@@ -45,6 +45,6 @@ public class Bookmark {
 
     // userId로 User를 찾아서 Bookmark 엔티티 생성
     public static Bookmark toEntity(User user, JobOpening jobOpening) {
-        return new Bookmark(user, jobOpening);  // user와 data를 이용해 Bookmark 엔티티 생성
+        return new Bookmark(user, jobOpening);  // user와 jobOpening을 이용해 Bookmark 엔티티 생성
     }
 }

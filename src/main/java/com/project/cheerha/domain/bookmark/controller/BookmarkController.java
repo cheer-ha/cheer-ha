@@ -35,7 +35,7 @@ public class BookmarkController {
         User user = getUserById(authUser.id());
 
         // 북마크 생성
-        bookmarkService.createBookmark(user, dto.dataId());
+        bookmarkService.createBookmark(user, dto.jobOpeningId());
 
         // 즐겨찾기 추가 시 201 응답 코드 리턴
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -66,7 +66,7 @@ public class BookmarkController {
         // 유저 정보 조회
         User user = getUserById(authUser.id());
 
-        bookmarkService.deleteBookmark(user, dto.dataId());
+        bookmarkService.deleteBookmark(user, dto.jobOpeningId());
 
         // 즐겨찾기 삭제 시 204 응답 코드 리턴
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

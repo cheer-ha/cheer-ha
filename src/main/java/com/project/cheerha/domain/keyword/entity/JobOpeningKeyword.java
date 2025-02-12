@@ -32,10 +32,10 @@ public class JobOpeningKeyword {
     @JoinColumn(name = "job_opening_id")
     private JobOpening jobOpening;
 
-    public static DataKeyword toEntity(Data data, Keyword keyword) {
-        DataKeyword dataKeyword = new DataKeyword();
-        dataKeyword.keyword = keyword;
-        dataKeyword.data = data;
-        return dataKeyword;
+    public static JobOpeningKeyword toEntity(JobOpening jobOpening, Keyword keyword) {
+        JobOpeningKeyword jobOpeningKeyword = new JobOpeningKeyword();
+        jobOpeningKeyword.keyword = keyword;
+        jobOpeningKeyword.jobOpening = jobOpening;
+        return jobOpeningKeyword;
     }
 }

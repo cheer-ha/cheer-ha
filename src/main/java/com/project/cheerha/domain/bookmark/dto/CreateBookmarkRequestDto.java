@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 
 public record CreateBookmarkRequestDto(
         @NotNull
-        Long dataId
+        Long jobOpeningId
 ) {
 
 }

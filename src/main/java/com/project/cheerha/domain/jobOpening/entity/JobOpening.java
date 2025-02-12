@@ -55,10 +55,9 @@ public class JobOpening {
 
     @Column(nullable = true)
     private Integer maxExperienceYears;
+
     @Column(length = 255, nullable = false)
     private String position;  // 포지션 (직무명 예시: SW개발)
-
-    private int count;
 
     //해외 사이트 적용을 생각해서 ZonedDateTime 사용
     private ZonedDateTime hiringStartAt;
@@ -70,7 +69,7 @@ public class JobOpening {
         this.viewCount++;
     }
 
-    @OneToMany(mappedBy = "data", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "jobOpening", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<JobOpeningKeyword> jobOpeningKeywordList = new ArrayList<>();
 
     // 자격 요건 키워드 리스트 반환
@@ -85,7 +84,7 @@ public class JobOpening {
     // 채용 기간을 문자열로 반환하는 메서드
     public String getHiringPeriod() {
         if (hiringStartAt != null && hiringEndAt != null) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z");
             return hiringStartAt.format(formatter) + " ~ " + hiringEndAt.format(formatter);
         } else {
             return "채용 기간 정보 없음";
