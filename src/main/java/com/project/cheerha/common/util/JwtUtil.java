@@ -71,18 +71,14 @@ public class JwtUtil {
             throw new IllegalArgumentException("Token does not start with a valid prefix");
         }
 
-        // Access Token 처리
+        //accessToken 접두어 제거
         if (tokenValue.startsWith(prefix)) {
-            String extractedToken = tokenValue.substring(prefix.length()).trim();
-            log.info("Extracted Access Token: '{}'", extractedToken);
-            return extractedToken;
+            return tokenValue.substring(prefix.length()).trim();
         }
 
-        // Refresh Token 처리
+        //refreshToken 접두어 제거
         if (tokenValue.startsWith(refreshPrefix)) {
-            String extractedToken = tokenValue.substring(refreshPrefix.length()).trim();
-            log.info("Extracted Refresh Token: '{}'", extractedToken);
-            return extractedToken;
+            return tokenValue.substring(refreshPrefix.length()).trim();
         }
         throw new IllegalArgumentException("Not Found Token");
     }

@@ -44,6 +44,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(authService.logout(authHeader));
     }
 
+    //redis 의 refreshToken 을 이용해 accessToken 재발급
     @PostMapping("/refresh")
     public ResponseEntity<String> refreshAccessToken(
         @RequestHeader("Authorization") String refreshToken
