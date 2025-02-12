@@ -10,7 +10,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,9 +26,9 @@ public class DataRepositoryQueryImpl implements DataRepositoryQuery{
 
     @Override
     public Page<Data> findAllByCondition(
-            String education, LocalDate hiringStartPeriod,
-            LocalDate hiringEndPeriod, String location,
-            int career, String jobType, String requiredSkill,
+            String education, LocalDateTime hiringStartPeriod,
+            LocalDateTime hiringEndPeriod, String location,
+            Integer career, String jobType, String requiredSkill,
             Pageable pageable
     ) {
         List<Data> dataList = queryFactory
@@ -78,7 +78,7 @@ public class DataRepositoryQueryImpl implements DataRepositoryQuery{
     }
 
     // 입력된 마감 날짜보다 작은 데이터만 가져오도록 하는 메서드
-    private BooleanExpression leoHiringEndPeriod(LocalDate hiringEndPeriod) {
+    private BooleanExpression leoHiringEndPeriod(LocalDateTime hiringEndPeriod) {
         return hiringEndPeriod != null ? data.hiringEndPeriod.loe(hiringEndPeriod) : null;
     }
 
@@ -88,8 +88,8 @@ public class DataRepositoryQueryImpl implements DataRepositoryQuery{
     }
 
     // 입력된 경력 이하의 데이터만 가져오도록 하는 메서드
-    private BooleanExpression leoCareer(int career) {
-        return career >= 0 ? data.career.loe(career) : null;
+    private BooleanExpression leoCareer(Integer career) {
+        return career != null ? data.career.loe(career) : null;
     }
 
     // 입력된 근무 형태와 동일한 데이터만 가져오도록 하는 메서드

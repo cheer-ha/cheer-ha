@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -19,9 +19,9 @@ public class DataService {
 
     @Transactional(readOnly = true)
     public Page<ReadDataResponseDto> readData(
-            String education, LocalDate hiringStartPeriod,
-            LocalDate hiringEndPeriod, String location,
-            int career, String jobType,
+            String education, LocalDateTime hiringStartPeriod,
+            LocalDateTime hiringEndPeriod, String location,
+            Integer career, String jobType,
             String requiredSkill, Pageable pageable
     ) {
         Page<Data> dataPage = dataRepository.findAllByCondition(

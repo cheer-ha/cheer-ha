@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @RequestMapping("/search")
 @RestController
@@ -25,11 +25,10 @@ public class DataController {
     @GetMapping
     public ResponseEntity<Page<ReadDataResponseDto>> readData(
         @RequestParam(required = false) String education,
-        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate hiringStartPeriod,
-        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate hiringEndPeriod,
+        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime hiringStartPeriod,
+        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime hiringEndPeriod,
         @RequestParam(required = false) String location,
-        // TODO : int 타입을 Integer 타입으로 변경해서 null 값을 처리할 수 있도록 하면 어떨까요?
-        @RequestParam(required = false) int career,
+        @RequestParam(required = false) Integer career,
         @RequestParam(required = false) String jobType,
         @RequestParam(required = false) String requiredSkill,
         Pageable pageable
