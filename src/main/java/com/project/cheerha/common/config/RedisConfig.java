@@ -11,7 +11,7 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 @EnableRedisRepositories
 public class RedisConfig {
 
-    @Bean
+    @Bean   //TODO: 하드코딩 된 부분 나중에 수정 하겠음
     public RedisConnectionFactory redisConnectionFactory() {
         return new LettuceConnectionFactory("localhost", 6379);
     }
