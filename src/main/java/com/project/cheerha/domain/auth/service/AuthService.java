@@ -17,9 +17,11 @@ import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -86,8 +88,11 @@ public class AuthService {
         if (!StringUtils.hasText(refreshToken)) {
             throw new CustomException(ErrorCode.TOKEN_NOT_FOUND);
         }
+        //refreshToken 접두어 제거(claims 위함)
+        refreshToken = jwtUtil.substringToken(refreshToken);
 
         Claims claims;
+
         try {
             claims = jwtUtil.extractClaims(refreshToken);
         } catch (Exception e) {
@@ -97,7 +102,15 @@ public class AuthService {
         Long userId = Long.parseLong(claims.getSubject());
 
         String storedRefreshToken = redisRefreshTokenService.getRefreshToken(userId);
-        if (!refreshToken.equals(storedRefreshToken)) {
+
+        if (storedRefreshToken == null) {
+            log.error("Refresh Token not found in Redis for userId: {}", userId);
+            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+
+        //storedToken 도 접두어 제거 한 상태로 비교해야 함
+        if (!refreshToken.equals(jwtUtil.substringToken(storedRefreshToken))) {
+            log.error("Refresh Token mismatch for userId: {}", userId);
             throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 

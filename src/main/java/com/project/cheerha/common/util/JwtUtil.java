@@ -61,14 +61,28 @@ public class JwtUtil {
 
     public String substringToken(String tokenValue) {
         String prefix = securityProperties.getToken().getPrefix();
+        String refreshPrefix = securityProperties.getToken().getRefreshPrefix();
         if (!StringUtils.hasText(tokenValue)) {
             throw new IllegalArgumentException("Token must not be null or empty");
         }
-        if (!tokenValue.startsWith(prefix)) {
-            throw new IllegalArgumentException("Token does not start with prefix");
+
+        //prefix 나 refreshPrefix 를 포함해야 함
+        if (!(tokenValue.startsWith(prefix) || tokenValue.startsWith(refreshPrefix))) {
+            throw new IllegalArgumentException("Token does not start with a valid prefix");
         }
-        if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(prefix)) {
-            return tokenValue.substring(7);
+
+        // Access Token 처리
+        if (tokenValue.startsWith(prefix)) {
+            String extractedToken = tokenValue.substring(prefix.length()).trim();
+            log.info("Extracted Access Token: '{}'", extractedToken);
+            return extractedToken;
+        }
+
+        // Refresh Token 처리
+        if (tokenValue.startsWith(refreshPrefix)) {
+            String extractedToken = tokenValue.substring(refreshPrefix.length()).trim();
+            log.info("Extracted Refresh Token: '{}'", extractedToken);
+            return extractedToken;
         }
         throw new IllegalArgumentException("Not Found Token");
     }
@@ -77,7 +91,6 @@ public class JwtUtil {
         try {
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
         } catch (Exception e) {
-            log.error("Failed to parse JWT token: {}", e.getMessage());
             throw new IllegalArgumentException("Invalid or expired JWT token");
         }
     }
