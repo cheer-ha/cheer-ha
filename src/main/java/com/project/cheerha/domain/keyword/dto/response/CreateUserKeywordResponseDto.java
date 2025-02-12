@@ -4,7 +4,7 @@ import java.util.List;
 
 public record CreateUserKeywordResponseDto(List<String> keywordList) {
 
-    public static CreateUserKeywordResponseDto of(List<String> keywordList) {
+    public static CreateUserKeywordResponseDto toDto(List<String> keywordList) {
         return new CreateUserKeywordResponseDto(keywordList);
     }
 }

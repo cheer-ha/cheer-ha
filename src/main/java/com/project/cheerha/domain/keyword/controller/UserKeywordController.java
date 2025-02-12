@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping
+@RequestMapping("/users/keywords")
 @RestController
 @RequiredArgsConstructor
 public class UserKeywordController {
 
     private final UserKeywordService userKeywordService;
 
-    @PostMapping("/user/keywords")
+    @PostMapping
     public ResponseEntity<CreateUserKeywordResponseDto> createUserKeywordList(
         @RequestBody CreateUserKeywordRequestDto requestDto,
         @Auth AuthUser authUser

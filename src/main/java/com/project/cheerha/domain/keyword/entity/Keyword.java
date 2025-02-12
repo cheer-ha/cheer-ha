@@ -31,7 +31,7 @@ public class Keyword {
 
 
     // 키워드 객체 목록에서 이름을 추출하는 메서드
-    public static List<String> extractNameListFromEntityList(List<Keyword> keywordList) {
+    public static List<String> extractNameFromEntity(List<Keyword> keywordList) {
         return keywordList.stream()
             .map(Keyword::getName)
             .toList();
