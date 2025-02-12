@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping
 @RestController
 @RequiredArgsConstructor
-public class DataKeywordController {
+public class JobOpeningKeywordController {
 
 }
