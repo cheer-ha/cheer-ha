@@ -5,11 +5,12 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.Set;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -55,31 +56,17 @@ public class Data {
 
     private int count;
 
-    // Data와 Keyword를 연결하는 DataKeyword 중간 테이블을 사용하여 자격 요건 관리
-    @OneToMany(mappedBy = "data", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<DataKeyword> dataKeywords = new HashSet<>();  // 자격 요건(키워드 리스트)
-
-    public Data(String title, String company, String location, Integer salary, String jobType, String url,
-                LocalDate hiringStartPeriod, LocalDate hiringEndPeriod, String education, Integer career,
-                String position, Set<DataKeyword> dataKeywords) {
-        this.title = title;
-        this.company = company;
-        this.location = location;
-        this.salary = salary;
-        this.jobType = jobType;
-        this.url = url;
-        this.hiringStartPeriod = hiringStartPeriod;
-        this.hiringEndPeriod = hiringEndPeriod;
-        this.education = education;
-        this.career = career;
-        this.position = position;
-        this.dataKeywords = dataKeywords;
+    public void upCnt(){
+        this.count++;
     }
 
+    @OneToMany(mappedBy = "data", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DataKeyword> dataKeywordList = new ArrayList<>();
+
     // 자격 요건 키워드 리스트 반환
-    public Set<String> getRequiredSkills() {
-        Set<String> skills = new HashSet<>();
-        for (DataKeyword dataKeyword : dataKeywords) {
+    public List<String> getRequiredSkillList() {
+        List<String> skills = new ArrayList<>();
+        for (DataKeyword dataKeyword : dataKeywordList) {
             skills.add(dataKeyword.getKeyword().getName());
         }
         return skills;
@@ -93,11 +80,5 @@ public class Data {
         } else {
             return "채용 기간 정보 없음";
         }
-    }
-
-    private int count;
-
-    public void upCnt(){
-        this.count++;
     }
 }
