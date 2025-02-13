@@ -1,11 +1,16 @@
 package com.project.cheerha.domain.jobOpening.service;
 
+import com.project.cheerha.common.dto.AuthUser;
 import com.project.cheerha.common.exception.CustomException;
 import com.project.cheerha.common.exception.ErrorCode;
+import com.project.cheerha.domain.history.entity.History;
+import com.project.cheerha.domain.history.repository.HistoryRepository;
 import com.project.cheerha.domain.jobOpening.dto.request.ReadJobOpeningRequestDto;
 import com.project.cheerha.domain.jobOpening.dto.response.ReadJobOpeningResponseDto;
 import com.project.cheerha.domain.jobOpening.entity.JobOpening;
 import com.project.cheerha.domain.jobOpening.repository.JobOpeningRepository;
+import com.project.cheerha.domain.user.entity.User;
+import com.project.cheerha.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -19,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class JobOpeningService {
 
     private final JobOpeningRepository jobOpeningRepository;
+    private final UserRepository userRepository;
+    private final HistoryRepository historyRepository;
 
     public String getJobOpeningUrlAndIncreaseViewCount(Long id) {
         JobOpening jobOpening = jobOpeningRepository.findById(id).orElseThrow(
@@ -39,8 +46,17 @@ public class JobOpeningService {
     @Transactional
     public Page<ReadJobOpeningResponseDto> readData(
             ReadJobOpeningRequestDto requestDto,
+            AuthUser authUser,
             Pageable pageable
     ) {
+        User user = userRepository.findById(authUser.id()).orElseThrow(
+                () -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        if (requestDto.getUserRequest() != null) {
+            History history = History.toEntity(user, requestDto.getUserRequest());
+            historyRepository.save(history);
+        }
+
         Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningRepository.findAllByCondition(
                 requestDto, pageable);
 

@@ -20,7 +20,9 @@ public class ReadJobOpeningRequestDto {
     private ZonedDateTime hiringEndAt;
 
     private String location;
-    private Integer ExperienceYears;
+    private Integer experienceYears;
     private String employmentType;
     private String requiredSkill;
+
+    private String userRequest;
 }

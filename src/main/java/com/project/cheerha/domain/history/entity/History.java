@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @Table(name = "history")
+@EntityListeners(AuditingEntityListener.class)
 public class History {
 
     @Id
@@ -29,4 +31,13 @@ public class History {
     @Column(updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
+
+    public static History toEntity(User user, String name) {
+        History history = new History();
+
+        history.user = user;
+        history.name = name;
+
+        return history;
+    }
 }

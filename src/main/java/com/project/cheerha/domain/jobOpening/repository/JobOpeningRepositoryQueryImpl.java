@@ -56,7 +56,8 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
                 leoHiringEndPeriod(requestDto.getHiringEndAt()),
                 eqLocation(requestDto.getLocation()),
                 leoCareer(requestDto.getExperienceYears()),
-                eqJobType(requestDto.getEmploymentType())
+                eqJobType(requestDto.getEmploymentType()),
+                containsUserRequest(requestDto.getUserRequest())
             )
             .groupBy(jobOpening.id)
             .limit(pageable.getPageSize())
@@ -102,13 +103,15 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
                     leoHiringEndPeriod(requestDto.getHiringEndAt()),
                     eqLocation(requestDto.getLocation()),
                     leoCareer(requestDto.getExperienceYears()),
-                    eqJobType(requestDto.getEmploymentType())
+                    eqJobType(requestDto.getEmploymentType()),
+                    containsUserRequest(requestDto.getUserRequest())
                 ).fetchOne())
                 .orElse(0L);
 
         return new PageImpl<>(dtoList, pageable, totalCount);
     }
 
+    // 입력된 자격 스킬을 포함한 데이터만 가져오도록 하는 메서드
     private BooleanExpression eqRequiredSkill(String requiredSkill) {
         return requiredSkill != null ? keyword.name.eq(requiredSkill) : Expressions.asBoolean(true).isTrue();
     }
@@ -141,5 +144,10 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
     // 입력된 근무 형태와 동일한 데이터만 가져오도록 하는 메서드
     private BooleanExpression eqJobType(String EmploymentType) {
         return EmploymentType != null ? jobOpening.employmentType.eq(EmploymentType) : Expressions.asBoolean(true).isTrue();
+    }
+
+    // 입력된 사용자 키워드를 포함하는 데이터만 가져오도록 하는 메서드
+    private BooleanExpression containsUserRequest(String userRequest) {
+        return userRequest != null ? jobOpening.company.containsIgnoreCase(userRequest) : Expressions.asBoolean(true).isTrue();
     }
 }

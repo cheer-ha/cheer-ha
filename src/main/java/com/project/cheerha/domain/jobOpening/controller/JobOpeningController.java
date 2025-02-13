@@ -1,6 +1,8 @@
 package com.project.cheerha.domain.jobOpening.controller;
 
 
+import com.project.cheerha.common.annotation.Auth;
+import com.project.cheerha.common.dto.AuthUser;
 import com.project.cheerha.common.exception.CustomException;
 import com.project.cheerha.common.exception.ErrorCode;
 import com.project.cheerha.domain.jobOpening.dto.request.ReadJobOpeningRequestDto;
@@ -32,12 +34,13 @@ public class JobOpeningController {
     public ResponseEntity<Page<ReadJobOpeningResponseDto>> readData(
             @ModelAttribute ReadJobOpeningRequestDto requestDto,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @Auth AuthUser authUser
     ) {
         Pageable pageable = validatePageSize(page, size);
 
         Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningService.readData(
-                requestDto, pageable
+                requestDto, authUser, pageable
         );
 
         return ResponseEntity.status(HttpStatus.OK).body(dtoPage);
