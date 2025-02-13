@@ -1,11 +1,18 @@
 package com.project.cheerha.domain.jobOpening.entity;
 
 import com.project.cheerha.domain.keyword.entity.JobOpeningKeyword;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.time.ZonedDateTime;
 import jakarta.persistence.*;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,13 +61,21 @@ public class JobOpening {
     private ZonedDateTime hiringStartAt;
     private ZonedDateTime hiringEndAt;
 
-    @OneToMany(mappedBy = "jobOpening", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<JobOpeningKeyword> jobOpeningKeywordList = new ArrayList<>();
-
     private int viewCount;
 
-    public void increaseViewCount(){
+    public void increaseViewCount() {
         this.viewCount++;
     }
 
+    @OneToMany(mappedBy = "jobOpening", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<JobOpeningKeyword> jobOpeningKeywordList = new ArrayList<>();
+
+    // 자격 요건 키워드 리스트 반환
+    public List<String> getRequiredSkillList() {
+        List<String> skillList = new ArrayList<>();
+        for (JobOpeningKeyword jobOpeningKeyword : jobOpeningKeywordList) {
+            skillList.add(jobOpeningKeyword.getKeyword().getName());
+        }
+        return skillList;
+    }
 }
