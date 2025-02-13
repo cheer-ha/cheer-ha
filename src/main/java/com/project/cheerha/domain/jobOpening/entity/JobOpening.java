@@ -10,8 +10,6 @@ import jakarta.persistence.Table;
 import java.time.ZonedDateTime;
 import jakarta.persistence.*;
 
-import java.time.format.DateTimeFormatter;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -65,7 +63,7 @@ public class JobOpening {
 
     private int viewCount;
 
-    public void increaseViewCount(){
+    public void increaseViewCount() {
         this.viewCount++;
     }
 
@@ -79,15 +77,5 @@ public class JobOpening {
             skills.add(jobOpeningKeyword.getKeyword().getName());
         }
         return skills;
-    }
-
-    // 채용 기간을 문자열로 반환하는 메서드
-    public String getHiringPeriod() {
-        if (hiringStartAt != null && hiringEndAt != null) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z");
-            return hiringStartAt.format(formatter) + " ~ " + hiringEndAt.format(formatter);
-        } else {
-            return "채용 기간 정보 없음";
-        }
     }
 }
