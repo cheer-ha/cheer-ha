@@ -34,9 +34,9 @@ public class BookmarkService {
         // userId로 User 객체를 조회
         User user = getUserById(userId);
 
-        // 이미 존재하는 북마크가 있는지 확인 (userId로 조회)
-        Optional<Bookmark> existingBookmark = bookmarkRepository.findByUserIdAndJobOpeningId(userId, jobOpeningId);
-        if (existingBookmark.isPresent()) {
+        // 이미 존재하는 북마크가 있는지 확인 (userId로 조회) - exists 사용
+        boolean bookmarkExists = bookmarkRepository.existsByUserIdAndJobOpeningId(userId, jobOpeningId);
+        if (bookmarkExists) {
             // 이미 존재하면 그냥 리턴
             return;
         }
