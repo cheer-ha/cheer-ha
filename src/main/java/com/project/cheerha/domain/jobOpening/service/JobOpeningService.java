@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class JobOpeningService {
+public class  JobOpeningService {
 
     private final JobOpeningRepository jobOpeningRepository;
 

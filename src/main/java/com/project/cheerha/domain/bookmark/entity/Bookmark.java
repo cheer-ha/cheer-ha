@@ -33,4 +33,12 @@ public class Bookmark {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_opening_id")
     private JobOpening jobOpening;
+
+    // userId로 User를 찾아서 Bookmark 엔티티 생성
+    public static Bookmark toEntity(User user, JobOpening jobOpening) {
+        Bookmark bookmark = new Bookmark();
+        bookmark.user = user;  // 필드 설정
+        bookmark.jobOpening = jobOpening;
+        return bookmark;
+    }
 }

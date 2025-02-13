@@ -1,5 +1,6 @@
 package com.project.cheerha.domain.jobOpening.entity;
 
+import com.project.cheerha.domain.keyword.entity.JobOpeningKeyword;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,8 +8,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.ZonedDateTime;
+import jakarta.persistence.*;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -48,16 +54,28 @@ public class JobOpening {
     @Column(nullable = true)
     private Integer maxExperienceYears;
 
+    @Column(length = 255, nullable = false)
+    private String position;  // 포지션 (직무명 예시: SW개발)
+
     //해외 사이트 적용을 생각해서 ZonedDateTime 사용
     private ZonedDateTime hiringStartAt;
     private ZonedDateTime hiringEndAt;
 
     private int viewCount;
 
-    public void increaseViewCount(){
+    public void increaseViewCount() {
         this.viewCount++;
     }
-}
 
-;
-;
+    @OneToMany(mappedBy = "jobOpening", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<JobOpeningKeyword> jobOpeningKeywordList = new ArrayList<>();
+
+    // 자격 요건 키워드 리스트 반환
+    public List<String> getRequiredSkillList() {
+        List<String> skillList = new ArrayList<>();
+        for (JobOpeningKeyword jobOpeningKeyword : jobOpeningKeywordList) {
+            skillList.add(jobOpeningKeyword.getKeyword().getName());
+        }
+        return skillList;
+    }
+}
