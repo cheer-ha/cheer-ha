@@ -47,7 +47,7 @@ public class BookmarkService {
     }
 
     // 로그인된 사용자의 모든 즐겨찾기 조회 (페이징 처리)
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<ReadBookmarkResponseDto> readAllBookmarks(Long userId, int page, int size) {
         // 페이지가 1 이하일 경우 0으로 처리 (0보다 작은 값은 0으로, 1 이상은 그대로)
         int correctedPage = Math.max(page - 1, 0);
