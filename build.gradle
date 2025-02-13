@@ -65,6 +65,10 @@ dependencies {
 
 	// bcrypt
 	implementation 'at.favre.lib:bcrypt:0.10.2'
+
+	// test
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.named('test') {
