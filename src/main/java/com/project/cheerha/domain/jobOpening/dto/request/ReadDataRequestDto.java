@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.data.dto.request;
+package com.project.cheerha.domain.jobOpening.dto.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

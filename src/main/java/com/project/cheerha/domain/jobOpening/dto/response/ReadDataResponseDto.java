@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.data.dto.response;
+package com.project.cheerha.domain.jobOpening.dto.response;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;

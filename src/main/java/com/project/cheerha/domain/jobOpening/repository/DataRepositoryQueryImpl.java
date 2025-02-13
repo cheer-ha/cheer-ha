@@ -1,7 +1,7 @@
-package com.project.cheerha.domain.data.repository;
+package com.project.cheerha.domain.jobOpening.repository;
 
-import com.project.cheerha.domain.data.dto.request.ReadDataRequestDto;
-import com.project.cheerha.domain.data.dto.response.ReadDataResponseDto;
+import com.project.cheerha.domain.jobOpening.dto.request.ReadDataRequestDto;
+import com.project.cheerha.domain.jobOpening.dto.response.ReadDataResponseDto;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
