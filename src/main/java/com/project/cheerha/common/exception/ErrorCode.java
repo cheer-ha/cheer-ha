@@ -13,9 +13,13 @@ public enum ErrorCode {
     TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "존재하지 않는 토큰입니다."),
     KEYWORD_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 키워드입니다."),
     WRONG_EMAIL_OR_PASSWORD(HttpStatus.UNAUTHORIZED, "이메일이나 패스워드가 잘못되었습니다."),
-    JOB_OPENING_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 채용공고입니다."),
+
+    LOGIN_REQUIRED(HttpStatus.FORBIDDEN, "권한이 없습니다."),
+
+    PAGING_ERROR(HttpStatus.BAD_REQUEST, "페이지 설정이 잘못되었습니다."),
+
     URL_NOT_FOUND(HttpStatus.NOT_FOUND,"해당 페이지 정보가 존재하지 않습니다."),
-    LOGIN_REQUIRED(HttpStatus.FORBIDDEN, "권한이 없습니다.");
+    JOB_OPENING_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 채용공고입니다.");
 
     private final HttpStatus status;
     private final String message;
