@@ -3,8 +3,6 @@ package com.project.cheerha.domain.jobOpening.controller;
 
 import com.project.cheerha.common.annotation.Auth;
 import com.project.cheerha.common.dto.AuthUser;
-import com.project.cheerha.common.exception.CustomException;
-import com.project.cheerha.common.exception.ErrorCode;
 import com.project.cheerha.domain.jobOpening.dto.request.ReadJobOpeningRequestDto;
 import com.project.cheerha.domain.jobOpening.dto.response.ReadJobOpeningResponseDto;
 import com.project.cheerha.domain.jobOpening.service.JobOpeningService;
@@ -50,7 +48,8 @@ public class JobOpeningController {
 
     private Pageable validatePageSize(int page, int size) {
         if (page < 1 || size < 1) {
-            throw new CustomException(ErrorCode.PAGING_ERROR);
+            page = Math.max(1, page);
+            size = Math.max(1, size);
         }
 
         return PageRequest.of(page - 1, size);
