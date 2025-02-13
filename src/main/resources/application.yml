@@ -32,6 +32,14 @@ jwt:
 #    org:
 #      springframework:
 #        security=DEBUG:
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
+        orm:
+          jdbc:
+            bind: trace
 
 #data:
 #  redis:
