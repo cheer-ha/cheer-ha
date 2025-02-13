@@ -34,13 +34,11 @@ public class Bookmark {
     @JoinColumn(name = "job_opening_id")
     private JobOpening jobOpening;
 
-    public Bookmark(User user, JobOpening jobOpening) {
-        this.user = user;
-        this.jobOpening = jobOpening;
-    }
-
     // userId로 User를 찾아서 Bookmark 엔티티 생성
     public static Bookmark toEntity(User user, JobOpening jobOpening) {
-        return new Bookmark(user, jobOpening);  // user와 jobOpening을 이용해 Bookmark 엔티티 생성
+        Bookmark bookmark = new Bookmark();
+        bookmark.user = user;  // 필드 설정
+        bookmark.jobOpening = jobOpening;
+        return bookmark;
     }
 }
