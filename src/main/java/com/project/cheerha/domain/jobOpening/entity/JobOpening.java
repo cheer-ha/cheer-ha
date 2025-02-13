@@ -72,10 +72,10 @@ public class JobOpening {
 
     // 자격 요건 키워드 리스트 반환
     public List<String> getRequiredSkillList() {
-        List<String> skills = new ArrayList<>();
+        List<String> skillList = new ArrayList<>();
         for (JobOpeningKeyword jobOpeningKeyword : jobOpeningKeywordList) {
-            skills.add(jobOpeningKeyword.getKeyword().getName());
+            skillList.add(jobOpeningKeyword.getKeyword().getName());
         }
-        return skills;
+        return skillList;
     }
 }
