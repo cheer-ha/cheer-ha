@@ -19,9 +19,9 @@ public class KeywordController {
 
     @GetMapping
     public ResponseEntity<ReadKeywordResponseDto> readAllKeywords(
-        @RequestParam(value = "search", required = false) String search
+        @RequestParam(value = "searchTerm", required = false) String searchTerm
     ) {
-        ReadKeywordResponseDto responseDto = keywordService.readKeywords(search);
+        ReadKeywordResponseDto responseDto = keywordService.readKeywords(searchTerm);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
