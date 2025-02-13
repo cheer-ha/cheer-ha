@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/keywords")
@@ -17,9 +18,10 @@ public class KeywordController {
     private final KeywordService keywordService;
 
     @GetMapping
-    public ResponseEntity<ReadKeywordResponseDto> readAllKeywords() {
-
-        ReadKeywordResponseDto responseDto = keywordService.readAllKeywords();
+    public ResponseEntity<ReadKeywordResponseDto> readAllKeywords(
+        @RequestParam(value = "search", required = false) String search
+    ) {
+        ReadKeywordResponseDto responseDto = keywordService.readKeywords(search);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
