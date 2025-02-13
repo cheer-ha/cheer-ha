@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +19,7 @@ public class HistoryService {
 
         return historyList.stream()
             .map(ReadHistoryResponseDto::toDto)
-            .collect(Collectors.toList());
+            .toList();
     }
 
 }
