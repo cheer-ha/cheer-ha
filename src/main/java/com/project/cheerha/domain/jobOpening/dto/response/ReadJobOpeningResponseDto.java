@@ -3,7 +3,7 @@ package com.project.cheerha.domain.jobOpening.dto.response;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 // TODO : 우선은 와이어프레임에 나오는 데이터만 반환되도록 설정, 보여줘야 하는 데이터가 더 많아진다면 추가해야 함
@@ -12,8 +12,8 @@ public class ReadJobOpeningResponseDto {
 
     private final Long id;
     private final String company;
-    private final LocalDateTime hiringStartAt;
-    private final LocalDateTime hiringEndAt;
+    private final ZonedDateTime hiringStartAt;
+    private final ZonedDateTime hiringEndAt;
     private final String position;
 
     private List<String> requiredSkills;
@@ -21,7 +21,7 @@ public class ReadJobOpeningResponseDto {
     @QueryProjection
     public ReadJobOpeningResponseDto(
             Long id, String company,
-            LocalDateTime hiringStartAt, LocalDateTime hiringEndAt,
+            ZonedDateTime hiringStartAt, ZonedDateTime hiringEndAt,
             String position
     ) {
         this.id = id;
