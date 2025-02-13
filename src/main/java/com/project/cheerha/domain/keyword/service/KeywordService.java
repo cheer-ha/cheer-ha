@@ -1,5 +1,6 @@
 package com.project.cheerha.domain.keyword.service;
 
+import com.project.cheerha.domain.keyword.dto.response.KeywordDto;
 import com.project.cheerha.domain.keyword.dto.response.ReadKeywordResponseDto;
 import com.project.cheerha.domain.keyword.entity.Keyword;
 import com.project.cheerha.domain.keyword.repository.KeywordRepository;
@@ -16,10 +17,16 @@ public class KeywordService {
 
     @Transactional(readOnly = true)
     public ReadKeywordResponseDto readAllKeywords() {
-        List<Keyword> allKeywordList = keywordRepository.findAll();
+        List<Keyword> keywordList = keywordRepository.findAll();
 
-        List<String> keywordNameList = Keyword.extractNameFromEntity(allKeywordList);
+        List<KeywordDto> keywordDtoList = keywordList.stream()
+            .map(keyword -> KeywordDto.toKeywordDto(
+                    keyword.getId(),
+                    keyword.getName()
+                )
+            )
+            .toList();
 
-        return ReadKeywordResponseDto.toDto(keywordNameList);
+        return ReadKeywordResponseDto.toDto(keywordDtoList);
     }
 }
