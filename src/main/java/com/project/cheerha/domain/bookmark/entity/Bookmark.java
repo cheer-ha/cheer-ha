@@ -34,10 +34,6 @@ public class Bookmark {
     @JoinColumn(name = "job_opening_id")
     private JobOpening jobOpening;
 
-    public Bookmark(JobOpening jobOpening) {
-        this.jobOpening = jobOpening;
-    }
-
     public Bookmark(User user, JobOpening jobOpening) {
         this.user = user;
         this.jobOpening = jobOpening;
