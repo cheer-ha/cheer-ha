@@ -8,7 +8,7 @@ import java.util.List;
 
 // TODO : 우선은 와이어프레임에 나오는 데이터만 반환되도록 설정, 보여줘야 하는 데이터가 더 많아진다면 추가해야 함
 @Getter
-public class ReadDataResponseDto {
+public class ReadJobOpeningResponseDto {
 
     private final Long id;
     private final String company;
@@ -19,7 +19,7 @@ public class ReadDataResponseDto {
     private List<String> requiredSkills;
 
     @QueryProjection
-    public ReadDataResponseDto(
+    public ReadJobOpeningResponseDto(
             Long id, String company,
             LocalDateTime hiringStartsAt, LocalDateTime hiringEndsAt,
             String position

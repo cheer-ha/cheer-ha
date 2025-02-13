@@ -1,7 +1,7 @@
 package com.project.cheerha.domain.jobOpening.repository;
 
-import com.project.cheerha.domain.jobOpening.dto.request.ReadDataRequestDto;
-import com.project.cheerha.domain.jobOpening.dto.response.ReadDataResponseDto;
+import com.project.cheerha.domain.jobOpening.dto.request.ReadJobOpeningRequestDto;
+import com.project.cheerha.domain.jobOpening.dto.response.ReadJobOpeningResponseDto;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -29,17 +29,17 @@ import static com.project.cheerha.domain.keyword.entity.QKeyword.keyword;
 @Repository
 @RequiredArgsConstructor
 @Slf4j
-public class DataRepositoryQueryImpl implements DataRepositoryQuery{
+public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery {
 
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<ReadDataResponseDto> findAllByCondition(
-            ReadDataRequestDto requestDto, Pageable pageable
+    public Page<ReadJobOpeningResponseDto> findAllByCondition(
+            ReadJobOpeningRequestDto requestDto, Pageable pageable
     ) {
-        List<ReadDataResponseDto> dtoList = queryFactory
+        List<ReadJobOpeningResponseDto> dtoList = queryFactory
             .select(Projections.constructor(
-                ReadDataResponseDto.class,
+                ReadJobOpeningResponseDto.class,
                 data.id,
                 data.company,
                 data.hiringStartPeriod,
@@ -66,7 +66,7 @@ public class DataRepositoryQueryImpl implements DataRepositoryQuery{
         log.info("dtoList size: " + dtoList.size());
 
         List<Long> dataIdList = dtoList.stream()
-                .map(ReadDataResponseDto::getId)
+                .map(ReadJobOpeningResponseDto::getId)
                 .toList();
 
         log.info("dataIdList size: " + dataIdList.size());

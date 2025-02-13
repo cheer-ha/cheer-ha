@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ReadDataRequestDto {
+public class ReadJobOpeningRequestDto {
 
     private String education;
 
