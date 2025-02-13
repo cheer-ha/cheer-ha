@@ -1,7 +1,8 @@
 package com.project.cheerha.common.redis;
 
 import com.project.cheerha.common.properties.JwtSecurityProperties;
-import java.util.concurrent.TimeUnit;
+
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -17,7 +18,7 @@ public class RedisRefreshTokenService {
         long expiration = jwtSecurityProperties.getToken().getRefreshExpiration();
         String key = getKey(userId);
         //set -> 원래 값을 수정함 -> 기존 refreshToken 덮어씌워짐
-        redisTemplate.opsForValue().set(key, refreshToken, expiration, TimeUnit.MILLISECONDS);
+        redisTemplate.opsForValue().set(key, refreshToken, Duration.ofMillis(expiration));
     }
 
     public String getRefreshToken(Long userId) {
