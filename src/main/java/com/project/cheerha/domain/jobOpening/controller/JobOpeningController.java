@@ -1,12 +1,18 @@
 package com.project.cheerha.domain.jobOpening.controller;
 
 
+import com.project.cheerha.common.exception.CustomException;
+import com.project.cheerha.common.exception.ErrorCode;
+import com.project.cheerha.domain.jobOpening.dto.request.ReadJobOpeningRequestDto;
+import com.project.cheerha.domain.jobOpening.dto.response.ReadJobOpeningResponseDto;
 import com.project.cheerha.domain.jobOpening.service.JobOpeningService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 @RequestMapping("/job-opening")
@@ -20,5 +26,28 @@ public class JobOpeningController {
     public RedirectView getRedirectedView (@PathVariable Long id) {
         String url = jobOpeningService.getJobOpeningUrlAndIncreaseViewCount(id);
         return new RedirectView(url);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<ReadJobOpeningResponseDto>> readData(
+            @ModelAttribute ReadJobOpeningRequestDto requestDto,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = validatePageSize(page, size);
+
+        Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningService.readData(
+                requestDto, pageable
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(dtoPage);
+    }
+
+    private Pageable validatePageSize(int page, int size) {
+        if (page < 1 || size < 1) {
+            throw new CustomException(ErrorCode.PAGING_ERROR);
+        }
+
+        return PageRequest.of(page - 1, size);
     }
 }

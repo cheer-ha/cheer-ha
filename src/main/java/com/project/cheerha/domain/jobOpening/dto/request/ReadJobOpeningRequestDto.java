@@ -5,22 +5,22 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class ReadJobOpeningRequestDto {
 
-    private String education;
+    private String educationLevel;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime hiringStartPeriod;
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime hiringEndPeriod;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private ZonedDateTime hiringStartAt;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private ZonedDateTime hiringEndAt;
 
     private String location;
-    private Integer career;
-    private String jobType;
+    private Integer ExperienceYears;
+    private String employmentType;
     private String requiredSkill;
 }

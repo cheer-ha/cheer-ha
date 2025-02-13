@@ -12,8 +12,8 @@ public class ReadJobOpeningResponseDto {
 
     private final Long id;
     private final String company;
-    private final LocalDateTime hiringStartsAt;
-    private final LocalDateTime hiringEndsAt;
+    private final LocalDateTime hiringStartAt;
+    private final LocalDateTime hiringEndAt;
     private final String position;
 
     private List<String> requiredSkills;
@@ -21,13 +21,13 @@ public class ReadJobOpeningResponseDto {
     @QueryProjection
     public ReadJobOpeningResponseDto(
             Long id, String company,
-            LocalDateTime hiringStartsAt, LocalDateTime hiringEndsAt,
+            LocalDateTime hiringStartAt, LocalDateTime hiringEndAt,
             String position
     ) {
         this.id = id;
         this.company = company;
-        this.hiringStartsAt = hiringStartsAt;
-        this.hiringEndsAt = hiringEndsAt;
+        this.hiringStartAt = hiringStartAt;
+        this.hiringEndAt = hiringEndAt;
         this.position = position;
     }
 

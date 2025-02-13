@@ -15,15 +15,15 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.project.cheerha.domain.data.entity.QData.data;
-import static com.project.cheerha.domain.keyword.entity.QDataKeyword.dataKeyword;
+import static com.project.cheerha.domain.jobOpening.entity.QJobOpening.jobOpening;
+import static com.project.cheerha.domain.keyword.entity.QJobOpeningKeyword.jobOpeningKeyword;
 import static com.project.cheerha.domain.keyword.entity.QKeyword.keyword;
 
 @Repository
@@ -40,25 +40,25 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
         List<ReadJobOpeningResponseDto> dtoList = queryFactory
             .select(Projections.constructor(
                 ReadJobOpeningResponseDto.class,
-                data.id,
-                data.company,
-                data.hiringStartPeriod,
-                data.hiringEndPeriod,
-                data.position
+                jobOpening.id,
+                jobOpening.company,
+                jobOpening.hiringStartAt,
+                jobOpening.hiringEndAt,
+                jobOpening.position
             ))
-            .from(data)
-            .leftJoin(data.dataKeywords, dataKeyword) // 데이터와 키워드 테이블 조인
-            .leftJoin(dataKeyword.keyword, keyword)
+            .from(jobOpening)
+            .leftJoin(jobOpening.jobOpeningKeywordList, jobOpeningKeyword) // 데이터와 키워드 테이블 조인
+            .leftJoin(jobOpeningKeyword.keyword, keyword)
             .where(
                 eqRequiredSkill(requestDto.getRequiredSkill()),
-                eqEducation(requestDto.getEducation()),
-                geoHiringStartPeriod(requestDto.getHiringStartPeriod()),
-                leoHiringEndPeriod(requestDto.getHiringEndPeriod()),
+                eqEducation(requestDto.getEducationLevel()),
+                geoHiringStartPeriod(requestDto.getHiringStartAt()),
+                leoHiringEndPeriod(requestDto.getHiringEndAt()),
                 eqLocation(requestDto.getLocation()),
-                leoCareer(requestDto.getCareer()),
-                eqJobType(requestDto.getJobType())
+                leoCareer(requestDto.getExperienceYears()),
+                eqJobType(requestDto.getEmploymentType())
             )
-            .groupBy(data.id)
+            .groupBy(jobOpening.id)
             .limit(pageable.getPageSize())
             .offset(pageable.getOffset())
             .fetch();
@@ -72,17 +72,17 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
         log.info("dataIdList size: " + dataIdList.size());
 
         List<Tuple> requiredSkillTupleList = queryFactory
-                .select(dataKeyword.data.id, keyword.name)
-                .from(dataKeyword)
-                .leftJoin(dataKeyword.keyword, keyword)
-                .where(dataKeyword.data.id.in(dataIdList))
+                .select(jobOpeningKeyword.jobOpening.id, keyword.name)
+                .from(jobOpeningKeyword)
+                .leftJoin(jobOpeningKeyword.keyword, keyword)
+                .where(jobOpeningKeyword.jobOpening.id.in(dataIdList))
                 .fetch();
 
         log.info("requiredSkillTupleList size: " + requiredSkillTupleList.size());
 
         Map<Long, List<String>> requiredSkillMap = requiredSkillTupleList.stream()
                 .collect(Collectors.groupingBy(
-                        tuple -> tuple.get(dataKeyword.data.id),
+                        tuple -> tuple.get(jobOpeningKeyword.jobOpening.id),
                         Collectors.mapping(tuple -> tuple.get(keyword.name), Collectors.toList())
                 ));
 
@@ -92,17 +92,17 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
 
         Long totalCount = Optional.ofNullable(
             queryFactory.select(Wildcard.count)
-                .from(data)
-                .leftJoin(data.dataKeywords, dataKeyword)
-                .leftJoin(dataKeyword.keyword, keyword)
+                .from(jobOpening)
+                .leftJoin(jobOpening.jobOpeningKeywordList, jobOpeningKeyword)
+                .leftJoin(jobOpeningKeyword.keyword, keyword)
                 .where(
                     eqRequiredSkill(requestDto.getRequiredSkill()),
-                    eqEducation(requestDto.getEducation()),
-                    geoHiringStartPeriod(requestDto.getHiringStartPeriod()),
-                    leoHiringEndPeriod(requestDto.getHiringEndPeriod()),
+                    eqEducation(requestDto.getEducationLevel()),
+                    geoHiringStartPeriod(requestDto.getHiringStartAt()),
+                    leoHiringEndPeriod(requestDto.getHiringEndAt()),
                     eqLocation(requestDto.getLocation()),
-                    leoCareer(requestDto.getCareer()),
-                    eqJobType(requestDto.getJobType())
+                    leoCareer(requestDto.getExperienceYears()),
+                    eqJobType(requestDto.getEmploymentType())
                 ).fetchOne())
                 .orElse(0L);
 
@@ -114,32 +114,32 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
     }
 
     // 입력된 학력과 같은 데이터만 가져오도록 하는 메서드
-    private BooleanExpression eqEducation(String education) {
-        return education != null ? data.education.eq(education) : Expressions.asBoolean(true).isTrue();
+    private BooleanExpression eqEducation(String educationLevel) {
+        return educationLevel != null ? jobOpening.educationLevel.eq(educationLevel) : Expressions.asBoolean(true).isTrue();
     }
 
     // 입력된 시작 날짜보다 큰 데이터만 가져오도록 하는 메서드
-    private BooleanExpression geoHiringStartPeriod(LocalDateTime hiringStartPeriod) {
-        return hiringStartPeriod != null ? data.hiringStartPeriod.loe(hiringStartPeriod) : Expressions.asBoolean(true).isTrue();
+    private BooleanExpression geoHiringStartPeriod(ZonedDateTime hiringStartAt) {
+        return hiringStartAt != null ? jobOpening.hiringStartAt.loe(hiringStartAt) : Expressions.asBoolean(true).isTrue();
     }
 
     // 입력된 마감 날짜보다 작은 데이터만 가져오도록 하는 메서드
-    private BooleanExpression leoHiringEndPeriod(LocalDateTime hiringEndPeriod) {
-        return hiringEndPeriod != null ? data.hiringEndPeriod.loe(hiringEndPeriod) : Expressions.asBoolean(true).isTrue();
+    private BooleanExpression leoHiringEndPeriod(ZonedDateTime hiringEndAt) {
+        return hiringEndAt != null ? jobOpening.hiringEndAt.loe(hiringEndAt) : Expressions.asBoolean(true).isTrue();
     }
 
     // 동일한 근무 지역의 데이터만 가져오도록 하는 메서드
     private BooleanExpression eqLocation(String location) {
-        return location != null ? data.location.eq(location) : Expressions.asBoolean(true).isTrue();
+        return location != null ? jobOpening.location.eq(location) : Expressions.asBoolean(true).isTrue();
     }
 
     // 입력된 경력 이하의 데이터만 가져오도록 하는 메서드
-    private BooleanExpression leoCareer(Integer career) {
-        return career != null ? data.career.loe(career) : Expressions.asBoolean(true).isTrue();
+    private BooleanExpression leoCareer(Integer maxExperienceYears) {
+        return maxExperienceYears != null ? jobOpening.maxExperienceYears.loe(maxExperienceYears) : Expressions.asBoolean(true).isTrue();
     }
 
     // 입력된 근무 형태와 동일한 데이터만 가져오도록 하는 메서드
-    private BooleanExpression eqJobType(String jobType) {
-        return jobType != null ? data.jobType.eq(jobType) : Expressions.asBoolean(true).isTrue();
+    private BooleanExpression eqJobType(String EmploymentType) {
+        return EmploymentType != null ? jobOpening.employmentType.eq(EmploymentType) : Expressions.asBoolean(true).isTrue();
     }
 }
