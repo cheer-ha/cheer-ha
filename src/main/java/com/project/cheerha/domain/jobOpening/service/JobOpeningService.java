@@ -1,6 +1,5 @@
 package com.project.cheerha.domain.jobOpening.service;
 
-import com.project.cheerha.common.dto.AuthUser;
 import com.project.cheerha.common.exception.CustomException;
 import com.project.cheerha.common.exception.ErrorCode;
 import com.project.cheerha.domain.history.entity.History;
@@ -46,10 +45,10 @@ public class  JobOpeningService {
     @Transactional
     public Page<ReadJobOpeningResponseDto> readData(
             ReadJobOpeningRequestDto requestDto,
-            AuthUser authUser,
+            Long userId,
             Pageable pageable
     ) {
-        User user = userRepository.findById(authUser.id()).orElseThrow(
+        User user = userRepository.findById(userId).orElseThrow(
                 () -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         if (requestDto.getUserRequest() != null) {

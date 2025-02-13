@@ -39,8 +39,10 @@ public class JobOpeningController {
     ) {
         Pageable pageable = validatePageSize(page, size);
 
+        Long userId = authUser.id();
+
         Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningService.readData(
-                requestDto, authUser, pageable
+                requestDto, userId, pageable
         );
 
         return ResponseEntity.status(HttpStatus.OK).body(dtoPage);
