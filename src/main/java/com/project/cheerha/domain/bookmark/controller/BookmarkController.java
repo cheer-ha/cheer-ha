@@ -2,9 +2,9 @@ package com.project.cheerha.domain.bookmark.controller;
 
 import com.project.cheerha.common.annotation.Auth;
 import com.project.cheerha.common.dto.AuthUser;
-import com.project.cheerha.domain.bookmark.dto.CreateBookmarkRequestDto;
-import com.project.cheerha.domain.bookmark.dto.DeleteBookmarkRequestDto;
-import com.project.cheerha.domain.bookmark.dto.ReadBookmarkResponseDto;
+import com.project.cheerha.domain.bookmark.dto.request.CreateBookmarkRequestDto;
+import com.project.cheerha.domain.bookmark.dto.request.DeleteBookmarkRequestDto;
+import com.project.cheerha.domain.bookmark.dto.response.ReadBookmarkResponseDto;
 import com.project.cheerha.domain.bookmark.service.BookmarkService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

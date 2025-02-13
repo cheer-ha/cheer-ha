@@ -1,8 +1,8 @@
-package com.project.cheerha.domain.bookmark.dto;
+package com.project.cheerha.domain.bookmark.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 
-public record DeleteBookmarkRequestDto(
+public record CreateBookmarkRequestDto(
         @NotNull
         Long jobOpeningId
 ) {
