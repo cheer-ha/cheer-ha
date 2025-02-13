@@ -24,5 +24,5 @@ public class ReadJobOpeningRequestDto {
     private String employmentType;
     private String requiredSkill;
 
-    private String userRequest;
+    private String searchTerm;
 }

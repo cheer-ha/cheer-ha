@@ -51,8 +51,8 @@ public class  JobOpeningService {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        if (requestDto.getUserRequest() != null) {
-            History history = History.toEntity(user, requestDto.getUserRequest());
+        if (requestDto.getSearchTerm() != null) {
+            History history = History.toEntity(user, requestDto.getSearchTerm());
             historyRepository.save(history);
         }
 

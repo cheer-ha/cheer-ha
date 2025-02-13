@@ -57,7 +57,7 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
                 eqLocation(requestDto.getLocation()),
                 leoCareer(requestDto.getExperienceYears()),
                 eqJobType(requestDto.getEmploymentType()),
-                containsUserRequest(requestDto.getUserRequest())
+                containsSearchTerm(requestDto.getSearchTerm())
             )
             .groupBy(jobOpening.id)
             .limit(pageable.getPageSize())
@@ -104,7 +104,7 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
                     eqLocation(requestDto.getLocation()),
                     leoCareer(requestDto.getExperienceYears()),
                     eqJobType(requestDto.getEmploymentType()),
-                    containsUserRequest(requestDto.getUserRequest())
+                    containsSearchTerm(requestDto.getSearchTerm())
                 ).fetchOne())
                 .orElse(0L);
 
@@ -147,7 +147,7 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
     }
 
     // 입력된 사용자 키워드를 포함하는 데이터만 가져오도록 하는 메서드
-    private BooleanExpression containsUserRequest(String userRequest) {
-        return userRequest != null ? jobOpening.company.containsIgnoreCase(userRequest) : Expressions.asBoolean(true).isTrue();
+    private BooleanExpression containsSearchTerm(String searchTerm) {
+        return searchTerm != null ? jobOpening.company.containsIgnoreCase(searchTerm) : Expressions.asBoolean(true).isTrue();
     }
 }
