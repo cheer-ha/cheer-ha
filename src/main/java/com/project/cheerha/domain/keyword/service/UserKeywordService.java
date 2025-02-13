@@ -49,12 +49,10 @@ public class UserKeywordService {
         List<Keyword> keywordList = new ArrayList<>();
 
         keywordIdList.forEach(keywordId -> {
-                Keyword foundKeyword = keywordRepository.findById(keywordId)
-                    .orElseThrow(() -> new CustomException(ErrorCode.KEYWORD_NOT_FOUND));
+                Keyword foundKeyword = getKeywordById(keywordId);
 
                 if (!isKeywordAlreadyChosen(userId, keywordId)) {
-                    User foundUser = userRepository.findById(userId)
-                        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+                    User foundUser = getUserById(userId);
 
                     UserKeyword newUserKeyword = UserKeyword.of(
                         foundUser,
@@ -106,19 +104,24 @@ public class UserKeywordService {
 
         List<KeywordDto> keywordDtoList = keywordIdList.stream()
             .map(keywordId -> {
-                    Keyword keyword = keywordRepository.findById(keywordId)
-                        .orElseThrow(
-                            () -> new CustomException(ErrorCode.KEYWORD_NOT_FOUND)
-                        );
+                    Keyword keyword = getKeywordById(keywordId);
 
-                    return KeywordDto.toKeywordDto(
-                        keyword.getId(),
-                        keyword.getName()
-                    );
+                    return KeywordDto.toKeywordDto(keyword.getId(), keyword.getName());
                 }
-            )
-            .toList();
+            ).toList();
 
         return ReadUserKeywordResponseDto.toDto(keywordDtoList);
+    }
+
+    // todo 리팩토링 시 다른 서비스 레이어로 분리 필요
+    private Keyword getKeywordById(Long keywordId) {
+        return keywordRepository.findById(keywordId)
+            .orElseThrow(() -> new CustomException(ErrorCode.KEYWORD_NOT_FOUND));
+    }
+
+    // todo 리팩토링 시 다른 서비스 레이어로 분리 필요
+    private User getUserById(Long userId) {
+        return userRepository.findById(userId)
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 }
