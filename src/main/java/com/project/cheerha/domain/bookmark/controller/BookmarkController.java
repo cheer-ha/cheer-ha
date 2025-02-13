@@ -3,6 +3,7 @@ package com.project.cheerha.domain.bookmark.controller;
 import com.project.cheerha.common.annotation.Auth;
 import com.project.cheerha.common.dto.AuthUser;
 import com.project.cheerha.domain.bookmark.dto.CreateBookmarkRequestDto;
+import com.project.cheerha.domain.bookmark.dto.DeleteBookmarkRequestDto;
 import com.project.cheerha.domain.bookmark.dto.ReadBookmarkResponseDto;
 import com.project.cheerha.domain.bookmark.service.BookmarkService;
 import jakarta.validation.Valid;
@@ -57,7 +58,7 @@ public class BookmarkController {
     // 로그인된 사용자의 즐겨찾기 삭제
     @DeleteMapping
     public ResponseEntity<Void> deleteBookmark(
-            @Valid @RequestBody CreateBookmarkRequestDto dto,
+            @Valid @RequestBody DeleteBookmarkRequestDto dto,
             @Auth AuthUser authUser
     ) {
         // 이미 인증된 사용자의 id를 가져옵니다.
