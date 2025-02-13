@@ -7,7 +7,9 @@ import com.project.cheerha.domain.keyword.entity.JobOpeningKeyword;
 import com.project.cheerha.domain.keyword.entity.Keyword;
 import com.project.cheerha.domain.keyword.repository.JobOpeningKeywordRepository;
 import com.project.cheerha.domain.keyword.repository.KeywordRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,6 +22,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Slf4j
 @SpringBootTest
 public class JobOpeningServiceTest {
 
@@ -41,7 +44,7 @@ public class JobOpeningServiceTest {
         keywordRepository.deleteAll();
 
         // 더미 데이터를 삽입
-        System.out.println("더미 데이터 설정을 시작합니다...");
+        log.info("더미 데이터 설정을 시작합니다...");
         addDummyData();
     }
 
@@ -50,7 +53,7 @@ public class JobOpeningServiceTest {
         for (int i = 1; i <= 5; i++) {
             List<String> requiredSkillList = List.of("java", "spring", "mysql");
 
-            System.out.println("잡 " + i + "의 더미 데이터를 생성합니다...");
+            log.info("잡 " + i + "의 더미 데이터를 생성합니다...");
             // 더미 데이터를 DTO를 사용하여 생성
             createAndSaveDataWithKeywords(
                     "Job " + i,
@@ -85,7 +88,7 @@ public class JobOpeningServiceTest {
             ZonedDateTime hiringEndAt,
             List<String> requiredSkillList
     ) {
-        System.out.println("타이틀이 " + title + "인 JobOpening 엔티티를 생성합니다.");
+        log.info("타이틀이 '{}'인 JobOpening 엔티티를 생성합니다.", title);
 
         // 키워드 목록을 생성하고 연결
         List<JobOpeningKeyword> jobOpeningKeywords = new ArrayList<>();
@@ -93,7 +96,7 @@ public class JobOpeningServiceTest {
             Keyword keyword = getOrCreateKeyword(skill);
             JobOpeningKeyword jobOpeningKeyword = JobOpeningKeyword.toEntity(null, keyword);
             jobOpeningKeywords.add(jobOpeningKeyword);
-            System.out.println("기술 스택으로 JobOpeningKeyword 생성: " + skill);
+            log.info("기술 스택으로 JobOpeningKeyword 생성: {}", skill);
         }
 
         // DTO로 JobOpening 생성
@@ -120,7 +123,7 @@ public class JobOpeningServiceTest {
 
         // JobOpening 저장
         jobOpening = jobOpeningRepository.save(jobOpening);
-        System.out.println("잡 " + title + "의 JobOpening 엔티티를 저장했습니다."+ jobOpening.getId());
+        log.info("잡 '{}'의 JobOpening 엔티티를 저장했습니다. ID: {}", title, jobOpening.getId());
 
         // 연결된 JobOpeningKeyword 저장
         saveJobOpeningKeywordsWithJobOpening(jobOpening, jobOpeningKeywords);
@@ -148,28 +151,29 @@ public class JobOpeningServiceTest {
     }
 
     private void saveJobOpeningKeywordsWithJobOpening(JobOpening jobOpening, List<JobOpeningKeyword> jobOpeningKeywords) {
-        System.out.println("JobOpening 엔티티 ID: " + jobOpening.getId() + "와 연결된 JobOpeningKeywords를 저장 중...");
+        log.info("JobOpening 엔티티 ID: {}와 연결된 JobOpeningKeywords를 저장 중...", jobOpening.getId());
         for (JobOpeningKeyword keyword : jobOpeningKeywords) {
             ReflectionTestUtils.setField(keyword, "jobOpening", jobOpening);
         }
         jobOpeningKeywordRepository.saveAll(jobOpeningKeywords);
-        System.out.println(jobOpeningKeywords.size() + "개의 JobOpeningKeyword가 JobOpening 엔티티에 저장되었습니다.");
+        log.info("{}개의 JobOpeningKeyword가 JobOpening 엔티티에 저장되었습니다.", jobOpeningKeywords.size());
     }
 
     private Keyword getOrCreateKeyword(String keywordName) {
         Keyword keyword = keywordRepository.findByName(keywordName)
                 .orElseGet(() -> keywordRepository.save(Keyword.toEntity(keywordName)));
-        System.out.println("키워드 '" + keywordName + "'를 조회하거나 새로 생성했습니다.");
+        log.info("키워드 '{}'를 조회하거나 새로 생성했습니다.", keywordName);
         return keyword;
     }
 
     @Test
+    @DisplayName("채용공고 더미데이터 생성 테스트")
     public void testAddDummyData() {
-        System.out.println("더미 데이터 삽입 테스트를 시작합니다...");
+        log.info("더미 데이터 삽입 테스트를 시작합니다...");
 
         // 데이터베이스에서 JobOpening 엔티티를 조회합니다.
         List<JobOpening> jobOpeningList = jobOpeningRepository.findAll();
-        System.out.println("데이터베이스에서 " + jobOpeningList.size() + "개의 JobOpening 엔티티를 조회했습니다.");
+        log.info("데이터베이스에서 {}개의 JobOpening 엔티티를 조회했습니다.", jobOpeningList.size());
 
         // 데이터가 존재하는지 확인합니다.
         assertThat(jobOpeningList).isNotEmpty();
@@ -177,13 +181,13 @@ public class JobOpeningServiceTest {
 
         // 데이터베이스에서 Keyword 엔티티를 조회하여 적어도 1개의 키워드가 생성되었는지 확인합니다.
         List<Keyword> keywords = keywordRepository.findAll();
-        System.out.println("데이터베이스에서 " + keywords.size() + "개의 Keyword 엔티티를 조회했습니다.");
+        log.info("데이터베이스에서 {}개의 Keyword 엔티티를 조회했습니다.", keywords.size());
         assertThat(keywords).isNotEmpty();
         assertThat(keywords.size()).isGreaterThan(0);
 
         // JobOpeningKeyword가 제대로 연결되어 저장되었는지 확인합니다.
         List<JobOpeningKeyword> jobOpeningKeywords = jobOpeningKeywordRepository.findAll();
-        System.out.println("데이터베이스에서 " + jobOpeningKeywords.size() + "개의 JobOpeningKeyword 엔티티를 조회했습니다.");
+        log.info("데이터베이스에서 {}개의 JobOpeningKeyword 엔티티를 조회했습니다.", jobOpeningKeywords.size());
         assertThat(jobOpeningKeywords).isNotEmpty();
         assertThat(jobOpeningKeywords.size()).isGreaterThan(0);
 
@@ -192,7 +196,7 @@ public class JobOpeningServiceTest {
         List<JobOpeningKeyword> firstJobOpeningKeywords = jobOpeningKeywords.stream()
                 .filter(keyword -> keyword.getJobOpening().getId().equals(firstJobOpening.getId()))
                 .toList();
-        System.out.println("첫 번째 JobOpening 엔티티 (ID: " + firstJobOpening.getId() + ")는 " + firstJobOpeningKeywords.size() + "개의 JobOpeningKeyword가 연결되어 있습니다.");
+        log.info("첫 번째 JobOpening 엔티티 (ID: {})는 {}개의 JobOpeningKeyword가 연결되어 있습니다.", firstJobOpening.getId(), firstJobOpeningKeywords.size());
         assertThat(firstJobOpeningKeywords).isNotEmpty();
     }
 }
