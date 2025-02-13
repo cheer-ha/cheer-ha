@@ -2,7 +2,7 @@ package com.project.cheerha.domain.jobOpening.service;
 
 import com.project.cheerha.domain.jobOpening.entity.JobOpening;
 import com.project.cheerha.domain.jobOpening.repository.JobOpeningRepository;
-import com.project.cheerha.domain.jobOpening.dto.CreateJobOpeningRequestDto;
+import com.project.cheerha.domain.jobOpening.dto.request.CreateJobOpeningRequestDto;
 import com.project.cheerha.domain.keyword.entity.JobOpeningKeyword;
 import com.project.cheerha.domain.keyword.entity.Keyword;
 import com.project.cheerha.domain.keyword.repository.JobOpeningKeywordRepository;
