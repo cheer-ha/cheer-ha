@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.data.service;
+package com.project.cheerha.domain.keyword.service;
 
 import com.project.cheerha.domain.data.dto.request.ReadDataRequestDto;
 import com.project.cheerha.domain.data.dto.response.ReadDataResponseDto;
@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class DataService {
+public class JobOpeningKeywordService {
 
     private final DataRepository dataRepository;
 

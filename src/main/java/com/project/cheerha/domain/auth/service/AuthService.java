@@ -4,6 +4,7 @@ import static com.project.cheerha.common.util.JwtUtil.expiredTokenSet;
 
 import com.project.cheerha.common.exception.CustomException;
 import com.project.cheerha.common.exception.ErrorCode;
+import com.project.cheerha.common.properties.JwtSecurityProperties;
 import com.project.cheerha.common.util.JwtUtil;
 import com.project.cheerha.common.util.PasswordEncoder;
 import com.project.cheerha.domain.auth.dto.request.CreateLoginRequestDto;
@@ -25,6 +26,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final JwtSecurityProperties jwtSecurityProperties;
 
     //TODO: signUp도 login 처럼 사용자 차단 고려
     public CreateSignupResponseDto signup(CreateSignupRequestDto dto) {
@@ -55,7 +57,8 @@ public class AuthService {
     }
 
     public CreateLogoutResponseDto logout(String authHeader) {
-        if (!StringUtils.hasText(authHeader) || !authHeader.startsWith("Bearer ")) {
+        String prefix = jwtSecurityProperties.getToken().getPrefix();
+        if (!StringUtils.hasText(authHeader) || !authHeader.startsWith(prefix)) {
             throw new CustomException(ErrorCode.TOKEN_NOT_FOUND);
         }
         String token = jwtUtil.substringToken(authHeader);

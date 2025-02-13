@@ -1,11 +1,15 @@
 package com.project.cheerha;
 
+import com.project.cheerha.common.properties.BcryptSecurityProperties;
+import com.project.cheerha.common.properties.JwtSecurityProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @EnableJpaAuditing
 @SpringBootApplication
+@EnableConfigurationProperties({JwtSecurityProperties.class, BcryptSecurityProperties.class})
 public class CheerhaApplication {
 
 	public static void main(String[] args) {

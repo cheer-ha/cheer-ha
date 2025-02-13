@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.data.controller;
+package com.project.cheerha.domain.keyword.controller;
 
 import com.project.cheerha.common.exception.CustomException;
 import com.project.cheerha.common.exception.ErrorCode;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/search")
 @RestController
 @RequiredArgsConstructor
-public class DataController {
+public class JobOpeningKeywordController {
 
     private final DataService dataService;
 

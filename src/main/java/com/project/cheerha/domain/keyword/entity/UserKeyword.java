@@ -32,4 +32,15 @@ public class UserKeyword {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "keyword_id")
     private Keyword keyword;
+
+    public static UserKeyword of(
+        User user,
+        Keyword keyword
+    ) {
+        UserKeyword userKeyword = new UserKeyword();
+        userKeyword.user = user;
+        userKeyword.keyword = keyword;
+
+        return userKeyword;
+    }
 }

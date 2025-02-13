@@ -1,6 +1,6 @@
 package com.project.cheerha.domain.keyword.entity;
 
-import com.project.cheerha.domain.data.entity.Data;
+import com.project.cheerha.domain.jobOpening.entity.JobOpening;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,10 +15,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "data_keyword", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"keyword_id", "data_id"})}
+@Table(name = "job_opening_keyword", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"keyword_id", "job_opening_id"})}
 )
-public class DataKeyword {
+public class JobOpeningKeyword {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +29,7 @@ public class DataKeyword {
     private Keyword keyword;
 
     @ManyToOne
-    @JoinColumn(name = "data_id")
-    private Data data;
+    @JoinColumn(name = "job_opening_id")
+    private JobOpening jobOpening;
 
 }

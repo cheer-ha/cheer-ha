@@ -23,6 +23,9 @@ spring:
 jwt:
   secret:
     key: ${jwt.key}
+  token:
+    prefix: ${jwt.prefix}
+    expiration: ${jwt.expiration}
 
 #logging:
 #  level:
@@ -44,4 +47,7 @@ logging:
 #    host: ${redis.host}
 #    port: ${redis.port}
 
+security:
+  bcrypt:
+    cost: ${security.cost}
 
