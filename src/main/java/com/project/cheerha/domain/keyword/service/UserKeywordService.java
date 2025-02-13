@@ -5,6 +5,7 @@ import com.project.cheerha.common.exception.ErrorCode;
 import com.project.cheerha.domain.keyword.dto.request.CreateUserKeywordRequestDto;
 import com.project.cheerha.domain.keyword.dto.request.DeleteUserKeywordRequestDto;
 import com.project.cheerha.domain.keyword.dto.response.CreateUserKeywordResponseDto;
+import com.project.cheerha.domain.keyword.dto.response.KeywordDto;
 import com.project.cheerha.domain.keyword.dto.response.ReadUserKeywordResponseDto;
 import com.project.cheerha.domain.keyword.entity.Keyword;
 import com.project.cheerha.domain.keyword.entity.UserKeyword;
@@ -103,18 +104,21 @@ public class UserKeywordService {
 
         List<Long> keywordIdList = userKeywordRepository.findKeywordIdsByUserId(userId);
 
-        List<String> keywordNameList = keywordIdList.stream()
+        List<KeywordDto> keywordDtoList = keywordIdList.stream()
             .map(keywordId -> {
                     Keyword keyword = keywordRepository.findById(keywordId)
                         .orElseThrow(
                             () -> new CustomException(ErrorCode.KEYWORD_NOT_FOUND)
                         );
 
-                    return keyword.getName();
+                    return KeywordDto.toKeywordDto(
+                        keyword.getId(),
+                        keyword.getName()
+                    );
                 }
             )
             .toList();
 
-        return ReadUserKeywordResponseDto.toDto(keywordNameList);
+        return ReadUserKeywordResponseDto.toDto(keywordDtoList);
     }
 }
