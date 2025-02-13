@@ -18,7 +18,7 @@ public class RedisBlackListService {
     public void addToBlackList(String token) {
         String blackPrefix = jwtSecurityProperties.getToken().getBlackListPrefix();
         long blackExpiration = jwtSecurityProperties.getToken().getBlackListExpiration();
-        redisTemplate.opsForValue().set(blackPrefix + token, "blacklisted", Duration.ofMillis(blackExpiration));
+        redisTemplate.opsForValue().set(blackPrefix + token, "blackList", Duration.ofMillis(blackExpiration));
     }
 
     public boolean isBlacklisted(String token) {
