@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.jobOpening.dto;
+package com.project.cheerha.domain.jobOpening.dto.request;
 
 import java.time.ZonedDateTime;
 import java.util.List;
