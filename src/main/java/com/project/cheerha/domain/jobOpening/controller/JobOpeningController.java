@@ -29,7 +29,7 @@ public class JobOpeningController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<ReadJobOpeningResponseDto>> readData(
+    public ResponseEntity<Page<ReadJobOpeningResponseDto>> readJobOpenings(
             @ModelAttribute ReadJobOpeningRequestDto requestDto,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -39,7 +39,7 @@ public class JobOpeningController {
 
         Long userId = authUser.id();
 
-        Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningService.readData(
+        Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningService.readJobOpenings(
                 requestDto, userId, pageable
         );
 

@@ -8,7 +8,7 @@ import com.project.cheerha.domain.bookmark.repository.BookmarkRepository;
 import com.project.cheerha.domain.jobOpening.entity.JobOpening;
 import com.project.cheerha.domain.jobOpening.repository.JobOpeningRepository;
 import com.project.cheerha.domain.user.entity.User;
-import com.project.cheerha.domain.user.repository.UserRepository;
+import com.project.cheerha.domain.user.service.UserFindByService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,8 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class BookmarkService {
 
     private final BookmarkRepository bookmarkRepository;
+    private final UserFindByService userFindByIdService;
     private final JobOpeningRepository jobOpeningRepository;
-    private final UserRepository userRepository;
 
     @Transactional
     public void createBookmark(Long userId, Long jobOpeningId) {
@@ -30,7 +30,7 @@ public class BookmarkService {
         JobOpening jobOpening = getJobOpeningById(jobOpeningId);
 
         // userId로 User 객체를 조회
-        User user = getUserById(userId);
+        User user = userFindByIdService.findById(userId);
 
         // 이미 존재하는 북마크가 있는지 확인 (userId로 조회) - exists 사용
         boolean bookmarkExists = bookmarkRepository.existsByUserIdAndJobOpeningId(userId,
@@ -66,12 +66,6 @@ public class BookmarkService {
     public void deleteBookmark(Long userId, Long jobOpeningId) {
         // userId와 jobOpeningId로 북마크 삭제
         bookmarkRepository.deleteByUserIdAndJobOpeningId(userId, jobOpeningId);
-    }
-
-    // 유저 정보 조회를 위한 private 메서드
-    private User getUserById(Long userId) {
-        return userRepository.findById(userId)
-            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
     // 채용공고 조회를 위한 private 메서드

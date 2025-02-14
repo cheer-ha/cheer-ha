@@ -12,12 +12,13 @@ import com.project.cheerha.domain.keyword.entity.UserKeyword;
 import com.project.cheerha.domain.keyword.repository.KeywordRepository;
 import com.project.cheerha.domain.keyword.repository.UserKeywordRepository;
 import com.project.cheerha.domain.user.entity.User;
-import com.project.cheerha.domain.user.repository.UserRepository;
-import java.util.ArrayList;
-import java.util.List;
+import com.project.cheerha.domain.user.service.UserFindByService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +26,7 @@ public class UserKeywordService {
 
     private final KeywordRepository keywordRepository;
     private final UserKeywordRepository userKeywordRepository;
-    private final UserRepository userRepository;
+    private final UserFindByService userFindByIdService;
 
     // todo 테스트 코드 작성 필요
     @Transactional
@@ -52,7 +53,7 @@ public class UserKeywordService {
                 Keyword foundKeyword = getKeywordById(keywordId);
 
                 if (!isKeywordAlreadyChosen(userId, keywordId)) {
-                    User foundUser = getUserById(userId);
+                    User foundUser = userFindByIdService.findById(userId);
 
                     UserKeyword newUserKeyword = UserKeyword.of(
                         foundUser,
@@ -119,9 +120,4 @@ public class UserKeywordService {
             .orElseThrow(() -> new CustomException(ErrorCode.KEYWORD_NOT_FOUND));
     }
 
-    // todo 리팩토링 시 다른 서비스 레이어로 분리 필요
-    private User getUserById(Long userId) {
-        return userRepository.findById(userId)
-            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-    }
 }

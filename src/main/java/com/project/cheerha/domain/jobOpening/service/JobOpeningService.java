@@ -9,7 +9,7 @@ import com.project.cheerha.domain.jobOpening.dto.response.ReadJobOpeningResponse
 import com.project.cheerha.domain.jobOpening.entity.JobOpening;
 import com.project.cheerha.domain.jobOpening.repository.JobOpeningRepository;
 import com.project.cheerha.domain.user.entity.User;
-import com.project.cheerha.domain.user.repository.UserRepository;
+import com.project.cheerha.domain.user.service.UserFindByService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -23,8 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class  JobOpeningService {
 
     private final JobOpeningRepository jobOpeningRepository;
-    private final UserRepository userRepository;
     private final HistoryRepository historyRepository;
+    private final UserFindByService userFindByIdService;
 
     public String getJobOpeningUrlAndIncreaseViewCount(Long id) {
         JobOpening jobOpening = jobOpeningRepository.findById(id).orElseThrow(
@@ -43,13 +43,12 @@ public class  JobOpeningService {
     }
 
     @Transactional
-    public Page<ReadJobOpeningResponseDto> readData(
+    public Page<ReadJobOpeningResponseDto> readJobOpenings(
             ReadJobOpeningRequestDto requestDto,
             Long userId,
             Pageable pageable
     ) {
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = userFindByIdService.findById(userId);
 
         if (requestDto.getSearchTerm() != null) {
             History history = History.toEntity(user, requestDto.getSearchTerm());
