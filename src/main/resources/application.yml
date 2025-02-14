@@ -20,12 +20,6 @@ spring:
       host: ${redis.host}
       database: ${redis.database}
 
-  data:
-    redis:
-      port: ${redis.port}
-      host: ${redis.host}
-      database: ${redis.database}
-
 # jwt token secret keys
 jwt:
   secret:
@@ -34,11 +28,6 @@ jwt:
     prefix: ${jwt.prefix}
     expiration: ${jwt.expiration}
 
-#logging:
-#  level:
-#    org:
-#      springframework:
-#        security=DEBUG:
 logging:
   level:
     org:
