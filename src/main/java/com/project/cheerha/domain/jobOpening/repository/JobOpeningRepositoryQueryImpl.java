@@ -137,7 +137,7 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
     }
 
     private BooleanExpression geoHiringStartPeriod(ZonedDateTime hiringStartAt) {
-        return hiringStartAt != null ? jobOpening.hiringStartAt.loe(hiringStartAt) : Expressions.asBoolean(true).isTrue();
+        return hiringStartAt != null ? jobOpening.hiringStartAt.goe(hiringStartAt) : Expressions.asBoolean(true).isTrue();
     }
 
     private BooleanExpression leoHiringEndPeriod(ZonedDateTime hiringEndAt) {
@@ -157,6 +157,6 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
     }
 
     private BooleanExpression containsSearchTerm(String searchTerm) {
-        return searchTerm != null ? jobOpening.company.containsIgnoreCase(searchTerm) : Expressions.asBoolean(true).isTrue();
+        return searchTerm != null ? jobOpening.title.containsIgnoreCase(searchTerm) : Expressions.asBoolean(true).isTrue();
     }
 }
