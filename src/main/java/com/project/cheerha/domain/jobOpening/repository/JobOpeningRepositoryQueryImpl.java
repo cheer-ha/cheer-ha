@@ -127,6 +127,32 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
         return new PageImpl<>(dtoList, pageable, totalCount);
     }
 
+    /**
+     * 조회수를 기준으로 상위 100개의 인기 채용 공고를 반환합니다.
+     *
+     * @param pageable 페이지 정보 (100개만 가져오므로 페이지 크기 100으로 설정)
+     * @return 조회수가 많은 상위 100개 채용 공고 목록
+     */
+    @Override
+    public Page<ReadJobOpeningResponseDto> findTop100PopularJobOpenings(Pageable pageable) {
+        List<ReadJobOpeningResponseDto> dtoList = queryFactory
+                .select(Projections.constructor(
+                        ReadJobOpeningResponseDto.class,
+                        jobOpening.id,
+                        jobOpening.company,
+                        jobOpening.hiringStartAt,
+                        jobOpening.hiringEndAt,
+                        jobOpening.position
+                ))
+                .from(jobOpening)
+                .orderBy(jobOpening.viewCount.desc())  // 조회수 내림차순 정렬
+                .limit(100)  // 상위 100개만 조회
+                .fetch();
+
+        log.info("dtoList size: " + dtoList.size());
+
+        return new PageImpl<>(dtoList, pageable, dtoList.size());
+    }
 
     private BooleanExpression eqRequiredSkill(String requiredSkill) {
         return requiredSkill != null ? keyword.name.eq(requiredSkill) : Expressions.asBoolean(true).isTrue();
