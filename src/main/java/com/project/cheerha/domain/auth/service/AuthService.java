@@ -4,8 +4,6 @@ import com.project.cheerha.common.exception.auth.AuthErrorCode;
 import com.project.cheerha.common.exception.auth.UnAuthorizedException;
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
-import com.project.cheerha.common.exception.data.DataErrorCode;
-import com.project.cheerha.common.exception.data.NotFoundException;
 import com.project.cheerha.common.properties.JwtSecurityProperties;
 import com.project.cheerha.common.redis.RedisBlackListService;
 import com.project.cheerha.common.redis.RedisRefreshTokenService;
@@ -139,7 +137,7 @@ public class AuthService {
         String newRefreshToken = jwtUtil.createRefreshToken(userId);
         redisRefreshTokenService.createRefreshToken(userId, newRefreshToken);
 
-        User user = userFindByService
+        User user = userFindByService.findById(userId);
 
         String refreshAccessToken = jwtUtil.createToken(userId, user.getEmail(), user.getRole());
         return RefreshAccessTokenResponseDto.of(refreshAccessToken);
