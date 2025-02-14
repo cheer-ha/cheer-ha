@@ -1,5 +1,6 @@
 package com.project.cheerha.common.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.cheerha.common.properties.JwtSecurityProperties;
 import com.project.cheerha.common.redis.RedisBlackListService;
 import com.project.cheerha.common.util.JwtUtil;
@@ -17,8 +18,12 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.PatternMatchUtils;
 
 @Slf4j
@@ -61,21 +66,21 @@ public class JwtFilter implements Filter {
         String bearerJwt = httpRequest.getHeader("Authorization");
 
         if (bearerJwt == null) {
-            httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "JWT 토큰이 필요합니다.");
+            sendErrorResponse(httpResponse, HttpStatus.BAD_REQUEST, "JWT 토큰이 필요합니다.");
             return;
         }
 
         String token = jwtUtil.substringToken(bearerJwt);
 
         if (redisBlackListService.isBlackList(token)) {
-            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "블랙리스트된 토큰입니다.");
+            sendErrorResponse(httpResponse, HttpStatus.UNAUTHORIZED, "블랙리스트된 토큰입니다.");
             return;
         }
 
         try {
-            Claims claims = jwtUtil.extractClaims(jwtUtil.substringToken(bearerJwt));
+            Claims claims = jwtUtil.extractClaims(token);
             if (claims == null) {
-                httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "잘못된 JWT 토큰입니다.");
+                sendErrorResponse(httpResponse, HttpStatus.BAD_REQUEST, "잘못된 JWT 토큰입니다.");
                 return;
             }
 
@@ -93,18 +98,21 @@ public class JwtFilter implements Filter {
             }
 
             chain.doFilter(request, response);
-        } catch (SecurityException | MalformedJwtException e) {
-            log.error("Invalid JWT signature, 유효하지 않은 JWT 서명 입니다.", e);
-            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않는 JWT 서명입니다.");
         } catch (ExpiredJwtException e) {
             log.error("Expired JWT token, 만료된 JWT token 입니다.", e);
-            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "만료된 JWT 토큰입니다.");
+            sendErrorResponse(httpResponse, HttpStatus.UNAUTHORIZED, "만료된 JWT 토큰입니다.");
+        } catch (SecurityException | MalformedJwtException e) {
+            log.error("Invalid JWT signature, 유효하지 않은 JWT 서명 입니다.", e);
+            sendErrorResponse(httpResponse, HttpStatus.UNAUTHORIZED, "유효하지 않은 JWT 서명입니다.");
         } catch (UnsupportedJwtException e) {
             log.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.", e);
-            httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "지원되지 않는 JWT 토큰입니다.");
-        } catch (Exception e) {
+            sendErrorResponse(httpResponse, HttpStatus.BAD_REQUEST, "지원되지 않는 JWT 토큰입니다.");
+        } catch (IllegalArgumentException e) {
             log.error("Invalid JWT token, 유효하지 않은 JWT 토큰 입니다.", e);
-            httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "유효하지 않은 JWT 토큰입니다.");
+            sendErrorResponse(httpResponse, HttpStatus.BAD_REQUEST, "잘못된 JWT 토큰 형식입니다.");
+        } catch (Exception e) {
+            log.error("예상치 못한 예외 발생", e);
+            sendErrorResponse(httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다.");
         }
     }
 
@@ -116,4 +124,18 @@ public class JwtFilter implements Filter {
     private boolean isWhiteList(String requestURI) {
         return PatternMatchUtils.simpleMatch(WHITE_LIST, requestURI);
     }
+
+    private void sendErrorResponse(HttpServletResponse response, HttpStatus status, String message) throws IOException {
+        response.setStatus(status.value());
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("status", status.value());
+        errorResponse.put("error", status.getReasonPhrase());
+        errorResponse.put("message", message);
+
+        response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
+    }
+
 }
