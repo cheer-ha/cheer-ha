@@ -19,6 +19,7 @@ import com.project.cheerha.domain.auth.dto.response.CreateSignupResponseDto;
 import com.project.cheerha.domain.auth.dto.response.RefreshAccessTokenResponseDto;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.repository.UserRepository;
+import com.project.cheerha.domain.user.service.UserFindByService;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,7 @@ public class AuthService {
     private final JwtSecurityProperties jwtSecurityProperties;
     private final RedisRefreshTokenService redisRefreshTokenService;
     private final RedisBlackListService redisBlackListService;
+    private final UserFindByService userFindByService;
 
     /**
      * TODO: 비정상적인 사용자 차단 고려
@@ -64,8 +66,7 @@ public class AuthService {
      * @return 로그인 응답 객체(AccessToken, RefreshToken 포함)
      */
     public CreateLoginResponseDto login(CreateLoginRequestDto dto) {
-        User user = userRepository.findByEmail(dto.email())
-            .orElseThrow(() -> new UnAuthorizedException(AuthErrorCode.WRONG_EMAIL_OR_PASSWORD));
+        User user = userFindByService.findByEmail(dto.email());
         if (!passwordEncoder.matches(dto.password(), user.getPassword())) {
             throw new UnAuthorizedException(AuthErrorCode.WRONG_EMAIL_OR_PASSWORD);
         }
@@ -138,8 +139,7 @@ public class AuthService {
         String newRefreshToken = jwtUtil.createRefreshToken(userId);
         redisRefreshTokenService.createRefreshToken(userId, newRefreshToken);
 
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new NotFoundException(DataErrorCode.USER_NOT_FOUND));
+        User user = userFindByService
 
         String refreshAccessToken = jwtUtil.createToken(userId, user.getEmail(), user.getRole());
         return RefreshAccessTokenResponseDto.of(refreshAccessToken);

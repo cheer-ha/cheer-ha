@@ -27,8 +27,19 @@ public class JobOpeningController {
         return new RedirectView(url);
     }
 
+    /**
+     * 채용 공고 목록을 필터링 및 검색하여 조회하는 API입니다.
+     *
+     * 사용자는 특정 검색어 및 필터 조건을 설정하여 원하는 채용 공고만 조회할 수 있습니다.
+     *
+     * @param requestDto 필터링 및 검색어를 포함
+     * @param page 조회할 페이지 번호
+     * @param size 페이지당 조회할 채용 공고 수
+     * @param authUser 현재 로그인한 사용자 정보
+     * @return 필터링된 채용 공고 목록 (페이지)
+     */
     @GetMapping("/search")
-    public ResponseEntity<ApiResponseDto<Page<ReadJobOpeningResponseDto>>> readData(
+    public ResponseEntity<ApiResponseDto<Page<ReadJobOpeningResponseDto>>> readJobOpenings(
             @ModelAttribute ReadJobOpeningRequestDto requestDto,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -36,7 +47,7 @@ public class JobOpeningController {
     ) {
         Pageable pageable = validatePageSize(page, size);
         Long userId = authUser.id();
-        Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningService.readData(
+        Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningService.readJobOpenings(
                 requestDto, userId, pageable
         );
         return ApiResponseDto.success(dtoPage);

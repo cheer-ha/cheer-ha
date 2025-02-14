@@ -1,7 +1,5 @@
 package com.project.cheerha.domain.keyword.service;
 
-import com.project.cheerha.common.exception.data.DataErrorCode;
-import com.project.cheerha.common.exception.data.NotFoundException;
 import com.project.cheerha.domain.keyword.dto.request.CreateUserKeywordRequestDto;
 import com.project.cheerha.domain.keyword.dto.request.DeleteUserKeywordRequestDto;
 import com.project.cheerha.domain.keyword.dto.response.CreateUserKeywordResponseDto;
@@ -9,23 +7,23 @@ import com.project.cheerha.domain.keyword.dto.response.KeywordDto;
 import com.project.cheerha.domain.keyword.dto.response.ReadUserKeywordResponseDto;
 import com.project.cheerha.domain.keyword.entity.Keyword;
 import com.project.cheerha.domain.keyword.entity.UserKeyword;
-import com.project.cheerha.domain.keyword.repository.KeywordRepository;
 import com.project.cheerha.domain.keyword.repository.UserKeywordRepository;
 import com.project.cheerha.domain.user.entity.User;
-import com.project.cheerha.domain.user.repository.UserRepository;
-import java.util.ArrayList;
-import java.util.List;
+import com.project.cheerha.domain.user.service.UserFindByService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class UserKeywordService {
 
-    private final KeywordRepository keywordRepository;
     private final UserKeywordRepository userKeywordRepository;
-    private final UserRepository userRepository;
+    private final UserFindByService userFindByIdService;
+    private final KeywordFindByService keywordFindByService;
 
     // todo 테스트 코드 작성 필요
     @Transactional
@@ -49,20 +47,20 @@ public class UserKeywordService {
         List<Keyword> keywordList = new ArrayList<>();
 
         keywordIdList.forEach(keywordId -> {
-                Keyword foundKeyword = getKeywordById(keywordId);
+                Keyword keyword = keywordFindByService.findById(keywordId);
 
                 if (!isKeywordAlreadyChosen(userId, keywordId)) {
-                    User foundUser = getUserById(userId);
+                    User user = userFindByIdService.findById(userId);
 
                     UserKeyword newUserKeyword = UserKeyword.of(
-                        foundUser,
-                        foundKeyword
+                        user,
+                        keyword
                     );
 
                     userKeywordRepository.save(newUserKeyword);
                 }
 
-                keywordList.add(foundKeyword);
+                keywordList.add(keyword);
             }
         );
 
@@ -104,7 +102,7 @@ public class UserKeywordService {
 
         List<KeywordDto> keywordDtoList = keywordIdList.stream()
             .map(keywordId -> {
-                    Keyword keyword = getKeywordById(keywordId);
+                    Keyword keyword = keywordFindByService.findById(keywordId);
 
                     return KeywordDto.toKeywordDto(keyword.getId(), keyword.getName());
                 }
@@ -113,15 +111,4 @@ public class UserKeywordService {
         return ReadUserKeywordResponseDto.toDto(keywordDtoList);
     }
 
-    // todo 리팩토링 시 다른 서비스 레이어로 분리 필요
-    private Keyword getKeywordById(Long keywordId) {
-        return keywordRepository.findById(keywordId)
-            .orElseThrow(() -> new NotFoundException(DataErrorCode.KEYWORD_NOT_FOUND));
-    }
-
-    // todo 리팩토링 시 다른 서비스 레이어로 분리 필요
-    private User getUserById(Long userId) {
-        return userRepository.findById(userId)
-            .orElseThrow(() -> new NotFoundException(DataErrorCode.USER_NOT_FOUND));
-    }
 }
