@@ -70,6 +70,12 @@ dependencies {
 	// bcrypt
 	implementation 'at.favre.lib:bcrypt:0.10.2'
 
+	// redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// redisson
+	implementation 'org.redisson:redisson-spring-boot-starter:3.23.0'
+
 	// test
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'

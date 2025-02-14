@@ -1,5 +1,7 @@
 package com.project.cheerha.common.config;
 
+import com.project.cheerha.common.properties.JwtSecurityProperties;
+import com.project.cheerha.common.redis.RedisBlackListService;
 import com.project.cheerha.common.util.JwtUtil;
 import com.project.cheerha.domain.user.entity.User.Role;
 import io.jsonwebtoken.Claims;
@@ -24,6 +26,8 @@ import org.springframework.util.PatternMatchUtils;
 public class JwtFilter implements Filter {
 
     private static final String[] WHITE_LIST = {"/auth/signup", "/auth/login"};
+    private final JwtSecurityProperties securityProperties;
+    private final RedisBlackListService redisBlackListService;
     private final JwtUtil jwtUtil;
 
     @Override
@@ -31,6 +35,16 @@ public class JwtFilter implements Filter {
         Filter.super.init(filterConfig);
     }
 
+    /**
+     * WhiteList 이외의 Http 요청에서 Jwt 토큰을 확인하고, 유효성 검사 수행한 후, 사용자 정보 설정
+     * AccessToken - UserId, Email, Role 저장(Email 을 AuthUser 에서 사용하진 않으나 일단 넣어 둠)
+     * RefreshToken - UserId 만 저장
+     * @param request http 요청
+     * @param response http 응답
+     * @param chain 필터체인(다음 필터로 요청 전달)
+     * @throws IOException 입출력 예외 발생 시
+     * @throws ServletException 서블릿 예외 발생 시(토큰 관련 오류)
+     */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
         throws IOException, ServletException {
@@ -53,8 +67,8 @@ public class JwtFilter implements Filter {
 
         String token = jwtUtil.substringToken(bearerJwt);
 
-        if (JwtUtil.expiredTokenSet.contains(token)) {
-            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "토큰이 유효하지 않습니다.");
+        if (redisBlackListService.isBlackList(token)) {
+            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "블랙리스트된 토큰입니다.");
             return;
         }
 
@@ -66,10 +80,17 @@ public class JwtFilter implements Filter {
             }
 
             httpRequest.setAttribute("userId", Long.parseLong(claims.getSubject()));
-            httpRequest.setAttribute("email", claims.get("email"));
-            String userRoleString = claims.get("userRole").toString();
-            Role role = Role.valueOf(userRoleString);
-            httpRequest.setAttribute("userRole", role);
+
+            if (bearerJwt.startsWith(securityProperties.getToken().getPrefix())) {
+                String email = claims.get("email", String.class);
+                String userRoleString = claims.get("userRole", String.class);
+                Role role = Role.valueOf(userRoleString);
+
+                if (email != null && userRoleString != null) {
+                    httpRequest.setAttribute("email", email);
+                    httpRequest.setAttribute("userRole", role);
+                }
+            }
 
             chain.doFilter(request, response);
         } catch (SecurityException | MalformedJwtException e) {

@@ -6,6 +6,7 @@ import com.project.cheerha.domain.auth.dto.request.CreateSignupRequestDto;
 import com.project.cheerha.domain.auth.dto.response.CreateLoginResponseDto;
 import com.project.cheerha.domain.auth.dto.response.CreateLogoutResponseDto;
 import com.project.cheerha.domain.auth.dto.response.CreateSignupResponseDto;
+import com.project.cheerha.domain.auth.dto.response.RefreshAccessTokenResponseDto;
 import com.project.cheerha.domain.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,5 +36,17 @@ public class AuthController {
     public ResponseEntity<ApiResponseDto<CreateLogoutResponseDto>> logout(
             @RequestHeader("Authorization") String authHeader) {
         return ApiResponseDto.success(authService.logout(authHeader));
+    }
+
+    /**
+     * 사용자의 RefreshToken 을 이용해 AccessToken 을 재발급 해주는 컨트롤러 메서드
+     * @param refreshToken 현재 사용자의 RefreshToken
+     * @return 현재 사용자의 새로운 AccessToken
+     */
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponseDto<RefreshAccessTokenResponseDto>> refreshAccessToken(
+        @RequestHeader("Authorization") String refreshToken
+    ) {
+        return ApiResponseDto.success(authService.refreshAccessToken(refreshToken));
     }
 }
