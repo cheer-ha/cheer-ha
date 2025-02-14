@@ -123,7 +123,7 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
 
     // 입력된 시작 날짜보다 큰 데이터만 가져오도록 하는 메서드
     private BooleanExpression geoHiringStartPeriod(ZonedDateTime hiringStartAt) {
-        return hiringStartAt != null ? jobOpening.hiringStartAt.loe(hiringStartAt) : Expressions.asBoolean(true).isTrue();
+        return hiringStartAt != null ? jobOpening.hiringStartAt.goe(hiringStartAt) : Expressions.asBoolean(true).isTrue();
     }
 
     // 입력된 마감 날짜보다 작은 데이터만 가져오도록 하는 메서드
