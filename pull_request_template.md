@@ -1,4 +1,4 @@
-## #️⃣ Kan Board Number
+## #️⃣ CHEERHA Board Number
 
 <!--- ex) #이슈번호, #이슈번호 -->
 
