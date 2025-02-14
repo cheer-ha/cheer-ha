@@ -42,11 +42,11 @@ public class JobOpeningServiceTest {
     @BeforeEach
     @Transactional
     public void setup() {
-        jobOpeningRepository.deleteAll();
-        jobOpeningKeywordRepository.deleteAll();
-        keywordRepository.deleteAll();
+//        jobOpeningRepository.deleteAll();
+//        jobOpeningKeywordRepository.deleteAll();
+//        keywordRepository.deleteAll();
         log.info("더미 데이터 설정을 시작합니다...");
-        addDummyData();
+//        addDummyData();
     }
 
     /**
