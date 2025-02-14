@@ -1,7 +1,5 @@
 package com.project.cheerha.domain.bookmark.service;
 
-import com.project.cheerha.common.exception.data.NotFoundException;
-import com.project.cheerha.common.exception.data.DataErrorCode;
 import com.project.cheerha.domain.bookmark.dto.response.ReadBookmarkResponseDto;
 import com.project.cheerha.domain.bookmark.entity.Bookmark;
 import com.project.cheerha.domain.bookmark.repository.BookmarkRepository;
@@ -42,9 +40,8 @@ public class BookmarkService {
         User user = userFindByIdService.findById(userId);
 
         // 이미 존재하는 북마크가 있는지 확인 (userId로 조회) - exists 사용
-        boolean bookmarkExists = bookmarkRepository.existsByUserIdAndJobOpeningId(userId,
-            jobOpeningId);
-        if (bookmarkExists) {
+        boolean isBookmarkExists = bookmarkRepository.existsByUserIdAndJobOpeningId(userId, jobOpeningId);
+        if (isBookmarkExists) {
             return;
         }
         Bookmark bookmark = Bookmark.toEntity(user, jobOpening);

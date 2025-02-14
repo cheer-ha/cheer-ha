@@ -1,7 +1,5 @@
 package com.project.cheerha.domain.keyword.service;
 
-import com.project.cheerha.common.exception.data.DataErrorCode;
-import com.project.cheerha.common.exception.data.NotFoundException;
 import com.project.cheerha.domain.keyword.dto.request.CreateUserKeywordRequestDto;
 import com.project.cheerha.domain.keyword.dto.request.DeleteUserKeywordRequestDto;
 import com.project.cheerha.domain.keyword.dto.response.CreateUserKeywordResponseDto;
@@ -49,20 +47,20 @@ public class UserKeywordService {
         List<Keyword> keywordList = new ArrayList<>();
 
         keywordIdList.forEach(keywordId -> {
-                Keyword foundKeyword = keywordFindByService.findById(keywordId);
+                Keyword keyword = keywordFindByService.findById(keywordId);
 
                 if (!isKeywordAlreadyChosen(userId, keywordId)) {
-                    User foundUser = userFindByIdService.findById(userId);
+                    User user = userFindByIdService.findById(userId);
 
                     UserKeyword newUserKeyword = UserKeyword.of(
-                        foundUser,
-                        foundKeyword
+                        user,
+                        keyword
                     );
 
                     userKeywordRepository.save(newUserKeyword);
                 }
 
-                keywordList.add(foundKeyword);
+                keywordList.add(keyword);
             }
         );
 
