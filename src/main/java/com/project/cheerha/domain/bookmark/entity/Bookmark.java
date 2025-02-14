@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(name = "bookmark", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"user_id", "job_opening_id"})}
-)  // user_id와 job_opening_id의 복합 유니크 제약)
+)
 public class Bookmark {
 
     @Id
@@ -34,10 +34,17 @@ public class Bookmark {
     @JoinColumn(name = "job_opening_id")
     private JobOpening jobOpening;
 
-    // userId로 User를 찾아서 Bookmark 엔티티 생성
+    /**
+     * 사용자가 북마크할 채용 공고와 사용자 정보를 받아서,
+     * 새로운 북마크 엔티티 객체를 생성하는 메서드입니다.
+     *
+     * @param user 사용자의 정보
+     * @param jobOpening 채용 공고의 정보
+     * @return 생성된 북마크 엔티티 객체
+     */
     public static Bookmark toEntity(User user, JobOpening jobOpening) {
         Bookmark bookmark = new Bookmark();
-        bookmark.user = user;  // 필드 설정
+        bookmark.user = user;
         bookmark.jobOpening = jobOpening;
         return bookmark;
     }
