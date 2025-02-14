@@ -42,8 +42,3 @@ logging:
         orm:
           jdbc:
             bind: trace
-
-management:
-  metrics:
-    enable:
-      system: false
