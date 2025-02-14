@@ -1,7 +1,7 @@
 package com.project.cheerha.domain.keyword.service;
 
-import com.project.cheerha.common.exception.CustomException;
-import com.project.cheerha.common.exception.ErrorCode;
+import com.project.cheerha.common.exception.data.DataErrorCode;
+import com.project.cheerha.common.exception.data.NotFoundException;
 import com.project.cheerha.domain.keyword.dto.request.CreateUserKeywordRequestDto;
 import com.project.cheerha.domain.keyword.dto.request.DeleteUserKeywordRequestDto;
 import com.project.cheerha.domain.keyword.dto.response.CreateUserKeywordResponseDto;
@@ -116,12 +116,12 @@ public class UserKeywordService {
     // todo 리팩토링 시 다른 서비스 레이어로 분리 필요
     private Keyword getKeywordById(Long keywordId) {
         return keywordRepository.findById(keywordId)
-            .orElseThrow(() -> new CustomException(ErrorCode.KEYWORD_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(DataErrorCode.KEYWORD_NOT_FOUND));
     }
 
     // todo 리팩토링 시 다른 서비스 레이어로 분리 필요
     private User getUserById(Long userId) {
         return userRepository.findById(userId)
-            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(DataErrorCode.USER_NOT_FOUND));
     }
 }
