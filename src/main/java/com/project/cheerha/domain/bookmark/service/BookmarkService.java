@@ -1,12 +1,11 @@
 package com.project.cheerha.domain.bookmark.service;
 
-import com.project.cheerha.common.exception.CustomException;
-import com.project.cheerha.common.exception.ErrorCode;
 import com.project.cheerha.domain.bookmark.dto.response.ReadBookmarkResponseDto;
 import com.project.cheerha.domain.bookmark.entity.Bookmark;
 import com.project.cheerha.domain.bookmark.repository.BookmarkRepository;
 import com.project.cheerha.domain.jobOpening.entity.JobOpening;
 import com.project.cheerha.domain.jobOpening.repository.JobOpeningRepository;
+import com.project.cheerha.domain.jobOpening.service.JobOpeningFindByService;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.service.UserFindByService;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +22,12 @@ public class BookmarkService {
     private final BookmarkRepository bookmarkRepository;
     private final UserFindByService userFindByIdService;
     private final JobOpeningRepository jobOpeningRepository;
+    private final JobOpeningFindByService jobOpeningFindByService;
 
     @Transactional
     public void createBookmark(Long userId, Long jobOpeningId) {
         // 데이터 조회: 주어진 jobOpeningId에 해당하는 JobOpening을 조회
-        JobOpening jobOpening = getJobOpeningById(jobOpeningId);
+        JobOpening jobOpening = jobOpeningFindByService.findById(jobOpeningId);
 
         // userId로 User 객체를 조회
         User user = userFindByIdService.findById(userId);
@@ -68,9 +68,4 @@ public class BookmarkService {
         bookmarkRepository.deleteByUserIdAndJobOpeningId(userId, jobOpeningId);
     }
 
-    // 채용공고 조회를 위한 private 메서드
-    private JobOpening getJobOpeningById(Long jobOpeningId) {
-        return jobOpeningRepository.findById(jobOpeningId)
-            .orElseThrow(() -> new CustomException(ErrorCode.JOB_OPENING_NOT_FOUND));
-    }
 }
