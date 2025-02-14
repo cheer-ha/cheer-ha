@@ -2,33 +2,36 @@ package com.project.cheerha.common.redis;
 
 import com.project.cheerha.common.properties.JwtSecurityProperties;
 
-import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import org.redisson.api.RBucket;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class RedisRefreshTokenService {
 
-    private final StringRedisTemplate redisTemplate;
+    private final RedissonClient redissonClient;
     private final JwtSecurityProperties jwtSecurityProperties;
 
     public void createRefreshToken(Long userId, String refreshToken) {
         long expiration = jwtSecurityProperties.getToken().getRefreshExpiration();
         String key = getKey(userId);
-        //set -> 원래 값을 수정함 -> 기존 refreshToken 덮어씌워짐
-        redisTemplate.opsForValue().set(key, refreshToken, Duration.ofMillis(expiration));
+        RBucket<String> bucket = redissonClient.getBucket(key);
+        bucket.set(refreshToken, expiration, TimeUnit.MILLISECONDS);
     }
 
     public String getRefreshToken(Long userId) {
         String key = getKey(userId);
-        return redisTemplate.opsForValue().get(key);
+        String token = redissonClient.<String>getBucket(key).get();
+        return token != null ? token : "";
     }
 
     public void deleteRefreshToken(Long userId) {
         String key = getKey(userId);
-        redisTemplate.delete(key);
+        redissonClient.getBucket(key).delete();
     }
 
     private String getKey(Long userId) {
