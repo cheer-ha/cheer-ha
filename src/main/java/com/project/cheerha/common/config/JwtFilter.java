@@ -46,6 +46,7 @@ public class JwtFilter implements Filter {
 
         String bearerJwt = httpRequest.getHeader("Authorization");
 
+        //todo: 이 부분 잘못된 요청이 아니라 jwt 토큰이 존재하지 않는 거니까 401에러가 맞지 않을까요?
         if (bearerJwt == null) {
             httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "JWT 토큰이 필요합니다.");
             return;
@@ -60,6 +61,7 @@ public class JwtFilter implements Filter {
 
         try {
             Claims claims = jwtUtil.extractClaims(jwtUtil.substringToken(bearerJwt));
+            //todo: 위 부분과 마찬가지로 이 부분도 401이 적절하다 생각됩니다.
             if (claims == null) {
                 httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "잘못된 JWT 토큰입니다.");
                 return;
@@ -72,6 +74,12 @@ public class JwtFilter implements Filter {
             httpRequest.setAttribute("userRole", role);
 
             chain.doFilter(request, response);
+            /**
+             * 이 부분이 캐치가 너무 수습이 안 되어있는 것 같다는 생각이 듭니다.
+             * 예외 처리가 리팩토링이 필요할 거 같아요.
+             * 특히 맨 마지막에는 그냥 exception인데 그러면 그 외의 에러라는 거라고 이해됩니다
+             * 이렇게 되면 이유없는 에러에 유효하지 않은 토큰이라 뜨는 불상사가 있지 않을까요
+             */
         } catch (SecurityException | MalformedJwtException e) {
             log.error("Invalid JWT signature, 유효하지 않은 JWT 서명 입니다.", e);
             httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않는 JWT 서명입니다.");

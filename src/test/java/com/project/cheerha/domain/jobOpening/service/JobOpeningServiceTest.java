@@ -1,12 +1,17 @@
 package com.project.cheerha.domain.jobOpening.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import com.project.cheerha.domain.jobOpening.dto.CreateJobOpeningRequestDto;
 import com.project.cheerha.domain.jobOpening.entity.JobOpening;
 import com.project.cheerha.domain.jobOpening.repository.JobOpeningRepository;
-import com.project.cheerha.domain.jobOpening.dto.CreateJobOpeningRequestDto;
 import com.project.cheerha.domain.keyword.entity.JobOpeningKeyword;
 import com.project.cheerha.domain.keyword.entity.Keyword;
 import com.project.cheerha.domain.keyword.repository.JobOpeningKeywordRepository;
 import com.project.cheerha.domain.keyword.repository.KeywordRepository;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,12 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @SpringBootTest
