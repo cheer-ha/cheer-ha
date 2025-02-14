@@ -1,7 +1,5 @@
 package com.project.cheerha.domain.jobOpening.service;
 
-import com.project.cheerha.common.exception.data.DataErrorCode;
-import com.project.cheerha.common.exception.data.NotFoundException;
 import com.project.cheerha.domain.history.entity.History;
 import com.project.cheerha.domain.history.repository.HistoryRepository;
 import com.project.cheerha.domain.jobOpening.dto.request.ReadJobOpeningRequestDto;
@@ -25,11 +23,11 @@ public class  JobOpeningService {
     private final JobOpeningRepository jobOpeningRepository;
     private final HistoryRepository historyRepository;
     private final UserFindByService userFindByIdService;
+    private final JobOpeningFindByService jobOpeningFindByService;
 
     public String getJobOpeningUrlAndIncreaseViewCount(Long id) {
-        JobOpening jobOpening = jobOpeningRepository.findById(id).orElseThrow(
-            () -> new NotFoundException(DataErrorCode.URL_NOT_FOUND)
-        );
+        JobOpening jobOpening = jobOpeningFindByService.findById(id);
+
         String url = jobOpening.getJobOpeningUrl();
 
         if (!url.startsWith("http")) {
