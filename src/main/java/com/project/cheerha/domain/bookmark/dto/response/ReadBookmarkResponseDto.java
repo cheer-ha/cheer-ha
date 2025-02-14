@@ -2,7 +2,6 @@ package com.project.cheerha.domain.bookmark.dto.response;
 
 import com.project.cheerha.domain.bookmark.entity.Bookmark;
 import com.project.cheerha.domain.jobOpening.entity.JobOpening;
-
 import java.time.ZonedDateTime;
 import java.util.List;
 
