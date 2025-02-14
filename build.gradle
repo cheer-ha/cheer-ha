@@ -75,6 +75,10 @@ dependencies {
 
 	// redisson
 	implementation 'org.redisson:redisson-spring-boot-starter:3.23.0'
+
+	// test
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.named('test') {
