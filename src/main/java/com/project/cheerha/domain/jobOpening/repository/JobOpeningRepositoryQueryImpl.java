@@ -148,6 +148,6 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
 
     // 입력된 사용자 키워드를 포함하는 데이터만 가져오도록 하는 메서드
     private BooleanExpression containsSearchTerm(String searchTerm) {
-        return searchTerm != null ? jobOpening.company.containsIgnoreCase(searchTerm) : Expressions.asBoolean(true).isTrue();
+        return searchTerm != null ? jobOpening.title.containsIgnoreCase(searchTerm) : Expressions.asBoolean(true).isTrue();
     }
 }
