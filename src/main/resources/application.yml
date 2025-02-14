@@ -13,6 +13,13 @@ spring:
         format_sql: true
   config:
     import: myinfo.yml
+
+  data:
+    redis:
+      port: ${redis.port}
+      host: ${redis.host}
+      database: ${redis.database}
+
   data:
     redis:
       port: ${redis.port}
@@ -25,11 +32,7 @@ jwt:
     key: ${jwt.key}
   token:
     prefix: ${jwt.prefix}
-    refreshPrefix: ${jwt.refreshPrefix}
-    blackListPrefix: ${jwt.blackListPrefix}
     expiration: ${jwt.expiration}
-    refreshExpiration: ${jwt.refreshExpiration}
-    blackListExpiration: ${jwt.blackListExpiration}
 
 #logging:
 #  level:
