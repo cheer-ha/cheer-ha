@@ -39,7 +39,7 @@ public class JobOpeningController {
      * @return 필터링된 채용 공고 목록 (페이지)
      */
     @GetMapping("/search")
-    public ResponseEntity<ApiResponseDto<Page<ReadJobOpeningResponseDto>>> readData(
+    public ResponseEntity<ApiResponseDto<Page<ReadJobOpeningResponseDto>>> readJobOpenings(
             @ModelAttribute ReadJobOpeningRequestDto requestDto,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -47,7 +47,7 @@ public class JobOpeningController {
     ) {
         Pageable pageable = validatePageSize(page, size);
         Long userId = authUser.id();
-        Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningService.readData(
+        Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningService.readJobOpenings(
                 requestDto, userId, pageable
         );
         return ApiResponseDto.success(dtoPage);
