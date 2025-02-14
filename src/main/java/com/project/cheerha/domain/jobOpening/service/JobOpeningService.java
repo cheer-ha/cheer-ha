@@ -1,7 +1,7 @@
 package com.project.cheerha.domain.jobOpening.service;
 
-import com.project.cheerha.common.exception.CustomException;
-import com.project.cheerha.common.exception.ErrorCode;
+import com.project.cheerha.common.exception.data.DataErrorCode;
+import com.project.cheerha.common.exception.data.NotFoundException;
 import com.project.cheerha.domain.history.entity.History;
 import com.project.cheerha.domain.history.repository.HistoryRepository;
 import com.project.cheerha.domain.jobOpening.dto.request.ReadJobOpeningRequestDto;
@@ -28,7 +28,7 @@ public class  JobOpeningService {
 
     public String getJobOpeningUrlAndIncreaseViewCount(Long id) {
         JobOpening jobOpening = jobOpeningRepository.findById(id).orElseThrow(
-            () -> new CustomException(ErrorCode.URL_NOT_FOUND)
+            () -> new NotFoundException(DataErrorCode.URL_NOT_FOUND)
         );
         String url = jobOpening.getJobOpeningUrl();
 
@@ -37,6 +37,7 @@ public class  JobOpeningService {
         }
 
         log.info("최종 리다이렉트 URL: {}", url);
+
         jobOpening.increaseViewCount();
         jobOpeningRepository.save(jobOpening);
         return url;

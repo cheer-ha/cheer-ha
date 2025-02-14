@@ -1,7 +1,11 @@
 package com.project.cheerha.domain.auth.service;
 
-import com.project.cheerha.common.exception.CustomException;
-import com.project.cheerha.common.exception.ErrorCode;
+import static com.project.cheerha.common.util.JwtUtil.expiredTokenSet;
+
+import com.project.cheerha.common.exception.auth.AuthErrorCode;
+import com.project.cheerha.common.exception.auth.UnAuthorizedException;
+import com.project.cheerha.common.exception.client.BadRequestException;
+import com.project.cheerha.common.exception.client.ClientErrorCode;
 import com.project.cheerha.common.properties.JwtSecurityProperties;
 import com.project.cheerha.common.util.JwtUtil;
 import com.project.cheerha.common.util.PasswordEncoder;
@@ -17,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import static com.project.cheerha.common.util.JwtUtil.expiredTokenSet;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +35,7 @@ public class AuthService {
     //TODO: signUp도 login 처럼 사용자 차단 고려
     public CreateSignupResponseDto signup(CreateSignupRequestDto dto) {
         if (userRepository.existsByEmail(dto.email())) {
-            throw new CustomException(ErrorCode.ALREADY_EXIST_EMAIL);
+            throw new BadRequestException(ClientErrorCode.ALREADY_EXIST_EMAIL);
         }
         String encodedPassword = passwordEncoder.encode(dto.password());
 
@@ -50,7 +53,7 @@ public class AuthService {
     public CreateLoginResponseDto login(CreateLoginRequestDto dto) {
         User user = userFindByService.findByEmail(dto.email());
         if (!passwordEncoder.matches(dto.password(), user.getPassword())) {
-            throw new CustomException(ErrorCode.WRONG_EMAIL_OR_PASSWORD);
+            throw new UnAuthorizedException(AuthErrorCode.WRONG_EMAIL_OR_PASSWORD);
         }
         String token = jwtUtil.createToken(user.getId(), user.getEmail(), user.getRole());
         return CreateLoginResponseDto.of(token);
@@ -59,12 +62,12 @@ public class AuthService {
     public CreateLogoutResponseDto logout(String authHeader) {
         String prefix = jwtSecurityProperties.getToken().getPrefix();
         if (!StringUtils.hasText(authHeader) || !authHeader.startsWith(prefix)) {
-            throw new CustomException(ErrorCode.TOKEN_NOT_FOUND);
+            throw new UnAuthorizedException(AuthErrorCode.TOKEN_UNAUTHORIZED);
         }
         String token = jwtUtil.substringToken(authHeader);
 
         if (expiredTokenSet.contains(token)) {
-            throw new CustomException(ErrorCode.TOKEN_NOT_FOUND);
+            throw new UnAuthorizedException(AuthErrorCode.TOKEN_UNAUTHORIZED);
         }
         expiredTokenSet.add(token);
         return CreateLogoutResponseDto.of();

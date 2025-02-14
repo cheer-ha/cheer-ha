@@ -1,8 +1,8 @@
 package com.project.cheerha.common.config;
 
 import com.project.cheerha.common.dto.AuthUser;
-import com.project.cheerha.common.exception.CustomException;
-import com.project.cheerha.common.exception.ErrorCode;
+import com.project.cheerha.common.exception.auth.AuthErrorCode;
+import com.project.cheerha.common.exception.auth.ForbiddenException;
 import com.project.cheerha.domain.user.entity.User.Role;
 import io.micrometer.common.lang.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,7 +35,7 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 
         //사용자 정보 없으면 에러 반환
         if (userIdObj == null || roleObj == null) {
-            throw new CustomException(ErrorCode.LOGIN_REQUIRED);
+            throw new ForbiddenException(AuthErrorCode.LOGIN_REQUIRED);
         }
 
         //string 으로 변환
