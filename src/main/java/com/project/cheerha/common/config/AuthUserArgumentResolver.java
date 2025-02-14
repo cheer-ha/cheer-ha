@@ -16,29 +16,41 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @Component
 public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 
+    /**
+     * 컨트롤러 메서드의 파라미터가 AuthUser 와 일치하는지 확인
+     * @param parameter 컨트롤러 메서드 파라미터 정보
+     * @return @AuthUser 일 경우 ture 반환, 아니면 false 반환
+     */
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.getParameterType().equals(AuthUser.class);
     }
 
-    //authUser 객체 생성해 컨트롤러 메서드에 주입
+    /**
+     * 요청을 보낸 사용자 정보를 JWT 에서 추출해 AuthUser 객체로 변환
+     * @param parameter 현재 메서드 파라미터 정보
+     * @param mavContainer 컨트롤러에서 뷰 반환할 때 사용
+     * @param webRequest http 요청 정보(JWT 에서 사용자 정보를 가져오기 위함)
+     * @param binderFactory 요청 데이터를 객체에 바인딩
+     * @return 인증된 사용자의 ID와 역할을 포함한 AuthUser 객체
+     * @throws CustomException 사용자가 인증되지 않은 경우
+     */
     @Override
-    public Object resolveArgument(@Nullable MethodParameter parameter,
-        @Nullable ModelAndViewContainer mavContainer, NativeWebRequest webRequest,
-        @Nullable WebDataBinderFactory binderFactory) {
-
+    public Object resolveArgument(
+            @Nullable MethodParameter parameter,
+            @Nullable ModelAndViewContainer mavContainer,
+            NativeWebRequest webRequest,
+            @Nullable WebDataBinderFactory binderFactory
+    ) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
 
-        //jwt 에서 추출한 값으로 사용자 정보 가져오기
         Object userIdObj = request.getAttribute("userId");
         Object roleObj = request.getAttribute("userRole");
 
-        //사용자 정보 없으면 에러 반환
         if (userIdObj == null || roleObj == null) {
             throw new ForbiddenException(AuthErrorCode.LOGIN_REQUIRED);
         }
 
-        //string 으로 변환
         Long userId = Long.parseLong(userIdObj.toString());
         Role userRole = Role.valueOf(roleObj.toString());
 

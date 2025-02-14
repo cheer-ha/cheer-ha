@@ -35,6 +35,16 @@ public class JwtFilter implements Filter {
         Filter.super.init(filterConfig);
     }
 
+    /**
+     * WhiteList 이외의 Http 요청에서 Jwt 토큰을 확인하고, 유효성 검사 수행한 후, 사용자 정보 설정
+     * AccessToken - UserId, Email, Role 저장(Email 을 AuthUser 에서 사용하진 않으나 일단 넣어 둠)
+     * RefreshToken - UserId 만 저장
+     * @param request http 요청
+     * @param response http 응답
+     * @param chain 필터체인(다음 필터로 요청 전달)
+     * @throws IOException 입출력 예외 발생 시
+     * @throws ServletException 서블릿 예외 발생 시(토큰 관련 오류)
+     */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
         throws IOException, ServletException {
@@ -57,7 +67,7 @@ public class JwtFilter implements Filter {
 
         String token = jwtUtil.substringToken(bearerJwt);
 
-        if (redisBlackListService.isBlacklisted(token)) {
+        if (redisBlackListService.isBlackList(token)) {
             httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "블랙리스트된 토큰입니다.");
             return;
         }
@@ -71,7 +81,6 @@ public class JwtFilter implements Filter {
 
             httpRequest.setAttribute("userId", Long.parseLong(claims.getSubject()));
 
-            //accessToken 일 때만 email, userRole 저장
             if (bearerJwt.startsWith(securityProperties.getToken().getPrefix())) {
                 String email = claims.get("email", String.class);
                 String userRoleString = claims.get("userRole", String.class);

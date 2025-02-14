@@ -26,6 +26,10 @@ public class JwtUtil {
     private Key key;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
+    /**
+     * 어플리케이션 초기화 시 JWT secret key 를 초기화하는 메서드
+     * Base64 인코딩된 키를 디코딩해 HMAC-SHA256 에 사용
+     */
     @PostConstruct
     public void init() {
         String secretKey = securityProperties.getSecret().getKey();
@@ -43,43 +47,59 @@ public class JwtUtil {
         }
     }
 
+    /**
+     * 사용자 정보를 포함한 JWT AccessToken 생성
+     * @param userId 현재 사용자의 식별자
+     * @param email 현재 사용자의 이메일
+     * @param role 현재 사용자의 권한정보
+     * @return 생성된 AccessToken 문자열(prefix, ttl 포함)
+     */
     public String createToken(Long userId, String email, Role role) {
         return generateJwt(userId, email, role,
             securityProperties.getToken().getPrefix(),
             securityProperties.getToken().getExpiration());
     }
 
-    //refreshToken 에는 userId만 (보안 상의 이유)
+    /**
+     * Jwt RefreshToken 생성(보안 상의 이유로 userId 만 포함)
+     * @param userId 현재 사용자의 식별자
+     * @return 생성된 RefreshToken 문자열(prefix, ttl 포함)
+     */
     public String createRefreshToken(Long userId) {
         return generateJwt(userId, null, null,
             securityProperties.getToken().getRefreshPrefix(),
             securityProperties.getToken().getRefreshExpiration());
     }
 
-    public String substringToken(String tokenValue) {
+    /**
+     * Jwt token 문자열에서 prefix 를 제거하여 순수 토큰 반환
+     * @param token prefix 가 포함된 token
+     * @return prefix 가 제거된 순수 token
+     * @throws IllegalArgumentException 유효하지 않은 토큰일 경우
+     */
+    public String substringToken(String token) {
         String prefix = securityProperties.getToken().getPrefix();
         String refreshPrefix = securityProperties.getToken().getRefreshPrefix();
-        if (!StringUtils.hasText(tokenValue)) {
+        if (!StringUtils.hasText(token)) {
             throw new IllegalArgumentException("Token must not be null or empty");
         }
-
-        //prefix 나 refreshPrefix 를 포함해야 함
-        if (!(tokenValue.startsWith(prefix) || tokenValue.startsWith(refreshPrefix))) {
+        if (!(token.startsWith(prefix) || token.startsWith(refreshPrefix))) {
             throw new IllegalArgumentException("Token does not start with a valid prefix");
         }
-
-        //accessToken 접두어 제거
-        if (tokenValue.startsWith(prefix)) {
-            return tokenValue.substring(prefix.length()).trim();
+        if (token.startsWith(prefix)) {
+            return token.substring(prefix.length()).trim();
         }
-
-        //refreshToken 접두어 제거
-        if (tokenValue.startsWith(refreshPrefix)) {
-            return tokenValue.substring(refreshPrefix.length()).trim();
+        if (token.startsWith(refreshPrefix)) {
+            return token.substring(refreshPrefix.length()).trim();
         }
         throw new IllegalArgumentException("Not Found Token");
     }
 
+    /**
+     * JWT 를 파싱하여 Claims(토큰의 본문) 추출
+     * @param token prefix 가 제거된 순수 token
+     * @return Claims 객체(토큰의 본문)
+     */
     public Claims extractClaims(String token) {
         try {
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
@@ -88,7 +108,15 @@ public class JwtUtil {
         }
     }
 
-    //helper
+    /**
+     * JWT 를 생성하는 내부 메서드
+     * @param userId 현재 사용자의 식별자
+     * @param email 현재 사용자의 이메일
+     * @param role 현재 사용자의 권한정보
+     * @param prefix 토큰 접두어(Access 와 Refresh 가 다름)
+     * @param expiration 토큰 만료 시간(밀리초 단위)
+     * @return 생성된 prefix 포함 JWT token
+     */
     private String generateJwt(Long userId, String email, Role role, String prefix, long expiration) {
         Date now = new Date();
         JwtBuilder jwtBuilder = Jwts.builder()

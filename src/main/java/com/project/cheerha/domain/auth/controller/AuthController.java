@@ -38,7 +38,11 @@ public class AuthController {
         return ApiResponseDto.success(authService.logout(authHeader));
     }
 
-    //redis 의 refreshToken 을 이용해 accessToken 재발급
+    /**
+     * 사용자의 RefreshToken 을 이용해 AccessToken 을 재발급 해주는 컨트롤러 메서드
+     * @param refreshToken 현재 사용자의 RefreshToken
+     * @return 현재 사용자의 새로운 AccessToken
+     */
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponseDto<RefreshAccessTokenResponseDto>> refreshAccessToken(
         @RequestHeader("Authorization") String refreshToken
