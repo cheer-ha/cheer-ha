@@ -16,8 +16,14 @@ public class KeywordService {
     private final KeywordRepository keywordRepository;
 
     @Transactional(readOnly = true)
-    public ReadKeywordResponseDto readAllKeywords() {
-        List<Keyword> keywordList = keywordRepository.findAll();
+    public ReadKeywordResponseDto readKeywords(String searchTerm) {
+        List<Keyword> keywordList;
+
+        if (searchTerm == null || searchTerm.isEmpty()) {
+            keywordList = keywordRepository.findAll();
+        } else {
+            keywordList = keywordRepository.findByNameContaining(searchTerm);
+        }
 
         List<KeywordDto> keywordDtoList = keywordList.stream()
             .map(keyword -> KeywordDto.toKeywordDto(
