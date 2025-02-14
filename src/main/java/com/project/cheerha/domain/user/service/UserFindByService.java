@@ -1,7 +1,9 @@
 package com.project.cheerha.domain.user.service;
 
-import com.project.cheerha.common.exception.CustomException;
-import com.project.cheerha.common.exception.ErrorCode;
+import com.project.cheerha.common.exception.auth.AuthErrorCode;
+import com.project.cheerha.common.exception.auth.UnAuthorizedException;
+import com.project.cheerha.common.exception.data.DataErrorCode;
+import com.project.cheerha.common.exception.data.NotFoundException;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,9 +17,9 @@ public class UserFindByService {
 
     public User findById(Long userId) {
         return userRepository.findById(userId)
-            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(DataErrorCode.USER_NOT_FOUND));
     }
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
-            .orElseThrow(() -> new CustomException(ErrorCode.WRONG_EMAIL_OR_PASSWORD));}
+            .orElseThrow(() -> new UnAuthorizedException(AuthErrorCode.WRONG_EMAIL_OR_PASSWORD));}
 }
