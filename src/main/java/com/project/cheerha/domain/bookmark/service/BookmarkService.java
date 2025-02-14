@@ -1,7 +1,7 @@
 package com.project.cheerha.domain.bookmark.service;
 
-import com.project.cheerha.common.exception.CustomException;
-import com.project.cheerha.common.exception.ErrorCode;
+import com.project.cheerha.common.exception.data.NotFoundException;
+import com.project.cheerha.common.exception.data.DataErrorCode;
 import com.project.cheerha.domain.bookmark.dto.response.ReadBookmarkResponseDto;
 import com.project.cheerha.domain.bookmark.entity.Bookmark;
 import com.project.cheerha.domain.bookmark.repository.BookmarkRepository;
@@ -86,11 +86,11 @@ public class BookmarkService {
      *
      * @param userId 사용자의 ID
      * @return 조회된 사용자 객체
-     * @throws CustomException 사용자가 존재하지 않을 경우
+     * @throws NotFoundException 사용자가 존재하지 않을 경우
      */
     private User getUserById(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(DataErrorCode.USER_NOT_FOUND));
     }
 
     /**
@@ -100,10 +100,10 @@ public class BookmarkService {
      *
      * @param jobOpeningId 채용 공고의 ID
      * @return 조회된 채용 공고 객체
-     * @throws CustomException 채용 공고가 존재하지 않을 경우
+     * @throws NotFoundException 채용 공고가 존재하지 않을 경우
      */
     private JobOpening getJobOpeningById(Long jobOpeningId) {
         return jobOpeningRepository.findById(jobOpeningId)
-                .orElseThrow(() -> new CustomException(ErrorCode.JOB_OPENING_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(DataErrorCode.JOB_OPENING_NOT_FOUND));
     }
 }
