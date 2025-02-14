@@ -32,7 +32,11 @@ public class AuthService {
     private final RedisRefreshTokenService redisRefreshTokenService;
     private final RedisBlackListService redisBlackListService;
 
-    //TODO: signUp도 login 처럼 사용자 차단 고려
+    /**
+     * TODO: 비정상적인 사용자 차단 고려
+     * 회원가입 처리하는 메서드
+     * @throws CustomException 이메일이 이미 존재하는 경우
+     */
     public CreateSignupResponseDto signup(CreateSignupRequestDto dto) {
         if (userRepository.existsByEmail(dto.email())) {
             throw new CustomException(ErrorCode.ALREADY_EXIST_EMAIL);
@@ -49,7 +53,11 @@ public class AuthService {
         return CreateSignupResponseDto.of();
     }
 
-    //TODO: aop 기능 : 사용자 ip 추출 하고, 한 ip 에서 같은 email 로 n번 이상 로그인 실패 시 해당 아이디에 대한 로그인 일시 차단
+    /**
+     * TODO: aop 기능 : 사용자 ip 추출 하고, 한 ip 에서 같은 email 로 n번 이상 로그인 실패 시 해당 아이디에 대한 로그인 일시 차단
+     * 로그인 메서드 - AccessToken 과 RefreshToken 생성
+     * @return 로그인 응답 객체(AccessToken, RefreshToken 포함)
+     */
     public CreateLoginResponseDto login(CreateLoginRequestDto dto) {
         User user = userRepository.findByEmail(dto.email())
             .orElseThrow(() -> new CustomException(ErrorCode.WRONG_EMAIL_OR_PASSWORD));
@@ -65,32 +73,39 @@ public class AuthService {
         return CreateLoginResponseDto.of(accessToken, refreshToken);
     }
 
+    /**
+     * 로그아웃 메서드 - AccessToken 을 BlackList 에 추가하고, RefreshToken 을 삭제
+     * @param authHeader 인증 헤더(prefix 포함된 token)
+     * @throws CustomException 토큰이 유효하지 않은 경우
+     */
     public CreateLogoutResponseDto logout(String authHeader) {
         String prefix = jwtSecurityProperties.getToken().getPrefix();
         if (!StringUtils.hasText(authHeader) || !authHeader.startsWith(prefix)) {
             throw new CustomException(ErrorCode.TOKEN_NOT_FOUND);
         }
-
         String token = jwtUtil.substringToken(authHeader);
-
         Claims claims = jwtUtil.extractClaims(token);
         long expirationMillis = claims.getExpiration().getTime() - System.currentTimeMillis();
 
         if (expirationMillis > 0) {
             redisBlackListService.addToBlackList(token);
         }
-
         Long userId = Long.parseLong(jwtUtil.extractClaims(token).getSubject());
         redisRefreshTokenService.deleteRefreshToken(userId);
 
         return CreateLogoutResponseDto.of();
     }
 
+    /**
+     * 새로운 AccessToken 을 발급하는 메서드, 사용된 RefreshToken 도 재발급
+     * @param refreshToken 현재 사용자의 RefreshToken
+     * @return 새로운 AccessToken
+     * @throws CustomException 토큰이 유효하지 않거나 - 저장된 값과 다를 경우
+     */
     public String refreshAccessToken(String refreshToken) {
         if (!StringUtils.hasText(refreshToken)) {
             throw new CustomException(ErrorCode.TOKEN_NOT_FOUND);
         }
-        //refreshToken 접두어 제거(claims 위함)
         refreshToken = jwtUtil.substringToken(refreshToken);
 
         Claims claims;
@@ -110,13 +125,11 @@ public class AuthService {
             throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
-        //storedToken 도 접두어 제거 한 상태로 비교해야 함
         if (!refreshToken.equals(jwtUtil.substringToken(storedRefreshToken))) {
             log.error("Refresh Token mismatch for userId: {}", userId);
             throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
-        //refreshToken 도 새로 발급 -> 재사용 막음
         String newRefreshToken = jwtUtil.createRefreshToken(userId);
         redisRefreshTokenService.createRefreshToken(userId, newRefreshToken);
 

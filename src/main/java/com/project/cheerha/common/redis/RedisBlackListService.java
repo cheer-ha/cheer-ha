@@ -15,7 +15,10 @@ public class RedisBlackListService {
     private final RedissonClient redissonClient;
     private final JwtSecurityProperties jwtSecurityProperties;
 
-    //token 을 블랙리스트로 추가하고 ttl 설정
+    /**
+     * 사용자의 AccessToken 을 블랙리스트에 저장하는 메서드
+     * @param token 현재 사용자의 AccessToken
+     */
     public void addToBlackList(String token) {
         String blackPrefix = jwtSecurityProperties.getToken().getBlackListPrefix();
         long blackExpiration = jwtSecurityProperties.getToken().getBlackListExpiration();
@@ -23,7 +26,12 @@ public class RedisBlackListService {
         bucket.set("blackList", blackExpiration, TimeUnit.MILLISECONDS);
     }
 
-    public boolean isBlacklisted(String token) {
+    /**
+     * 블랙리스트에 등록된 토큰인지 검증하는 메서드
+     * @param token 현재 사용자의 AccessToken
+     * @return 블랙리스트에 들어있다면 true / 아니면 false
+     */
+    public boolean isBlackList(String token) {
         String blackPrefix = jwtSecurityProperties.getToken().getBlackListPrefix();
         return redissonClient.getBucket(blackPrefix + token).isExists();
     }
