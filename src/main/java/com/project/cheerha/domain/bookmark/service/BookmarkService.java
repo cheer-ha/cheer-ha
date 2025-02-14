@@ -4,7 +4,6 @@ import com.project.cheerha.domain.bookmark.dto.response.ReadBookmarkResponseDto;
 import com.project.cheerha.domain.bookmark.entity.Bookmark;
 import com.project.cheerha.domain.bookmark.repository.BookmarkRepository;
 import com.project.cheerha.domain.jobOpening.entity.JobOpening;
-import com.project.cheerha.domain.jobOpening.repository.JobOpeningRepository;
 import com.project.cheerha.domain.jobOpening.service.JobOpeningFindByService;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.service.UserFindByService;
@@ -21,7 +20,6 @@ public class BookmarkService {
 
     private final BookmarkRepository bookmarkRepository;
     private final UserFindByService userFindByIdService;
-    private final JobOpeningRepository jobOpeningRepository;
     private final JobOpeningFindByService jobOpeningFindByService;
 
     @Transactional
