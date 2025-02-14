@@ -1,0 +1,20 @@
+package com.project.cheerha.domain.keyword.service;
+
+import com.project.cheerha.common.exception.data.DataErrorCode;
+import com.project.cheerha.common.exception.data.NotFoundException;
+import com.project.cheerha.domain.keyword.entity.Keyword;
+import com.project.cheerha.domain.keyword.repository.KeywordRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+@Component
+@RequiredArgsConstructor
+public class KeywordFindByService {
+
+    private final KeywordRepository keywordRepository;
+
+    public Keyword findById(Long keywordId) {
+        return keywordRepository.findById(keywordId)
+            .orElseThrow(() -> new NotFoundException(DataErrorCode.KEYWORD_NOT_FOUND));
+    }
+}

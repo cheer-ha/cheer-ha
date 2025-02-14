@@ -16,9 +16,11 @@ import com.project.cheerha.domain.auth.dto.response.CreateLogoutResponseDto;
 import com.project.cheerha.domain.auth.dto.response.CreateSignupResponseDto;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.repository.UserRepository;
+import com.project.cheerha.domain.user.service.UserFindByService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +30,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final JwtSecurityProperties jwtSecurityProperties;
+    private final UserFindByService userFindByService;
 
     //TODO: signUp도 login 처럼 사용자 차단 고려
     public CreateSignupResponseDto signup(CreateSignupRequestDto dto) {
@@ -48,8 +51,7 @@ public class AuthService {
 
     //TODO: aop 기능 : 사용자 ip 추출 하고, 한 ip 에서 같은 email 로 n번 이상 로그인 실패 시 해당 아이디에 대한 로그인 일시 차단
     public CreateLoginResponseDto login(CreateLoginRequestDto dto) {
-        User user = userRepository.findByEmail(dto.email())
-            .orElseThrow(() -> new UnAuthorizedException(AuthErrorCode.WRONG_EMAIL_OR_PASSWORD));
+        User user = userFindByService.findByEmail(dto.email());
         if (!passwordEncoder.matches(dto.password(), user.getPassword())) {
             throw new UnAuthorizedException(AuthErrorCode.WRONG_EMAIL_OR_PASSWORD);
         }
