@@ -6,6 +6,7 @@ import com.project.cheerha.domain.auth.dto.request.CreateSignupRequestDto;
 import com.project.cheerha.domain.auth.dto.response.CreateLoginResponseDto;
 import com.project.cheerha.domain.auth.dto.response.CreateLogoutResponseDto;
 import com.project.cheerha.domain.auth.dto.response.CreateSignupResponseDto;
+import com.project.cheerha.domain.auth.dto.response.RefreshAccessTokenResponseDto;
 import com.project.cheerha.domain.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,10 +40,9 @@ public class AuthController {
 
     //redis 의 refreshToken 을 이용해 accessToken 재발급
     @PostMapping("/refresh")
-    public ResponseEntity<String> refreshAccessToken(
+    public ResponseEntity<ApiResponseDto<RefreshAccessTokenResponseDto>> refreshAccessToken(
         @RequestHeader("Authorization") String refreshToken
     ) {
-        String newAccessToken = authService.refreshAccessToken(refreshToken);
-        return ResponseEntity.ok(newAccessToken);
+        return ApiResponseDto.success(authService.refreshAccessToken(refreshToken));
     }
 }
