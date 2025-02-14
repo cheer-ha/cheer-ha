@@ -22,7 +22,6 @@ public class UserController {
     public ResponseEntity<ReadUserResponseDto> readUser(
         @Auth AuthUser authUser
     ) {
-       // return ResponseEntity.status(HttpStatus.OK).body(userService.readUser(authUser));
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(userService.readUser(authUser));
     }
 }
