@@ -11,7 +11,6 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
@@ -34,11 +33,6 @@ public class JwtFilter implements Filter {
     private final JwtSecurityProperties securityProperties;
     private final RedisBlackListService redisBlackListService;
     private final JwtUtil jwtUtil;
-
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        Filter.super.init(filterConfig);
-    }
 
     /**
      * WhiteList 이외의 Http 요청에서 Jwt 토큰을 확인하고, 유효성 검사 수행한 후, 사용자 정보 설정
@@ -114,11 +108,6 @@ public class JwtFilter implements Filter {
             log.error("예상치 못한 예외 발생", e);
             sendErrorResponse(httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다.");
         }
-    }
-
-    @Override
-    public void destroy() {
-        Filter.super.destroy();
     }
 
     private boolean isWhiteList(String requestURI) {
