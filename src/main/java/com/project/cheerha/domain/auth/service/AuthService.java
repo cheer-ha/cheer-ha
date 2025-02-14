@@ -40,7 +40,7 @@ public class AuthService {
     /**
      * TODO: 비정상적인 사용자 차단 고려
      * 회원가입 처리하는 메서드
-     * @throws CustomException 이메일이 이미 존재하는 경우
+     * @throws BadRequestException 이메일이 이미 존재하는 경우
      */
     public CreateSignupResponseDto signup(CreateSignupRequestDto dto) {
         if (userRepository.existsByEmail(dto.email())) {
@@ -81,7 +81,7 @@ public class AuthService {
     /**
      * 로그아웃 메서드 - AccessToken 을 BlackList 에 추가하고, RefreshToken 을 삭제
      * @param authHeader 인증 헤더(prefix 포함된 token)
-     * @throws CustomException 토큰이 유효하지 않은 경우
+     * @throws UnAuthorizedException 토큰이 유효하지 않은 경우
      */
     public CreateLogoutResponseDto logout(String authHeader) {
         String prefix = jwtSecurityProperties.getToken().getPrefix();
@@ -105,7 +105,7 @@ public class AuthService {
      * 새로운 AccessToken 을 발급하는 메서드, 사용된 RefreshToken 도 재발급
      * @param refreshToken 현재 사용자의 RefreshToken
      * @return 새로운 AccessToken
-     * @throws CustomException 토큰이 유효하지 않거나 - 저장된 값과 다를 경우
+     * @throws UnAuthorizedException 토큰이 유효하지 않거나 - 저장된 값과 다를 경우
      */
     public RefreshAccessTokenResponseDto refreshAccessToken(String refreshToken) {
         if (!StringUtils.hasText(refreshToken)) {

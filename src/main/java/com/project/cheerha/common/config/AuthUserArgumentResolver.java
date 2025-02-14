@@ -33,7 +33,7 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
      * @param webRequest http 요청 정보(JWT 에서 사용자 정보를 가져오기 위함)
      * @param binderFactory 요청 데이터를 객체에 바인딩
      * @return 인증된 사용자의 ID와 역할을 포함한 AuthUser 객체
-     * @throws CustomException 사용자가 인증되지 않은 경우
+     * @throws ForbiddenException 사용자가 인증되지 않은 경우
      */
     @Override
     public Object resolveArgument(
