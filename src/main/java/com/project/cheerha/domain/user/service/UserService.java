@@ -1,8 +1,8 @@
 package com.project.cheerha.domain.user.service;
 
 import com.project.cheerha.common.dto.AuthUser;
-import com.project.cheerha.common.exception.CustomException;
-import com.project.cheerha.common.exception.ErrorCode;
+import com.project.cheerha.common.exception.data.DataErrorCode;
+import com.project.cheerha.common.exception.data.NotFoundException;
 import com.project.cheerha.domain.user.dto.response.ReadUserResponseDto;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.repository.UserRepository;
@@ -17,7 +17,7 @@ public class UserService {
 
     public ReadUserResponseDto readUser(AuthUser authUser) {
         User user = userRepository.findById(authUser.id())
-            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(DataErrorCode.USER_NOT_FOUND));
         return ReadUserResponseDto.of(user.getEmail(), user.getName(), user.getCareer());
     }
 }

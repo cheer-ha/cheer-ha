@@ -1,5 +1,6 @@
-package com.project.cheerha.common.exception;
+package com.project.cheerha.common.exception.handler;
 
+import com.project.cheerha.common.exception.base.BaseException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
