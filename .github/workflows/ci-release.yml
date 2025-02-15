@@ -21,16 +21,18 @@ jobs:
           distribution: 'temurin'
 
       - name: Cache Gradle Packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: gradle-
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+            gradle-
 
       - name: Chmod gradlew
-        run: chmod +x ./gradlew
+        run: sudo chmod +x ./gradlew
 
       - name: Build with Gradle (Check Build-Logs)
         run: ./gradlew build --parallel --daemon --max-workers=2 --info | tee build-log.txt
