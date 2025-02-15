@@ -36,7 +36,7 @@ public class JwtFilter implements Filter {
 
     /**
      * WhiteList 이외의 Http 요청에서 Jwt 토큰을 확인하고, 유효성 검사 수행한 후, 사용자 정보 설정
-     * AccessToken - UserId, Email, Role 저장(Email 을 AuthUser 에서 사용하진 않으나 일단 넣어 둠)
+     * AccessToken - UserId, Role 저장
      * RefreshToken - UserId 만 저장
      * @param request http 요청
      * @param response http 응답
@@ -81,12 +81,10 @@ public class JwtFilter implements Filter {
             httpRequest.setAttribute("userId", Long.parseLong(claims.getSubject()));
 
             if (bearerJwt.startsWith(securityProperties.getToken().getPrefix())) {
-                String email = claims.get("email", String.class);
                 String userRoleString = claims.get("userRole", String.class);
                 Role role = Role.valueOf(userRoleString);
 
-                if (email != null && userRoleString != null) {
-                    httpRequest.setAttribute("email", email);
+                if (userRoleString != null) {
                     httpRequest.setAttribute("userRole", role);
                 }
             }
