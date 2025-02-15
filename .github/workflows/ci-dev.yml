@@ -39,7 +39,7 @@ jobs:
             gradle-
 
       - name: Chmod gradlew
-        run: chmod +x ./gradlew
+        run: sudo chmod +x ./gradlew
 
       - name: Build with Gradle (Check Build-Logs)
         run: ./gradlew build --parallel --daemon --max-workers=2 -x test --info | tee build-log.txt
