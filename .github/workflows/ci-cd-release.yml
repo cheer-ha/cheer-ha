@@ -59,10 +59,6 @@ jobs:
 
             echo "${{ secrets.ENV_FILE }}" > ~/cheer-ha/.env
 
-            if [ ! -f ~/cheer-ha/docker-compose-release.yml ]; then
-              wget -O ~/cheer-ha/docker-compose-release.yml https://raw.githubusercontent.com/cheer-ha/cheer-ha/release/1.0.0/docker-compose-release.yml
-            fi
-
             sudo docker-compose -f ~/cheer-ha/docker-compose-release.yml down
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/cheer-ha:latest
             sudo docker-compose -f ~/cheer-ha/docker-compose-release.yml up -d
