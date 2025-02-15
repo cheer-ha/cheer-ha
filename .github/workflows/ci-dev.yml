@@ -14,6 +14,13 @@ jobs:
       - name: Git Checkout
         uses: actions/checkout@v3
 
+      - name: Run Java Linter
+        uses: github/super-linter@v4
+        env:
+          VALIDATE_ALL_CODEBASE: false
+          DEFAULT_BRANCH: dev
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Setup JDK 17
         uses: actions/setup-java@v3
         with:
@@ -21,13 +28,15 @@ jobs:
           distribution: 'temurin'
 
       - name: Cache Gradle Packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: gradle-
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+            gradle-
 
       - name: Chmod gradlew
         run: chmod +x ./gradlew
@@ -43,6 +52,14 @@ jobs:
 
       - name: PR Quality Gate #빌드 실패 시 머지 차단
         if: failure()
-        run: exit 1
+        run: |
+          echo "❌ Build failed. Check the logs in GitHub Actions." > build-failure.log
+          cat build-log.txt >> build-failure.log
+          exit 1
 
-
+      - name: Upload Failure Logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-failure-logs
+          path: build-failure.log
