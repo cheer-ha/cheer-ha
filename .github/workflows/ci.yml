@@ -32,8 +32,11 @@ jobs:
       - name: Chmod gradlew
         run: chmod +x ./gradlew
 
-      - name: Build with Gradle
-        run: ./gradlew build -x test
+      - name: Build with Gradle (Check Build-Logs)
+        run: ./gradlew build --parallel --daemon --max-workers=2 -x test --info | tee build-log.txt
 
-#      - name: Run Tests  # 자동화된 테스트 실행
-#        run: ./gradlew test
+      - name: PR Quality Gate #빌드 실패 시 머지 차단
+        if: failure()
+        run: exit 1
+
+
