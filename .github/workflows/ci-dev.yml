@@ -2,7 +2,7 @@ name: cheer-ha Dev CI Pipeline
 
 on:
   push:
-    branches: [dev, ci/setup]
+    branches: [empty] #테스트용으로 비워 둠
   pull_request:
     branches: [dev]
 
