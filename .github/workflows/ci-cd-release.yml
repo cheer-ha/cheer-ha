@@ -48,26 +48,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy using SSH
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.HOST_IP_ADDRESS }}
-          username: ubuntu
-          key: ${{ secrets.SSH_SECRET_KEY }}
-          script: |
-            mkdir -p ~/cheer-ha
-            cd ~/cheer-ha
-            if [ ! -d .git ]; then
-              git clone https://github.com/cheer-ha/cheer-ha.git .
-            else
-              git pull origin main
-            fi
-
-            echo "${{ secrets.ENV_FILE }}" > .env
-
-            sudo usermod -aG docker ubuntu
-            newgrp docker
-
-            sudo docker-compose down
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/cheer-ha:latest
-            sudo docker-compose up -d
+    - name: Deploy using SSH
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ secrets.HOST_IP_ADDRESS }}
+        username: ubuntu
+        key: ${{ secrets.SSH_SECRET_KEY }}
+        script: |
+          BRANCH="release/1.0.0"
+        
+          mkdir -p ~/cheer-ha
+          cd ~/cheer-ha
+        
+          if [ ! -d .git ]; then
+            git clone --branch $BRANCH --single-branch https://github.com/cheer-ha/cheer-ha.git .
+          else
+            git fetch origin $BRANCH
+            git reset --hard origin/$BRANCH
+          fi
+          
+          echo "${{ secrets.ENV_FILE }}" > .env
+          
+          sudo usermod -aG docker ubuntu
+          newgrp docker
+        
+          sudo docker-compose down
+          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/cheer-ha:latest
+          sudo docker-compose up -d
