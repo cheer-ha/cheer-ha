@@ -35,6 +35,12 @@ jobs:
       - name: Build with Gradle (Check Build-Logs)
         run: ./gradlew build --parallel --daemon --max-workers=2 -x test --info | tee build-log.txt
 
+      - name: Upload Build Logs
+        uses: actions/upload-artifact@v3
+        with:
+          name: gradle-logs
+          path: build-log.txt
+
       - name: PR Quality Gate #빌드 실패 시 머지 차단
         if: failure()
         run: exit 1
