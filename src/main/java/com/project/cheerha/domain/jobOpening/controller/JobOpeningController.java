@@ -65,23 +65,25 @@ public class JobOpeningController {
      * 조회수를 기준으로 상위 100개의 인기 채용 공고를 조회하는 API입니다.
      *
      * 이 API는 클라이언트가 조회수를 기준으로 가장 인기 있는 채용 공고 100개를 요청할 수 있게 해줍니다.
-     * 페이지 번호와 크기를 매개변수로 받아 페이징 처리된 결과를 반환합니다.
-     * 페이지 번호나 크기가 1보다 작은 경우 기본값 1로 처리됩니다.
+     * 클라이언트는 페이지 번호와 페이지 크기를 매개변수로 전달하여, 페이징 처리된 결과를 받을 수 있습니다.
+     * 페이지 번호나 크기가 1보다 작은 경우, 기본값으로 각각 1과 10이 적용됩니다.
+     *
+     * 페이지 번호(`page`)와 페이지 크기(`size`)는 `@RequestParam`을 통해 전달되며,
+     * 이를 바탕으로 조회할 데이터 범위가 결정됩니다.
      *
      * @param page 조회할 페이지 번호 (기본값: 1, 1보다 작으면 1로 처리됨)
-     * @param size 페이지 당 조회할 데이터 수 (기본값: 100, 1보다 작으면 1로 처리됨)
-     * @return 인기 채용 공고 목록을 포함한 응답 객체 (API 응답 형식: ApiResponseDto)
+     * @param size 페이지 당 조회할 데이터 수 (기본값: 10, 1보다 작으면 1로 처리됨)
+     * @return 인기 채용 공고 목록을 포함한 페이징 처리된 응답 객체 (API 응답 형식: ApiResponseDto)
+     *         - `ApiResponseDto`: 성공적인 응답을 포함하는 API 응답 객체
+     *         - `Page<ReadJobOpeningResponseDto>`: 페이지네이션된 인기 채용 공고 목록
      */
     @GetMapping("/popular")
     public ResponseEntity<ApiResponseDto<Page<ReadJobOpeningResponseDto>>> readTop100PopularJobOpenings(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "100") int size
+            @RequestParam(defaultValue = "10") int size
     ) {
-        page = Math.max(1, page);
-        size = Math.max(1, size);
-        Pageable pageable = PageRequest.of(page - 1, size);
+        Pageable pageable = validatePageSize(page, size);
         Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningService.readTop100PopularJobOpenings(pageable);
         return ApiResponseDto.success(dtoPage);
     }
-
 }

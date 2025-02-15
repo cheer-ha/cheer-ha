@@ -128,10 +128,16 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
     }
 
     /**
-     * 조회수를 기준으로 상위 100개의 인기 채용 공고를 반환합니다.
+     * 조회수 기준으로 상위 100개의 인기 채용공고를 조회하고, 페이지네이션을 지원하는 메서드입니다.
      *
-     * @param pageable 페이지 정보 (100개만 가져오므로 페이지 크기 100으로 설정)
-     * @return 조회수가 많은 상위 100개 채용 공고 목록
+     * 이 메서드는 `jobOpening` 테이블에서 조회수(viewCount)를 기준으로 상위 100개의 인기 채용공고를 내림차순으로 조회합니다.
+     * 페이지네이션을 고려하여 사용자가 요청한 페이지에 맞는 데이터를 가져오며, 각 페이지당 표시되는 항목 수는 `pageable.getPageSize()`로 결정됩니다.
+     * 또한, 데이터는 `offset`과 `limit`을 사용하여 최적화된 방식으로 쿼리됩니다.
+     *
+     * @param pageable 페이지 요청 정보 (페이지 번호, 페이지 크기 등)
+     * @return 요청한 페이지의 인기 채용공고 목록을 포함하는 `Page` 객체
+     *         - `dtoList`: 요청한 페이지에 해당하는 `ReadJobOpeningResponseDto` 객체 목록
+     *         - `total`: 전체 인기 채용공고의 개수는 최대 100개로 제한
      */
     @Override
     public Page<ReadJobOpeningResponseDto> findTop100PopularJobOpenings(Pageable pageable) {
@@ -145,8 +151,10 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
                         jobOpening.position
                 ))
                 .from(jobOpening)
-                .orderBy(jobOpening.viewCount.desc())  // 조회수 내림차순 정렬
-                .limit(100)  // 상위 100개만 조회
+                .orderBy(jobOpening.viewCount.desc())
+                .limit(100)
+                .offset(pageable.getPageNumber() * pageable.getPageSize())
+                .limit(pageable.getPageSize())
                 .fetch();
 
         log.info("dtoList size: " + dtoList.size());
