@@ -48,4 +48,14 @@ jobs:
 
       - name: PR Quality Gate #빌드 실패 시 머지 차단
         if: failure()
-        run: exit 1
+        run: |
+          echo "❌ Build failed. Check the logs in GitHub Actions." > build-failure.log
+          cat build-log.txt >> build-failure.log
+          exit 1
+
+      - name: Upload Failure Logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-failure-logs
+          path: build-failure.log
