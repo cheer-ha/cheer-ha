@@ -124,7 +124,7 @@ public class AuthService {
 
         String storedRefreshToken = redisRefreshTokenService.getRefreshToken(userId);
 
-        if (storedRefreshToken == null) {
+        if (storedRefreshToken == null || storedRefreshToken.isBlank()) {
             log.error("Refresh Token not found in Redis for userId: {}", userId);
             throw new UnAuthorizedException(AuthErrorCode.TOKEN_UNAUTHORIZED);
         }
