@@ -49,24 +49,21 @@ public class BookmarkService {
     }
 
     /**
-     * 사용자의 모든 북마크를 조회하는 메서드입니다.
+     * 사용자의 모든 북마크를 페이징 처리하여 조회하는 메서드입니다.
      *
      * 주어진 사용자 ID를 기반으로 사용자의 모든 북마크를 페이징 처리하여 반환합니다.
-     * 페이지나 페이지크기가 1이하일 경우 1로 처리합니다.
+     * 페이지 번호와 크기는 `Pageable` 객체를 통해 전달되며, 페이지 번호나 크기가 1 이하일 경우 `validatePageSize` 메서드에서 1로 처리됩니다.
      *
      * @param userId 사용자의 ID
-     * @param page 페이지 번호
-     * @param size 페이지 크기
+     * @param pageable 페이지 번호와 크기를 포함한 Pageable 객체
      * @return 페이징된 북마크 목록 (ReadBookmarkResponseDto 형태)
      */
     @Transactional(readOnly = true)
-    public Page<ReadBookmarkResponseDto> readAllBookmarks(Long userId, int page, int size) {
-        int correctedPage = Math.max(page - 1, 0);
-        int correctedSize = Math.max(size, 1);
-        Pageable pageable = PageRequest.of(correctedPage,correctedSize);
+    public Page<ReadBookmarkResponseDto> readAllBookmarks(Long userId, Pageable pageable) {
         Page<Bookmark> bookmarkPage = bookmarkRepository.findByUserId(userId, pageable);
         return bookmarkPage.map(ReadBookmarkResponseDto::toDto);
     }
+
 
     /**
      * 사용자가 저장한 채용 공고의 북마크를 삭제하는 메서드입니다.
