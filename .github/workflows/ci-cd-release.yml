@@ -1,0 +1,62 @@
+name: CI/CD for Cheer-Ha
+
+on:
+  push:
+    branches: [release/1.0.0, cd/setup]
+  pull_request:
+    branches: [release/1.0.0]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Create .env file
+        run: echo "$ENV_FILE" > .env
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
+
+      - name: Chmod gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build --parallel --daemon --max-workers=2 -x test
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build Docker Image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/cheer-ha:latest .
+
+      - name: Push Docker Image to Docker Hub
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/cheer-ha:latest
+
+  deploy:
+    name: Deploy to EC2
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy using SSH
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.HOST_IP_ADDRESS }}
+          username: ubuntu
+          key: ${{ secrets.SSH_SECRET_KEY }}
+          script: |
+            cd ~/cheer-ha
+            echo "${{ secrets.ENV_FILE }}" > .env
+            docker-compose down
+            docker pull ${{ secrets.DOCKER_USERNAME }}/cheer-ha:latest
+            docker-compose up -d
