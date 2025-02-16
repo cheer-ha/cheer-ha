@@ -60,13 +60,13 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
             .leftJoin(jobOpening.jobOpeningKeywordList, jobOpeningKeyword) // 데이터와 키워드 테이블 조인
             .leftJoin(jobOpeningKeyword.keyword, keyword)
             .where(
+                eqJobType(requestDto.getEmploymentType()),
+                eqLocation(requestDto.getLocation()),
                 eqRequiredSkill(requestDto.getRequiredSkill()),
                 eqEducation(requestDto.getEducationLevel()),
+                leoCareer(requestDto.getExperienceYears()),
                 geoHiringStartPeriod(requestDto.getHiringStartAt()),
                 leoHiringEndPeriod(requestDto.getHiringEndAt()),
-                eqLocation(requestDto.getLocation()),
-                leoCareer(requestDto.getExperienceYears()),
-                eqJobType(requestDto.getEmploymentType()),
                 containsSearchTerm(requestDto.getSearchTerm())
             )
             .groupBy(jobOpening.id)
@@ -112,13 +112,13 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
                 .leftJoin(jobOpening.jobOpeningKeywordList, jobOpeningKeyword)
                 .leftJoin(jobOpeningKeyword.keyword, keyword)
                 .where(
+                    eqJobType(requestDto.getEmploymentType()),
+                    eqLocation(requestDto.getLocation()),
                     eqRequiredSkill(requestDto.getRequiredSkill()),
                     eqEducation(requestDto.getEducationLevel()),
+                    leoCareer(requestDto.getExperienceYears()),
                     geoHiringStartPeriod(requestDto.getHiringStartAt()),
                     leoHiringEndPeriod(requestDto.getHiringEndAt()),
-                    eqLocation(requestDto.getLocation()),
-                    leoCareer(requestDto.getExperienceYears()),
-                    eqJobType(requestDto.getEmploymentType()),
                     containsSearchTerm(requestDto.getSearchTerm())
                 ).fetchOne())
                 .orElse(0L);
