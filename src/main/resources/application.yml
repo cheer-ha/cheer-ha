@@ -32,11 +32,8 @@ security:
   bcrypt:
     cost: ${SECURITY_COST}
 
-logging:
-  level:
-    org:
-      hibernate:
-        SQL: debug
-        orm:
-          jdbc:
-            bind: trace
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
