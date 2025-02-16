@@ -33,11 +33,16 @@ mkdir -p ~/cheer-ha
 #환경변수 파일 생성
 echo "$ENV_FILE" > ~/cheer-ha/.env
 
+#keystroe 복원 후 환경변수에 추가
+echo "$KEYSTORE_BASE64" | base64 --decode > ~/cheer-ha/keystore.p12
+chmod 600 ~/cheer-ha/keystore.p12
+echo "KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD" >> ~/cheer-ha/.env
+
 #도커컴포즈 파일 생성
 cat <<EOF > /home/ubuntu/cheer-ha/docker-compose-release.yml
 services:
   app:
-    image: $DOCKER_USERNAME/cheer-ha:latest
+    image: \${DOCKER_USERNAME}/cheer-ha:latest
     container_name: cheer-ha-app
     restart: always
     depends_on:
