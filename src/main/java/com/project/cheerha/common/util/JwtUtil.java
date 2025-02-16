@@ -50,12 +50,11 @@ public class JwtUtil {
     /**
      * 사용자 정보를 포함한 JWT AccessToken 생성
      * @param userId 현재 사용자의 식별자
-     * @param email 현재 사용자의 이메일
      * @param role 현재 사용자의 권한정보
      * @return 생성된 AccessToken 문자열(prefix, ttl 포함)
      */
-    public String createToken(Long userId, String email, Role role) {
-        return generateJwt(userId, email, role,
+    public String createToken(Long userId, Role role) {
+        return generateJwt(userId, role,
             securityProperties.getToken().getPrefix(),
             securityProperties.getToken().getExpiration());
     }
@@ -66,7 +65,7 @@ public class JwtUtil {
      * @return 생성된 RefreshToken 문자열(prefix, ttl 포함)
      */
     public String createRefreshToken(Long userId) {
-        return generateJwt(userId, null, null,
+        return generateJwt(userId, null,
             securityProperties.getToken().getRefreshPrefix(),
             securityProperties.getToken().getRefreshExpiration());
     }
@@ -111,13 +110,12 @@ public class JwtUtil {
     /**
      * JWT 를 생성하는 내부 메서드
      * @param userId 현재 사용자의 식별자
-     * @param email 현재 사용자의 이메일
      * @param role 현재 사용자의 권한정보
      * @param prefix 토큰 접두어(Access 와 Refresh 가 다름)
      * @param expiration 토큰 만료 시간(밀리초 단위)
      * @return 생성된 prefix 포함 JWT token
      */
-    private String generateJwt(Long userId, String email, Role role, String prefix, long expiration) {
+    private String generateJwt(Long userId, Role role, String prefix, long expiration) {
         Date now = new Date();
         JwtBuilder jwtBuilder = Jwts.builder()
             .setSubject(String.valueOf(userId))
@@ -125,7 +123,6 @@ public class JwtUtil {
             .setIssuedAt(now)
             .signWith(key, signatureAlgorithm);
 
-        if (email != null) jwtBuilder.claim("email", email);
         if (role != null) jwtBuilder.claim("userRole", role);
 
         return prefix + jwtBuilder.compact();
