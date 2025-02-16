@@ -59,4 +59,20 @@ public class  JobOpeningService {
 
         return dtoPage;
     }
+
+    /**
+     * 조회수 기준으로 상위 100개의 인기 채용공고를 조회하는 메서드입니다.
+     *
+     * 이 메서드는 `jobOpeningRepositoryQuery`를 사용하여 조회수를 내림차순으로 정렬한 후,
+     * 인기 채용공고 100개를 반환합니다.
+     *
+     * 페이지네이션을 지원하지만, 실제로는 상위 100개만 조회하므로 페이지 크기(size)는 100으로 고정됩니다.
+     *
+     * @param pageable 페이지 요청 정보 (페이지 번호, 페이지 크기 등)
+     * @return 조회수가 많은 상위 100개의 인기 채용공고 목록을 포함하는 페이지 객체
+     */
+    @Transactional(readOnly = true)
+    public Page<ReadJobOpeningResponseDto> readTop100PopularJobOpenings(Pageable pageable) {
+        return jobOpeningRepository.findTop100PopularJobOpenings(pageable);
+    }
 }

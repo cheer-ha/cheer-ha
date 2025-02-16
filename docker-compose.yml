@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: spring-app
+    container_name: cheer-ha-app
     restart: always
     depends_on:
       - mysql
