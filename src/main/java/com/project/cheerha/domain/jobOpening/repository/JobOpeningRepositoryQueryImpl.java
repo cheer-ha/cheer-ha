@@ -8,7 +8,6 @@ import com.project.cheerha.domain.jobOpening.entity.EmploymentType;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +20,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.project.cheerha.domain.jobOpening.entity.QJobOpening.jobOpening;
@@ -114,26 +112,8 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
         // 5. 각 Dto에 자격 요건 추가
         dtoList.forEach(dto -> dto.addRequiredSkills(requiredSkillMap.getOrDefault(dto.getId(), new ArrayList<>())));
 
-        // 6. 전체 검색 결과 개수 조회
-        Long totalCount = Optional.ofNullable(
-            queryFactory.select(Wildcard.count)
-                .from(jobOpening)
-                .leftJoin(jobOpening.jobOpeningKeywordList, jobOpeningKeyword)
-                .leftJoin(jobOpeningKeyword.keyword, keyword)
-                .where(
-                    eqRequiredSkill(requestDto.getRequiredSkill()),
-                    eqLocation(requestDto.getLocation()),
-                    eqJobType(requestDto.getEmploymentType()),
-                    eqEducation(requestDto.getEducationLevel()),
-                    leoCareer(requestDto.getExperienceYears()),
-                    geoHiringStartPeriod(requestDto.getHiringStartAt()),
-                    leoHiringEndPeriod(requestDto.getHiringEndAt()),
-                    containsSearchTerm(requestDto.getSearchTerm())
-                ).fetchOne())
-                .orElse(0L);
-
-        // 7. 결과 반환
-        return new PageImpl<>(dtoList, pageable, totalCount);
+        // 6. 결과 반환
+        return new PageImpl<>(dtoList, pageable, dtoList.size());
     }
 
     /**
