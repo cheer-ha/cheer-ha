@@ -37,7 +37,9 @@ echo "$ENV_FILE" > ~/cheer-ha/.env
 cat <<EOF > /home/ubuntu/cheer-ha/docker-compose-release.yml
 services:
   app:
-    image: lcyoun9/cheer-ha:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: cheer-ha-app
     restart: always
     depends_on:
@@ -48,15 +50,15 @@ services:
 
   mysql:
     image: mysql:8.0
-    container_name: \${DB_URL}
+    container_name: ${DB_URL}
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: \${ROOT_PASS}
-      MYSQL_DATABASE: \${DB_NAME}
-      MYSQL_USER: \${DB_USER}
-      MYSQL_PASSWORD: \${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${ROOT_PASS}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "\${DB_PORT}:3306"
+      - "${DB_PORT}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
 
