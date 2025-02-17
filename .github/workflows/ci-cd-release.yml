@@ -20,6 +20,9 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Remove Existing .env File
+        run: rm -f .env
+
       - name: Create .env file
         run: echo "$ENV_FILE" > .env
         env:
@@ -33,6 +36,16 @@ jobs:
 
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Delete Old Docker Image
+        run: |
+          TOKEN=$(curl -s -H "Content-Type: application/json" -X POST -d \
+          '{"username": "${{ secrets.DOCKER_USERNAME }}", "password": "${{ secrets.DOCKER_PASSWORD }}"}' \
+          https://hub.docker.com/v2/users/login/ | jq -r .token)
+        
+          curl -X DELETE \
+          -H "Authorization: Bearer $TOKEN" \
+          "https://hub.docker.com/v2/repositories/${{ secrets.DOCKER_USERNAME }}/cheer-ha/tags/latest/"
 
       - name: Build Docker Image
         run: |
