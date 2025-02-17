@@ -1,9 +1,9 @@
 package com.project.cheerha.domain.jobOpening.repository;
 
 import com.project.cheerha.domain.jobOpening.dto.request.ReadJobOpeningRequestDto;
+import com.project.cheerha.domain.jobOpening.dto.response.QReadJobOpeningResponseDto;
 import com.project.cheerha.domain.jobOpening.dto.response.ReadJobOpeningResponseDto;
 import com.querydsl.core.Tuple;
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.Wildcard;
@@ -33,15 +33,32 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
 
     private final JPAQueryFactory queryFactory;
 
+    /**
+     * 주어진 검색 조건을 기반으로 채용 공고 목록을 조회합니다.
+     *
+     * 다양한 필터 조건을 적용해서 채용 공고 데이터를 가져오고, 해당 공고의 키워드(자격 요건)를 함께 조회합니다.
+     *
+     * @param requestDto 검색 및 필터링 조건
+     * @param pageable 페이지 정보를 포함 (페이지 번호, 페이지 크기)
+     * @return 필터링된 채용 공고 목록
+     */
     @Override
     public Page<ReadJobOpeningResponseDto> findAllByCondition(
             ReadJobOpeningRequestDto requestDto, Pageable pageable
     ) {
+        // 1. 기본 채용 공고 데이터 조회 (필터 조건 적용)
         List<ReadJobOpeningResponseDto> dtoList = queryFactory
-            .select(Projections.constructor(
-                ReadJobOpeningResponseDto.class,
+            .select(new QReadJobOpeningResponseDto(
                 jobOpening.id,
+                jobOpening.title,
                 jobOpening.company,
+                jobOpening.location,
+                jobOpening.salary,
+                jobOpening.employmentType,
+                jobOpening.educationLevel,
+                jobOpening.jobOpeningUrl,
+                jobOpening.minExperienceYears,
+                jobOpening.maxExperienceYears,
                 jobOpening.hiringStartAt,
                 jobOpening.hiringEndAt,
                 jobOpening.position
@@ -51,12 +68,12 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
             .leftJoin(jobOpeningKeyword.keyword, keyword)
             .where(
                 eqRequiredSkill(requestDto.getRequiredSkill()),
+                eqLocation(requestDto.getLocation()),
+                eqJobType(requestDto.getEmploymentType()),
                 eqEducation(requestDto.getEducationLevel()),
+                leoCareer(requestDto.getExperienceYears()),
                 geoHiringStartPeriod(requestDto.getHiringStartAt()),
                 leoHiringEndPeriod(requestDto.getHiringEndAt()),
-                eqLocation(requestDto.getLocation()),
-                leoCareer(requestDto.getExperienceYears()),
-                eqJobType(requestDto.getEmploymentType()),
                 containsSearchTerm(requestDto.getSearchTerm())
             )
             .groupBy(jobOpening.id)
@@ -66,12 +83,14 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
 
         log.info("dtoList size: " + dtoList.size());
 
+        // 2. 조회된 채용 공고 Id 목록 추출
         List<Long> dataIdList = dtoList.stream()
                 .map(ReadJobOpeningResponseDto::getId)
                 .toList();
 
         log.info("dataIdList size: " + dataIdList.size());
 
+        // 3. 해당 공고의 자격 요건 조회
         List<Tuple> requiredSkillTupleList = queryFactory
                 .select(jobOpeningKeyword.jobOpening.id, keyword.name)
                 .from(jobOpeningKeyword)
@@ -81,6 +100,7 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
 
         log.info("requiredSkillTupleList size: " + requiredSkillTupleList.size());
 
+        // 4. 채용 공고 Id별 자격 요건 리스트 매핑
         Map<Long, List<String>> requiredSkillMap = requiredSkillTupleList.stream()
                 .collect(Collectors.groupingBy(
                         tuple -> tuple.get(jobOpeningKeyword.jobOpening.id),
@@ -89,8 +109,10 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
 
         log.info("requiredSkillMap size: " + requiredSkillMap.size());
 
+        // 5. 각 Dto에 자격 요건 추가
         dtoList.forEach(dto -> dto.addRequiredSkills(requiredSkillMap.getOrDefault(dto.getId(), new ArrayList<>())));
 
+        // 6. 전체 검색 결과 개수 조회
         Long totalCount = Optional.ofNullable(
             queryFactory.select(Wildcard.count)
                 .from(jobOpening)
@@ -98,56 +120,91 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
                 .leftJoin(jobOpeningKeyword.keyword, keyword)
                 .where(
                     eqRequiredSkill(requestDto.getRequiredSkill()),
+                    eqLocation(requestDto.getLocation()),
+                    eqJobType(requestDto.getEmploymentType()),
                     eqEducation(requestDto.getEducationLevel()),
+                    leoCareer(requestDto.getExperienceYears()),
                     geoHiringStartPeriod(requestDto.getHiringStartAt()),
                     leoHiringEndPeriod(requestDto.getHiringEndAt()),
-                    eqLocation(requestDto.getLocation()),
-                    leoCareer(requestDto.getExperienceYears()),
-                    eqJobType(requestDto.getEmploymentType()),
                     containsSearchTerm(requestDto.getSearchTerm())
                 ).fetchOne())
                 .orElse(0L);
 
+        // 7. 결과 반환
         return new PageImpl<>(dtoList, pageable, totalCount);
     }
 
-    // 입력된 자격 스킬을 포함한 데이터만 가져오도록 하는 메서드
+    /**
+     * 조회수 기준으로 상위 100개의 인기 채용공고를 조회하고, 페이지네이션을 지원하는 메서드입니다.
+     *
+     * 이 메서드는 `jobOpening` 테이블에서 조회수(viewCount)를 기준으로 상위 100개의 인기 채용공고를 내림차순으로 조회합니다.
+     * 페이지네이션을 고려하여 사용자가 요청한 페이지에 맞는 데이터를 가져오며, 각 페이지당 표시되는 항목 수는 `pageable.getPageSize()`로 결정됩니다.
+     * 또한, 데이터는 `offset`과 `limit`을 사용하여 최적화된 방식으로 쿼리됩니다.
+     *
+     * @param pageable 페이지 요청 정보 (페이지 번호, 페이지 크기 등)
+     * @return 요청한 페이지의 인기 채용공고 목록을 포함하는 `Page` 객체
+     *         - `dtoList`: 요청한 페이지에 해당하는 `ReadJobOpeningResponseDto` 객체 목록
+     *         - `total`: 전체 인기 채용공고의 개수는 최대 100개로 제한
+     */
+    @Override
+    public Page<ReadJobOpeningResponseDto> findTop100PopularJobOpenings(Pageable pageable) {
+        List<ReadJobOpeningResponseDto> dtoList = queryFactory
+                .select(new QReadJobOpeningResponseDto(
+                        jobOpening.id,
+                        jobOpening.title,
+                        jobOpening.company,
+                        jobOpening.location,
+                        jobOpening.salary,
+                        jobOpening.employmentType,
+                        jobOpening.educationLevel,
+                        jobOpening.jobOpeningUrl,
+                        jobOpening.minExperienceYears,
+                        jobOpening.maxExperienceYears,
+                        jobOpening.hiringStartAt,
+                        jobOpening.hiringEndAt,
+                        jobOpening.position
+                ))
+                .from(jobOpening)
+                .orderBy(jobOpening.viewCount.desc())
+                .limit(100)
+                .offset(pageable.getPageNumber() * pageable.getPageSize())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        log.info("dtoList size: " + dtoList.size());
+
+        return new PageImpl<>(dtoList, pageable, dtoList.size());
+    }
+
     private BooleanExpression eqRequiredSkill(String requiredSkill) {
         return requiredSkill != null ? keyword.name.eq(requiredSkill) : Expressions.asBoolean(true).isTrue();
     }
 
-    // 입력된 학력과 같은 데이터만 가져오도록 하는 메서드
     private BooleanExpression eqEducation(String educationLevel) {
         return educationLevel != null ? jobOpening.educationLevel.eq(educationLevel) : Expressions.asBoolean(true).isTrue();
     }
 
-    // 입력된 시작 날짜보다 큰 데이터만 가져오도록 하는 메서드
     private BooleanExpression geoHiringStartPeriod(ZonedDateTime hiringStartAt) {
-        return hiringStartAt != null ? jobOpening.hiringStartAt.loe(hiringStartAt) : Expressions.asBoolean(true).isTrue();
+        return hiringStartAt != null ? jobOpening.hiringStartAt.goe(hiringStartAt) : Expressions.asBoolean(true).isTrue();
     }
 
-    // 입력된 마감 날짜보다 작은 데이터만 가져오도록 하는 메서드
     private BooleanExpression leoHiringEndPeriod(ZonedDateTime hiringEndAt) {
         return hiringEndAt != null ? jobOpening.hiringEndAt.loe(hiringEndAt) : Expressions.asBoolean(true).isTrue();
     }
 
-    // 동일한 근무 지역의 데이터만 가져오도록 하는 메서드
     private BooleanExpression eqLocation(String location) {
         return location != null ? jobOpening.location.eq(location) : Expressions.asBoolean(true).isTrue();
     }
 
-    // 입력된 경력 이하의 데이터만 가져오도록 하는 메서드
     private BooleanExpression leoCareer(Integer maxExperienceYears) {
         return maxExperienceYears != null ? jobOpening.maxExperienceYears.loe(maxExperienceYears) : Expressions.asBoolean(true).isTrue();
     }
 
-    // 입력된 근무 형태와 동일한 데이터만 가져오도록 하는 메서드
     private BooleanExpression eqJobType(String EmploymentType) {
         return EmploymentType != null ? jobOpening.employmentType.eq(EmploymentType) : Expressions.asBoolean(true).isTrue();
     }
 
-    // 입력된 사용자 키워드를 포함하는 데이터만 가져오도록 하는 메서드
     private BooleanExpression containsSearchTerm(String searchTerm) {
-        return searchTerm != null ? jobOpening.company.containsIgnoreCase(searchTerm) : Expressions.asBoolean(true).isTrue();
+        return searchTerm != null ? jobOpening.title.containsIgnoreCase(searchTerm) : Expressions.asBoolean(true).isTrue();
     }
 }

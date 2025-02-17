@@ -2,8 +2,8 @@ package com.project.cheerha.domain.keyword.controller;
 
 import com.project.cheerha.domain.keyword.dto.response.ReadKeywordResponseDto;
 import com.project.cheerha.domain.keyword.service.KeywordService;
+import com.project.cheerha.common.dto.ApiResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,11 +18,10 @@ public class KeywordController {
     private final KeywordService keywordService;
 
     @GetMapping
-    public ResponseEntity<ReadKeywordResponseDto> readAllKeywords(
-        @RequestParam(value = "searchTerm", required = false) String searchTerm
+    public ResponseEntity<ApiResponseDto<ReadKeywordResponseDto>> readAllKeywords(
+            @RequestParam(value = "searchTerm", required = false) String searchTerm
     ) {
         ReadKeywordResponseDto responseDto = keywordService.readKeywords(searchTerm);
-
-        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+        return ApiResponseDto.success(responseDto);
     }
 }
