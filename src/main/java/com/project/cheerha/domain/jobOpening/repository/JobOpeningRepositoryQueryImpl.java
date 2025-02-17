@@ -1,9 +1,9 @@
 package com.project.cheerha.domain.jobOpening.repository;
 
 import com.project.cheerha.domain.jobOpening.dto.request.ReadJobOpeningRequestDto;
+import com.project.cheerha.domain.jobOpening.dto.response.QReadJobOpeningResponseDto;
 import com.project.cheerha.domain.jobOpening.dto.response.ReadJobOpeningResponseDto;
 import com.querydsl.core.Tuple;
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.Wildcard;
@@ -48,10 +48,17 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
     ) {
         // 1. 기본 채용 공고 데이터 조회 (필터 조건 적용)
         List<ReadJobOpeningResponseDto> dtoList = queryFactory
-            .select(Projections.constructor(
-                ReadJobOpeningResponseDto.class,
+            .select(new QReadJobOpeningResponseDto(
                 jobOpening.id,
+                jobOpening.title,
                 jobOpening.company,
+                jobOpening.location,
+                jobOpening.salary,
+                jobOpening.employmentType,
+                jobOpening.educationLevel,
+                jobOpening.jobOpeningUrl,
+                jobOpening.minExperienceYears,
+                jobOpening.maxExperienceYears,
                 jobOpening.hiringStartAt,
                 jobOpening.hiringEndAt,
                 jobOpening.position
@@ -61,12 +68,12 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
             .leftJoin(jobOpeningKeyword.keyword, keyword)
             .where(
                 eqRequiredSkill(requestDto.getRequiredSkill()),
+                eqLocation(requestDto.getLocation()),
+                eqJobType(requestDto.getEmploymentType()),
                 eqEducation(requestDto.getEducationLevel()),
+                leoCareer(requestDto.getExperienceYears()),
                 geoHiringStartPeriod(requestDto.getHiringStartAt()),
                 leoHiringEndPeriod(requestDto.getHiringEndAt()),
-                eqLocation(requestDto.getLocation()),
-                leoCareer(requestDto.getExperienceYears()),
-                eqJobType(requestDto.getEmploymentType()),
                 containsSearchTerm(requestDto.getSearchTerm())
             )
             .groupBy(jobOpening.id)
@@ -113,12 +120,12 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
                 .leftJoin(jobOpeningKeyword.keyword, keyword)
                 .where(
                     eqRequiredSkill(requestDto.getRequiredSkill()),
+                    eqLocation(requestDto.getLocation()),
+                    eqJobType(requestDto.getEmploymentType()),
                     eqEducation(requestDto.getEducationLevel()),
+                    leoCareer(requestDto.getExperienceYears()),
                     geoHiringStartPeriod(requestDto.getHiringStartAt()),
                     leoHiringEndPeriod(requestDto.getHiringEndAt()),
-                    eqLocation(requestDto.getLocation()),
-                    leoCareer(requestDto.getExperienceYears()),
-                    eqJobType(requestDto.getEmploymentType()),
                     containsSearchTerm(requestDto.getSearchTerm())
                 ).fetchOne())
                 .orElse(0L);
@@ -142,10 +149,17 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
     @Override
     public Page<ReadJobOpeningResponseDto> findTop100PopularJobOpenings(Pageable pageable) {
         List<ReadJobOpeningResponseDto> dtoList = queryFactory
-                .select(Projections.constructor(
-                        ReadJobOpeningResponseDto.class,
+                .select(new QReadJobOpeningResponseDto(
                         jobOpening.id,
+                        jobOpening.title,
                         jobOpening.company,
+                        jobOpening.location,
+                        jobOpening.salary,
+                        jobOpening.employmentType,
+                        jobOpening.educationLevel,
+                        jobOpening.jobOpeningUrl,
+                        jobOpening.minExperienceYears,
+                        jobOpening.maxExperienceYears,
                         jobOpening.hiringStartAt,
                         jobOpening.hiringEndAt,
                         jobOpening.position
