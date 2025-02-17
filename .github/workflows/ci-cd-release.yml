@@ -28,6 +28,9 @@ jobs:
         env:
           ENV_FILE: ${{ secrets.ENV_FILE }}
 
+      - name: Debug ENV_FILE
+        run: cat .env
+
       - name: Chmod gradlew
         run: chmod +x gradlew
 
