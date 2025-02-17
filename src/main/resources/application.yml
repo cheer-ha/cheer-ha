@@ -17,6 +17,11 @@ spring:
       host: ${REDIS_HOST}
       database: ${REDIS_DATABASE}
 
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600  # 캐시 항목의 TTL(Time To Live)을 1시간으로 설정
+
 jwt:
   secret:
     key: ${JWT_KEY}
