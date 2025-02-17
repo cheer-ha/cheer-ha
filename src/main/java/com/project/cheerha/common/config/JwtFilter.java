@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.cheerha.common.properties.JwtSecurityProperties;
 import com.project.cheerha.common.redis.RedisBlackListService;
 import com.project.cheerha.common.util.JwtUtil;
-import com.project.cheerha.domain.user.entity.User.Role;
+
+import com.project.cheerha.domain.user.entity.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;

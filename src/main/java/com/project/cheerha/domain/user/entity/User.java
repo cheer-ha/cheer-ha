@@ -15,8 +15,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "user")
 public class User {
 
-    public enum Role {USER, ADMIN}
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
