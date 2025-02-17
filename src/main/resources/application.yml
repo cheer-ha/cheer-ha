@@ -13,19 +13,23 @@ spring:
         format_sql: true
   config:
     import: myinfo.yml
-#  data:
-#    redis:
-#      port: ${redis.port}
-#      host: ${redis.host}
-#      database: ${redis.database}
+  data:
+    redis:
+      port: ${redis.port}
+      host: ${redis.host}
+      database: ${redis.database}
 
-# jwt 토큰 사용을 위한 비밀키
+# jwt token secret keys
 jwt:
   secret:
     key: ${jwt.key}
   token:
     prefix: ${jwt.prefix}
+    refreshPrefix: ${jwt.refreshPrefix}
+    blackListPrefix: ${jwt.blackListPrefix}
     expiration: ${jwt.expiration}
+    refreshExpiration: ${jwt.refreshExpiration}
+    blackListExpiration: ${jwt.blackListExpiration}
 
 #logging:
 #  level:
@@ -41,13 +45,6 @@ logging:
           jdbc:
             bind: trace
 
-#data:
-#  redis:
-#    password: ${redis.password}
-#    host: ${redis.host}
-#    port: ${redis.port}
-
 security:
   bcrypt:
     cost: ${security.cost}
-
