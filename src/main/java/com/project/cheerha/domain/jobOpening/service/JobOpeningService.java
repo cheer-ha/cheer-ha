@@ -12,13 +12,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class  JobOpeningService {
+public class JobOpeningService {
 
     private final JobOpeningRepository jobOpeningRepository;
     private final HistoryRepository historyRepository;
@@ -36,10 +38,7 @@ public class  JobOpeningService {
             url = "https://" + url;
         }
 
-        log.info("최종 리다이렉트 URL: {}", url);
-        log.info("업데이트 전 version: {}", jobOpening.getVersion());
         increaseViewCountRetry(jobOpening.getId(), jobOpening.getVersion());
-        log.info("업데이트 후 version: {}", jobOpening.getVersion());
 
         return url;
     }
@@ -62,15 +61,14 @@ public class  JobOpeningService {
 //        }
 
 
+    @Retryable(
+        retryFor = {RuntimeException.class},
+        maxAttempts = 5,
+        backoff = @Backoff(100)
+    )
     public void increaseViewCountRetry(Long id, Long version) {
-        for (int i = 0; i < 5; i++) {
-            int updatedRows = jobOpeningRepository.updateViewCountWithOptimisticLock(id, version);
-            log.info("업데이트 된 행 개수 : {}", updatedRows);
-            if (updatedRows > 0) {
-                return;
-            } else {
-                log.warn("낙관적 락 충돌로 인한 재시도 횟수 {}회", i + 1);
-            }
+        int updatedRows = jobOpeningRepository.updateViewCountWithOptimisticLock(id, version);
+        if (updatedRows == 0) {
             throw new RuntimeException("충돌 횟수 초과");
         }
     }
@@ -78,9 +76,9 @@ public class  JobOpeningService {
 
     @Transactional
     public Page<ReadJobOpeningResponseDto> readJobOpenings(
-            ReadJobOpeningRequestDto requestDto,
-            Long userId,
-            Pageable pageable
+        ReadJobOpeningRequestDto requestDto,
+        Long userId,
+        Pageable pageable
     ) {
         User user = userFindByIdService.findById(userId);
 
@@ -90,17 +88,16 @@ public class  JobOpeningService {
         }
 
         Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningRepository.findAllByCondition(
-                requestDto, pageable);
+            requestDto, pageable);
 
         return dtoPage;
     }
 
     /**
      * 조회수 기준으로 상위 100개의 인기 채용공고를 조회하는 메서드입니다.
-     *
-     * 이 메서드는 `jobOpeningRepositoryQuery`를 사용하여 조회수를 내림차순으로 정렬한 후,
-     * 인기 채용공고 100개를 반환합니다.
-     *
+     * <p>
+     * 이 메서드는 `jobOpeningRepositoryQuery`를 사용하여 조회수를 내림차순으로 정렬한 후, 인기 채용공고 100개를 반환합니다.
+     * <p>
      * 페이지네이션을 지원하지만, 실제로는 상위 100개만 조회하므로 페이지 크기(size)는 100으로 고정됩니다.
      *
      * @param pageable 페이지 요청 정보 (페이지 번호, 페이지 크기 등)
