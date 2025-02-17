@@ -6,26 +6,46 @@ import lombok.Getter;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-// TODO : 우선은 와이어프레임에 나오는 데이터만 반환되도록 설정, 보여줘야 하는 데이터가 더 많아진다면 추가해야 함
 @Getter
 public class ReadJobOpeningResponseDto {
 
     private final Long id;
+    private final String title;
     private final String company;
+    private final String location;
+    private final int salary;
+    private final String employmentType;
+    private final String educationLevel;
+    private final String jobOpeningUrl;
+    private final Integer minExperienceYears;
+    private final Integer maxExperienceYears;
+    private final String position;
     private final ZonedDateTime hiringStartAt;
     private final ZonedDateTime hiringEndAt;
-    private final String position;
+
 
     private List<String> requiredSkills;
 
     @QueryProjection
     public ReadJobOpeningResponseDto(
-            Long id, String company,
+            Long id, String title,
+            String company, String location,
+            int salary, String employmentType,
+            String educationLevel, String jobOpeningUrl,
+            Integer minExperienceYears, Integer maxExperienceYears,
             ZonedDateTime hiringStartAt, ZonedDateTime hiringEndAt,
             String position
     ) {
         this.id = id;
+        this.title = title;
         this.company = company;
+        this.location = location;
+        this.salary = salary;
+        this.employmentType = employmentType;
+        this.educationLevel = educationLevel;
+        this.jobOpeningUrl = jobOpeningUrl;
+        this.minExperienceYears = minExperienceYears;
+        this.maxExperienceYears = maxExperienceYears;
         this.hiringStartAt = hiringStartAt;
         this.hiringEndAt = hiringEndAt;
         this.position = position;
