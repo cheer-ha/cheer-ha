@@ -67,10 +67,6 @@ public class JobOpening {
     @Version
     private Long version;
 
-    public void increaseViewCount() {
-        this.viewCount++;
-    }
-
     @OneToMany(mappedBy = "jobOpening", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<JobOpeningKeyword> jobOpeningKeywordList = new ArrayList<>();
 
