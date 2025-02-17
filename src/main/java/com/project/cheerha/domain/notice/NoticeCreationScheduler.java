@@ -30,9 +30,6 @@ public class NoticeCreationScheduler {
         List<JobOpeningKeywordDto> jobOpeningKeywordDtoList = noticeCreationService.findAllJobOpeningKeywords();
         List<UserKeywordDto> userKeywordDtoList = noticeCreationService.findAllUserKeywords();
 
-        log.info("채용 공고 목록 {}: ", userKeywordDtoList);
-        log.info("사용자 목록 {}: ", jobOpeningKeywordDtoList);
-
         // 사용자의 이메일 및 연결된 채용 공고 URL을 저장할 Map
         Map<String, Set<String>> emailUrlMap = new HashMap<>();
 
@@ -49,18 +46,18 @@ public class NoticeCreationScheduler {
                 // (4) 일치하면 이메일과 채용 공고 URL을 Map에 저장
                 if (isUserKeywordMatchingJobKeyword) {
                     emailUrlMap
-                        .computeIfAbsent(userDto.email(), emailAsKey -> new HashSet<>())
-                        .add(jobOpeningKeywordDto.url());
+                        .computeIfAbsent(
+                            userDto.email(),
+                            emailAsKey -> new HashSet<>()
+                        ).add(jobOpeningKeywordDto.url());
                 }
             }
         }
 
-//        // 이메일별 알림 전송 준비
-//        emailUrlMap.forEach((email, urlSet) -> {
-//                log.info("이메일 전송 준비 완료: {} -> {}", email, urlSet);
-//            }
-//        );
-
-        emailService.sendTestEmail();
+        // (5) 이메일별로 알림 전송
+        emailUrlMap.forEach((email, urlSet) -> {
+                emailService.sendMail(email, List.copyOf(urlSet));
+            }
+        );
     }
 }
