@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.cheerha.common.properties.JwtSecurityProperties;
 import com.project.cheerha.common.redis.RedisBlackListService;
 import com.project.cheerha.common.util.JwtUtil;
-import com.project.cheerha.domain.user.entity.User.Role;
+
+import com.project.cheerha.domain.user.entity.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -29,7 +30,7 @@ import org.springframework.util.PatternMatchUtils;
 @RequiredArgsConstructor
 public class JwtFilter implements Filter {
 
-    private static final String[] WHITE_LIST = {"/auth/signup", "/auth/login"};
+    private static final String[] WHITE_LIST = {"/auth/signup", "/auth/login", "/actuator/health"};
     private final JwtSecurityProperties securityProperties;
     private final RedisBlackListService redisBlackListService;
     private final JwtUtil jwtUtil;
