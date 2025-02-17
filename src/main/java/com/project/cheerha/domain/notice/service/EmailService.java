@@ -28,19 +28,20 @@ public class EmailService {
             helper.setSubject("📢 새로운 맞춤 채용 공고가 도착했어요!");
 
             StringBuilder content = new StringBuilder();
-            content.append("<h1>✨ 안녕하세요! 새로운 채용 공고가 도착했어요! ✨</h1>");
-            content.append("<p>혹시 아래 공고를 확인해 볼까요? 🧐</p>");
+            content.append("<h1>🚀 새로운 채용 공고가 준비됐어요! 🎉</h1>");
+            content.append("<p>맞춤형 채용 공고가 도착했답니다! 💼</p>");
+            content.append("<p>아래 링크에서 확인해보세요! ⬇️</p>");
             content.append("<ul>");
 
             for (String url : jobOpeningUrlList) {
                 content.append("<li>👉 <a href=\"")
                     .append(url)
                     .append("\" target=\"_blank\">")
-                    .append("채용 공고 확인하기!</a></li>");
+                    .append("채용 공고 자세히 보기</a></li>");
             }
 
             content.append("</ul>");
-            content.append("<p>🎉 좋은 기회를 놓치지 마세요! 화이팅! 💪</p>");
+            content.append("<p>행운을 빕니다! 🙌</p>");
 
             helper.setText(content.toString(), true);
 
