@@ -4,6 +4,7 @@ import com.project.cheerha.domain.bookmark.entity.Bookmark;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
@@ -23,6 +24,11 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
      * @param pageable 페이징 처리 정보
      * @return 주어진 사용자에 대한 북마크 목록 (페이징 처리된 결과)
      */
+    @Query("SELECT b FROM Bookmark b " +
+            "JOIN FETCH b.jobOpening jo " +
+            "JOIN FETCH jo.jobOpeningKeywordList jokl " +
+            "JOIN FETCH jokl.keyword k " +
+            "WHERE b.user.id = :userId")
     Page<Bookmark> findByUserId(Long userId, Pageable pageable);
 
     /**
