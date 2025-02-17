@@ -1,7 +1,7 @@
 package com.project.cheerha.domain.bookmark.service;
 
-import com.project.cheerha.common.exception.CustomException;
-import com.project.cheerha.common.exception.ErrorCode;
+import com.project.cheerha.common.exception.data.DataErrorCode;
+import com.project.cheerha.common.exception.data.NotFoundException;
 import com.project.cheerha.domain.bookmark.dto.response.ReadBookmarkResponseDto;
 import com.project.cheerha.domain.bookmark.entity.Bookmark;
 import com.project.cheerha.domain.bookmark.repository.BookmarkRepository;
@@ -71,12 +71,12 @@ public class BookmarkService {
     // 유저 정보 조회를 위한 private 메서드
     private User getUserById(Long userId) {
         return userRepository.findById(userId)
-            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(DataErrorCode.USER_NOT_FOUND));
     }
 
     // 채용공고 조회를 위한 private 메서드
     private JobOpening getJobOpeningById(Long jobOpeningId) {
         return jobOpeningRepository.findById(jobOpeningId)
-            .orElseThrow(() -> new CustomException(ErrorCode.JOB_OPENING_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(DataErrorCode.JOB_OPENING_NOT_FOUND));
     }
 }

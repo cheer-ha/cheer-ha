@@ -63,6 +63,10 @@ public class JobOpening {
 
     private int viewCount;
 
+    //낙관적 락을 위한 충돌 대비 버전 관리 필드
+    @Version
+    private Integer version;
+
     public void increaseViewCount() {
         this.viewCount++;
     }

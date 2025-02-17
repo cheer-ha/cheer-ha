@@ -28,7 +28,7 @@ public class  JobOpeningService {
 
     public String getJobOpeningUrlAndIncreaseViewCount(Long id) {
         JobOpening jobOpening = jobOpeningRepository.findById(id).orElseThrow(
-            () -> new NotFoundException(DataErrorCode.URL_NOT_FOUND)
+            () -> new NotFoundException(DataErrorCode.JOB_OPENING_NOT_FOUND)
         );
         String url = jobOpening.getJobOpeningUrl();
 
