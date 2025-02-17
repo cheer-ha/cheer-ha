@@ -26,36 +26,56 @@ public class  JobOpeningService {
     private final UserRepository userRepository;
     private final HistoryRepository historyRepository;
 
-        @Transactional
-        public String getJobOpeningUrlAndIncreaseViewCount(Long id) {
-            JobOpening jobOpening = jobOpeningRepository.findByForUpdateViewCount(id).orElseThrow(
-                () -> new NotFoundException(DataErrorCode.JOB_OPENING_NOT_FOUND)
-            );
 
-            String url = jobOpening.getJobOpeningUrl();
+    @Transactional
+    public String getJobOpeningUrlAndIncreaseViewCount(Long id) {
+        JobOpening jobOpening = jobOpeningRepository.findById(id).orElseThrow(
+            () -> new NotFoundException(DataErrorCode.JOB_OPENING_NOT_FOUND)
+        );
 
-            if (!url.startsWith("http")) {
-                url = "https://" + url;
-            }
-            log.info("최종 리다이렉트 URL: {}", url);
-            jobOpening.increaseViewCount();
-
-            return url;
+        String url = jobOpening.getJobOpeningUrl();
+        if (!url.startsWith("http")) {
+            url = "https://" + url;
         }
 
+        log.info("최종 리다이렉트 URL: {}", url);
+        log.info("업데이트 전 version: {}", jobOpening.getVersion());
+        increaseViewCountRetry(jobOpening.getId(), jobOpening.getVersion());
+        log.info("업데이트 후 version: {}", jobOpening.getVersion());
 
-//    public void increaseViewCountRetry(Long id, Long version) {
-//        for (int i = 0; i < 5; i++) {
-//            int updatedRows = jobOpeningRepository.updateViewCountWithOptimisticLock(id, version);
-//            log.info("업데이트 된 행 개수 : {}", updatedRows);
-//            if (updatedRows > 0) {
-//                return;
-//            } else {
-//                log.warn("낙관적 락 충돌로 인한 재시도 횟수 {}회", i + 1);
+        return url;
+    }
+
+    //비관락
+//        @Transactional
+//        public String getJobOpeningUrlAndIncreaseViewCount(Long id) {
+//            JobOpening jobOpening = jobOpeningRepository.findByForUpdateViewCount(id).orElseThrow(
+//                () -> new NotFoundException(DataErrorCode.JOB_OPENING_NOT_FOUND)
+//            );
+//            String url = jobOpening.getJobOpeningUrl();
+//
+//            if (!url.startsWith("http")) {
+//                url = "https://" + url;
 //            }
-//            throw new RuntimeException("충돌 횟수 초과");
+//            log.info("최종 리다이렉트 URL: {}", url);
+//            jobOpening.increaseViewCount();
+//
+//            return url;
 //        }
-//    }
+
+
+    public void increaseViewCountRetry(Long id, Long version) {
+        for (int i = 0; i < 5; i++) {
+            int updatedRows = jobOpeningRepository.updateViewCountWithOptimisticLock(id, version);
+            log.info("업데이트 된 행 개수 : {}", updatedRows);
+            if (updatedRows > 0) {
+                return;
+            } else {
+                log.warn("낙관적 락 충돌로 인한 재시도 횟수 {}회", i + 1);
+            }
+            throw new RuntimeException("충돌 횟수 초과");
+        }
+    }
 
 
     @Transactional
