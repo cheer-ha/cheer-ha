@@ -2,6 +2,7 @@ package com.project.cheerha.domain.notice;
 
 import com.project.cheerha.domain.notice.dto.JobOpeningKeywordDto;
 import com.project.cheerha.domain.notice.dto.UserKeywordDto;
+import com.project.cheerha.domain.notice.service.EmailService;
 import com.project.cheerha.domain.notice.service.NoticeCreationService;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class NoticeCreationScheduler {
 
     private final NoticeCreationService noticeCreationService;
+    private final EmailService emailService;
 
     @Scheduled(cron = "*/30 * * * * *")
     @Transactional
@@ -53,10 +55,12 @@ public class NoticeCreationScheduler {
             }
         }
 
-        // 이메일별 알림 전송 준비
-        emailUrlMap.forEach((email, urlSet) -> {
-                log.info("이메일 전송 준비 완료: {} -> {}", email, urlSet);
-            }
-        );
+//        // 이메일별 알림 전송 준비
+//        emailUrlMap.forEach((email, urlSet) -> {
+//                log.info("이메일 전송 준비 완료: {} -> {}", email, urlSet);
+//            }
+//        );
+
+        emailService.sendTestEmail();
     }
 }
