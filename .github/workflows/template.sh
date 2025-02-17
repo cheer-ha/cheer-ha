@@ -42,7 +42,6 @@ services:
     restart: always
     depends_on:
       - mysql
-      - redis
     ports:
       - "8080:8080"
     env_file: .env
@@ -61,18 +60,8 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
 
-  redis:
-    image: redis:latest
-    container_name: \${REDIS_HOST}
-    restart: always
-    ports:
-      - "\${REDIS_PORT}:6379"
-    volumes:
-      - redis_data:/data
-
 volumes:
   mysql_data:
-  redis_data:
 
 EOF
 
