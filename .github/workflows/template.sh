@@ -24,45 +24,17 @@ DOCKER_COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/rel
 sudo curl -L "https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 
-#도커 로그인
-echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-
 #cheerha 디렉토리 생성
 mkdir -p ~/cheer-ha
 
 #환경변수 파일 생성
-echo "$ENV_FILE" > ~/cheer-ha/.env
+cat <<EOF > /home/ubuntu/cheer-ha/.env
+#env 붙여넣기
+EOF
 
 #도커컴포즈 파일 생성
 cat <<EOF > /home/ubuntu/cheer-ha/docker-compose-release.yml
-services:
-  app:
-    image: lcyoun9/cheer-ha:latest
-    container_name: cheer-ha-app
-    restart: always
-    depends_on:
-      - mysql
-    ports:
-      - "8080:8080"
-    env_file: .env
-
-  mysql:
-    image: mysql:8.0
-    container_name: \${DB_URL}
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: \${ROOT_PASS}
-      MYSQL_DATABASE: \${DB_NAME}
-      MYSQL_USER: \${DB_USER}
-      MYSQL_PASSWORD: \${DB_PASSWORD}
-    ports:
-      - "\${DB_PORT}:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-
-volumes:
-  mysql_data:
-
+#컴포즈 붙여넣기
 EOF
 
 #컨테이너 실행
