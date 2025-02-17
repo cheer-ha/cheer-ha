@@ -16,9 +16,6 @@ sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin d
 sudo systemctl start docker
 sudo systemctl enable docker
 
-#sudo 도커 권한 부여
-sudo usermod -aG docker ubuntu
-
 #도커컴포즈 설치
 DOCKER_COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
 sudo curl -L "https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
@@ -38,6 +35,6 @@ cat <<EOF > /home/ubuntu/cheer-ha/docker-compose-release.yml
 EOF
 
 #컨테이너 실행
-docker-compose -f ~/cheer-ha/docker-compose-release.yml down
-docker pull lcyoun9/cheer-ha:latest
-docker-compose -f ~/cheer-ha/docker-compose-release.yml up -d --force-recreate
+sudo docker-compose -f ~/cheer-ha/docker-compose-release.yml down
+sudo docker pull lcyoun9/cheer-ha:latest
+sudo docker-compose -f ~/cheer-ha/docker-compose-release.yml up -d --force-recreate
