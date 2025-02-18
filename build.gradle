@@ -80,6 +80,9 @@ dependencies {
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 
+	// email
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
 	//healthcheck
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 }
