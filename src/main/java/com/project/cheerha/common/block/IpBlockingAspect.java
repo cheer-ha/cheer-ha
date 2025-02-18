@@ -68,11 +68,8 @@ public class IpBlockingAspect {
                 redisTemplate.opsForList().rightPush(redisAttemptKey, email);
             }
 
-            //첫 추가 시 ttl 설정
-            long listSize = redisTemplate.opsForList().size(redisAttemptKey);
-            if (listSize == 1) {
-                redisTemplate.expire(redisAttemptKey, ATTEMPT_TTL, TimeUnit.MINUTES);
-            }
+            //추가 시 ttl 설정
+            redisTemplate.expire(redisAttemptKey, ATTEMPT_TTL, TimeUnit.MINUTES);
 
             //서로 다른 이메일이 3개 이상이면 차단
             if (!Objects.requireNonNull(attemptedEmails).contains(email) && attemptedEmails.size() >= MAX_DIFFERENT_EMAILS) {
