@@ -25,7 +25,7 @@ public class EmailBlockingAspect {
     private static final String FAIL_PREFIX = "fail:email:";
     private static final long EMAIL_BLOCK_DURATION = 15;  //15분 동안 차단
     private static final long EMAIL_FAIL_DURATION = 3;    //로그인 실패 시 실패데이터 3일간 유지
-    private static final int MAX_FAILED_COUNT = 5;  //5회 실패 시 차단
+    private static final int MAX_FAILED_COUNT = 4;  //5회 실패 시 차단
 
     /**
      * 같은 이메일로 5회 이상 로그인 실패한 경우 15분간 차단하는 메서드입니다
@@ -40,6 +40,7 @@ public class EmailBlockingAspect {
         String redisKey = BLOCK_PREFIX + email;
         String failCountKey = FAIL_PREFIX + email;
 
+        //차단된 이메일인지 확인
         if (Boolean.TRUE.equals(redisTemplate.hasKey(redisKey))) {
             log.warn("임시차단된 사용자의 로그인 요청: {}", email);
             redisTemplate.opsForValue().set(redisKey, "blocked", EMAIL_BLOCK_DURATION, TimeUnit.MINUTES);
@@ -48,17 +49,20 @@ public class EmailBlockingAspect {
 
         try {
             Object result = joinPoint.proceed(args);
+            //로그인 성공 시 failCount 삭제
             redisTemplate.delete(failCountKey);
             return result;
         } catch (Exception e) {
             if(Objects.equals(e.getMessage(), "패스워드가 잘못되었습니다.")){
                 log.error("로그인 실패: {}", email);
 
+                //잘못된 비밀번호 입력 시 count 1회 추가, 첫 추가 시 ttl 설정
                 long failedAttempts = redisTemplate.opsForValue().increment(failCountKey);
                 if (failedAttempts == 1) {
                     redisTemplate.expire(failCountKey, EMAIL_FAIL_DURATION, TimeUnit.DAYS);
                 }
 
+                //잘못된 시도 5회 시 이메일 차단
                 if (failedAttempts >= MAX_FAILED_COUNT) {
                     redisTemplate.opsForValue().set(redisKey, "blocked", EMAIL_BLOCK_DURATION, TimeUnit.MINUTES);
                     log.warn("임시차단된 이메일: {} 이 {} 분 간 차단되었습니다", email, EMAIL_BLOCK_DURATION);
