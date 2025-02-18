@@ -21,8 +21,8 @@ import java.util.concurrent.TimeUnit;
 public class EmailBlockingAspect {
 
     private final RedisTemplate<String, String> redisTemplate;
-    private static final String BLOCK_PREFIX = "block:";
-    private static final String FAIL_PREFIX = "fail:";
+    private static final String BLOCK_PREFIX = "block:email:";
+    private static final String FAIL_PREFIX = "fail:email:";
     private static final long EMAIL_BLOCK_DURATION = 15;  //15분 동안 차단
     private static final long EMAIL_FAIL_DURATION = 3;    //로그인 실패 시 실패데이터 3일간 유지
     private static final int MAX_FAILED_COUNT = 5;  //5회 실패 시 차단
