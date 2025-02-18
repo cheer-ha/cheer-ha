@@ -19,7 +19,8 @@ public enum AuthErrorCode {
 
     //UnAuthorizedException
     TOKEN_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "존재하지 않는 토큰입니다."),
-    WRONG_EMAIL_OR_PASSWORD(HttpStatus.UNAUTHORIZED, "이메일이나 패스워드가 잘못되었습니다.");
+    INVALID_EMAIL(HttpStatus.UNAUTHORIZED, "이메일이 잘못되었습니다."),
+    INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "패스워드가 잘못되었습니다.");
 
     private final HttpStatus status;
     private final String message;
