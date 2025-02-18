@@ -7,8 +7,8 @@ import com.project.cheerha.domain.keyword.dto.request.DeleteUserKeywordRequestDt
 import com.project.cheerha.domain.keyword.dto.response.CreateUserKeywordResponseDto;
 import com.project.cheerha.domain.keyword.dto.response.ReadUserKeywordResponseDto;
 import com.project.cheerha.domain.keyword.service.UserKeywordService;
+import com.project.cheerha.common.dto.ApiResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,40 +25,34 @@ public class UserKeywordController {
     private final UserKeywordService userKeywordService;
 
     @PostMapping
-    public ResponseEntity<CreateUserKeywordResponseDto> createUserKeywordList(
-        @RequestBody CreateUserKeywordRequestDto requestDto,
-        @Auth AuthUser authUser
+    public ResponseEntity<ApiResponseDto<CreateUserKeywordResponseDto>> createUserKeywordList(
+            @RequestBody CreateUserKeywordRequestDto requestDto,
+            @Auth AuthUser authUser
     ) {
         Long userId = authUser.id();
-
         CreateUserKeywordResponseDto responseDto = userKeywordService.createUserKeyword(
-            userId,
-            requestDto
+                userId,
+                requestDto
         );
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
-    }
-
-    @DeleteMapping
-    public ResponseEntity<Void> deleteUserKeyword(
-        @RequestBody DeleteUserKeywordRequestDto requestDto,
-        @Auth AuthUser authUser
-    ) {
-        Long userId = authUser.id();
-
-        userKeywordService.deleteUserKeyword(userId, requestDto);
-
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ApiResponseDto.created(responseDto);
     }
 
     @GetMapping
-    public ResponseEntity<ReadUserKeywordResponseDto> readAllUserKeywords(
-        @Auth AuthUser authUser
+    public ResponseEntity<ApiResponseDto<ReadUserKeywordResponseDto>> readAllUserKeywords(
+            @Auth AuthUser authUser
     ) {
         Long userId = authUser.id();
-
         ReadUserKeywordResponseDto responseDto = userKeywordService.readAllUserKeywords(userId);
+        return ApiResponseDto.success(responseDto);
+    }
 
-        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    @DeleteMapping
+    public ResponseEntity<ApiResponseDto<Void>> deleteUserKeyword(
+            @RequestBody DeleteUserKeywordRequestDto requestDto,
+            @Auth AuthUser authUser
+    ) {
+        Long userId = authUser.id();
+        userKeywordService.deleteUserKeyword(userId, requestDto);
+        return ApiResponseDto.noContent();
     }
 }

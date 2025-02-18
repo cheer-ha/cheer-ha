@@ -1,17 +1,16 @@
 package com.project.cheerha.domain.bookmark.service;
 
-import com.project.cheerha.common.exception.data.DataErrorCode;
-import com.project.cheerha.common.exception.data.NotFoundException;
 import com.project.cheerha.domain.bookmark.dto.response.ReadBookmarkResponseDto;
 import com.project.cheerha.domain.bookmark.entity.Bookmark;
 import com.project.cheerha.domain.bookmark.repository.BookmarkRepository;
 import com.project.cheerha.domain.jobOpening.entity.JobOpening;
-import com.project.cheerha.domain.jobOpening.repository.JobOpeningRepository;
+import com.project.cheerha.domain.jobOpening.service.JobOpeningFindByService;
 import com.project.cheerha.domain.user.entity.User;
-import com.project.cheerha.domain.user.repository.UserRepository;
+import com.project.cheerha.domain.user.service.UserFindByService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,62 +20,58 @@ import org.springframework.transaction.annotation.Transactional;
 public class BookmarkService {
 
     private final BookmarkRepository bookmarkRepository;
-    private final JobOpeningRepository jobOpeningRepository;
-    private final UserRepository userRepository;
+    private final UserFindByService userFindByIdService;
+    private final JobOpeningFindByService jobOpeningFindByService;
 
+    private static final int MAX_BOOKMARK_COUNT = 200;
+
+    /**
+     * 사용자가 채용 공고를 북마크하는 메서드입니다.
+     *
+     * @param userId 사용자의 ID
+     * @param jobOpeningId 채용 공고의 ID
+     */
     @Transactional
+    @CacheEvict(value = "bookmarks", key = "#userId")
     public void createBookmark(Long userId, Long jobOpeningId) {
-        // 데이터 조회: 주어진 jobOpeningId에 해당하는 JobOpening을 조회
-        JobOpening jobOpening = getJobOpeningById(jobOpeningId);
-
-        // userId로 User 객체를 조회
-        User user = getUserById(userId);
-
-        // 이미 존재하는 북마크가 있는지 확인 (userId로 조회) - exists 사용
-        boolean bookmarkExists = bookmarkRepository.existsByUserIdAndJobOpeningId(userId,
-            jobOpeningId);
-        if (bookmarkExists) {
-            // 이미 존재하면 그냥 리턴
+        JobOpening jobOpening = jobOpeningFindByService.findById(jobOpeningId);
+        boolean isBookmarkExists = bookmarkRepository.existsByUserIdAndJobOpeningId(userId, jobOpeningId);
+        if (isBookmarkExists) {
             return;
         }
-
-        // Bookmark 엔티티 생성 (toEntity 메서드 사용)
+        long bookmarkCount = bookmarkRepository.countByUserId(userId);
+        if (bookmarkCount >= MAX_BOOKMARK_COUNT) {
+            Bookmark oldestBookmark = bookmarkRepository.findFirstByUserIdOrderByIdAsc(userId);
+            bookmarkRepository.delete(oldestBookmark);
+        }
+        User user = userFindByIdService.findById(userId);
         Bookmark bookmark = Bookmark.toEntity(user, jobOpening);
         bookmarkRepository.save(bookmark);
     }
 
-    // 로그인된 사용자의 모든 즐겨찾기 조회 (페이징 처리)
+    /**
+     * 사용자의 모든 북마크를 페이징 처리하여 조회하는 메서드입니다.
+     *
+     * @param userId 사용자의 ID
+     * @param pageable 페이지 번호와 크기를 포함한 Pageable 객체
+     * @return 페이징된 북마크 목록 (ReadBookmarkResponseDto 형태)
+     */
     @Transactional(readOnly = true)
-    public Page<ReadBookmarkResponseDto> readAllBookmarks(Long userId, int page, int size) {
-        // 페이지가 1 이하일 경우 0으로 처리 (0보다 작은 값은 0으로, 1 이상은 그대로)
-        int correctedPage = Math.max(page - 1, 0);
-
-        // 페이지네이션 처리
-        Pageable pageable = PageRequest.of(correctedPage, size);
-
-        // userId로 북마크 목록을 가져옴
+    @Cacheable(value = "bookmarks", key = "#userId", unless = "#result.isEmpty()")
+    public Page<ReadBookmarkResponseDto> readAllBookmarks(Long userId, Pageable pageable) {
         Page<Bookmark> bookmarkPage = bookmarkRepository.findByUserId(userId, pageable);
-
-        // Page<Bookmark>를 Page<ReadBookmarkResponseDto>로 변환
         return bookmarkPage.map(ReadBookmarkResponseDto::toDto);
     }
 
-    // 로그인된 사용자의 즐겨찾기 삭제
+    /**
+     * 사용자가 저장한 채용 공고의 북마크를 삭제하는 메서드입니다.
+     *
+     * @param userId 사용자의 ID
+     * @param jobOpeningId 삭제할 채용 공고의 ID
+     */
     @Transactional
+    @CacheEvict(value = "bookmarks", key = "#userId")
     public void deleteBookmark(Long userId, Long jobOpeningId) {
-        // userId와 jobOpeningId로 북마크 삭제
         bookmarkRepository.deleteByUserIdAndJobOpeningId(userId, jobOpeningId);
-    }
-
-    // 유저 정보 조회를 위한 private 메서드
-    private User getUserById(Long userId) {
-        return userRepository.findById(userId)
-            .orElseThrow(() -> new NotFoundException(DataErrorCode.USER_NOT_FOUND));
-    }
-
-    // 채용공고 조회를 위한 private 메서드
-    private JobOpening getJobOpeningById(Long jobOpeningId) {
-        return jobOpeningRepository.findById(jobOpeningId)
-            .orElseThrow(() -> new NotFoundException(DataErrorCode.JOB_OPENING_NOT_FOUND));
     }
 }

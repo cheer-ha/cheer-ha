@@ -9,4 +9,7 @@ public interface JobOpeningRepositoryQuery {
 
     Page<ReadJobOpeningResponseDto> findAllByCondition(
             ReadJobOpeningRequestDto requestDto, Pageable pageable);
+
+    // 인기 채용공고 조회 - 조회수 기준 상위 100개
+    Page<ReadJobOpeningResponseDto> findTop100PopularJobOpenings(Pageable pageable);
 }

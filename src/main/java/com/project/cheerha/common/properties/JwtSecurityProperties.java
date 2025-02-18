@@ -5,7 +5,7 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Getter
-@Setter //setter 없으면 설정 안 돌아감
+@Setter
 @ConfigurationProperties(prefix = "jwt")
 public class JwtSecurityProperties {
 
@@ -22,6 +22,10 @@ public class JwtSecurityProperties {
     @Setter
     public static class Token {
         private String prefix;
+        private String refreshPrefix;
+        private String blackListPrefix;
         private long expiration;
+        private long refreshExpiration;
+        private long blackListExpiration;
     }
 }
