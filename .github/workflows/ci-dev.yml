@@ -34,14 +34,21 @@ jobs:
       - name: Chmod gradlew
         run: sudo chmod +x ./gradlew
 
-      - name: Build with Gradle (Check Build-Logs)
-        run: ./gradlew build --parallel --daemon --max-workers=2 --info | tee build-log.txt
+      - name: Run Tests and Generate Coverage Report
+        run: |
+          ./gradlew test jacocoTestReport --parallel --daemon --max-workers=2 --info | tee test-log.txt
 
-      - name: Upload Build Logs
+      - name: Upload Test Logs
         uses: actions/upload-artifact@v4
         with:
-          name: gradle-logs
-          path: build-log.txt
+          name: test-logs
+          path: test-log.txt
+
+      - name: Upload JaCoCo Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: build/reports/jacoco/test/html/
 
       - name: PR Quality Gate #빌드 실패 시 머지 차단
         if: failure()
@@ -54,5 +61,5 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: build-failure-logs
-          path: build-failure.log
+          name: test-failure-logs
+          path: test-failure.log
