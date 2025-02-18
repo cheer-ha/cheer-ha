@@ -110,4 +110,21 @@ public class DoFilterTest {
 
         verify(response, times(1)).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
+
+    @Test
+    void testFilter_블랙리스트_토큰일때() throws ServletException, IOException {
+        when(request.getRequestURI()).thenReturn("/api/protected");
+        when(request.getHeader("Authorization")).thenReturn("Bearer blackListToken");
+        when(jwtUtil.substringToken("Bearer blackListToken")).thenReturn("blackListToken");
+
+        when(redisBlackListService.isBlackList("blackListToken")).thenReturn(true);
+
+        PrintWriter writer = new PrintWriter(new StringWriter());
+        when(response.getWriter()).thenReturn(writer);
+
+        jwtFilter.doFilter(request, response, filterChain);
+
+        verify(response, times(1)).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    }
+
 }
