@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
 @EnableJpaAuditing
+@EnableScheduling
 @SpringBootApplication
 @EnableConfigurationProperties({JwtSecurityProperties.class, BcryptSecurityProperties.class})
 public class CheerhaApplication {
