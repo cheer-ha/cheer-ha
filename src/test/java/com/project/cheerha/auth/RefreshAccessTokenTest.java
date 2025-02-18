@@ -68,4 +68,23 @@ public class RefreshAccessTokenTest {
         UnAuthorizedException exception = assertThrows(UnAuthorizedException.class, () -> authService.refreshAccessToken(invalidRefreshToken));
         assertEquals(AuthErrorCode.TOKEN_UNAUTHORIZED.getMessage(), exception.getMessage());
     }
+
+    @Test
+    void testRefreshAccessToken_리프레시토큰_불일치() {
+        //given
+        String refreshToken = "validRefreshToken";
+        String storedToken = "differentStoredToken";
+        Claims claims = mock(Claims.class);
+
+        when(jwtUtil.extractClaims(refreshToken)).thenReturn(claims);
+        when(claims.getSubject()).thenReturn("1");
+        when(redisRefreshTokenService.getRefreshToken(1L)).thenReturn(storedToken);
+
+        //when & then
+        UnAuthorizedException exception = assertThrows(UnAuthorizedException.class,
+                () -> authService.refreshAccessToken(refreshToken));
+
+        assertEquals(AuthErrorCode.TOKEN_UNAUTHORIZED.getMessage(), exception.getMessage());
+    }
+
 }
