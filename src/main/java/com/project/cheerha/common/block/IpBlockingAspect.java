@@ -91,7 +91,7 @@ public class IpBlockingAspect {
 
     /**
      * 사용자의 ip 를 추출합니다.
-     * @return ipV6이 있다면 변별력을 위해 V6 을 우선적으로 가져옵니다. v6이 없다면 v4를 가져옵니다
+     * @return ipV6이 있다면 변별력을 위해 V6 을 우선적으로 가져옵니다. v6이 없다면 v4를 가져옵니다.
      */
     private String getClientIp(HttpServletRequest request) {
         String ip = request.getHeader("X-Forwarded-For");
