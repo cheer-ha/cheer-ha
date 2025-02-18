@@ -66,7 +66,7 @@ public class AuthService {
     public CreateLoginResponseDto login(CreateLoginRequestDto dto) {
         User user = userFindByService.findByEmail(dto.email());
         if (!passwordEncoder.matches(dto.password(), user.getPassword())) {
-            throw new UnAuthorizedException(AuthErrorCode.WRONG_EMAIL_OR_PASSWORD);
+            throw new UnAuthorizedException(AuthErrorCode.INVALID_PASSWORD);
         }
 
         String accessToken = jwtUtil.createToken(user.getId(), user.getRole());

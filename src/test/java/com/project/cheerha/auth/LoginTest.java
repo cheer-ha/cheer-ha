@@ -69,6 +69,6 @@ public class LoginTest {
 
         //when & then
         UnAuthorizedException exception = assertThrows(UnAuthorizedException.class, () -> authService.login(dto));
-        assertEquals(AuthErrorCode.WRONG_EMAIL_OR_PASSWORD.getMessage(), exception.getMessage());
+        assertEquals(AuthErrorCode.INVALID_PASSWORD.getMessage(), exception.getMessage());
     }
 }
