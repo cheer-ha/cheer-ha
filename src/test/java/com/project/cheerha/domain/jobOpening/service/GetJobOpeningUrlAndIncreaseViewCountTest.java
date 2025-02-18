@@ -28,7 +28,11 @@ public class GetJobOpeningUrlAndIncreaseViewCountTest {
     @Autowired
     private JobOpeningRepository jobOpeningRepository;
 
-    //테스트 수행 전 초기화로 변경
+    /**
+     * 테스트 시작 전, resetViewCount 메서드를 무조건 실행하도록 @BeforeEach를 사용합니다.
+     * 모든 테스트가 실행될 때 적용되는 부분입니다.
+     * JobOpeningRepository에서 모든 파일을 가져와 리스트로 뽑고, 그 중 viewCount에 해당되는 값만
+     */
     @BeforeEach
     public void resetViewCount() {
         List<JobOpening> jobOpenings = jobOpeningRepository.findAll();

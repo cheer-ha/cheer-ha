@@ -34,6 +34,7 @@ public class User {
     @Column(length = 5, nullable = false )
     private Role role;
 
+
     public static User of(String email, String name, int career, String password) {
         User user = new User();
         user.email = email;
