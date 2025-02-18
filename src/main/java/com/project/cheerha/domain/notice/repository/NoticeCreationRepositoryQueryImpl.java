@@ -8,6 +8,7 @@ import com.project.cheerha.domain.notice.dto.UserKeywordDto;
 import com.project.cheerha.domain.user.entity.QUser;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -36,7 +37,7 @@ public class NoticeCreationRepositoryQueryImpl implements NoticeCreationReposito
             .fetch();
     }
 
-    public List<JobOpeningKeywordDto> findAllJobOpeningKeywords() {
+    public List<JobOpeningKeywordDto> findAllJobOpeningKeywords(ZonedDateTime referenceTime) {
         QJobOpeningKeyword jobOpeningKeyword = QJobOpeningKeyword.jobOpeningKeyword;
         QJobOpening jobOpening = QJobOpening.jobOpening;
 
@@ -50,6 +51,7 @@ public class NoticeCreationRepositoryQueryImpl implements NoticeCreationReposito
             )
             .from(jobOpeningKeyword)
             .join(jobOpeningKeyword.jobOpening, jobOpening)
+            .where(jobOpening.createdAt.after(referenceTime))
             .fetch();
     }
 }

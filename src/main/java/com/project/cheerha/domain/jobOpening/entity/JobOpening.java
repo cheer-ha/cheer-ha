@@ -1,25 +1,29 @@
 package com.project.cheerha.domain.jobOpening.entity;
 
 import com.project.cheerha.domain.keyword.entity.JobOpeningKeyword;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.ZonedDateTime;
-import jakarta.persistence.*;
-
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "job_opening")
+@EntityListeners(AuditingEntityListener.class)
 public class JobOpening {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,6 +64,8 @@ public class JobOpening {
     //해외 사이트 적용을 생각해서 ZonedDateTime 사용
     private ZonedDateTime hiringStartAt;
     private ZonedDateTime hiringEndAt;
+
+    private ZonedDateTime createdAt = ZonedDateTime.now();
 
     private int viewCount;
 
