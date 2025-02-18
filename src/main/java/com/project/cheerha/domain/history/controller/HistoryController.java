@@ -19,6 +19,15 @@ public class HistoryController {
 
     private final HistoryService historyService;
 
+    /**
+     * 사용자의 최근 검색어 목록을 조회하는 API입니다.
+     *
+     * Redis에 저장된 최근 검색어 목록을 반환합니다.
+     * 첫번째 조회 시 검색어가 없다면, 다시 조회하여 DB에서 검색어 목록을 가져옵니다.
+     *
+     * @param authUser 로그인한 유저의 정보
+     * @return 최근 검색어 목록 (10개)
+     */
     @GetMapping
     public ResponseEntity<ApiResponseDto<List<String>>> readAllHistories(
             @Auth AuthUser authUser
@@ -27,7 +36,7 @@ public class HistoryController {
         List<String> SearchTermsList = historyService.getRecentSearchTerms(userId);
 
         if (SearchTermsList.isEmpty()) {
-            SearchTermsList = historyService.getRecentSearchTerms(userId); // 다시 조회
+            SearchTermsList = historyService.getRecentSearchTerms(userId);
         }
 
         return ApiResponseDto.success(SearchTermsList);
