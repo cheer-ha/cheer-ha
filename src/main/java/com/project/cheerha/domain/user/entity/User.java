@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "user")
+@Table(name = "`user`") //user가 예약어라서 이 부분 ``로 안감싸면 오류나요.
 public class User {
 
     @Id
@@ -28,19 +28,22 @@ public class User {
     @Column(nullable = false)
     private int career;
 
+    @Column(nullable = false)
+    private int age;
+
     @Column(length = 255, nullable = false )
     private String password;
 
     @Column(length = 5, nullable = false )
     private Role role;
 
-
-    public static User of(String email, String name, int career, String password) {
+    public static User of(String email, String name, int age, int career, String password) {
         User user = new User();
         user.email = email;
         user.name = name;
         user.career = career;
         user.password = password;
+        user.age = age;
         user.role = Role.USER;
         return user;
     }

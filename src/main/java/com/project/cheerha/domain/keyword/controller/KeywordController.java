@@ -2,6 +2,7 @@ package com.project.cheerha.domain.keyword.controller;
 
 import com.project.cheerha.common.dto.ApiResponseDto;
 import com.project.cheerha.domain.keyword.dto.request.ReadKeywordAgeRequestDto;
+import com.project.cheerha.domain.keyword.dto.response.KeywordCustomAgeResponseDto;
 import com.project.cheerha.domain.keyword.dto.response.ReadKeywordResponseDto;
 import com.project.cheerha.domain.keyword.service.KeywordService;
 import java.util.List;
@@ -29,10 +30,10 @@ public class KeywordController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<ApiResponseDto<List<ReadKeywordResponseDto>>> readTop10KeywordsByAgeGroup(
+    public ResponseEntity<ApiResponseDto<List<KeywordCustomAgeResponseDto>>> readTop10KeywordsByAgeGroup(
         @RequestBody ReadKeywordAgeRequestDto requestDto
     ) {
-        List<ReadKeywordResponseDto> dtoList = keywordService.readTop10KeywordsByAgeGroup(requestDto);
+        List<KeywordCustomAgeResponseDto> dtoList = keywordService.readTop10KeywordsByAgeGroup(requestDto);
         return ApiResponseDto.success(dtoList);
     }
 }

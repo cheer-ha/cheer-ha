@@ -1,6 +1,5 @@
 package com.project.cheerha.domain.keyword.dto.request;
 
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
@@ -12,7 +11,7 @@ public record ReadKeywordAgeRequestDto(
     @Min(20)
     int minAge,
     @NotBlank
-    @Max(79)
+   // @Max(79)
     int maxAge
 ) {
 
