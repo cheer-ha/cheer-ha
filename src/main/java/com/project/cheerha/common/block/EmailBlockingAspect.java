@@ -23,8 +23,8 @@ public class EmailBlockingAspect {
     private final RedisTemplate<String, String> redisTemplate;
     private static final String BLOCK_PREFIX = "block:";
     private static final String FAIL_PREFIX = "fail:";
-    private static final long BLOCK_DURATION = 15;  //15분 동안 차단
-    private static final long FAIL_DURATION = 3;    //로그인 실패 시 실패데이터 3일간 유지
+    private static final long EMAIL_BLOCK_DURATION = 15;  //15분 동안 차단
+    private static final long EMAIL_FAIL_DURATION = 3;    //로그인 실패 시 실패데이터 3일간 유지
     private static final int MAX_FAILED_COUNT = 5;  //5회 실패 시 차단
 
     /**
@@ -42,7 +42,7 @@ public class EmailBlockingAspect {
 
         if (Boolean.TRUE.equals(redisTemplate.hasKey(redisKey))) {
             log.warn("임시차단된 사용자의 로그인 요청: {}", email);
-            redisTemplate.opsForValue().set(redisKey, "blocked", BLOCK_DURATION, TimeUnit.MINUTES);
+            redisTemplate.opsForValue().set(redisKey, "blocked", EMAIL_BLOCK_DURATION, TimeUnit.MINUTES);
             throw new UnAuthorizedException(AuthErrorCode.BLOCKED_EMAIL);
         }
 
@@ -56,13 +56,13 @@ public class EmailBlockingAspect {
 
                 long failedAttempts = redisTemplate.opsForValue().increment(failCountKey);
                 if (failedAttempts == 1) {
-                    redisTemplate.expire(failCountKey, FAIL_DURATION, TimeUnit.DAYS);
+                    redisTemplate.expire(failCountKey, EMAIL_FAIL_DURATION, TimeUnit.DAYS);
                 }
 
                 if (failedAttempts >= MAX_FAILED_COUNT) {
-                    redisTemplate.opsForValue().set(redisKey, "blocked", BLOCK_DURATION, TimeUnit.MINUTES);
-                    log.warn("임시차단된 이메일: {} 이 {} 분 간 차단되었습니다", email, BLOCK_DURATION);
-                    redisTemplate.expire(failCountKey, FAIL_DURATION, TimeUnit.MINUTES);
+                    redisTemplate.opsForValue().set(redisKey, "blocked", EMAIL_BLOCK_DURATION, TimeUnit.MINUTES);
+                    log.warn("임시차단된 이메일: {} 이 {} 분 간 차단되었습니다", email, EMAIL_BLOCK_DURATION);
+                    redisTemplate.expire(failCountKey, EMAIL_FAIL_DURATION, TimeUnit.MINUTES);
                 }
             }
             throw e;
