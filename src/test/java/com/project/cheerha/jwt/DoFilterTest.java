@@ -160,5 +160,32 @@ public class DoFilterTest {
         verify(response, times(1)).setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
 
+    @Test
+    void testFilter_유효하지_않은_권한일때() throws ServletException, IOException {
+        when(request.getRequestURI()).thenReturn("/api/protected");
+        when(request.getHeader("Authorization")).thenReturn("Bearer validToken");
+        when(jwtUtil.substringToken("Bearer validToken")).thenReturn("validToken");
+        when(redisBlackListService.isBlackList("validToken")).thenReturn(false);
+
+        Claims claims = mock(Claims.class);
+        when(jwtUtil.extractClaims("validToken")).thenReturn(claims);
+        when(claims.getSubject()).thenReturn("1");
+
+        when(claims.get("userRole", String.class)).thenReturn("INVALID_ROLE");
+
+        JwtSecurityProperties securityProperties = mock(JwtSecurityProperties.class);
+        JwtSecurityProperties.Token token = mock(JwtSecurityProperties.Token.class);
+
+        when(securityProperties.getToken()).thenReturn(token);
+        when(token.getPrefix()).thenReturn("Bearer ");
+
+        PrintWriter writer = new PrintWriter(new StringWriter());
+        when(response.getWriter()).thenReturn(writer);
+
+        jwtFilter = new JwtFilter(securityProperties, redisBlackListService, jwtUtil);
+        jwtFilter.doFilter(request, response, filterChain);
+
+        verify(response, times(1)).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    }
 
 }
