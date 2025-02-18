@@ -28,4 +28,16 @@ public class HistoryController {
         List<ReadHistoryResponseDto> dtoList = historyService.readAllHistories(userId);
         return ApiResponseDto.success(dtoList);
     }
+
+    @GetMapping("/redis")
+    public ResponseEntity<ApiResponseDto<List<String>>> readAllRedisHistories(
+        @Auth AuthUser authUser
+    ) {
+        Long userId = authUser.id();
+
+        List<String> recentSearchTermsList = historyService.getRecentSearchTerms(userId);
+
+        return ApiResponseDto.success(recentSearchTermsList);
+    }
+
 }

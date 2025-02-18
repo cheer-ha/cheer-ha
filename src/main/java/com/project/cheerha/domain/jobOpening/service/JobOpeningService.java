@@ -2,6 +2,7 @@ package com.project.cheerha.domain.jobOpening.service;
 
 import com.project.cheerha.domain.history.entity.History;
 import com.project.cheerha.domain.history.repository.HistoryRepository;
+import com.project.cheerha.domain.history.service.HistoryService;
 import com.project.cheerha.domain.jobOpening.dto.request.ReadJobOpeningRequestDto;
 import com.project.cheerha.domain.jobOpening.dto.response.ReadJobOpeningResponseDto;
 import com.project.cheerha.domain.jobOpening.entity.JobOpening;
@@ -24,6 +25,7 @@ public class  JobOpeningService {
     private final HistoryRepository historyRepository;
     private final UserFindByService userFindByIdService;
     private final JobOpeningFindByService jobOpeningFindByService;
+    private final HistoryService historyService;
 
     public String getJobOpeningUrlAndIncreaseViewCount(Long id) {
         JobOpening jobOpening = jobOpeningFindByService.findById(id);
@@ -50,6 +52,8 @@ public class  JobOpeningService {
         User user = userFindByIdService.findById(userId);
 
         if (requestDto.getSearchTerm() != null) {
+            historyService.saveSearchTerm(userId, requestDto.getSearchTerm());
+
             History history = History.toEntity(user, requestDto.getSearchTerm());
             historyRepository.save(history);
         }
