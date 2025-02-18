@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 public enum EducationLevel {
 
-    정규직, 계약직, 아르바이트, 인턴, 프리랜서;
+    무관, 고졸, 전문학사, 학사, 석사, 박사;
 
     public static EducationLevel toEnum(String educationLevel) {
         return Arrays.stream(EducationLevel.values())

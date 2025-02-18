@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 public enum EmploymentType {
 
-    무관, 고졸, 전문학사, 학사, 석사, 박사;
+    정규직, 계약직, 아르바이트, 인턴, 프리랜서;
 
     public static EmploymentType toEnum(String employmentType) {
         return Arrays.stream(EmploymentType.values())
