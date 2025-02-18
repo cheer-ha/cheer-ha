@@ -140,5 +140,25 @@ public class DoFilterTest {
         assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
     }
 
+    @Test
+    void testFilter_유저정보가_없는_토큰일때() throws ServletException, IOException {
+        when(request.getRequestURI()).thenReturn("/api/protected");
+        when(request.getHeader("Authorization")).thenReturn("Bearer validToken");
+        when(jwtUtil.substringToken("Bearer validToken")).thenReturn("validToken");
+        when(redisBlackListService.isBlackList("validToken")).thenReturn(false);
+
+        Claims claims = mock(Claims.class);
+        when(jwtUtil.extractClaims("validToken")).thenReturn(claims);
+
+        when(claims.getSubject()).thenReturn(null);
+
+        PrintWriter writer = new PrintWriter(new StringWriter());
+        when(response.getWriter()).thenReturn(writer);
+
+        jwtFilter.doFilter(request, response, filterChain);
+
+        verify(response, times(1)).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    }
+
 
 }
