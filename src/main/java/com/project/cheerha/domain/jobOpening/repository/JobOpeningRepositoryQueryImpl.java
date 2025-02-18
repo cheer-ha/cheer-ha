@@ -3,6 +3,8 @@ package com.project.cheerha.domain.jobOpening.repository;
 import com.project.cheerha.domain.jobOpening.dto.request.ReadJobOpeningRequestDto;
 import com.project.cheerha.domain.jobOpening.dto.response.QReadJobOpeningResponseDto;
 import com.project.cheerha.domain.jobOpening.dto.response.ReadJobOpeningResponseDto;
+import com.project.cheerha.domain.jobOpening.entity.EducationLevel;
+import com.project.cheerha.domain.jobOpening.entity.EmploymentType;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
@@ -67,8 +69,8 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
             .where(
                 eqRequiredSkill(requestDto.getRequiredSkill()),
                 eqLocation(requestDto.getLocation()),
-                eqJobType(requestDto.getEmploymentType()),
-                eqEducation(requestDto.getEducationLevel()),
+                eqJobType(EmploymentType.toEnum(requestDto.getEmploymentType())),
+                eqEducation(EducationLevel.toEnum(requestDto.getEducationLevel())),
                 leoCareer(requestDto.getExperienceYears()),
                 geoHiringStartPeriod(requestDto.getHiringStartAt()),
                 leoHiringEndPeriod(requestDto.getHiringEndAt()),
@@ -160,7 +162,7 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
         return requiredSkill != null ? keyword.name.eq(requiredSkill) : Expressions.asBoolean(true).isTrue();
     }
 
-    private BooleanExpression eqEducation(String educationLevel) {
+    private BooleanExpression eqEducation(EducationLevel educationLevel) {
         return educationLevel != null ? jobOpening.educationLevel.eq(educationLevel) : Expressions.asBoolean(true).isTrue();
     }
 
@@ -180,8 +182,8 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
         return maxExperienceYears != null ? jobOpening.maxExperienceYears.loe(maxExperienceYears) : Expressions.asBoolean(true).isTrue();
     }
 
-    private BooleanExpression eqJobType(String EmploymentType) {
-        return EmploymentType != null ? jobOpening.employmentType.eq(EmploymentType) : Expressions.asBoolean(true).isTrue();
+    private BooleanExpression eqJobType(EmploymentType employmentType) {
+        return employmentType != null ? jobOpening.employmentType.eq(employmentType) : Expressions.asBoolean(true).isTrue();
     }
 
     private BooleanExpression containsSearchTerm(String searchTerm) {
