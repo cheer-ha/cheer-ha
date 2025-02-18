@@ -22,7 +22,7 @@ public class UserFindByService {
     }
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
-            .orElseThrow(() -> new UnAuthorizedException(AuthErrorCode.WRONG_EMAIL_OR_PASSWORD));}
+            .orElseThrow(() -> new UnAuthorizedException(AuthErrorCode.INVALID_EMAIL));}
 
     public List<User> findAllUsers() {
         return userRepository.findAll();
