@@ -1,13 +1,10 @@
 package com.project.cheerha.domain.jobOpening.service;
 
-import com.project.cheerha.domain.history.entity.History;
-import com.project.cheerha.domain.history.repository.HistoryRepository;
+import com.project.cheerha.domain.history.service.HistoryService;
 import com.project.cheerha.domain.jobOpening.dto.request.ReadJobOpeningRequestDto;
 import com.project.cheerha.domain.jobOpening.dto.response.ReadJobOpeningResponseDto;
 import com.project.cheerha.domain.jobOpening.entity.JobOpening;
 import com.project.cheerha.domain.jobOpening.repository.JobOpeningRepository;
-import com.project.cheerha.domain.user.entity.User;
-import com.project.cheerha.domain.user.service.UserFindByService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -21,9 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class JobOpeningService {
 
     private final JobOpeningRepository jobOpeningRepository;
-    private final HistoryRepository historyRepository;
-    private final UserFindByService userFindByIdService;
     private final JobOpeningFindByService jobOpeningFindByService;
+    private final HistoryService historyService;
 
 
     @Transactional
@@ -38,17 +34,25 @@ public class JobOpeningService {
         return url;
     }
 
+    /**
+     * 채용 공고 목록을 조회하는 메서드입니다.
+     *
+     * requestDto에 값이 포함되면 해당 조건을 기준으로 필터링이 적용됩니다.
+     * searchTerm이 존재하면 해당 검색어를 Redis에 저장합니다.
+     *
+     * @param requestDto 조회 조건을 포함한 요청 Dto
+     * @param userId 검색어 저장을 위한 유저의 Id
+     * @param pageable 페이지 요청 정보 (페이지 번호, 페이지 크기)
+     * @return 필터링된 채용 공고 목록
+     */
     @Transactional
     public Page<ReadJobOpeningResponseDto> readJobOpenings(
         ReadJobOpeningRequestDto requestDto,
         Long userId,
         Pageable pageable
     ) {
-        User user = userFindByIdService.findById(userId);
-
         if (requestDto.getSearchTerm() != null) {
-            History history = History.toEntity(user, requestDto.getSearchTerm());
-            historyRepository.save(history);
+            historyService.saveSearchTerm(userId, requestDto.getSearchTerm());
         }
 
         Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningRepository.findAllByCondition(

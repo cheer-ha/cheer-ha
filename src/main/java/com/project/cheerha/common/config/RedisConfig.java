@@ -5,7 +5,10 @@ import org.redisson.codec.JsonJacksonCodec;
 import org.redisson.config.Config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 @EnableRedisRepositories
@@ -20,5 +23,14 @@ public class RedisConfig {
                 .setAddress("redis://localhost:6379");    //로컬에서 실행할 경우
 //                .setAddress("rediss://master.cheerha-redis.tlrpjs.apn2.cache.amazonaws.com:6379");   //aws
         return org.redisson.Redisson.create(config);
+    }
+
+    @Bean
+    public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        RedisTemplate<String, String> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory);
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new StringRedisSerializer());
+        return template;
     }
 }
