@@ -23,13 +23,13 @@ public class NoticeCreationScheduler {
     private final NoticeCreationService noticeCreationService;
     private final EmailService emailService;
 
+    // 30초마다 스케줄러 작동
     @Scheduled(cron = "*/30 * * * * *")
     @Transactional
     public void sendJobOpeningMatchingNotices() {
 
         ZonedDateTime referenceTime = ZonedDateTime.now().minusSeconds(30L)
             .withZoneSameInstant(ZoneId.of("UTC"));
-        ;
 
         List<JobOpeningKeywordDto> jobOpeningKeywordDtoList = noticeCreationService.findAllJobOpeningKeywords(
             referenceTime);
@@ -59,9 +59,10 @@ public class NoticeCreationScheduler {
             }
         }
         // (5) 이메일별로 알림 전송
-        emailUrlMap.forEach((email, urlSet) -> {
-                emailService.sendMail(email, List.copyOf(urlSet));
-            }
-        );
+        // todo 30초마다 이메일 발송되지 않도록 주석 처리
+//        emailUrlMap.forEach((email, urlSet) -> {
+//                emailService.sendMail(email, List.copyOf(urlSet));
+//            }
+//        );
     }
 }

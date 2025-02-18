@@ -1,15 +1,12 @@
 package com.project.cheerha.domain.jobOpening.entity;
 
 import com.project.cheerha.domain.keyword.entity.JobOpeningKeyword;
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import java.time.ZonedDateTime;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -70,6 +67,7 @@ public class JobOpening {
     private ZonedDateTime hiringStartAt;
     private ZonedDateTime hiringEndAt;
 
+    // 채용 공고가 생성된, 즉 올라온 날짜
     private ZonedDateTime createdAt = ZonedDateTime.now();
 
     private int viewCount;
