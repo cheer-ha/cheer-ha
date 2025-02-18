@@ -127,4 +127,18 @@ public class DoFilterTest {
         verify(response, times(1)).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
 
+    @Test
+    void testFilter_Authorization_헤더가_없을때() throws ServletException, IOException {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        FilterChain filterChain = mock(FilterChain.class);
+
+        request.setRequestURI("/api/protected");
+
+        jwtFilter.doFilter(request, response, filterChain);
+
+        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
+    }
+
+
 }
