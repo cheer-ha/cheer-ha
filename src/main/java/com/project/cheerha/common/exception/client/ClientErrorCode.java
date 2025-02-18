@@ -16,7 +16,8 @@ public enum ClientErrorCode {
 
     //BadRequestException
     PAGING_ERROR(HttpStatus.BAD_REQUEST, "페이지 설정이 잘못되었습니다."),
-    ALREADY_EXIST_EMAIL(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다.");
+    ALREADY_EXIST_EMAIL(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다."),
+    INVALID_ENUM_VALUE(HttpStatus.BAD_REQUEST, "유효하지 않은 값입니다. 허용된 값 중에서 선택해주세요.");
 
     private final HttpStatus status;
     private final String message;

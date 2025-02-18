@@ -1,12 +1,13 @@
 package com.project.cheerha.domain.jobOpening.repository;
 
 import com.project.cheerha.domain.jobOpening.dto.request.ReadJobOpeningRequestDto;
+import com.project.cheerha.domain.jobOpening.dto.response.QReadJobOpeningResponseDto;
 import com.project.cheerha.domain.jobOpening.dto.response.ReadJobOpeningResponseDto;
+import com.project.cheerha.domain.jobOpening.entity.EducationLevel;
+import com.project.cheerha.domain.jobOpening.entity.EmploymentType;
 import com.querydsl.core.Tuple;
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.project.cheerha.domain.jobOpening.entity.QJobOpening.jobOpening;
@@ -48,10 +48,17 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
     ) {
         // 1. 기본 채용 공고 데이터 조회 (필터 조건 적용)
         List<ReadJobOpeningResponseDto> dtoList = queryFactory
-            .select(Projections.constructor(
-                ReadJobOpeningResponseDto.class,
+            .select(new QReadJobOpeningResponseDto(
                 jobOpening.id,
+                jobOpening.title,
                 jobOpening.company,
+                jobOpening.location,
+                jobOpening.salary,
+                jobOpening.employmentType,
+                jobOpening.educationLevel,
+                jobOpening.jobOpeningUrl,
+                jobOpening.minExperienceYears,
+                jobOpening.maxExperienceYears,
                 jobOpening.hiringStartAt,
                 jobOpening.hiringEndAt,
                 jobOpening.position
@@ -61,12 +68,12 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
             .leftJoin(jobOpeningKeyword.keyword, keyword)
             .where(
                 eqRequiredSkill(requestDto.getRequiredSkill()),
-                eqEducation(requestDto.getEducationLevel()),
+                eqLocation(requestDto.getLocation()),
+                eqJobType(EmploymentType.toEnum(requestDto.getEmploymentType())),
+                eqEducation(EducationLevel.toEnum(requestDto.getEducationLevel())),
+                leoCareer(requestDto.getExperienceYears()),
                 geoHiringStartPeriod(requestDto.getHiringStartAt()),
                 leoHiringEndPeriod(requestDto.getHiringEndAt()),
-                eqLocation(requestDto.getLocation()),
-                leoCareer(requestDto.getExperienceYears()),
-                eqJobType(requestDto.getEmploymentType()),
                 containsSearchTerm(requestDto.getSearchTerm())
             )
             .groupBy(jobOpening.id)
@@ -105,26 +112,8 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
         // 5. 각 Dto에 자격 요건 추가
         dtoList.forEach(dto -> dto.addRequiredSkills(requiredSkillMap.getOrDefault(dto.getId(), new ArrayList<>())));
 
-        // 6. 전체 검색 결과 개수 조회
-        Long totalCount = Optional.ofNullable(
-            queryFactory.select(Wildcard.count)
-                .from(jobOpening)
-                .leftJoin(jobOpening.jobOpeningKeywordList, jobOpeningKeyword)
-                .leftJoin(jobOpeningKeyword.keyword, keyword)
-                .where(
-                    eqRequiredSkill(requestDto.getRequiredSkill()),
-                    eqEducation(requestDto.getEducationLevel()),
-                    geoHiringStartPeriod(requestDto.getHiringStartAt()),
-                    leoHiringEndPeriod(requestDto.getHiringEndAt()),
-                    eqLocation(requestDto.getLocation()),
-                    leoCareer(requestDto.getExperienceYears()),
-                    eqJobType(requestDto.getEmploymentType()),
-                    containsSearchTerm(requestDto.getSearchTerm())
-                ).fetchOne())
-                .orElse(0L);
-
-        // 7. 결과 반환
-        return new PageImpl<>(dtoList, pageable, totalCount);
+        // 6. 결과 반환
+        return new PageImpl<>(dtoList, pageable, dtoList.size());
     }
 
     /**
@@ -142,10 +131,17 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
     @Override
     public Page<ReadJobOpeningResponseDto> findTop100PopularJobOpenings(Pageable pageable) {
         List<ReadJobOpeningResponseDto> dtoList = queryFactory
-                .select(Projections.constructor(
-                        ReadJobOpeningResponseDto.class,
+                .select(new QReadJobOpeningResponseDto(
                         jobOpening.id,
+                        jobOpening.title,
                         jobOpening.company,
+                        jobOpening.location,
+                        jobOpening.salary,
+                        jobOpening.employmentType,
+                        jobOpening.educationLevel,
+                        jobOpening.jobOpeningUrl,
+                        jobOpening.minExperienceYears,
+                        jobOpening.maxExperienceYears,
                         jobOpening.hiringStartAt,
                         jobOpening.hiringEndAt,
                         jobOpening.position
@@ -166,7 +162,7 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
         return requiredSkill != null ? keyword.name.eq(requiredSkill) : Expressions.asBoolean(true).isTrue();
     }
 
-    private BooleanExpression eqEducation(String educationLevel) {
+    private BooleanExpression eqEducation(EducationLevel educationLevel) {
         return educationLevel != null ? jobOpening.educationLevel.eq(educationLevel) : Expressions.asBoolean(true).isTrue();
     }
 
@@ -186,8 +182,8 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
         return maxExperienceYears != null ? jobOpening.maxExperienceYears.loe(maxExperienceYears) : Expressions.asBoolean(true).isTrue();
     }
 
-    private BooleanExpression eqJobType(String EmploymentType) {
-        return EmploymentType != null ? jobOpening.employmentType.eq(EmploymentType) : Expressions.asBoolean(true).isTrue();
+    private BooleanExpression eqJobType(EmploymentType employmentType) {
+        return employmentType != null ? jobOpening.employmentType.eq(employmentType) : Expressions.asBoolean(true).isTrue();
     }
 
     private BooleanExpression containsSearchTerm(String searchTerm) {
