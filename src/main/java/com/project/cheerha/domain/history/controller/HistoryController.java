@@ -3,7 +3,6 @@ package com.project.cheerha.domain.history.controller;
 import com.project.cheerha.common.annotation.Auth;
 import com.project.cheerha.common.dto.ApiResponseDto;
 import com.project.cheerha.common.dto.AuthUser;
-import com.project.cheerha.domain.history.dto.response.ReadHistoryResponseDto;
 import com.project.cheerha.domain.history.service.HistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,23 +20,17 @@ public class HistoryController {
     private final HistoryService historyService;
 
     @GetMapping
-    public ResponseEntity<ApiResponseDto<List<ReadHistoryResponseDto>>> readAllHistories(
+    public ResponseEntity<ApiResponseDto<List<String>>> readAllHistories(
             @Auth AuthUser authUser
     ) {
         Long userId = authUser.id();
-        List<ReadHistoryResponseDto> dtoList = historyService.readAllHistories(userId);
-        return ApiResponseDto.success(dtoList);
-    }
+        List<String> SearchTermsList = historyService.getRecentSearchTerms(userId);
 
-    @GetMapping("/redis")
-    public ResponseEntity<ApiResponseDto<List<String>>> readAllRedisHistories(
-        @Auth AuthUser authUser
-    ) {
-        Long userId = authUser.id();
+        if (SearchTermsList.isEmpty()) {
+            SearchTermsList = historyService.getRecentSearchTerms(userId); // 다시 조회
+        }
 
-        List<String> recentSearchTermsList = historyService.getRecentSearchTerms(userId);
-
-        return ApiResponseDto.success(recentSearchTermsList);
+        return ApiResponseDto.success(SearchTermsList);
     }
 
 }
