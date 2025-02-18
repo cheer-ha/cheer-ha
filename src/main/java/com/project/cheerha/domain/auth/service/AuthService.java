@@ -51,8 +51,10 @@ public class AuthService {
         User user = User.of(
             dto.email(),
             dto.name(),
+            dto.age(),
             dto.career(),
             encodedPassword
+
         );
         userRepository.save(user);
         return CreateSignupResponseDto.of();
