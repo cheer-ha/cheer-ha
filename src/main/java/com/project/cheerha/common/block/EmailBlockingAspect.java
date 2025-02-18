@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 @Aspect
 @Component
 @RequiredArgsConstructor
-public class BlockingAspect {
+public class EmailBlockingAspect {
 
     private final RedisTemplate<String, String> redisTemplate;
     private static final String BLOCK_PREFIX = "block:";
@@ -32,8 +32,8 @@ public class BlockingAspect {
      * 차단된 상태로 로그인 재시도 시 다시 15분 차단당합니다
      * TODO: 이후 이메일 인증을 통해 푸는 방법도 고려해볼만합니다
      */
-    @Around("execution(* com.project.cheerha.domain.auth.service.AuthService.login(..))")
-    public Object blockAbnormalUserWhenLogin(ProceedingJoinPoint joinPoint) throws Throwable {
+    @Around("execution(* com.project.cheerha.domain.auth.controller.AuthController.login(..))")
+    public Object blockEmailWhenLogin(ProceedingJoinPoint joinPoint) throws Throwable {
         Object[] args = joinPoint.getArgs();
         CreateLoginRequestDto dto = (CreateLoginRequestDto) args[0];
         String email = dto.email();
@@ -62,6 +62,7 @@ public class BlockingAspect {
                 if (failedAttempts >= MAX_FAILED_COUNT) {
                     redisTemplate.opsForValue().set(redisKey, "blocked", BLOCK_DURATION, TimeUnit.MINUTES);
                     log.warn("임시차단된 이메일: {} 이 {} 분 간 차단되었습니다", email, BLOCK_DURATION);
+                    redisTemplate.expire(failCountKey, FAIL_DURATION, TimeUnit.MINUTES);
                 }
             }
             throw e;
