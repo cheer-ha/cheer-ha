@@ -1,7 +1,8 @@
 package com.project.cheerha.common.util;
 
 import com.project.cheerha.common.properties.JwtSecurityProperties;
-import com.project.cheerha.domain.user.entity.User.Role;
+
+import com.project.cheerha.domain.user.entity.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;

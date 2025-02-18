@@ -1,18 +1,11 @@
 package com.project.cheerha.domain.jobOpening.entity;
 
 import com.project.cheerha.domain.keyword.entity.JobOpeningKeyword;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import java.time.ZonedDateTime;
 import jakarta.persistence.*;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,10 +31,12 @@ public class JobOpening {
     private int salary;
 
     @Column(length = 20, nullable = false)
-    private String employmentType;
+    @Enumerated(EnumType.STRING)
+    private EmploymentType employmentType;
 
     @Column(length = 50, nullable = false)
-    private String educationLevel;
+    @Enumerated(EnumType.STRING)
+    private EducationLevel educationLevel;
 
     @Column(length = 255, nullable = false)
     private String jobOpeningUrl;
