@@ -63,8 +63,6 @@ public class JobOpening {
 
     private int viewCount;
 
-
-
     public void increaseViewCount() {
         this.viewCount++;
     }
