@@ -1,6 +1,6 @@
 package com.project.cheerha.common.dto;
 
-import com.project.cheerha.domain.user.entity.User.Role;
+import com.project.cheerha.domain.user.entity.Role;
 
 /**
  * 현재 사용자의 정보를 담는 DTO
