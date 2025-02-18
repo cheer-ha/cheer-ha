@@ -33,7 +33,7 @@ public class EmailBlockingAspect {
      * TODO: 이후 이메일 인증을 통해 푸는 방법도 고려해볼만합니다
      */
     @Around("execution(* com.project.cheerha.domain.auth.controller.AuthController.login(..))")
-    public Object blockEmailWhenLogin(ProceedingJoinPoint joinPoint) throws Throwable {
+    public Object blockAbnormalEmail(ProceedingJoinPoint joinPoint) throws Throwable {
         Object[] args = joinPoint.getArgs();
         CreateLoginRequestDto dto = (CreateLoginRequestDto) args[0];
         String email = dto.email();

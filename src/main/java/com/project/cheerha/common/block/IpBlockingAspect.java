@@ -37,7 +37,7 @@ public class IpBlockingAspect {
      * TODO: 차단을 해제할 수 있는 방안도 고려해보아야 합니다.
      */
     @Around("execution(* com.project.cheerha.domain.auth.controller.AuthController.login(..))")
-    public Object blockAbnormalUserByIp(ProceedingJoinPoint joinPoint) throws Throwable {
+    public Object blockAbnormalIp(ProceedingJoinPoint joinPoint) throws Throwable {
         HttpServletRequest request = getRequest();
         if (request == null) {
             return joinPoint.proceed();
