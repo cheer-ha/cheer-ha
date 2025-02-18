@@ -6,6 +6,7 @@ import com.project.cheerha.common.exception.data.DataErrorCode;
 import com.project.cheerha.common.exception.data.NotFoundException;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.repository.UserRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -22,4 +23,8 @@ public class UserFindByService {
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
             .orElseThrow(() -> new UnAuthorizedException(AuthErrorCode.INVALID_EMAIL));}
+
+    public List<User> findAllUsers() {
+        return userRepository.findAll();
+    }
 }
