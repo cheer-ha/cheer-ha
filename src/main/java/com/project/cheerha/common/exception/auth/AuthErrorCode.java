@@ -16,6 +16,7 @@ public enum AuthErrorCode {
 
     //ForbiddenException
     LOGIN_REQUIRED(HttpStatus.FORBIDDEN, "권한이 없습니다."),
+    BANNED_IP(HttpStatus.FORBIDDEN, "밴 당한 아이피입니다. 관리자에게 문의하세요"),
 
     //UnAuthorizedException
     TOKEN_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "존재하지 않는 토큰입니다."),
