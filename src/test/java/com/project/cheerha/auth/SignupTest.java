@@ -64,6 +64,6 @@ public class SignupTest {
 
         //when & then
         BadRequestException exception = assertThrows(BadRequestException.class, () -> authService.signup(dto));
-        assertEquals(ClientErrorCode.ALREADY_EXIST_EMAIL.getStatus(), exception.getStatus());
+        assertEquals(ClientErrorCode.ALREADY_EXIST_EMAIL.getMessage(), exception.getMessage());
     }
 }

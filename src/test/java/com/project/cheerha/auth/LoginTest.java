@@ -40,7 +40,7 @@ public class LoginTest {
     private AuthService authService;
 
     @Test
-    void testLogin_Success() {
+    void testLogin_로그인_성공했을때() {
         //given
         CreateLoginRequestDto dto = new CreateLoginRequestDto("test@example.com", "password");
         User user = mock(User.class);
@@ -60,7 +60,7 @@ public class LoginTest {
     }
 
     @Test
-    void testLogin_WrongPassword_ThrowsException() {
+    void testLogin_비밀번호_틀릴때() {
         //given
         CreateLoginRequestDto dto = new CreateLoginRequestDto("test@example.com", "wrongpassword");
         User user = mock(User.class);
@@ -69,6 +69,6 @@ public class LoginTest {
 
         //when & then
         UnAuthorizedException exception = assertThrows(UnAuthorizedException.class, () -> authService.login(dto));
-        assertEquals(AuthErrorCode.WRONG_EMAIL_OR_PASSWORD.getStatus(), exception.getStatus());
+        assertEquals(AuthErrorCode.WRONG_EMAIL_OR_PASSWORD.getMessage(), exception.getMessage());
     }
 }
