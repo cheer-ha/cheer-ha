@@ -3,6 +3,8 @@ package com.project.cheerha.common.block;
 import com.project.cheerha.common.exception.auth.AuthErrorCode;
 import com.project.cheerha.common.exception.auth.UnAuthorizedException;
 import com.project.cheerha.domain.auth.dto.request.CreateLoginRequestDto;
+import com.project.cheerha.domain.auth.entity.BannedEmail;
+import com.project.cheerha.domain.auth.repository.BannedEmailRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -21,11 +23,12 @@ import java.util.concurrent.TimeUnit;
 public class EmailBlockingAspect {
 
     private final RedisTemplate<String, String> redisTemplate;
-    private static final String BLOCK_PREFIX = "block:email:";
+    private final BannedEmailRepository bannedEmailRepository;
+
     private static final String FAIL_PREFIX = "fail:email:";
-    private static final long EMAIL_BLOCK_DURATION = 15;  //15분 동안 차단
     private static final long EMAIL_FAIL_DURATION = 3;    //로그인 실패 시 실패데이터 3일간 유지
     private static final int MAX_FAILED_COUNT = 5;  //5회 실패 시 차단
+    private static final String BLOCK_MESSAGE = "비밀번호 입력 5회 실패";
 
     /**
      * 같은 이메일로 5회 이상 로그인 실패한 경우 15분간 차단하는 메서드입니다.
@@ -37,14 +40,12 @@ public class EmailBlockingAspect {
         Object[] args = joinPoint.getArgs();
         CreateLoginRequestDto dto = (CreateLoginRequestDto) args[0];
         String email = dto.email();
-        String redisKey = BLOCK_PREFIX + email;
         String failCountKey = FAIL_PREFIX + email;
 
         //차단된 이메일인지 확인
-        if (Boolean.TRUE.equals(redisTemplate.hasKey(redisKey))) {
+        if (bannedEmailRepository.existsByEmail(email)) {
             log.warn("임시차단된 사용자의 로그인 요청: {}", email);
-            redisTemplate.opsForValue().set(redisKey, "blocked", EMAIL_BLOCK_DURATION, TimeUnit.MINUTES);
-            throw new UnAuthorizedException(AuthErrorCode.BLOCKED_EMAIL);
+            throw new UnAuthorizedException(AuthErrorCode.BANNED_EMAIL);
         }
 
         try {
@@ -64,9 +65,14 @@ public class EmailBlockingAspect {
 
                 //잘못된 시도 5회 시 이메일 차단
                 if (failedAttempts >= MAX_FAILED_COUNT) {
-                    redisTemplate.opsForValue().set(redisKey, "blocked", EMAIL_BLOCK_DURATION, TimeUnit.MINUTES);
-                    log.warn("임시차단된 이메일: {} 이 {} 분 간 차단되었습니다", email, EMAIL_BLOCK_DURATION);
-                    redisTemplate.expire(failCountKey, EMAIL_FAIL_DURATION, TimeUnit.MINUTES);
+                    String message = BLOCK_MESSAGE;
+                    BannedEmail bannedEmail = BannedEmail.of(
+                            email,
+                            message
+                    );
+                    log.warn("email {} 차단 완료 : {}", email, message);
+                    bannedEmailRepository.save(bannedEmail);
+                    redisTemplate.delete(failCountKey);
                 }
             }
             throw e;
