@@ -2,7 +2,7 @@ package com.project.cheerha.domain.notice.service;
 
 import com.project.cheerha.domain.notice.dto.JobOpeningKeywordDto;
 import com.project.cheerha.domain.notice.dto.UserKeywordDto;
-import com.project.cheerha.domain.notice.repository.NoticeCreationRepositoryQuery;
+import com.project.cheerha.domain.notice.repository.EmailRepositoryQuery;
 import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class NoticeCreationService {
+public class EmailFindService {
 
-    private final NoticeCreationRepositoryQuery repositoryQuery;
+    private final EmailRepositoryQuery repositoryQuery;
 
     // 데이터베이스에서 사용자 관련 정보를 조회해오는 메서드
     public List<UserKeywordDto> findAllUserKeywords() {
