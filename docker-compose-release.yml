@@ -63,7 +63,7 @@ services:
     ports:
       - "9121:9121"
     environment:
-      - REDIS_ADDR=redis://my-redis.abc123.apn2.cache.amazonaws.com:6379
+      - REDIS_ADDR=rediss://my-redis.abc123.apn2.cache.amazonaws.com:6379
     networks:
       - monitoring
 
