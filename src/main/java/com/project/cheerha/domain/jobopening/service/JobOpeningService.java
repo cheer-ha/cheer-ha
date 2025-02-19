@@ -1,10 +1,12 @@
-package com.project.cheerha.domain.jobOpening.service;
+package com.project.cheerha.domain.jobopening.service;
 
 import com.project.cheerha.domain.history.service.HistoryService;
-import com.project.cheerha.domain.jobOpening.dto.request.ReadJobOpeningRequestDto;
-import com.project.cheerha.domain.jobOpening.dto.response.ReadJobOpeningResponseDto;
-import com.project.cheerha.domain.jobOpening.entity.JobOpening;
-import com.project.cheerha.domain.jobOpening.repository.JobOpeningRepository;
+import com.project.cheerha.domain.jobopening.dto.request.ReadJobOpeningRequestDto;
+import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningResponseDto;
+import com.project.cheerha.domain.jobopening.entity.JobOpening;
+import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
+import com.project.cheerha.domain.viewcount.entity.JobOpeningViewCount;
+import com.project.cheerha.domain.viewcount.repository.JobOpeningViewCountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -18,19 +20,31 @@ import org.springframework.transaction.annotation.Transactional;
 public class JobOpeningService {
 
     private final JobOpeningRepository jobOpeningRepository;
+    private final JobOpeningViewCountRepository jobOpeningViewCountRepository;
     private final JobOpeningFindByService jobOpeningFindByService;
     private final HistoryService historyService;
 
 
+    /**
+     * ViewCount 정보를 관리하는 테이블과 채용공고가 올라오는 테이블에서 각각 id값(채용공고 id)으로 조회와 조회수 업데이트를 합니다.
+     * viewcount 테이블에서 비관 락이 작동하여 count 값의 정합성을 유지합니다.
+     * @param id 채용공고 사이트에 대한 식별 id
+     * @return 리다이렉트 된 페이지의 url
+     */
     @Transactional
     public String getJobOpeningUrlAndIncreaseViewCount(Long id) {
-        JobOpening jobOpening = jobOpeningFindByService.findByForUpdateViewCount(id);
+        JobOpening jobOpening = jobOpeningFindByService.findById(id);
 
+        JobOpeningViewCount jobOpeningViewCount = jobOpeningViewCountRepository.findByForUpdateViewCount(id)
+            .orElseGet(() -> {
+                JobOpeningViewCount newViewCount = JobOpeningViewCount.create(jobOpening); // 초기 조회수 0
+                return jobOpeningViewCountRepository.save(newViewCount);
+            });
         String url = jobOpening.getJobOpeningUrl();
         if (!url.startsWith("http")) {
             url = "https://" + url;
         }
-        jobOpening.increaseViewCount();
+        jobOpeningViewCount.increaseViewCount();
         return url;
     }
 

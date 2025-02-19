@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.jobOpening.entity;
+package com.project.cheerha.domain.jobopening.entity;
 
 import com.project.cheerha.domain.keyword.entity.JobOpeningKeyword;
 import jakarta.persistence.CascadeType;
@@ -71,10 +71,6 @@ public class JobOpening {
     private ZonedDateTime createdAt = ZonedDateTime.now();
 
     private int viewCount;
-
-    public void increaseViewCount() {
-        this.viewCount++;
-    }
 
     @OneToMany(mappedBy = "jobOpening", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<JobOpeningKeyword> jobOpeningKeywordList = new ArrayList<>();
