@@ -56,6 +56,17 @@ services:
       - "--mysqld.address=cheerha.c3iaaaic47mw.ap-northeast-2.rds.amazonaws.com:3306"
     restart: always
 
+  redis-exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: redis-exporter
+    restart: always
+    ports:
+      - "9121:9121"
+    environment:
+      - REDIS_ADDR=redis://my-redis.abc123.apn2.cache.amazonaws.com:6379
+    networks:
+      - monitoring
+
 networks:
   monitoring:
     driver: bridge
