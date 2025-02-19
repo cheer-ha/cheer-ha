@@ -22,50 +22,45 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class EmailScheduler {
 
-    private final EmailDataFetchService emailDataFetchService;
+    private final EmailDataFetchService fetchService;
     private final EmailService emailService;
 
-    // 30초마다 채용 공고를 조회하여 이메일을 전송하는 스케줄러
     @Scheduled(cron = "*/30 * * * * *")
     @Transactional
     public void sendJobOpeningMatchingNotices() {
-        // 중복 조회를 방지하고자 조회 시간 사용
-        ZonedDateTime referenceTime = ZonedDateTime.now().minusDays(2L)
+        ZonedDateTime referenceTime = ZonedDateTime.now()
+            .minusDays(2L)
             .withZoneSameInstant(ZoneId.of("UTC"));
 
-        // 채용 공고의 ID, 키워드 ID, 채용 공고의 URL 조회
-        List<JobOpeningKeywordDto> jobOpeningKeywordDtoList = emailDataFetchService.findJobOpeningKeywordList(referenceTime);
+        List<JobOpeningKeywordDto> jobOpeningKeywordDtoList = fetchService
+            .findJobOpeningKeywordList(referenceTime);
 
-        // 사용자의 ID, 키워드 ID, 사용자의 이메일 조회
-        List<UserKeywordDto> userKeywordDtoList = emailDataFetchService.findUserKeywordList();
+        List<UserKeywordDto> userKeywordDtoList = fetchService
+            .findUserKeywordList();
 
-        // 사용자의 이메일 및 연결된 채용 공고 URL을 저장할 Map
         Map<String, Set<String>> emailUrlMap = new HashMap<>();
 
-        // (1) 사용자 키워드 ID 목록 순회
-        for (UserKeywordDto userDto : userKeywordDtoList) {
-
-            // (2) 모든 채용 공고 키워드 ID 목록 순회
+        for (UserKeywordDto dto : userKeywordDtoList) {
             for (JobOpeningKeywordDto jobOpeningKeywordDto : jobOpeningKeywordDtoList) {
 
-                // (3) 키워드끼리 일치하는지 확인
-                boolean isUserKeywordMatchingJobKeyword = userDto.keywordId()
+                boolean isUserKeywordMatchingJobKeyword = dto.keywordId()
                     .equals(jobOpeningKeywordDto.keywordId());
 
-                // (4) 일치하면 이메일과 채용 공고 URL을 Map에 저장
                 if (isUserKeywordMatchingJobKeyword) {
                     emailUrlMap
                         .computeIfAbsent(
-                            userDto.email(),
+                            dto.email(),
                             emailAsKey -> new HashSet<>()
                         ).add(jobOpeningKeywordDto.url());
                 }
             }
         }
 
-        // (5) 이메일별로 알림 전송
         emailUrlMap.forEach((email, urlSet) -> {
-                emailService.sendMail(email, List.copyOf(urlSet));
+                emailService.sendMail(
+                    email,
+                    List.copyOf(urlSet)
+                );
             }
         );
     }
