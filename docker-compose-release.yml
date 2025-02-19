@@ -33,6 +33,29 @@ services:
       - prometheus
     restart: always
 
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    networks:
+      - monitoring
+    restart: always
+
+  mysqld-exporter:
+    image: prom/mysqld-exporter:latest
+    container_name: mysqld-exporter
+    ports:
+      - "9104:9104"
+    networks:
+      - monitoring
+    environment:
+      - DATA_SOURCE_NAME="exporter:비번@(cheerha.c3iaaaic47mw.ap-northeast-2.rds.amazonaws.com:3306)/"
+    command:
+      - "--mysqld.username=exporter:비번"
+      - "--mysqld.address=cheerha.c3iaaaic47mw.ap-northeast-2.rds.amazonaws.com:3306"
+    restart: always
+
 networks:
   monitoring:
     driver: bridge
