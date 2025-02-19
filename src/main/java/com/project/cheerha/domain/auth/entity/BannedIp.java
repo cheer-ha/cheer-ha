@@ -22,4 +22,11 @@ public class BannedIp {
     private ZonedDateTime createdAt = ZonedDateTime.now();
 
     private boolean isDeleted = false;
+
+    public static BannedIp of(String ip, String message) {
+        BannedIp bannedIp = new BannedIp();
+        bannedIp.ip = ip;
+        bannedIp.message = message;
+        return bannedIp;
+    }
 }

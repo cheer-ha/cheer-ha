@@ -3,6 +3,8 @@ package com.project.cheerha.common.block;
 import com.project.cheerha.common.exception.auth.AuthErrorCode;
 import com.project.cheerha.common.exception.auth.UnAuthorizedException;
 import com.project.cheerha.domain.auth.dto.request.CreateLoginRequestDto;
+import com.project.cheerha.domain.auth.entity.BannedIp;
+import com.project.cheerha.domain.auth.repository.BannedIpRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,11 +27,12 @@ import java.util.concurrent.TimeUnit;
 public class IpBlockingAspect {
 
     private final RedisTemplate<String, String> redisTemplate;
-    private static final String BLOCK_PREFIX = "block:ip:";
+    private final BannedIpRepository bannedIpRepository;
+
     private static final String LOGIN_ATTEMPT_PREFIX = "attempt:ip:";
-    private static final long IP_BLOCK_DURATION = 3;  //ip 3일 차단
     private static final long ATTEMPT_TTL = 15;        //15분 동안 시도 기록 유지
     private static final int MAX_DIFFERENT_EMAILS = 3; //서로 다른 이메일 4개 이상 감지되면 차단(3개까지 허용)
+    private static final String BAN_MASSAGE = "서로 다른 4개의 이메일 감지";
 
     /**
      * 서로 다른 이메일 4개 이상 로그인 시도 시 해당 사용자의 ip 를 차단합니다.
@@ -48,11 +51,10 @@ public class IpBlockingAspect {
         String email = dto.email();
 
         String ip = getClientIp(request);
-        String redisBlockKey = BLOCK_PREFIX + ip;
         String redisAttemptKey = LOGIN_ATTEMPT_PREFIX + ip;
 
         //차단된 ip 인지 확인
-        if (Boolean.TRUE.equals(redisTemplate.hasKey(redisBlockKey))) {
+        if (bannedIpRepository.existsByIp(ip)) {
             log.warn("차단된 IP 로그인 시도: {}", ip);
             throw new UnAuthorizedException(AuthErrorCode.BANNED_IP);
         }
@@ -73,10 +75,14 @@ public class IpBlockingAspect {
 
             //서로 다른 이메일이 3개 이상이면 차단
             if (!Objects.requireNonNull(attemptedEmails).contains(email) && attemptedEmails.size() >= MAX_DIFFERENT_EMAILS) {
-                redisTemplate.opsForValue().set(redisBlockKey, "blocked", IP_BLOCK_DURATION, TimeUnit.DAYS);
-                log.warn("IP {} 차단됨 (서로 다른 {}개 이메일 감지됨)", ip, MAX_DIFFERENT_EMAILS + 1);
+                String message = BAN_MASSAGE;
+                BannedIp bannedIp = BannedIp.of(
+                    ip, message
+                );
+                bannedIpRepository.save(bannedIp);
+                log.warn("ip {} 차단 완료 : {}", ip, message);
+                redisTemplate.delete(redisAttemptKey);
             }
-
             throw e;
         }
     }
