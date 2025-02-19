@@ -54,7 +54,6 @@ public class AuthService {
             dto.age(),
             dto.career(),
             encodedPassword
-
         );
         userRepository.save(user);
         return CreateSignupResponseDto.of();
