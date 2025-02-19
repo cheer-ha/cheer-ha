@@ -32,7 +32,7 @@ public class IpBlockingAspect {
     private static final String LOGIN_ATTEMPT_PREFIX = "attempt:ip:";
     private static final long ATTEMPT_TTL = 15;        //15분 동안 시도 기록 유지
     private static final int MAX_DIFFERENT_EMAILS = 3; //서로 다른 이메일 4개 이상 감지되면 차단(3개까지 허용)
-    private static final String BAN_MASSAGE = "서로 다른 4개의 이메일 감지";
+    private static final String BAN_MASSAGE = "서로 다른 4개의 이메일 감지";   //db에 저장되고, 로그에 출력되는 메세지
 
     /**
      * 서로 다른 이메일 4개 이상 로그인 시도 시 해당 사용자의 ip 를 차단합니다.

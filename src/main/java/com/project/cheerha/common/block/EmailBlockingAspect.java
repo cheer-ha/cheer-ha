@@ -28,7 +28,7 @@ public class EmailBlockingAspect {
     private static final String FAIL_PREFIX = "fail:email:";
     private static final long EMAIL_FAIL_DURATION = 3;    //로그인 실패 시 실패데이터 3일간 유지
     private static final int MAX_FAILED_COUNT = 5;  //5회 실패 시 차단
-    private static final String BLOCK_MESSAGE = "비밀번호 입력 5회 실패";
+    private static final String BAN_MASSAGE = "비밀번호 입력 5회 실패";    //db에 저장되고, 로그에 출력되는 메세지
 
     /**
      * 같은 이메일로 5회 이상 로그인 실패한 경우 밴하는 메서드입니다.
@@ -64,7 +64,7 @@ public class EmailBlockingAspect {
 
                 //잘못된 시도 5회 시 이메일 차단
                 if (failedAttempts >= MAX_FAILED_COUNT) {
-                    String message = BLOCK_MESSAGE;
+                    String message = BAN_MASSAGE;
                     BannedEmail bannedEmail = BannedEmail.of(
                             email,
                             message
