@@ -1,9 +1,9 @@
-package com.project.cheerha.domain.notice;
+package com.project.cheerha.domain.notice.scheduler.draft;
 
-import com.project.cheerha.domain.notice.dto.JobOpeningKeywordDto;
-import com.project.cheerha.domain.notice.dto.UserKeywordDto;
-import com.project.cheerha.domain.notice.service.EmailFindService;
+import com.project.cheerha.domain.notice.dto.draft.JobOpeningKeywordDto;
+import com.project.cheerha.domain.notice.dto.draft.UserKeywordDto;
 import com.project.cheerha.domain.notice.service.EmailService;
+import com.project.cheerha.domain.notice.service.draft.EmailDataFetchService;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
@@ -20,9 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class EmailSchedulerLv0 {
+public class EmailScheduler {
 
-    private final EmailFindService emailFindService;
+    private final EmailDataFetchService emailDataFetchService;
     private final EmailService emailService;
 
     // 30초마다 채용 공고를 조회하여 이메일을 전송하는 스케줄러
@@ -34,11 +34,10 @@ public class EmailSchedulerLv0 {
             .withZoneSameInstant(ZoneId.of("UTC"));
 
         // 채용 공고의 ID, 키워드 ID, 채용 공고의 URL 조회
-        List<JobOpeningKeywordDto> jobOpeningKeywordDtoList = emailFindService.findAllJobOpeningKeywords(
-            referenceTime);
+        List<JobOpeningKeywordDto> jobOpeningKeywordDtoList = emailDataFetchService.findJobOpeningKeywordList(referenceTime);
 
         // 사용자의 ID, 키워드 ID, 사용자의 이메일 조회
-        List<UserKeywordDto> userKeywordDtoList = emailFindService.findAllUserKeywords();
+        List<UserKeywordDto> userKeywordDtoList = emailDataFetchService.findUserKeywordList();
 
         // 사용자의 이메일 및 연결된 채용 공고 URL을 저장할 Map
         Map<String, Set<String>> emailUrlMap = new HashMap<>();

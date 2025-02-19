@@ -1,12 +1,12 @@
-package com.project.cheerha.domain.notice.repository;
+package com.project.cheerha.domain.notice.repository.draft;
 
 import com.project.cheerha.domain.jobOpening.entity.QJobOpening;
 import com.project.cheerha.domain.keyword.entity.QJobOpeningKeyword;
 import com.project.cheerha.domain.keyword.entity.QUserKeyword;
-import com.project.cheerha.domain.notice.dto.JobOpeningKeywordDto;
-import com.project.cheerha.domain.notice.dto.QJobOpeningKeywordDto;
-import com.project.cheerha.domain.notice.dto.QUserKeywordDto;
-import com.project.cheerha.domain.notice.dto.UserKeywordDto;
+import com.project.cheerha.domain.notice.dto.draft.JobOpeningKeywordDto;
+import com.project.cheerha.domain.notice.dto.draft.QJobOpeningKeywordDto;
+import com.project.cheerha.domain.notice.dto.draft.QUserKeywordDto;
+import com.project.cheerha.domain.notice.dto.draft.UserKeywordDto;
 import com.project.cheerha.domain.user.entity.QUser;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.ZonedDateTime;
@@ -29,8 +29,8 @@ public class EmailRepositoryQueryImpl implements EmailRepositoryQuery {
         return queryFactory
             .select(
                 new QUserKeywordDto(
+                    user.id,
                     userKeyword.user.id,
-                    userKeyword.keyword.id,
                     user.email
                 )
             ).from(userKeyword)
@@ -44,13 +44,13 @@ public class EmailRepositoryQueryImpl implements EmailRepositoryQuery {
         QJobOpening jobOpening = QJobOpening.jobOpening;
 
         return queryFactory
-            .select(new QJobOpeningKeywordDto(
+            .select(
+                new QJobOpeningKeywordDto(
                     jobOpeningKeyword.jobOpening.id,
                     jobOpeningKeyword.keyword.id,
                     jobOpening.jobOpeningUrl
                 )
-            )
-            .from(jobOpeningKeyword)
+            ).from(jobOpeningKeyword)
             .join(jobOpeningKeyword.jobOpening, jobOpening)
             .where(jobOpening.createdAt.after(referenceTime))
             .fetch();

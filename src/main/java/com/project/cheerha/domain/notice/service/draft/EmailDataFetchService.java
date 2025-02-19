@@ -1,8 +1,8 @@
-package com.project.cheerha.domain.notice.service;
+package com.project.cheerha.domain.notice.service.draft;
 
-import com.project.cheerha.domain.notice.dto.JobOpeningKeywordDto;
-import com.project.cheerha.domain.notice.dto.UserKeywordDto;
-import com.project.cheerha.domain.notice.repository.EmailRepositoryQuery;
+import com.project.cheerha.domain.notice.dto.draft.JobOpeningKeywordDto;
+import com.project.cheerha.domain.notice.dto.draft.UserKeywordDto;
+import com.project.cheerha.domain.notice.repository.draft.EmailRepositoryQuery;
 import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -10,17 +10,17 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class EmailFindService {
+public class EmailDataFetchService {
 
     private final EmailRepositoryQuery repositoryQuery;
 
     // 데이터베이스에서 사용자 관련 정보를 조회해오는 메서드
-    public List<UserKeywordDto> findAllUserKeywords() {
+    public List<UserKeywordDto> findUserKeywordList() {
         return repositoryQuery.findAllUserKeywords();
     }
 
     // 데이터베이스에서 채용 공고 관련 정보를 조회해오는 메서드
-    public List<JobOpeningKeywordDto> findAllJobOpeningKeywords(ZonedDateTime referenceTime) {
+    public List<JobOpeningKeywordDto> findJobOpeningKeywordList(ZonedDateTime referenceTime) {
         return repositoryQuery.findAllJobOpeningKeywords(referenceTime);
     }
 }

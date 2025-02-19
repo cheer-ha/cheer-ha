@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.notice.dto;
+package com.project.cheerha.domain.notice.dto.draft;
 
 import com.querydsl.core.annotations.QueryProjection;
 

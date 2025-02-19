@@ -1,7 +1,7 @@
-package com.project.cheerha.domain.notice.repository;
+package com.project.cheerha.domain.notice.repository.draft;
 
-import com.project.cheerha.domain.notice.dto.JobOpeningKeywordDto;
-import com.project.cheerha.domain.notice.dto.UserKeywordDto;
+import com.project.cheerha.domain.notice.dto.draft.JobOpeningKeywordDto;
+import com.project.cheerha.domain.notice.dto.draft.UserKeywordDto;
 import java.time.ZonedDateTime;
 import java.util.List;
 
