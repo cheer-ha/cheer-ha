@@ -5,6 +5,8 @@ import com.project.cheerha.common.dto.ApiResponseDto;
 import com.project.cheerha.common.dto.AuthUser;
 import com.project.cheerha.domain.bookmark.dto.request.CreateBookmarkRequestDto;
 import com.project.cheerha.domain.bookmark.dto.request.DeleteBookmarkRequestDto;
+import com.project.cheerha.domain.bookmark.dto.request.ReadBookmarkAgeRequestDto;
+import com.project.cheerha.domain.bookmark.dto.response.BookmarkCustomAgeResponseDto;
 import com.project.cheerha.domain.bookmark.dto.response.ReadBookmarkResponseDto;
 import com.project.cheerha.domain.bookmark.service.BookmarkService;
 import jakarta.validation.Valid;
@@ -95,4 +97,16 @@ public class BookmarkController {
         }
         return PageRequest.of(page - 1, size);
     }
+
+    /**
+     * 연령대별 즐겨찾기 상위 10개 조회라고 해도 양이 꽤 많아질 거 같아서 페이징 처리했습니다.
+     */
+    @GetMapping("/popular")
+    public ResponseEntity<ApiResponseDto<Page<BookmarkCustomAgeResponseDto>>> readTop10BookmarkByAgeGroup(
+        @RequestBody ReadBookmarkAgeRequestDto requestDto,
+        Pageable pageable
+    ) {
+        return ApiResponseDto.success(bookmarkService.readTop10BookmarkByAgeGroup(requestDto, pageable));
+    }
+
 }
