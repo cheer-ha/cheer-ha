@@ -74,7 +74,7 @@ public class JwtFilter implements Filter {
 
         try {
             Claims claims = jwtUtil.extractClaims(token);
-            if (claims == null) {
+            if (claims == null || claims.getSubject() == null) {
                 sendErrorResponse(httpResponse, HttpStatus.BAD_REQUEST, "잘못된 JWT 토큰입니다.");
                 return;
             }
