@@ -31,8 +31,7 @@ public class EmailBlockingAspect {
     private static final String BLOCK_MESSAGE = "비밀번호 입력 5회 실패";
 
     /**
-     * 같은 이메일로 5회 이상 로그인 실패한 경우 15분간 차단하는 메서드입니다.
-     * 차단된 상태로 로그인 재시도 시 다시 15분 차단당합니다.
+     * 같은 이메일로 5회 이상 로그인 실패한 경우 밴하는 메서드입니다.
      * TODO: 이후 이메일 인증을 통해 푸는 방법도 고려해볼만합니다
      */
     @Around("execution(* com.project.cheerha.domain.auth.controller.AuthController.login(..))")
