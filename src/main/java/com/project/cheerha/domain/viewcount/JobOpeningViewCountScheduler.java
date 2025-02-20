@@ -27,10 +27,10 @@ public class JobOpeningViewCountScheduler {
     /**
      * 조회수 동기화 스케줄러
      * 1분마다 실행되어 job_opening_view_count 테이블의 viewCount를 job_opening 테이블의 viewCount로 동기화
-     * fixedRate를 사용하여 60,000ms(1분)마다 실행
+     * fixedRate를 사용하여 3,600,000ms (1시간)마다 실행
      * 트랜잭션 어노테이션을 사용하여 트랜잭션 단위로 실행하여 정합성을 유지
      */
-    @Scheduled(fixedRate = 60000) // 1분마다 실행
+    @Scheduled(fixedRate = 3600000) // 1분마다 실행
     @Transactional
     public void syncViewCounts() {
         // 1. jobOpeningViewCount 테이블에서 존재하는 jobOpening.id 목록 가져오기
@@ -40,7 +40,7 @@ public class JobOpeningViewCountScheduler {
         for (Long jobOpeningId : jobOpeningIds) {
             Long viewCount = jobOpeningViewsRepository.findViewCountByJobOpeningId(jobOpeningId);
 
-            log.info("🔍 JobOpening ID: {}, ViewCount: {}", jobOpeningId, viewCount); // ✅ 로그 추가 (검증용)
+            log.info("🔍 JobOpening ID: {}, ViewCount: {}", jobOpeningId, viewCount);
 
             if (viewCount != null && viewCount > 0) {
                 jobOpeningRepository.updateViewCount(jobOpeningId, viewCount);
