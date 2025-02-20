@@ -30,7 +30,7 @@ public class User {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 5, nullable = false )
+    @Column(length = 20, nullable = false )
     private Role role;
 
     public static User of(String email, String name, int age, int career, String password) {
