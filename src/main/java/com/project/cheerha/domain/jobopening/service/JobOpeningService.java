@@ -24,29 +24,35 @@ public class JobOpeningService {
     private final JobOpeningFindByService jobOpeningFindByService;
     private final HistoryService historyService;
 
-
     /**
-     * ViewCount 정보를 관리하는 테이블과 채용공고가 올라오는 테이블에서 각각 id값(채용공고 id)으로 조회와 조회수 업데이트를 합니다.
+     * 채용공고 리다이렉트 동시성 제어를 위한 집계 테이블 조회수 카운팅 메서드 입니다.
+     * viewCount 정보를 관리하는 집계 테이블에서 조회수가 카운팅됩니다.
      * viewcount 테이블에서 비관 락이 작동하여 count 값의 정합성을 유지합니다.
-     * @param id 채용공고 사이트에 대한 식별 id
-     * @return 리다이렉트 된 페이지의 url
+     * @param id 채용공고 식별 id
      */
     @Transactional
-    public String getJobOpeningUrlAndIncreaseViewCount(Long id) {
-        JobOpening jobOpening = jobOpeningFindByService.findById(id);
-
-        JobOpeningViewCount jobOpeningViewCount = jobOpeningViewCountRepository.findByForUpdateViewCount(id)
+    public void increaseViewCount(Long id) {
+        JobOpeningViewCount viewCount = jobOpeningViewCountRepository.findByForUpdateViewCount(id)
             .orElseGet(() -> {
-                JobOpeningViewCount newViewCount = JobOpeningViewCount.create(jobOpening); // 초기 조회수 0
-                return jobOpeningViewCountRepository.save(newViewCount);
+                JobOpening jobOpening = jobOpeningFindByService.findById(id);
+                return jobOpeningViewCountRepository.save(JobOpeningViewCount.create(jobOpening));
             });
+        viewCount.increaseViewCount();
+    }
+
+    /**
+     * 페이지 리다이렉트를 위한 서비스 로직입니다.
+     * @param jobOpening
+     * @return 리다이렉트 될 페이지 URL
+     */
+    public String getJobOpeningUrl(JobOpening jobOpening) {
         String url = jobOpening.getJobOpeningUrl();
         if (!url.startsWith("http")) {
             url = "https://" + url;
         }
-        jobOpeningViewCount.increaseViewCount();
         return url;
     }
+
 
     /**
      * 채용 공고 목록을 조회하는 메서드입니다.

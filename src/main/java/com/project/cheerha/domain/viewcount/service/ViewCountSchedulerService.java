@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.viewcount;
+package com.project.cheerha.domain.viewcount.service;
 
 import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
 import com.project.cheerha.domain.viewcount.repository.JobOpeningViewCountRepository;
@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class JobOpeningViewCountScheduler {
+public class ViewCountSchedulerService {
 
     /**
      * 조회수 정보를 관리하는 Repository와 채용공고 정보를 관리하는 Repository
@@ -30,13 +30,14 @@ public class JobOpeningViewCountScheduler {
      * fixedRate를 사용하여 3,600,000ms (1시간)마다 실행
      * 트랜잭션 어노테이션을 사용하여 트랜잭션 단위로 실행하여 정합성을 유지
      */
-    @Scheduled(fixedRate = 3600000) // 1분마다 실행
+    @Scheduled(fixedRate = 3600000) // 긴 버전 1시간
+//    @Scheduled(fixedRate = 60000) //미완성이라 테스트용으로 짧게
     @Transactional
     public void syncViewCounts() {
-        // 1. jobOpeningViewCount 테이블에서 존재하는 jobOpening.id 목록 가져오기
+        // jobOpeningViewCount 테이블에서 viewCount값이 1이상인 jobOpening.id 목록 가져오기
         List<Long> jobOpeningIds = jobOpeningViewsRepository.findAllJobOpeningId();
 
-        // 2. 각 jobOpening.id별로 viewCount 조회 및 업데이트
+        // 각 jobOpening.id별로 viewCount 조회 및 업데이트
         for (Long jobOpeningId : jobOpeningIds) {
             Long viewCount = jobOpeningViewsRepository.findViewCountByJobOpeningId(jobOpeningId);
 
