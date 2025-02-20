@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "user")
+@Table(name = "`user`") //user가 예약어라서 이 부분 ``로 안감싸면 오류나요.
 public class User {
 
     @Id

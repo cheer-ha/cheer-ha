@@ -5,9 +5,12 @@ import com.project.cheerha.common.dto.ApiResponseDto;
 import com.project.cheerha.common.dto.AuthUser;
 import com.project.cheerha.domain.bookmark.dto.request.CreateBookmarkRequestDto;
 import com.project.cheerha.domain.bookmark.dto.request.DeleteBookmarkRequestDto;
+import com.project.cheerha.domain.bookmark.dto.request.ReadBookmarkAgeRequestDto;
+import com.project.cheerha.domain.bookmark.dto.response.BookmarkCustomAgeResponseDto;
 import com.project.cheerha.domain.bookmark.dto.response.ReadBookmarkResponseDto;
 import com.project.cheerha.domain.bookmark.service.BookmarkService;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -95,4 +98,19 @@ public class BookmarkController {
         }
         return PageRequest.of(page - 1, size);
     }
+
+    /**
+     * 최소, 최대 연령대를 사용자가 커스터마이징하여 추가된 즐겨찾기를 상위 10개를 조회할 수 있는 로직입니다.
+     * Valid 어노테이션으로 해당 연령대가 아닌 값이 나오면 예외가 발생하도록 설정했습니다.
+     * @param requestDto 사용자가 body에 json 형태로 minAge, maxAge 입력
+     * @return 커스텀 된 즐겨찾기 상위 10개를 List로 반환
+     */
+    @GetMapping("/popular")
+    public ResponseEntity<ApiResponseDto<List<BookmarkCustomAgeResponseDto>>> readTop10BookmarkByAgeGroup(
+        @Valid @RequestBody ReadBookmarkAgeRequestDto requestDto
+    ) {
+        List<BookmarkCustomAgeResponseDto> dtoList = bookmarkService.readTop10BookmarkByAgeGroup(requestDto);
+        return ApiResponseDto.success(dtoList);
+    }
+
 }

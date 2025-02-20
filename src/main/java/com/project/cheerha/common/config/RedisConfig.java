@@ -21,7 +21,7 @@ public class RedisConfig {
         config.useSingleServer()
 //                .setAddress("redis://redis:6379");  //도커로 실행할 경우
 //                .setAddress("redis://localhost:6379");    //로컬에서 실행할 경우
-                .setAddress("rediss://master.cheerha-redis.tlrpjs.apn2.cache.amazonaws.com:6379");   //aws
+               .setAddress("rediss://master.cheerha-redis.tlrpjs.apn2.cache.amazonaws.com:6379");   //aws
         return org.redisson.Redisson.create(config);
     }
 
