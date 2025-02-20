@@ -1,6 +1,6 @@
 package com.project.cheerha.domain.keyword.entity;
 
-import com.project.cheerha.domain.jobOpening.entity.JobOpening;
+import com.project.cheerha.domain.jobopening.entity.JobOpening;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
