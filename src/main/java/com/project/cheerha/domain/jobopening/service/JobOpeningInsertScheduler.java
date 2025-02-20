@@ -49,7 +49,7 @@ public class JobOpeningInsertScheduler {
             "인천", "수원", "울산", "창원", "청주"
     };
 
-    @ScheduledDynamic(minMinutes = 1, maxMinutes = 2)
+    @ScheduledDynamic(minMinutes = 3, maxMinutes = 40)
     public void insertRandomJobOpening() {
         log.info("랜덤 채용공고 데이터 삽입 시작");
 
@@ -62,7 +62,7 @@ public class JobOpeningInsertScheduler {
         for (int i = 0; i < jobCount; i++) {
             String company = companies[random.nextInt(companies.length)];
             String position = positions[random.nextInt(positions.length)];
-            String location = locations[random.nextInt(locations.length)];
+            String location = random.nextDouble() > 0.5 ? locations[random.nextInt(locations.length)] : "서울";
             int maxExperienceYears = 1 + random.nextInt(5);
             int minExperienceYears = random.nextInt(3);
             String jobOpeningUrl = "https://example.com/job/" + UUID.randomUUID();
