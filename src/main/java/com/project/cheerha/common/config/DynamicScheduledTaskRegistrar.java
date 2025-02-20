@@ -1,7 +1,6 @@
 package com.project.cheerha.common.config;
 
 import com.project.cheerha.common.annotation.ScheduledDynamic;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;
@@ -11,7 +10,6 @@ import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.Random;
 
-@Slf4j
 @Configuration
 public class DynamicScheduledTaskRegistrar implements BeanPostProcessor {
 
