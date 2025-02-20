@@ -1,7 +1,5 @@
 package com.project.cheerha.common.block;
 
-import com.project.cheerha.common.exception.auth.AuthErrorCode;
-import com.project.cheerha.common.exception.auth.UnAuthorizedException;
 import com.project.cheerha.domain.auth.dto.request.CreateLoginRequestDto;
 import com.project.cheerha.domain.auth.entity.BannedIp;
 import com.project.cheerha.domain.auth.repository.BannedIpRepository;
@@ -52,12 +50,6 @@ public class IpBlockingAspect {
 
         String ip = getClientIp(request);
         String redisAttemptKey = LOGIN_ATTEMPT_PREFIX + ip;
-
-        //차단된 ip 인지 확인
-        if (bannedIpRepository.existsByIp(ip)) {
-            log.warn("차단된 IP 로그인 시도: {}", ip);
-            throw new UnAuthorizedException(AuthErrorCode.BANNED_IP);
-        }
 
         try {
             return joinPoint.proceed();
