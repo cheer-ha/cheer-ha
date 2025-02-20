@@ -1,4 +1,7 @@
-package com.project.cheerha.domain.jobOpening.dto.request;
+package com.project.cheerha.domain.jobopening.dto.request;
+
+import com.project.cheerha.domain.jobopening.entity.EducationLevel;
+import com.project.cheerha.domain.jobopening.entity.EmploymentType;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -13,8 +16,8 @@ public record CreateJobOpeningRequestDto(
         String company,
         String location,
         Integer salary,
-        String employmentType,
-        String educationLevel,
+        EmploymentType employmentType,
+        EducationLevel educationLevel,
         String jobOpeningUrl,
         Integer minExperienceYears,
         Integer maxExperienceYears,

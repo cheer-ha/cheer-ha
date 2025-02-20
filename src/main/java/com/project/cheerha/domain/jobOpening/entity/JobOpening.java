@@ -1,5 +1,7 @@
-package com.project.cheerha.domain.jobOpening.entity;
+package com.project.cheerha.domain.jobopening.entity;
 
+import com.project.cheerha.domain.jobopening.entity.EducationLevel;
+import com.project.cheerha.domain.jobopening.entity.EmploymentType;
 import com.project.cheerha.domain.keyword.entity.JobOpeningKeyword;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -36,10 +38,10 @@ public class JobOpening {
     private int salary;
 
     @Column(length = 20, nullable = false)
-    private String employmentType;
+    private EmploymentType employmentType;
 
     @Column(length = 50, nullable = false)
-    private String educationLevel;
+    private EducationLevel educationLevel;
 
     @Column(length = 255, nullable = false)
     private String jobOpeningUrl;

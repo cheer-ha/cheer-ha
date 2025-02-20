@@ -1,3 +1,3 @@
-package com.project.cheerha.domain.jobOpening.entity;
+package com.project.cheerha.domain.jobopening.entity;
 
 public enum EducationLevel {}
