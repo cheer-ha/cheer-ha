@@ -4,10 +4,8 @@ import com.project.cheerha.domain.jobopening.entity.JobOpening;
 import com.project.cheerha.domain.keyword.entity.JobOpeningKeyword;
 import com.project.cheerha.domain.keyword.entity.Keyword;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 public class JobOpeningKeywordFactory {
 
@@ -17,13 +15,11 @@ public class JobOpeningKeywordFactory {
     public static List<JobOpeningKeyword> createRandomKeywordList(JobOpening jobOpening) {
         int keywordCount = 45;
         int numKeywords = random.nextInt(6) + 5;
-        Set<Long> keywordSet = new HashSet<>();
-        while (keywordSet.size() < numKeywords) {
-            keywordSet.add((long) (random.nextInt(keywordCount) + 1));
-        }
 
-        return keywordSet.stream()
-                .map(id -> JobOpeningKeyword.toEntity(jobOpening, Keyword.toEntity(id)))
+        return random.ints(1, keywordCount + 1)
+                .distinct()
+                .limit(numKeywords)
+                .mapToObj(id -> JobOpeningKeyword.toEntity(jobOpening, Keyword.toEntity((long) id)))
                 .toList();
     }
 }
