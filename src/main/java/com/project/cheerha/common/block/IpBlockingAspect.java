@@ -1,5 +1,6 @@
 package com.project.cheerha.common.block;
 
+import com.project.cheerha.common.util.IpUtil;
 import com.project.cheerha.domain.auth.dto.request.CreateLoginRequestDto;
 import com.project.cheerha.domain.auth.entity.BannedIp;
 import com.project.cheerha.domain.auth.repository.BannedIpRepository;
@@ -26,6 +27,7 @@ public class IpBlockingAspect {
 
     private final RedisTemplate<String, String> redisTemplate;
     private final BannedIpRepository bannedIpRepository;
+    private final IpUtil ipUtil;
 
     private static final String LOGIN_ATTEMPT_PREFIX = "attempt:ip:";
     private static final long ATTEMPT_TTL = 15;        //15분 동안 시도 기록 유지
@@ -48,7 +50,7 @@ public class IpBlockingAspect {
         CreateLoginRequestDto dto = (CreateLoginRequestDto) args[0];
         String email = dto.email();
 
-        String ip = getClientIp(request);
+        String ip = ipUtil.getClientIp(request);
         String redisAttemptKey = LOGIN_ATTEMPT_PREFIX + ip;
 
         try {
@@ -82,27 +84,6 @@ public class IpBlockingAspect {
     private HttpServletRequest getRequest() {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         return attributes != null ? attributes.getRequest() : null;
-    }
-
-    /**
-     * 사용자의 ip 를 추출합니다.
-     * @return ipV6이 있다면 변별력을 위해 V6 을 우선적으로 가져옵니다. v6이 없다면 v4를 가져옵니다.
-     */
-    private String getClientIp(HttpServletRequest request) {
-        String ip = request.getHeader("X-Forwarded-For");
-
-        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
-            ip = ip.split(",")[0].trim();
-        } else {
-            ip = request.getRemoteAddr();
-        }
-
-        if (ip.contains(":")) {
-            log.info("IPv6 추출 성공: {}", ip);
-        } else {
-            log.info("IPv4 추출 성공: {}", ip);
-        }
-        return ip;
     }
 
 }
