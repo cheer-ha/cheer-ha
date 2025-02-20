@@ -127,6 +127,7 @@ public class  JobOpeningService {
                             job.getPosition(),
                             job.getHiringStartAt(),
                             job.getHiringEndAt(),
+                            job.getCreatedAt(),
                             job.getViewCount(),
                             job.getRequiredSkills()
                     )).collect(Collectors.toList());

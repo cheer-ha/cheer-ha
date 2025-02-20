@@ -57,6 +57,9 @@ public class JobOpeningDocument {
     @Field(type = FieldType.Date)  // Date 타입으로 저장
     private LocalDateTime hiringEndAt; // 채용 종료일
 
+    @Field(type = FieldType.Date)  // Date 타입으로 저장
+    private LocalDateTime createdAt = LocalDateTime.now(); // 채용공고 생성일
+
     @Field(type = FieldType.Integer)  // Integer 타입으로 저장
     private int viewCount; // 조회수
 
@@ -76,8 +79,9 @@ public class JobOpeningDocument {
                 jobOpening.getMinExperienceYears(),
                 jobOpening.getMaxExperienceYears(),
                 jobOpening.getPosition(),
-                convertZonedDateTimeToLocalDateTime(jobOpening.getHiringStartAt()), // Convert here
-                convertZonedDateTimeToLocalDateTime(jobOpening.getHiringEndAt()), // Convert here
+                convertZonedDateTimeToLocalDateTime(jobOpening.getHiringStartAt()),
+                convertZonedDateTimeToLocalDateTime(jobOpening.getHiringEndAt()),
+                convertZonedDateTimeToLocalDateTime(jobOpening.getCreatedAt()),
                 jobOpening.getViewCount(),
                 jobOpening.getRequiredSkillList()
         );
