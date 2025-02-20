@@ -1,17 +1,14 @@
 package com.project.cheerha.domain.jobopening.repository;
 
 import com.project.cheerha.domain.jobopening.entity.JobOpening;
-import jakarta.persistence.LockModeType;
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface JobOpeningRepository extends JpaRepository<JobOpening, Long>, JobOpeningRepositoryQuery {
 
-    //비관적 락
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("select b from JobOpening b where b.id = :id")
-    Optional<JobOpening> findByForUpdateViewCount(Long id);
-
+    @Modifying
+    @Query("UPDATE JobOpening b SET b.viewCount = b.viewCount + :viewCount WHERE b.id = :id")
+    void updateViewCount(@Param("id")Long id, @Param ("viewCount") Long viewCount);
 }
