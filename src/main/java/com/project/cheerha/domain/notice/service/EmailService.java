@@ -2,7 +2,7 @@ package com.project.cheerha.domain.notice.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -23,9 +23,9 @@ public class EmailService {
     /**
      * 이메일을 보내는 메서드
      * @param recipientEmail 수신자 이메일 주소
-     * @param jobOpeningUrlList 채용 공고 목록
+     * @param jobOpeningUrlSet 채용 공고 목록
      */
-    public void sendMail(String recipientEmail, List<String> jobOpeningUrlList) {
+    public void sendMail(String recipientEmail, Set<String> jobOpeningUrlSet) {
         try {
             // 새로운 이메일 메시지 객체 생성
             MimeMessage message = javaMailSender.createMimeMessage();
@@ -45,7 +45,7 @@ public class EmailService {
             content.append("<ul>");
 
             // 채용 공고 URL 목록을 리스트 형식으로 출력
-            for (String url : jobOpeningUrlList) {
+            for (String url : jobOpeningUrlSet) {
                 content.append("<li>👉 <a href=\"")
                     .append(url)
                     .append("\" target=\"_blank\">")
