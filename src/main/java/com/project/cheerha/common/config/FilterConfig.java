@@ -1,5 +1,6 @@
 package com.project.cheerha.common.config;
 
+import com.project.cheerha.common.exception.handler.FilterExceptionHandler;
 import com.project.cheerha.common.properties.JwtSecurityProperties;
 import com.project.cheerha.common.redis.RedisBlackListService;
 import com.project.cheerha.common.util.JwtUtil;
@@ -16,6 +17,7 @@ public class FilterConfig {
     private final JwtUtil jwtUtil;
     private final JwtSecurityProperties jwtSecurityProperties;
     private final RedisBlackListService redisBlackListService;
+    private final FilterExceptionHandler filterExceptionHandler;
 
     @Bean
     public FilterRegistrationBean<Filter> ipBlockingFilterRegistration(IpBlockingFilter ipBlockingFilter) {
@@ -29,10 +31,9 @@ public class FilterConfig {
     @Bean
     public FilterRegistrationBean<JwtFilter> jwtFilter() {
         FilterRegistrationBean<JwtFilter> registrationBean = new FilterRegistrationBean<>();
-        registrationBean.setFilter(new JwtFilter(jwtSecurityProperties, redisBlackListService, jwtUtil));
+        registrationBean.setFilter(new JwtFilter(jwtSecurityProperties, redisBlackListService, jwtUtil, filterExceptionHandler));
         registrationBean.addUrlPatterns("/*");
         registrationBean.setOrder(2);
-
         return registrationBean;
     }
 }

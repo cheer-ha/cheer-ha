@@ -1,6 +1,7 @@
 package com.project.cheerha.jwt;
 
 import com.project.cheerha.common.config.JwtFilter;
+import com.project.cheerha.common.exception.handler.FilterExceptionHandler;
 import com.project.cheerha.common.properties.JwtSecurityProperties;
 import com.project.cheerha.common.redis.RedisBlackListService;
 import com.project.cheerha.common.util.JwtUtil;
@@ -42,6 +43,9 @@ public class DoFilterTest {
 
     @Mock
     private FilterChain filterChain;
+
+    @Mock
+    private FilterExceptionHandler filterExceptionHandler;
 
     @InjectMocks
     private JwtFilter jwtFilter;
@@ -87,7 +91,7 @@ public class DoFilterTest {
         when(securityProperties.getToken()).thenReturn(token);
         when(token.getPrefix()).thenReturn("Bearer ");
 
-        jwtFilter = new JwtFilter(securityProperties, redisBlackListService, jwtUtil);
+        jwtFilter = new JwtFilter(securityProperties, redisBlackListService, jwtUtil, filterExceptionHandler);
         jwtFilter.doFilter(request, response, filterChain);
 
         verify(filterChain, times(1)).doFilter(request, response);
@@ -105,7 +109,7 @@ public class DoFilterTest {
         PrintWriter writer = new PrintWriter(new StringWriter());
         when(response.getWriter()).thenReturn(writer);
 
-        jwtFilter = new JwtFilter(securityProperties, redisBlackListService, jwtUtil);
+        jwtFilter = new JwtFilter(securityProperties, redisBlackListService, jwtUtil, filterExceptionHandler);
         jwtFilter.doFilter(request, response, filterChain);
 
         verify(response, times(1)).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -182,7 +186,7 @@ public class DoFilterTest {
         PrintWriter writer = new PrintWriter(new StringWriter());
         when(response.getWriter()).thenReturn(writer);
 
-        jwtFilter = new JwtFilter(securityProperties, redisBlackListService, jwtUtil);
+        jwtFilter = new JwtFilter(securityProperties, redisBlackListService, jwtUtil, filterExceptionHandler);
         jwtFilter.doFilter(request, response, filterChain);
 
         verify(response, times(1)).setStatus(HttpServletResponse.SC_BAD_REQUEST);

@@ -1,11 +1,13 @@
 package com.project.cheerha.common.config;
 
+import com.project.cheerha.common.exception.handler.FilterExceptionHandler;
 import com.project.cheerha.domain.auth.repository.BannedIpRepository;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -16,6 +18,7 @@ import java.io.IOException;
 public class IpBlockingFilter implements Filter {
 
     private final BannedIpRepository bannedIpRepository;
+    private final FilterExceptionHandler filterExceptionHandler;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -27,7 +30,7 @@ public class IpBlockingFilter implements Filter {
 
         if (bannedIpRepository.existsByIp(ip)) {
             log.warn("차단된 IP 접근 시도: {}", ip);
-            httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "차단된 IP입니다.");
+            filterExceptionHandler.sendErrorResponse(httpResponse, HttpStatus.FORBIDDEN, "차단된 IP입니다.");
             return;
         }
 
