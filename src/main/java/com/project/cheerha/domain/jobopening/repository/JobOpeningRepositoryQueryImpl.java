@@ -1,8 +1,10 @@
 package com.project.cheerha.domain.jobopening.repository;
 
 import com.project.cheerha.domain.jobopening.dto.request.ReadJobOpeningRequestDto;
-import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningResponseDto;
 import com.project.cheerha.domain.jobopening.dto.response.QReadJobOpeningResponseDto;
+import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningResponseDto;
+import com.project.cheerha.domain.jobopening.entity.EducationLevel;
+import com.project.cheerha.domain.jobopening.entity.EmploymentType;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
@@ -51,8 +53,8 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
                 jobOpening.company,
                 jobOpening.location,
                 jobOpening.salary,
-                jobOpening.employmentType,
-                jobOpening.educationLevel,
+                jobOpening.employmentType.stringValue(),
+                jobOpening.educationLevel.stringValue(),
                 jobOpening.jobOpeningUrl,
                 jobOpening.minExperienceYears,
                 jobOpening.maxExperienceYears,
@@ -134,8 +136,8 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
                         jobOpening.company,
                         jobOpening.location,
                         jobOpening.salary,
-                        jobOpening.employmentType,
-                        jobOpening.educationLevel,
+                        jobOpening.employmentType.stringValue(),
+                        jobOpening.educationLevel.stringValue(),
                         jobOpening.jobOpeningUrl,
                         jobOpening.minExperienceYears,
                         jobOpening.maxExperienceYears,

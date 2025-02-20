@@ -14,8 +14,8 @@ public class ReadJobOpeningResponseDto {
     private final String company;
     private final String location;
     private final int salary;
-    private final EmploymentType employmentType;
-    private final EducationLevel educationLevel;
+    private final String employmentType;
+    private final String educationLevel;
     private final String jobOpeningUrl;
     private final Integer minExperienceYears;
     private final Integer maxExperienceYears;
@@ -30,8 +30,8 @@ public class ReadJobOpeningResponseDto {
     public ReadJobOpeningResponseDto(
             Long id, String title,
             String company, String location,
-            int salary, EmploymentType employmentType,
-            EducationLevel educationLevel, String jobOpeningUrl,
+            int salary, String employmentType,
+            String educationLevel, String jobOpeningUrl,
             Integer minExperienceYears, Integer maxExperienceYears,
             ZonedDateTime hiringStartAt, ZonedDateTime hiringEndAt,
             String position

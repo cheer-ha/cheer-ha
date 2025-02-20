@@ -1,5 +1,6 @@
 package com.project.cheerha.domain.viewcount;
 
+import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
 import com.project.cheerha.domain.viewcount.repository.JobOpeningViewCountRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

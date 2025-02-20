@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.jobOpening.data.csv;
+package com.project.cheerha.domain.jobopening.data.csv;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.BulkRequest;
