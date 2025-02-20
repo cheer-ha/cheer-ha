@@ -16,11 +16,10 @@ public enum AuthErrorCode {
 
     //ForbiddenException
     LOGIN_REQUIRED(HttpStatus.FORBIDDEN, "권한이 없습니다."),
-    BANNED_IP(HttpStatus.FORBIDDEN, "밴 당한 아이피입니다. 관리자에게 문의하세요"),
+    BANNED_EMAIL(HttpStatus.FORBIDDEN, "로그인이 임시차단된 이메일입니다. 관리자에게 문의하세요"),
 
     //UnAuthorizedException
     TOKEN_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "존재하지 않는 토큰입니다."),
-    BLOCKED_EMAIL(HttpStatus.UNAUTHORIZED, "비밀번호를 5회 이상 틀렸습니다. 15분 뒤 다시 시도해주세요"),
     INVALID_EMAIL(HttpStatus.UNAUTHORIZED, "이메일이 잘못되었습니다."),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "패스워드가 잘못되었습니다.");
 

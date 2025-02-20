@@ -17,9 +17,4 @@ public class JobOpeningFindByService {
         return jobOpeningRepository.findById(jobOpeningId)
             .orElseThrow(() -> new NotFoundException(DataErrorCode.JOB_OPENING_NOT_FOUND));
     }
-
-    public JobOpening findByForUpdateViewCount(Long id) {
-        return jobOpeningRepository.findByForUpdateViewCount(id)
-            .orElseThrow(() -> new NotFoundException(DataErrorCode.JOB_OPENING_NOT_FOUND));
-    }
 }

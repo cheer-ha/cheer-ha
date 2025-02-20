@@ -1,20 +1,13 @@
 package com.project.cheerha.domain.user.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "`user`") //user가 예약어라서 이 부분 ``로 안감싸면 오류나요.
+@Table(name = "`user`")
 public class User {
 
     @Id
