@@ -1,6 +1,6 @@
 package com.project.cheerha.domain.bookmark.entity;
 
-import com.project.cheerha.domain.jobOpening.entity.JobOpening;
+import com.project.cheerha.domain.jobopening.entity.JobOpening;
 import com.project.cheerha.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;

@@ -1,10 +1,9 @@
-package com.project.cheerha.domain.jobOpening.service;
-
+package com.project.cheerha.domain.jobopening.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import com.project.cheerha.domain.jobOpening.entity.JobOpening;
-import com.project.cheerha.domain.jobOpening.repository.JobOpeningRepository;
+import com.project.cheerha.domain.jobopening.entity.JobOpening;
+import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;

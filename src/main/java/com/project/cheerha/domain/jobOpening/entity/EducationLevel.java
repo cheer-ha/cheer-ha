@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.jobOpening.entity;
+package com.project.cheerha.domain.jobopening.entity;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;

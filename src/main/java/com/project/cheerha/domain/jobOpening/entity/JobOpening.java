@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.jobOpening.entity;
+package com.project.cheerha.domain.jobopening.entity;
 
 import com.project.cheerha.domain.keyword.entity.JobOpeningKeyword;
 import jakarta.persistence.CascadeType;

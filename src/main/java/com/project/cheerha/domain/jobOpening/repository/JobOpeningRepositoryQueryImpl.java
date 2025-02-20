@@ -1,14 +1,14 @@
-package com.project.cheerha.domain.jobOpening.repository;
+package com.project.cheerha.domain.jobopening.repository;
 
-import static com.project.cheerha.domain.jobOpening.entity.QJobOpening.jobOpening;
+import static com.project.cheerha.domain.jobopening.entity.QJobOpening.jobOpening;
 import static com.project.cheerha.domain.keyword.entity.QJobOpeningKeyword.jobOpeningKeyword;
 import static com.project.cheerha.domain.keyword.entity.QKeyword.keyword;
 
-import com.project.cheerha.domain.jobOpening.dto.request.ReadJobOpeningRequestDto;
-import com.project.cheerha.domain.jobOpening.dto.response.QReadJobOpeningResponseDto;
-import com.project.cheerha.domain.jobOpening.dto.response.ReadJobOpeningResponseDto;
-import com.project.cheerha.domain.jobOpening.entity.EducationLevel;
-import com.project.cheerha.domain.jobOpening.entity.EmploymentType;
+import com.project.cheerha.domain.jobopening.dto.request.ReadJobOpeningRequestDto;
+import com.project.cheerha.domain.jobopening.dto.response.QReadJobOpeningResponseDto;
+import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningResponseDto;
+import com.project.cheerha.domain.jobopening.entity.EducationLevel;
+import com.project.cheerha.domain.jobopening.entity.EmploymentType;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;

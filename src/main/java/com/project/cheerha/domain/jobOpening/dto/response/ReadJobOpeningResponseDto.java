@@ -1,7 +1,7 @@
-package com.project.cheerha.domain.jobOpening.dto.response;
+package com.project.cheerha.domain.jobopening.dto.response;
 
-import com.project.cheerha.domain.jobOpening.entity.EducationLevel;
-import com.project.cheerha.domain.jobOpening.entity.EmploymentType;
+import com.project.cheerha.domain.jobopening.entity.EducationLevel;
+import com.project.cheerha.domain.jobopening.entity.EmploymentType;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 

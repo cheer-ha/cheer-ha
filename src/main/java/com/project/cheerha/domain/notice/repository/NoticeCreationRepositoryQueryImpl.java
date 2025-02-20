@@ -1,6 +1,6 @@
 package com.project.cheerha.domain.notice.repository;
 
-import com.project.cheerha.domain.jobOpening.entity.QJobOpening;
+import com.project.cheerha.domain.jobopening.entity.QJobOpening;
 import com.project.cheerha.domain.keyword.entity.QJobOpeningKeyword;
 import com.project.cheerha.domain.keyword.entity.QUserKeyword;
 import com.project.cheerha.domain.notice.dto.JobOpeningKeywordDto;
