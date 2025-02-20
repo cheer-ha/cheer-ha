@@ -1,0 +1,115 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.4.2'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.project'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	//spring boot
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	//jpa
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
+	//lombok
+	implementation 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// test
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+
+	//mysql
+	implementation 'org.springframework.boot:spring-boot-starter'
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// jwt
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5' // JSON 처리용
+	compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
+	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
+
+	//querydsl
+	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+
+	//개발용
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	//Mockito
+	testImplementation 'org.mockito:mockito-core:5.5.0'
+	testImplementation 'org.mockito:mockito-junit-jupiter:5.5.0'
+
+	//AssertJ
+	testImplementation 'org.assertj:assertj-core:3.24.2'
+
+	//AOP
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+	// bcrypt
+	implementation 'at.favre.lib:bcrypt:0.10.2'
+
+	// redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// redisson
+	implementation 'org.redisson:redisson-spring-boot-starter:3.23.0'
+
+	// test
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+
+	// email
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	//healthcheck
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	//prometheus
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+
+	// email
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	//healthcheck
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	//prometheus
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+
+// elasticsearch
+	implementation 'co.elastic.clients:elasticsearch-java:8.17.2'  // Elasticsearch Java 클라이언트 (8.x 이상 버전 사용 시)
+	implementation 'org.elasticsearch.client:elasticsearch-rest-client:8.15.5' // Elasticsearch REST 클라이언트 (8.x 버전과 호환)
+	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch' // Spring Data Elasticsearch 스타터 (Elasticsearch와 Spring Data 통합)
+	implementation 'org.apache.httpcomponents:httpclient:4.5.13' // Apache HttpClient (HTTP 요청을 보내기 위한 클라이언트 라이브러리)
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.0' // Jackson Databind (JSON 데이터 바인딩을 위한 라이브러리)
+	implementation 'org.apache.commons:commons-csv:1.8' // Apache Commons CSV (CSV 파일을 읽고 쓰기 위한 라이브러리)
+	implementation 'com.opencsv:opencsv:5.6' // OpenCSV (CSV 파일을 처리하기 위한 라이브러리)
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+clean { delete file('src/main/generated') }
