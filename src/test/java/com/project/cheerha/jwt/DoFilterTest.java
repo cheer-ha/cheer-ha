@@ -1,6 +1,7 @@
 package com.project.cheerha.jwt;
 
 import com.project.cheerha.common.config.JwtFilter;
+import com.project.cheerha.common.exception.handler.FilterExceptionHandler;
 import com.project.cheerha.common.properties.JwtSecurityProperties;
 import com.project.cheerha.common.redis.RedisBlackListService;
 import com.project.cheerha.common.util.JwtUtil;
@@ -15,14 +16,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,6 +41,9 @@ public class DoFilterTest {
 
     @Mock
     private FilterChain filterChain;
+
+    @Mock
+    private FilterExceptionHandler filterExceptionHandler;
 
     @InjectMocks
     private JwtFilter jwtFilter;
@@ -66,8 +68,11 @@ public class DoFilterTest {
 
         jwtFilter.doFilter(request, response, filterChain);
 
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
+        verify(filterExceptionHandler, times(1))
+                .sendErrorResponse(any(HttpServletResponse.class), eq(HttpStatus.BAD_REQUEST), anyString());
     }
+
+
 
     @Test
     void testFilter_토큰값이_정상일때() throws ServletException, IOException {
@@ -87,7 +92,7 @@ public class DoFilterTest {
         when(securityProperties.getToken()).thenReturn(token);
         when(token.getPrefix()).thenReturn("Bearer ");
 
-        jwtFilter = new JwtFilter(securityProperties, redisBlackListService, jwtUtil);
+        jwtFilter = new JwtFilter(securityProperties, redisBlackListService, jwtUtil, filterExceptionHandler);
         jwtFilter.doFilter(request, response, filterChain);
 
         verify(filterChain, times(1)).doFilter(request, response);
@@ -102,13 +107,11 @@ public class DoFilterTest {
 
         JwtSecurityProperties securityProperties = mock(JwtSecurityProperties.class);
 
-        PrintWriter writer = new PrintWriter(new StringWriter());
-        when(response.getWriter()).thenReturn(writer);
-
-        jwtFilter = new JwtFilter(securityProperties, redisBlackListService, jwtUtil);
+        jwtFilter = new JwtFilter(securityProperties, redisBlackListService, jwtUtil, filterExceptionHandler);
         jwtFilter.doFilter(request, response, filterChain);
 
-        verify(response, times(1)).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(filterExceptionHandler, times(1))
+                .sendErrorResponse(any(HttpServletResponse.class), eq(HttpStatus.UNAUTHORIZED), anyString());
     }
 
     @Test
@@ -119,12 +122,10 @@ public class DoFilterTest {
 
         when(redisBlackListService.isBlackList("blackListToken")).thenReturn(true);
 
-        PrintWriter writer = new PrintWriter(new StringWriter());
-        when(response.getWriter()).thenReturn(writer);
-
         jwtFilter.doFilter(request, response, filterChain);
 
-        verify(response, times(1)).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(filterExceptionHandler, times(1))
+                .sendErrorResponse(any(HttpServletResponse.class), eq(HttpStatus.UNAUTHORIZED), anyString());
     }
 
     @Test
@@ -137,7 +138,8 @@ public class DoFilterTest {
 
         jwtFilter.doFilter(request, response, filterChain);
 
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
+        verify(filterExceptionHandler, times(1))
+                .sendErrorResponse(any(HttpServletResponse.class), eq(HttpStatus.BAD_REQUEST), anyString());
     }
 
     @Test
@@ -152,12 +154,10 @@ public class DoFilterTest {
 
         when(claims.getSubject()).thenReturn(null);
 
-        PrintWriter writer = new PrintWriter(new StringWriter());
-        when(response.getWriter()).thenReturn(writer);
-
         jwtFilter.doFilter(request, response, filterChain);
 
-        verify(response, times(1)).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        verify(filterExceptionHandler, times(1))
+                .sendErrorResponse(any(HttpServletResponse.class), eq(HttpStatus.BAD_REQUEST), anyString());
     }
 
     @Test
@@ -179,13 +179,11 @@ public class DoFilterTest {
         when(securityProperties.getToken()).thenReturn(token);
         when(token.getPrefix()).thenReturn("Bearer ");
 
-        PrintWriter writer = new PrintWriter(new StringWriter());
-        when(response.getWriter()).thenReturn(writer);
-
-        jwtFilter = new JwtFilter(securityProperties, redisBlackListService, jwtUtil);
+        jwtFilter = new JwtFilter(securityProperties, redisBlackListService, jwtUtil, filterExceptionHandler);
         jwtFilter.doFilter(request, response, filterChain);
 
-        verify(response, times(1)).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        verify(filterExceptionHandler, times(1))
+                .sendErrorResponse(any(HttpServletResponse.class), eq(HttpStatus.BAD_REQUEST), anyString());
     }
 
 }

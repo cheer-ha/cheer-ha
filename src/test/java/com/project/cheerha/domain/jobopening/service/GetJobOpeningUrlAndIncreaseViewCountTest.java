@@ -40,6 +40,7 @@ public class GetJobOpeningUrlAndIncreaseViewCountTest {
         jobOpeningRepository.saveAll(jobOpenings);
     }
 
+    //todo: 테이블 분리한 비관적 락에 대해 테스트 코드 변경을 추후에 할 예정
     @Test
     @DisplayName("비관적 락 적용 후 동시에 채용공고를 클릭했을 때")
     void 비관적_락_여러_사용자가_동시에_채용공고_클릭() throws InterruptedException {

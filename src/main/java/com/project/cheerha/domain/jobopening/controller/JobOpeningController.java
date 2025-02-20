@@ -21,6 +21,12 @@ public class JobOpeningController {
 
     private final JobOpeningService jobOpeningService;
 
+    /**
+     * 원하는 채용공고에 리다이렉팅 되게 하는 API입니다.
+     * @param id 조회할 채용공고 페이지의 식별 id값
+     * @return 리다이렉트 된 채용공고 사이트
+     */
+
     @GetMapping("/{id}")
     public RedirectView getRedirectedView(@PathVariable Long id) {
         String url = jobOpeningService.getJobOpeningUrlAndIncreaseViewCount(id);
