@@ -18,7 +18,7 @@ import java.util.*;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class JobOpeningScheduler {
+public class JobOpeningInsertScheduler {
 
     private final JobOpeningRepository jobOpeningRepository;
     private final JobOpeningKeywordRepository jobOpeningKeywordRepository;
