@@ -70,7 +70,7 @@ public class IpBlockingAspect {
             //서로 다른 이메일이 3개 이상이면 차단
             if (!Objects.requireNonNull(attemptedEmails).contains(email) && attemptedEmails.size() >= MAX_DIFFERENT_EMAILS) {
                 String message = BAN_MASSAGE;
-                BannedIp bannedIp = BannedIp.of(
+                BannedIp bannedIp = BannedIp.toEntity(
                     ip, message
                 );
                 bannedIpRepository.save(bannedIp);
