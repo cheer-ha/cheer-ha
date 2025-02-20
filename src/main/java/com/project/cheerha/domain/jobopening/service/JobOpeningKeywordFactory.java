@@ -13,6 +13,7 @@ public class JobOpeningKeywordFactory {
 
     private static final Random random = new Random();
 
+    //jobOpeningGenerator 의 로직을 그대로 사용하므로, 상수를 static 으로 두지 않음
     public static List<JobOpeningKeyword> createRandomKeywordList(JobOpening jobOpening) {
         int keywordCount = 45;
         int numKeywords = random.nextInt(6) + 5;

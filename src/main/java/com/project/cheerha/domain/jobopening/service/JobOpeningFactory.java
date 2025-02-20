@@ -17,6 +17,9 @@ public class JobOpeningFactory {
 
     private static final Random random = new Random();
 
+    //jobOpeningGenerator 의 로직을 그대로 사용하므로, 상수를 static 으로 두지 않음
+    //location "서울" 50%로 확률 올림
+    //url 도 UUID 로 랜덤으로 생성
     public static JobOpening createRandomJobOpening() {
         String company = companies[random.nextInt(companies.length)];
         String position = positions[random.nextInt(positions.length)];
@@ -53,6 +56,7 @@ public class JobOpeningFactory {
         );
     }
 
+    //jobOpeningGenerator 의 로직을 그대로 사용함
     private static int calculateRandomSalary() {
         double randomPercentage = random.nextDouble();
         if (randomPercentage <= 0.5) {
