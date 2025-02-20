@@ -1,31 +1,37 @@
-package com.project.cheerha.common.interceptor;
+package com.project.cheerha.common.config;
 
-import com.project.cheerha.common.exception.auth.AuthErrorCode;
-import com.project.cheerha.common.exception.auth.UnAuthorizedException;
 import com.project.cheerha.domain.auth.repository.BannedIpRepository;
+import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.HandlerInterceptor;
+
+import java.io.IOException;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class IpBlockingInterceptor implements HandlerInterceptor {
+public class IpBlockingFilter implements Filter {
 
     private final BannedIpRepository bannedIpRepository;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        String ip = getClientIp(request);
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
+        String ip = getClientIp(httpRequest);
 
         if (bannedIpRepository.existsByIp(ip)) {
             log.warn("차단된 IP 접근 시도: {}", ip);
-            throw new UnAuthorizedException(AuthErrorCode.BANNED_IP);
+            httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "차단된 IP입니다.");
+            return;
         }
-        return true;
+
+        chain.doFilter(request, response);
     }
 
     private String getClientIp(HttpServletRequest request) {
@@ -35,7 +41,6 @@ public class IpBlockingInterceptor implements HandlerInterceptor {
         } else {
             ip = request.getRemoteAddr();
         }
-
         if (ip.contains(":")) {
             log.info("IPv6 추출 성공: {}", ip);
         } else {
