@@ -1,10 +1,10 @@
-package com.project.cheerha.domain.jobOpening.service;
+package com.project.cheerha.domain.jobopening.service;
 
 import com.project.cheerha.domain.history.service.HistoryService;
-import com.project.cheerha.domain.jobOpening.dto.request.ReadJobOpeningRequestDto;
-import com.project.cheerha.domain.jobOpening.dto.response.ReadJobOpeningResponseDto;
-import com.project.cheerha.domain.jobOpening.entity.JobOpening;
-import com.project.cheerha.domain.jobOpening.repository.JobOpeningRepository;
+import com.project.cheerha.domain.jobopening.dto.request.ReadJobOpeningRequestDto;
+import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningResponseDto;
+import com.project.cheerha.domain.jobopening.entity.JobOpening;
+import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

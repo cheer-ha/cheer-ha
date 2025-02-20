@@ -1,7 +1,7 @@
-package com.project.cheerha.domain.jobOpening.repository;
+package com.project.cheerha.domain.jobopening.repository;
 
-import com.project.cheerha.domain.jobOpening.dto.request.ReadJobOpeningRequestDto;
-import com.project.cheerha.domain.jobOpening.dto.response.ReadJobOpeningResponseDto;
+import com.project.cheerha.domain.jobopening.dto.request.ReadJobOpeningRequestDto;
+import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

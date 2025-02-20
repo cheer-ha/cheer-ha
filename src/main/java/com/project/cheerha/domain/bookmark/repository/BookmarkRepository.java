@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
+public interface BookmarkRepository extends JpaRepository<Bookmark, Long>, BookmarkRepositoryQuery {
 
     /**
      * 사용자가 이미 특정 채용 공고를 북마크한 적이 있는지 확인하는 메서드입니다.
