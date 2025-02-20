@@ -93,11 +93,11 @@ public class GetJobOpeningUrlAndIncreaseViewCountTest {
 //    @DisplayName("낙관적 락을 이용한 동시성 제어")
 //    void 낙관적_락_여러_사용자가_동시에_채용공고를_클릭함() throws InterruptedException {
 //        //given
-//        JobOpening jobOpening = jobOpeningRepository.findAll().stream()
+//        JobOpening jobopening = jobOpeningRepository.findAll().stream()
 //            .findFirst()
 //            .orElseThrow(() -> new RuntimeException("테스트를 위한 채용공고 데이터가 없습니다."));
 //
-//        Long jobOpeningId = jobOpening.getId();
+//        Long jobOpeningId = jobopening.getId();
 //        long startTime = System.nanoTime();
 //
 //        AtomicInteger successCount = new AtomicInteger(0);

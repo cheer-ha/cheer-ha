@@ -4,7 +4,7 @@ import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
 import static com.project.cheerha.domain.keyword.entity.QUserKeyword.*;
 import static com.project.cheerha.domain.user.entity.QUser.*;
-import static com.project.cheerha.domain.jobOpening.entity.QJobOpening.*;
+import static com.project.cheerha.domain.jobopening.entity.QJobOpening.*;
 import static com.project.cheerha.domain.keyword.entity.QJobOpeningKeyword.*;
 
 import com.project.cheerha.domain.notice.QUserDto;

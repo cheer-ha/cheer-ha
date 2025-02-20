@@ -118,7 +118,7 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
     /**
      * 조회수 기준으로 상위 100개의 인기 채용공고를 조회하고, 페이지네이션을 지원하는 메서드입니다.
      *
-     * 이 메서드는 `jobOpening` 테이블에서 조회수(viewCount)를 기준으로 상위 100개의 인기 채용공고를 내림차순으로 조회합니다.
+     * 이 메서드는 `jobopening` 테이블에서 조회수(viewCount)를 기준으로 상위 100개의 인기 채용공고를 내림차순으로 조회합니다.
      * 페이지네이션을 고려하여 사용자가 요청한 페이지에 맞는 데이터를 가져오며, 각 페이지당 표시되는 항목 수는 `pageable.getPageSize()`로 결정됩니다.
      * 또한, 데이터는 `offset`과 `limit`을 사용하여 최적화된 방식으로 쿼리됩니다.
      *
