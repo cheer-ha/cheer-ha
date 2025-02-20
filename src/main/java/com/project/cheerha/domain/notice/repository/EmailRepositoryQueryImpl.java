@@ -2,13 +2,13 @@ package com.project.cheerha.domain.notice.repository;
 
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
+import static com.project.cheerha.domain.keyword.entity.QUserKeyword.*;
+import static com.project.cheerha.domain.user.entity.QUser.*;
+import static com.project.cheerha.domain.jobOpening.entity.QJobOpening.*;
+import static com.project.cheerha.domain.keyword.entity.QJobOpeningKeyword.*;
 
-import com.project.cheerha.domain.jobOpening.entity.QJobOpening;
-import com.project.cheerha.domain.keyword.entity.QJobOpeningKeyword;
-import com.project.cheerha.domain.keyword.entity.QUserKeyword;
 import com.project.cheerha.domain.notice.QUserDto;
 import com.project.cheerha.domain.notice.UserDto;
-import com.project.cheerha.domain.user.entity.QUser;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -33,15 +33,12 @@ public class EmailRepositoryQueryImpl implements EmailRepositoryQuery {
     public Map<Long, List<String>> findAllJobOpeningKeywords(
         ZonedDateTime referenceTime
     ) {
-        QJobOpeningKeyword jok = QJobOpeningKeyword.jobOpeningKeyword;
-        QJobOpening jobOpening = QJobOpening.jobOpening;
-
         return queryFactory
-            .from(jok)
-            .join(jok.jobOpening, jobOpening)
+            .from(jobOpeningKeyword)
+            .join(jobOpeningKeyword.jobOpening, jobOpening)
             .where(jobOpening.createdAt.after(referenceTime)) // 기준 시간 이후 생성된 채용 공고
             .transform(
-                groupBy(jok.keyword.id) // 키워드 ID별로 그룹화
+                groupBy(jobOpeningKeyword.keyword.id) // 키워드 ID별로 그룹화
                     .as(list(jobOpening.jobOpeningUrl)) // URL 목록을 그룹에 매핑
             );
     }
@@ -53,8 +50,6 @@ public class EmailRepositoryQueryImpl implements EmailRepositoryQuery {
      */
     @Override
     public List<UserDto> findAllUserKeywords() {
-        QUserKeyword userKeyword = QUserKeyword.userKeyword;
-        QUser user = QUser.user;
 
         return queryFactory
             .select(

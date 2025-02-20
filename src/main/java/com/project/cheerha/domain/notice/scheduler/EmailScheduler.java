@@ -26,8 +26,8 @@ public class EmailScheduler {
     private final EmailService emailService;
     private final ThreadPoolTaskScheduler threadPoolScheduler;
 
-    // 30초마다 일정 주기로 이메일 전송 작업을 처리하는 메소드
-    @Scheduled(cron = "*/30 * * * * *")
+    // 아침 9시와 오후 5시에 실행
+    @Scheduled(cron = "0 0 9,17 * * *")
     @Transactional
     public void sendJobOpeningMatchingNotices() {
 
