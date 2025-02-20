@@ -5,6 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+//스케줄링을 랜덤한 간격으로 실행할 수 있게 하는 커스텀 어노테이션
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ScheduledDynamic {
