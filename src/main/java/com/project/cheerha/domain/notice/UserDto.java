@@ -1,15 +1,14 @@
-package com.project.cheerha.domain.notice.dto.refactor;
+package com.project.cheerha.domain.notice;
 
 import com.querydsl.core.annotations.QueryProjection;
 
-
-public record UserKeywordDto(
+public record UserDto (
     Long keywordId,
     String email
 ) {
 
     @QueryProjection
-    public UserKeywordDto(
+    public UserDto(
         Long keywordId,
         String email
     ) {
