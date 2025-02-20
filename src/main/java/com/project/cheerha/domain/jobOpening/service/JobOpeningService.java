@@ -1,16 +1,16 @@
-package com.project.cheerha.domain.jobOpening.service;
+package com.project.cheerha.domain.jobopening.service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import com.project.cheerha.domain.history.entity.History;
 import com.project.cheerha.domain.history.repository.HistoryRepository;
-import com.project.cheerha.domain.jobOpening.dto.request.ReadJobOpeningRequestDto;
-import com.project.cheerha.domain.jobOpening.dto.response.ReadJobOpeningElasticResponseDto;
-import com.project.cheerha.domain.jobOpening.dto.response.ReadJobOpeningResponseDto;
-import com.project.cheerha.domain.jobOpening.entity.JobOpening;
-import com.project.cheerha.domain.jobOpening.entity.JobOpeningDocument;
-import com.project.cheerha.domain.jobOpening.repository.JobOpeningRepository;
+import com.project.cheerha.domain.jobopening.dto.request.ReadJobOpeningRequestDto;
+import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningElasticResponseDto;
+import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningResponseDto;
+import com.project.cheerha.domain.jobopening.entity.JobOpening;
+import com.project.cheerha.domain.jobopening.entity.JobOpeningDocument;
+import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.service.UserFindByService;
 import lombok.RequiredArgsConstructor;

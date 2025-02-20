@@ -1,4 +1,7 @@
-package com.project.cheerha.domain.jobOpening.dto.response;
+package com.project.cheerha.domain.jobopening.dto.response;
+
+import com.project.cheerha.domain.jobopening.entity.EducationLevel;
+import com.project.cheerha.domain.jobopening.entity.EmploymentType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,8 +17,8 @@ public record ReadJobOpeningElasticResponseDto(
         String company, // 회사 이름
         String location, // 채용 지역
         Integer salary, // 연봉
-        String employmentType, // 고용 형태 (예: 정규직, 계약직 등)
-        String educationLevel, // 요구하는 학력 수준
+        EmploymentType employmentType, // 고용 형태 (예: 정규직, 계약직 등)
+        EducationLevel educationLevel, // 요구하는 학력 수준
         String jobOpeningUrl, // 채용공고 URL
         Integer minExperienceYears, // 최소 경력 연수
         Integer maxExperienceYears, // 최대 경력 연수

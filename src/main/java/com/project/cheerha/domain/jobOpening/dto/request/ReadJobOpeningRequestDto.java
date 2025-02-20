@@ -1,5 +1,7 @@
-package com.project.cheerha.domain.jobOpening.dto.request;
+package com.project.cheerha.domain.jobopening.dto.request;
 
+import com.project.cheerha.domain.jobopening.entity.EducationLevel;
+import com.project.cheerha.domain.jobopening.entity.EmploymentType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,7 +14,7 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 public class ReadJobOpeningRequestDto {
 
-    private String educationLevel;
+    private EducationLevel educationLevel;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private ZonedDateTime hiringStartAt;
@@ -21,7 +23,7 @@ public class ReadJobOpeningRequestDto {
 
     private String location;
     private Integer experienceYears;
-    private String employmentType;
+    private EmploymentType employmentType;
     private String requiredSkill;
 
     private String searchTerm;
