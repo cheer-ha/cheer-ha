@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 public enum EducationLevel {
 
-    무관, 고졸, 대졸, 학사, 석사, 박사;
+    무관, 고졸, 전문학사, 학사, 석사, 박사;
 
     public static EducationLevel toEnum(String educationLevel) {
         return Arrays.stream(EducationLevel.values())
