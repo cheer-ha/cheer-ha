@@ -40,6 +40,7 @@ public class JobOpeningService {
                 JobOpeningViewCount newViewCount = JobOpeningViewCount.create(jobOpening); // 초기 조회수 0
                 return jobOpeningViewCountRepository.save(newViewCount);
             });
+
         String url = jobOpening.getJobOpeningUrl();
         if (!url.startsWith("http")) {
             url = "https://" + url;

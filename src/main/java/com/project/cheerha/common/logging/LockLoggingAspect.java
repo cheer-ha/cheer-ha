@@ -18,7 +18,7 @@ public class LockLoggingAspect {
      * - 메서드 실행 후 리턴된 URL을 로그로 출력
      * - 예외 발생 시 로그로 출력
      */
-    @Around("execution(* com.project.cheerha.domain.jobOpening.service.JobOpeningService.getJobOpeningUrlAndIncreaseViewCount(..))")
+    @Around("execution(* com.project.cheerha.domain.jobopening.service.JobOpeningService.getJobOpeningUrlAndIncreaseViewCount(..))")
     public Object redirectUrlLog(ProceedingJoinPoint joinPoint) throws Throwable {
         Object[] args = joinPoint.getArgs(); //메서드의 매개변수를 가져옴, 즉 id값 가져오기
         log.info("채용공고 id: {}", Arrays.toString(args));
