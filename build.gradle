@@ -89,6 +89,15 @@ dependencies {
 	//prometheus
 	implementation 'io.micrometer:micrometer-registry-prometheus'
 
+	// email
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	//healthcheck
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	//prometheus
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+
 // elasticsearch
 	implementation 'co.elastic.clients:elasticsearch-java:8.17.2'  // Elasticsearch Java 클라이언트 (8.x 이상 버전 사용 시)
 	implementation 'org.elasticsearch.client:elasticsearch-rest-client:8.15.5' // Elasticsearch REST 클라이언트 (8.x 버전과 호환)

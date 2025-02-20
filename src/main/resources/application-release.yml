@@ -1,0 +1,66 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    url: jdbc:mysql://${DB_URL}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  data:
+    redis:
+      port: ${REDIS_PORT}
+      host: ${REDIS_HOST}
+      database: ${REDIS_DATABASE}
+      ssl:
+        enabled: true
+
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600  # 캐시 항목의 TTL(Time To Live)을 1시간으로 설정
+
+jwt:
+  secret:
+    key: ${JWT_KEY}
+  token:
+    prefix: ${JWT_PREFIX}
+    refreshPrefix: ${REFRESH_PREFIX}
+    blackListPrefix: ${BLACK_PREFIX}
+    expiration: ${JWT_EXPIRATION}
+    refreshExpiration: ${REFRESH_EXPIRATION}
+    blackListExpiration: ${BLACK_EXPIRATION}
+
+security:
+  bcrypt:
+    cost: ${SECURITY_COST}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+server:
+  ssl:
+    enabled: false
+  port: 8080
+
+
