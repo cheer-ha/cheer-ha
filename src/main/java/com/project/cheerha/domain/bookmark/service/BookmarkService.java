@@ -1,5 +1,7 @@
 package com.project.cheerha.domain.bookmark.service;
 
+import com.project.cheerha.domain.bookmark.dto.request.ReadBookmarkAgeRequestDto;
+import com.project.cheerha.domain.bookmark.dto.response.BookmarkCustomAgeResponseDto;
 import com.project.cheerha.domain.bookmark.dto.response.ReadBookmarkResponseDto;
 import com.project.cheerha.domain.bookmark.entity.Bookmark;
 import com.project.cheerha.domain.bookmark.repository.BookmarkRepository;
@@ -73,5 +75,11 @@ public class BookmarkService {
     @CacheEvict(value = "bookmarks", key = "#userId")
     public void deleteBookmark(Long userId, Long jobOpeningId) {
         bookmarkRepository.deleteByUserIdAndJobOpeningId(userId, jobOpeningId);
+    }
+
+    public Page<BookmarkCustomAgeResponseDto> readTop10BookmarkByAgeGroup (
+        ReadBookmarkAgeRequestDto requestDto, Pageable pageable
+    ) {
+       return bookmarkRepository.readTop10BookmarksByAgeGroup(requestDto, pageable);
     }
 }
