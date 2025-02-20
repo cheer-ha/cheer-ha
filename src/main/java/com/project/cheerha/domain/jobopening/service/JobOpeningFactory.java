@@ -56,7 +56,7 @@ public class JobOpeningFactory {
         );
     }
 
-    //jobOpeningGenerator 의 로직을 그대로 사용함
+    //jobOpeningGenerator 의 로직을 그대로 사용하므로, 상수를 static 으로 두지 않음
     private static int calculateRandomSalary() {
         double randomPercentage = random.nextDouble();
         if (randomPercentage <= 0.5) {
