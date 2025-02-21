@@ -11,12 +11,14 @@ import java.time.ZonedDateTime;
 import jakarta.persistence.*;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor
 @Table(name = "job_opening")
 public class JobOpening {
     @Id
@@ -65,10 +67,6 @@ public class JobOpening {
     private ZonedDateTime createdAt = ZonedDateTime.now();
 
     private int viewCount;
-
-    public void increaseViewCount() {
-        this.viewCount++;
-    }
 
     @OneToMany(mappedBy = "jobOpening", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<JobOpeningKeyword> jobOpeningKeywordList = new ArrayList<>();

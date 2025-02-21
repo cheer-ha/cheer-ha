@@ -10,9 +10,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor
 @Table(name = "job_opening_keyword", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"keyword_id", "job_opening_id"})}
 )
