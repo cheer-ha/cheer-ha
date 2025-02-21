@@ -10,6 +10,10 @@ public enum EducationLevel {
     무관, 고졸, 전문학사, 학사, 석사, 박사;
 
     public static EducationLevel toEnum(String educationLevel) {
+        if (educationLevel == null || educationLevel.isBlank()) {
+            return null;
+        }
+
         return Arrays.stream(EducationLevel.values())
             .filter(r -> r.name().equalsIgnoreCase(educationLevel))
             .findFirst()
