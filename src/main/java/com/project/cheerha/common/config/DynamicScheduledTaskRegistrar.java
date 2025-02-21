@@ -1,6 +1,7 @@
 package com.project.cheerha.common.config;
 
 import com.project.cheerha.common.annotation.ScheduledDynamic;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;
@@ -14,6 +15,7 @@ import java.util.Random;
  * 어노테이션 @ScheduledDynamic 이 달린 메서드를 직접 찾아서
  * 랜덤한 시간 간격을 두고 스케줄링 수행
  */
+@Slf4j
 @Configuration
 public class DynamicScheduledTaskRegistrar implements BeanPostProcessor {
 
@@ -62,16 +64,9 @@ public class DynamicScheduledTaskRegistrar implements BeanPostProcessor {
      */
     private void scheduleNextRun(Runnable task, ScheduledDynamic annotation) {
         long interval = getRandomInterval(annotation.minMinutes(), annotation.maxMinutes());
-
-        taskScheduler.schedule(() -> {
-            try {
-                task.run();
-            } finally {
-                //한 번 실행 끝나면 다시 다음 스케줄 예약함(재귀)
-                scheduleNextRun(task, annotation);
-            }
-        }, triggerContext -> {
+        taskScheduler.schedule(task, triggerContext -> {
             long nextExecutionTime = System.currentTimeMillis() + interval;
+            log.info("다음 스케줄링 시간 : {}", new Date(nextExecutionTime));
             return new Date(nextExecutionTime).toInstant();
         });
     }
