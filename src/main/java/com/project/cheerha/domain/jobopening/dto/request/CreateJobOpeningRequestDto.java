@@ -1,7 +1,5 @@
 package com.project.cheerha.domain.jobopening.dto.request;
 
-import com.project.cheerha.domain.jobopening.entity.EducationLevel;
-
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -23,6 +21,7 @@ public record CreateJobOpeningRequestDto(
         String position,
         ZonedDateTime hiringStartAt,
         ZonedDateTime hiringEndAt,
+        ZonedDateTime createdAt,
         List<String> jobOpeningKeywordList
 ) {
 
