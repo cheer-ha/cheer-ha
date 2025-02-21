@@ -13,6 +13,8 @@ import com.project.cheerha.domain.jobopening.entity.JobOpeningDocument;
 import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.service.UserFindByService;
+import com.project.cheerha.domain.viewcount.entity.JobOpeningViewCount;
+import com.project.cheerha.domain.viewcount.repository.JobOpeningViewCountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -34,6 +36,7 @@ public class JobOpeningService {
     private final UserFindByService userFindByIdService;
     private final JobOpeningFindByService jobOpeningFindByService;
     private final ElasticsearchClient elasticsearchClient;
+    private final JobOpeningViewCountRepository jobOpeningViewCountRepository;
 
     /**
      * 채용공고 리다이렉트 동시성 제어를 위한 집계 테이블 조회수 카운팅 메서드 입니다.
