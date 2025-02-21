@@ -22,7 +22,7 @@ public record ReadJobOpeningElasticResponseDto(
         String position, // 채용 직무
         LocalDateTime hiringStartAt, // 채용 시작일
         LocalDateTime hiringEndAt, // 채용 마감일
-        LocalDateTime CreateAt, // 채용공고 생성일
+        LocalDateTime createdAt, // 채용공고 생성일
         Integer viewCount, // 조회수
         List<String> requiredSkills // 요구되는 기술 목록
 ) {
