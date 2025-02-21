@@ -14,7 +14,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-@Document(indexName = "job_opening")
+@Document(indexName = "job-opening")
 public class JobOpeningDocument {
 
     @Id

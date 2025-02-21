@@ -35,15 +35,6 @@ public class CsvToJsonElasticsearchService {
     private String indexName;
 
     /**
-     * 애플리케이션 시작 시 호출되는 메서드입니다.
-     * CSV 파일에서 데이터를 로드하여 Elasticsearch에 삽입합니다.
-     */
-    @PostConstruct
-    public void loadCsvData() {
-        insertDataFromCsv(csvFilePath);
-    }
-
-    /**
      * 주어진 파일 경로의 CSV 데이터를 Elasticsearch에 삽입합니다.
      *
      * @param filePath CSV 파일의 경로
