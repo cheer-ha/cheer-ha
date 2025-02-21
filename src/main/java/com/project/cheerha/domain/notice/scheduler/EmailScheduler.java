@@ -31,45 +31,31 @@ public class EmailScheduler {
     @Transactional
     public void sendJobOpeningMatchingNotices() {
 
-        // 조회 시간: 30초 (UTC)
-        // 데이터베이스에 저장된 시간과 비교하기 편하게 UTC로 변환
-        ZonedDateTime referenceTime = ZonedDateTime.now().minusSeconds(30L).withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime referenceTime = ZonedDateTime.now().minusDays(3L).withZoneSameInstant(ZoneId.of("UTC"));
 
-        // 조회 시간에 맞는 채용 공고 키워드 조회
         Map<Long, List<String>> jobOpeningKeywordMap = fetchService.findJobOpeningKeywordMap(referenceTime);
 
-        // 사용자 키워드 조회 (이메일과 매칭할 사용자 정보)
         List<UserDto> userDtoList = fetchService.findUserKeywordList();
 
-        // 사용자 이메일과 매칭된 채용 공고를 저장할 Map
         Map<String, Set<String>> emailUrlMap = new HashMap<>();
 
-        // 사용자마다 키워드를 기준으로 매칭된 채용 공고 URL을 찾음
         for (UserDto dto : userDtoList) {
-            // 해당 사용자의 키워드로 매칭되는 채용 공고 URL 목록 조회
             List<String> matchingUrlList = jobOpeningKeywordMap.getOrDefault(
                 dto.keywordId(),
                 List.of()
             );
 
-            // 매칭된 채용 공고가 있으면 해당 사용자의 이메일에 URL 추가
             if (!matchingUrlList.isEmpty()) {
                 emailUrlMap.computeIfAbsent(
                     dto.email(),
                     email -> new HashSet<>()
                 ).addAll(matchingUrlList);
-                // 해당 이메일에 매칭된 URL을 추가
             }
         }
 
-        // 각 이메일로 매칭된 채용 공고를 비동기로 전송
-        // SchedulerConfig에서 설정한 스레드 풀 10개 사용
         emailUrlMap.forEach((email, urlSet) -> {
-            threadPoolScheduler.submit(() -> {
-                log.info("매칭 결과: {} - {}", email, urlSet);
-                emailService.sendMail(email, urlSet);
-                // 매칭된 채용 공고 URL과 함께 해당 이메일로 전송
-            });
+            log.info("매칭 결과: {} - {}", email, urlSet);
+            emailService.sendMail(email, urlSet);
         });
     }
 }
