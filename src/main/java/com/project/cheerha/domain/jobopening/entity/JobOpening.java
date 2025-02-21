@@ -12,6 +12,7 @@ import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Table(name = "job_opening")
+@EntityListeners(AuditingEntityListener.class)
 public class JobOpening {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
