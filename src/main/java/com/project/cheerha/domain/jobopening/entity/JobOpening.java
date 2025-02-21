@@ -81,4 +81,28 @@ public class JobOpening {
         }
         return skillList;
     }
+
+    public static JobOpening toEntity(
+            String title, String company, String location, int salary,
+            String employmentType, String educationLevel, String jobOpeningUrl,
+            Integer minExperienceYears, Integer maxExperienceYears, String position,
+            ZonedDateTime hiringStartAt, ZonedDateTime hiringEndAt, ZonedDateTime createdAt) {
+
+        JobOpening jobOpening = new JobOpening();  // jobOpening 인스턴스 생성
+        jobOpening.title = title;
+        jobOpening.company = company;
+        jobOpening.location = location;
+        jobOpening.salary = salary;
+        jobOpening.employmentType = EmploymentType.valueOf(employmentType);
+        jobOpening.educationLevel = EducationLevel.valueOf(educationLevel);
+        jobOpening.jobOpeningUrl = jobOpeningUrl;
+        jobOpening.minExperienceYears = minExperienceYears;
+        jobOpening.maxExperienceYears = maxExperienceYears;
+        jobOpening.position = position;
+        jobOpening.hiringStartAt = hiringStartAt;
+        jobOpening.hiringEndAt = hiringEndAt;
+        jobOpening.createdAt = createdAt;
+
+        return jobOpening;
+    }
 }
