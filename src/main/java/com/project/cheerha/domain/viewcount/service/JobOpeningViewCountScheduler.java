@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ViewCountSchedulerService {
+public class JobOpeningViewCountScheduler {
 
     /**
      * 조회수 정보를 관리하는 Repository와 채용공고 정보를 관리하는 Repository
