@@ -11,4 +11,5 @@ public interface JobOpeningRepository extends JpaRepository<JobOpening, Long>, J
     @Modifying
     @Query("UPDATE JobOpening b SET b.viewCount = b.viewCount + :viewCount WHERE b.id = :id")
     void updateViewCount(@Param("id")Long id, @Param ("viewCount") Long viewCount);
+
 }

@@ -1,5 +1,7 @@
 package com.project.cheerha.domain.jobopening.dto.request;
 
+import com.project.cheerha.domain.jobopening.entity.EducationLevel;
+
 import java.time.ZonedDateTime;
 import java.util.List;
 

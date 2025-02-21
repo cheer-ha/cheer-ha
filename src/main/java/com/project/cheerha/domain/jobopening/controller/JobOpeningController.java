@@ -4,6 +4,7 @@ import com.project.cheerha.common.annotation.Auth;
 import com.project.cheerha.common.dto.ApiResponseDto;
 import com.project.cheerha.common.dto.AuthUser;
 import com.project.cheerha.domain.jobopening.dto.request.ReadJobOpeningRequestDto;
+import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningElasticResponseDto;
 import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningResponseDto;
 import com.project.cheerha.domain.jobopening.entity.JobOpening;
 import com.project.cheerha.domain.jobopening.service.JobOpeningFindByService;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
+
+import java.util.List;
 
 @RequestMapping("/job-opening")
 @RestController
@@ -102,5 +105,19 @@ public class JobOpeningController {
         Pageable pageable = validatePageSize(page, size);
         Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningService.readTop100PopularJobOpenings(pageable);
         return ApiResponseDto.success(dtoPage);
+    }
+
+    /**
+     * Elasticsearch를 사용하여 모든 채용 공고를 조회하는 API입니다.
+     *
+     * 이 API는 Elasticsearch를 통해 저장된 모든 채용 공고 목록을 조회합니다.
+     * 응답은 채용 공고 DTO의 리스트로 반환됩니다.
+     *
+     * @return 모든 채용 공고 목록을 포함한 API 응답 객체 (API 응답 형식: ApiResponseDto)
+     */
+    @GetMapping("/search/elastic")
+    public ResponseEntity<ApiResponseDto<List<ReadJobOpeningElasticResponseDto>>> readJobOpeningsUsingElasticsearch() {
+        List<ReadJobOpeningElasticResponseDto> dtoList = jobOpeningService.readAllJobOpeningsUsingElasticsearch();
+        return ApiResponseDto.success(dtoList);
     }
 }

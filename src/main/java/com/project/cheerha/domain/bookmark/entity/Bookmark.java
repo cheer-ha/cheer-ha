@@ -4,11 +4,9 @@ import com.project.cheerha.domain.jobopening.entity.JobOpening;
 import com.project.cheerha.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor
 @Table(name = "bookmark", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"user_id", "job_opening_id"})}
 )
