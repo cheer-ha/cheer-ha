@@ -3,8 +3,11 @@ package com.project.cheerha.domain.jobopening.service;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
+import com.project.cheerha.common.exception.data.DataErrorCode;
+import com.project.cheerha.common.exception.data.ElasticsearchQueryException;
 import com.project.cheerha.domain.history.entity.History;
 import com.project.cheerha.domain.history.repository.HistoryRepository;
+import com.project.cheerha.domain.history.service.HistoryService;
 import com.project.cheerha.domain.jobopening.dto.request.ReadJobOpeningRequestDto;
 import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningElasticResponseDto;
 import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningResponseDto;
@@ -32,7 +35,7 @@ import java.util.stream.Collectors;
 public class JobOpeningService {
 
     private final JobOpeningRepository jobOpeningRepository;
-    private final HistoryRepository historyRepository;
+    private final HistoryService historyService;
     private final UserFindByService userFindByIdService;
     private final JobOpeningFindByService jobOpeningFindByService;
     private final ElasticsearchClient elasticsearchClient;
@@ -88,8 +91,7 @@ public class JobOpeningService {
         User user = userFindByIdService.findById(userId);
 
         if (requestDto.getSearchTerm() != null) {
-            History history = History.toEntity(user, requestDto.getSearchTerm());
-            historyRepository.save(history);
+            historyService.saveSearchTerm(userId, requestDto.getSearchTerm());
         }
 
         Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningRepository.findAllByCondition(
@@ -120,7 +122,7 @@ public class JobOpeningService {
      * 이 메서드는 모든 채용공고를 가져와서 DTO로 변환하여 반환합니다.
      *
      * @return 채용공고 목록을 포함하는 DTO 리스트
-     * @throws RuntimeException Elasticsearch 쿼리 실행 실패 시 발생
+     * @throws ElasticsearchQueryException Elasticsearch 쿼리 실행 실패 시 발생
      */
     @Transactional(readOnly = true)
     public List<ReadJobOpeningElasticResponseDto> readAllJobOpeningsUsingElasticsearch() {
@@ -160,8 +162,8 @@ public class JobOpeningService {
                             job.getRequiredSkills()
                     )).collect(Collectors.toList());
         } catch (IOException e) {
-            // 예외 처리
-            throw new RuntimeException("Elasticsearch query failed", e);
+            // 사용자 정의 예외로 변환하여 던짐
+            throw new ElasticsearchQueryException(DataErrorCode.JOB_OPENING_NOT_FOUND);
         }
     }
 }
