@@ -17,11 +17,11 @@ import java.util.Base64;
 public class Aes256Util {
 
     private final JwtSecurityProperties jwtSecurityProperties;
-    private final String SECRET_KEY = jwtSecurityProperties.getSecret().getAesKey();
 
     public String encrypt(String plainText) {
         try {
-            SecretKeySpec secretKey = new SecretKeySpec(SECRET_KEY.getBytes(), "AES");
+            String aesSecretKey = jwtSecurityProperties.getSecret().getAesKey();
+            SecretKeySpec secretKey = new SecretKeySpec(aesSecretKey.getBytes(), "AES");
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             byte[] encryptedBytes = cipher.doFinal(plainText.getBytes());
@@ -33,7 +33,8 @@ public class Aes256Util {
 
     public String decrypt(String encryptedText) {
         try {
-            SecretKeySpec secretKey = new SecretKeySpec(SECRET_KEY.getBytes(), "AES");
+            String aesSecretKey = jwtSecurityProperties.getSecret().getAesKey();
+            SecretKeySpec secretKey = new SecretKeySpec(aesSecretKey.getBytes(), "AES");
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             byte[] decodedBytes = Base64.getDecoder().decode(encryptedText);
