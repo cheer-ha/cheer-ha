@@ -4,16 +4,22 @@ import com.project.cheerha.common.exception.auth.AuthErrorCode;
 import com.project.cheerha.common.exception.auth.UnAuthorizedException;
 import com.project.cheerha.common.exception.server.EncryptException;
 import com.project.cheerha.common.exception.server.ServerErrorCode;
+import com.project.cheerha.common.properties.JwtSecurityProperties;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 
+@Component
+@RequiredArgsConstructor
 public class Aes256Util {
 
-    private static final String SECRET_KEY = "SecretSecretSecretSecret";
+    private final JwtSecurityProperties jwtSecurityProperties;
+    private final String SECRET_KEY = jwtSecurityProperties.getSecret().getAesKey();
 
-    public static String encrypt(String plainText) {
+    public String encrypt(String plainText) {
         try {
             SecretKeySpec secretKey = new SecretKeySpec(SECRET_KEY.getBytes(), "AES");
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
@@ -25,7 +31,7 @@ public class Aes256Util {
         }
     }
 
-    public static String decrypt(String encryptedText) {
+    public String decrypt(String encryptedText) {
         try {
             SecretKeySpec secretKey = new SecretKeySpec(SECRET_KEY.getBytes(), "AES");
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");

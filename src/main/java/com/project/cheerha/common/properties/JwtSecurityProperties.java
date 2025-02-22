@@ -15,6 +15,7 @@ public class JwtSecurityProperties {
     @Getter
     @Setter
     public static class Secret {
+        private String aesKey;
         private String key;
     }
 

@@ -23,6 +23,7 @@ import org.springframework.util.StringUtils;
 public class JwtUtil {
 
     private final JwtSecurityProperties securityProperties;
+    private final Aes256Util aes256Util;
 
     private Key key;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
@@ -56,7 +57,7 @@ public class JwtUtil {
      */
     public String createToken(Long userId, Role role) {
         String payload = userId + ":" + role;
-        String encryptedPayload = Aes256Util.encrypt(payload);
+        String encryptedPayload = aes256Util.encrypt(payload);
         return generateJwt(encryptedPayload,
             securityProperties.getToken().getPrefix(),
             securityProperties.getToken().getExpiration());
@@ -69,7 +70,7 @@ public class JwtUtil {
      */
     public String createRefreshToken(Long userId) {
         String payload = String.valueOf(userId);
-        String encryptedPayload = Aes256Util.encrypt(payload);
+        String encryptedPayload = aes256Util.encrypt(payload);
         return generateJwt(encryptedPayload,
             securityProperties.getToken().getRefreshPrefix(),
             securityProperties.getToken().getRefreshExpiration());
@@ -108,7 +109,7 @@ public class JwtUtil {
     public Claims extractClaims(String token) {
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-            String decryptedSubject = Aes256Util.decrypt(claims.getSubject());
+            String decryptedSubject = aes256Util.decrypt(claims.getSubject());
             claims.setSubject(decryptedSubject);
             return claims;
         } catch (Exception e) {
