@@ -78,15 +78,13 @@ public class JwtFilter implements Filter {
                 return;
             }
 
-            httpRequest.setAttribute("userId", Long.parseLong(claims.getSubject()));
+            String[] decryptedData = claims.getSubject().split(":");
+            Long userId = Long.valueOf(decryptedData[0]);
+            httpRequest.setAttribute("userId", userId);
 
-            if (bearerJwt.startsWith(securityProperties.getToken().getPrefix())) {
-                String userRoleString = claims.get("userRole", String.class);
-                Role role = Role.valueOf(userRoleString);
-
-                if (userRoleString != null) {
-                    httpRequest.setAttribute("userRole", role);
-                }
+            if (bearerJwt.startsWith(securityProperties.getToken().getPrefix()) && decryptedData.length > 1) {
+                Role role = Role.valueOf(decryptedData[1]);
+                httpRequest.setAttribute("userRole", role);
             }
 
             chain.doFilter(request, response);
