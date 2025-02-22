@@ -26,14 +26,15 @@ public class EmailScheduler {
     private final EmailService emailService;
     private final ThreadPoolTaskScheduler threadPoolScheduler;
 
-    // 아침 9시와 오후 5시에 실행
-    @Scheduled(cron = "0 0 9,17 * * *")
+    @Scheduled(cron = "*/30 * * * * *")
     @Transactional
     public void sendJobOpeningMatchingNotices() {
 
-        ZonedDateTime referenceTime = ZonedDateTime.now().minusDays(3L).withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime referenceTime = ZonedDateTime.now().minusDays(3L)
+            .withZoneSameInstant(ZoneId.of("UTC"));
 
-        Map<Long, List<String>> jobOpeningKeywordMap = fetchService.findJobOpeningKeywordMap(referenceTime);
+        Map<Long, List<String>> jobOpeningKeywordMap = fetchService.findJobOpeningKeywordMap(
+            referenceTime);
 
         List<UserDto> userDtoList = fetchService.findUserKeywordList();
 

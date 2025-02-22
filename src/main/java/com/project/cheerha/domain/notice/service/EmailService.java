@@ -18,7 +18,7 @@ public class EmailService {
     private final JavaMailSender javaMailSender;
     private static final String SENDER_EMAIL = "cheerha35@gmail.com";
 
-    @Async("emailTaskExecutor")
+    @Async
     public void sendMail(String recipientEmail, Set<String> jobOpeningUrlSet) {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
