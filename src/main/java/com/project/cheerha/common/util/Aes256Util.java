@@ -1,5 +1,10 @@
 package com.project.cheerha.common.util;
 
+import com.project.cheerha.common.exception.auth.AuthErrorCode;
+import com.project.cheerha.common.exception.auth.UnAuthorizedException;
+import com.project.cheerha.common.exception.server.EncryptException;
+import com.project.cheerha.common.exception.server.ServerErrorCode;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
@@ -16,7 +21,7 @@ public class Aes256Util {
             byte[] encryptedBytes = cipher.doFinal(plainText.getBytes());
             return Base64.getEncoder().encodeToString(encryptedBytes);
         } catch (Exception e) {
-            throw new RuntimeException("AES 암호화 실패", e);
+            throw new EncryptException(ServerErrorCode.TOKEN_ENCRYPTION_FAILED);
         }
     }
 
@@ -29,7 +34,7 @@ public class Aes256Util {
             byte[] decryptedBytes = cipher.doFinal(decodedBytes);
             return new String(decryptedBytes);
         } catch (Exception e) {
-            throw new RuntimeException("AES 복호화 실패", e);
+            throw new UnAuthorizedException(AuthErrorCode.TOKEN_DECRYPTION_FAILED);
         }
     }
 }
