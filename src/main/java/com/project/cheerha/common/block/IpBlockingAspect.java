@@ -27,7 +27,6 @@ public class IpBlockingAspect {
 
     private final RedisTemplate<String, String> redisTemplate;
     private final BannedIpRepository bannedIpRepository;
-    private final IpUtil ipUtil;
 
     private static final String LOGIN_ATTEMPT_PREFIX = "attempt:ip:";
     private static final long ATTEMPT_TTL = 15;        //15분 동안 시도 기록 유지
@@ -50,7 +49,7 @@ public class IpBlockingAspect {
         CreateLoginRequestDto dto = (CreateLoginRequestDto) args[0];
         String email = dto.email();
 
-        String ip = ipUtil.getClientIp(request);
+        String ip = IpUtil.getClientIp(request);
         String redisAttemptKey = LOGIN_ATTEMPT_PREFIX + ip;
 
         try {
