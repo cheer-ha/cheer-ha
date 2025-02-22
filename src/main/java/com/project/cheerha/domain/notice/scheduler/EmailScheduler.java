@@ -13,7 +13,6 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +23,6 @@ public class EmailScheduler {
 
     private final EmailDataFetchService fetchService;
     private final EmailService emailService;
-    private final ThreadPoolTaskScheduler threadPoolScheduler;
 
     @Scheduled(cron = "*/30 * * * * *")
     @Transactional
@@ -33,8 +31,7 @@ public class EmailScheduler {
         ZonedDateTime referenceTime = ZonedDateTime.now().minusDays(3L)
             .withZoneSameInstant(ZoneId.of("UTC"));
 
-        Map<Long, List<String>> jobOpeningKeywordMap = fetchService.findJobOpeningKeywordMap(
-            referenceTime);
+        Map<Long, List<String>> jobOpeningKeywordMap = fetchService.findJobOpeningKeywordMap(referenceTime);
 
         List<UserDto> userDtoList = fetchService.findUserKeywordList();
 
