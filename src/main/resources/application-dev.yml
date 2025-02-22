@@ -36,6 +36,7 @@ spring:
 
 jwt:
   secret:
+    aesKey: ${AES_KEY}
     key: ${JWT_KEY}
 
   token:
