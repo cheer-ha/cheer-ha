@@ -7,7 +7,7 @@ import java.util.Base64;
 public class AESKeyGenerator {
     public static void main(String[] args) {
         try {
-            byte[] key = new byte[32];
+            byte[] key = new byte[16];
             SecureRandom secureRandom = new SecureRandom();
             secureRandom.nextBytes(key);
 
