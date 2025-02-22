@@ -14,6 +14,9 @@ public enum DataErrorCode {
      *  해당 데이터가 존재하지 않을 때 404(NotFound) 입니다.
      **/
 
+    //ConflictException
+    NAMED_LOCK_CONFLICT(HttpStatus.CONFLICT, "다른 스케줄러가 이미 실행중입니다."),
+
     //NotFoundException
     JOB_OPENING_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 채용공고입니다."),
     KEYWORD_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 키워드입니다."),
