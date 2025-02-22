@@ -101,12 +101,16 @@ public class JwtUtil {
 
     /**
      * JWT 를 파싱하여 Claims(토큰의 본문) 추출
+     * AES256 복호화를 수행합니다
      * @param token prefix 가 제거된 순수 token
      * @return Claims 객체(토큰의 본문)
      */
     public Claims extractClaims(String token) {
         try {
-            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+            Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+            String decryptedSubject = Aes256Util.decrypt(claims.getSubject());
+            claims.setSubject(decryptedSubject);
+            return claims;
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid or expired JWT token");
         }
