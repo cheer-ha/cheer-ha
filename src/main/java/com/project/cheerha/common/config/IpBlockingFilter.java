@@ -20,7 +20,6 @@ public class IpBlockingFilter implements Filter {
 
     private final BannedIpRepository bannedIpRepository;
     private final FilterExceptionHandler filterExceptionHandler;
-    private final IpUtil ipUtil;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -28,7 +27,7 @@ public class IpBlockingFilter implements Filter {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-        String ip = ipUtil.getClientIp(httpRequest);
+        String ip = IpUtil.getClientIp(httpRequest);
 
         if (bannedIpRepository.existsByIp(ip)) {
             log.warn("차단된 IP 접근 시도: {}", ip);
