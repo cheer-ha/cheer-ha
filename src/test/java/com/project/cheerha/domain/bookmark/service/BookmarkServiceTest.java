@@ -46,8 +46,8 @@ class BookmarkServiceTest {
         Long userId = 1L;
         user = User.of(
                 "user2001@gmail.com",
-                "김리은",
-                39,
+                "user2001",
+                30,
                 6,
                 "password123"
         );
