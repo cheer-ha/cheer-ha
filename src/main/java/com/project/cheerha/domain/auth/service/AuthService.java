@@ -48,7 +48,7 @@ public class AuthService {
         }
         String encodedPassword = passwordEncoder.encode(dto.password());
 
-        User user = User.of(
+        User user = User.toEntity(
             dto.email(),
             dto.name(),
             dto.age(),

@@ -23,9 +23,9 @@ public class Keyword {
     @Column(length = 50, nullable = false)
     private String name;
 
-    public static Keyword toEntity(String name) {
+    public static Keyword toEntity(Long id) {
         Keyword keyword = new Keyword();
-        keyword.name = name;
+        keyword.id = id;
         return keyword;
     }
 
