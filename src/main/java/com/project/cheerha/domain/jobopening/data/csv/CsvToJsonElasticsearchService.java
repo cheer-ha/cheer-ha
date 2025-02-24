@@ -16,10 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -34,14 +32,23 @@ public class CsvToJsonElasticsearchService {
     @Value("${elasticsearch.index.name}") // application.properties에 정의된 Elasticsearch 인덱스 이름
     private String indexName;
 
+    private Map<Long, List<String>> jobOpeningSkillsMap;
+    private Map<Long, String> keywordMap;
+
     /**
-     * 주어진 파일 경로의 CSV 데이터를 Elasticsearch에 삽입합니다.
-     *
-     * @param filePath CSV 파일의 경로
+     * CSV 파일을 읽고 Elasticsearch에 삽입하는 메서드입니다.
      */
+    @PostConstruct
+    public void loadCsvData() {
+        // 먼저 jobOpeningSkillsMap을 초기화하고, 그 후 CSV 데이터 삽입
+        loadJobOpeningSkills();
+        insertDataFromCsv(csvFilePath);
+    }
+
     public void insertDataFromCsv(String filePath) {
-        try (FileReader reader = new FileReader(filePath)) {
-            // CSV 파일을 파싱하여 헤더가 포함된 레코드를 가져옵니다.
+        try {
+            File file = new File("src/main/resources/Job_Openings.csv");  // 로컬 경로 설정
+            FileReader reader = new FileReader(file);  // FileReader로 파일을 읽습니다
             Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader().parse(reader);
             ObjectMapper objectMapper = new ObjectMapper(); // Jackson ObjectMapper 인스턴스 생성
 
@@ -50,39 +57,61 @@ public class CsvToJsonElasticsearchService {
 
             // CSV 레코드를 순회하며 Elasticsearch에 삽입할 준비를 합니다.
             for (CSVRecord record : records) {
-                // CSV 각 레코드를 Map 형태로 변환
                 Map<String, Object> recordMap = new HashMap<>();
+
+                // 기술 리스트 초기화
+                List<String> requiredSkills = new ArrayList<>();
+                Long jobOpeningId = Long.valueOf(record.get("id"));
+
+                // job_opening_keywords.csv에서 직무에 해당하는 키워드들을 가져옴
+                List<String> jobKeywords = jobOpeningSkillsMap.get(jobOpeningId);
+                if (jobKeywords != null) {
+                    requiredSkills.addAll(jobKeywords);  // 키워드를 리스트에 추가
+                }
+
+                log.info("Job Opening ID: " + jobOpeningId + ", Required Skills: " + requiredSkills);
+
+                // Add requiredSkills to the recordMap
+                if (requiredSkills.isEmpty()) {
+                    log.warn("No skills found for job opening ID: " + jobOpeningId);
+                } else {
+                    recordMap.put("requiredSkills", requiredSkills);
+                }
+
+                // recordMap에 필요한 데이터 넣기
                 for (String header : record.toMap().keySet()) {
-                    recordMap.put(header, record.get(header)); // 각 헤더와 값을 Map에 추가
+                    String value = record.get(header);
+
+                    // 필드를 카멜 케이스로 변환 후 Map에 추가
+                    String camelCaseHeader = convertToCamelCase(header);
+                    if ("requiredSkills".equals(camelCaseHeader)) {
+                        recordMap.put("requiredSkills", requiredSkills);
+                    } else {
+                        recordMap.put(camelCaseHeader, value);  // Add other fields as normal
+                    }
                 }
 
                 // `_id`를 CSV에서 가져온 `id` 필드를 사용하여 설정
                 String documentId = record.get("id");  // CSV에서 `id` 필드를 가져와서 사용
-
-                // `_source.id`로 설정
                 recordMap.put("id", documentId);  // `_source.id` 필드에 해당 값을 추가
 
                 // Elasticsearch에 데이터 삽입을 위한 IndexOperation 생성
                 IndexOperation<Map<String, Object>> indexOperation = new IndexOperation.Builder<Map<String, Object>>()
-                        .index(indexName) // 사용할 Elasticsearch 인덱스 설정
-                        .id(documentId)  // 문서의 `_id`로 설정
-                        .document(recordMap) // 데이터를 document로 설정
+                        .index(indexName)
+                        .id(documentId)
+                        .document(recordMap)
                         .build();
 
-                // BulkOperation에 IndexOperation 추가
                 BulkOperation bulkOperation = BulkOperation.of(op -> op.index(indexOperation));
 
-                // 요청 리스트에 추가
                 bulkOperations.add(bulkOperation);
 
-                // 배치 크기가 일정 이상이면 Elasticsearch에 전송
                 if (bulkOperations.size() >= 500) {
                     executeBulkRequest(bulkOperations); // 배치 요청 전송
                     bulkOperations.clear(); // 새 요청으로 초기화
                 }
             }
 
-            // 남아있는 데이터 삽입
             if (!bulkOperations.isEmpty()) {
                 executeBulkRequest(bulkOperations); // 마지막 배치 전송
             }
@@ -95,24 +124,96 @@ public class CsvToJsonElasticsearchService {
     }
 
     /**
-     * 주어진 BulkOperation 리스트를 Elasticsearch에 전송하여 데이터를 일괄 삽입합니다.
-     *
-     * @param bulkOperations Elasticsearch에 전송할 BulkOperation 리스트
+     * BulkOperation 리스트를 Elasticsearch에 전송하여 데이터를 일괄 삽입합니다.
      */
     private void executeBulkRequest(List<BulkOperation> bulkOperations) {
         try {
-            // BulkRequest 요청 실행
             BulkRequest bulkRequest = new BulkRequest.Builder().operations(bulkOperations).build();
             BulkResponse bulkResponse = client.bulk(bulkRequest); // Elasticsearch에 배치 요청 전송
 
             // 요청 결과에 따라 로그 출력
             if (bulkResponse.errors()) {
-                log.warn("Bulk insert failed with errors"); // 에러가 발생한 경우 경고 로그 출력
+                log.warn("Bulk insert failed with errors");
             } else {
-                log.info("Bulk insert completed successfully"); // 성공적으로 완료된 경우 정보 로그 출력
+                log.info("Bulk insert completed successfully");
             }
         } catch (Exception e) {
             log.error("Failed to execute bulk request", e); // 요청 실행 중 예외 발생 시 에러 로그 출력
         }
+    }
+
+    /**
+     * job_opening_keywords.csv와 keywords.csv를 읽고,
+     * 각 직무(job opening)과 그에 해당하는 기술(keyword)을 매핑하여 jobOpeningSkillsMap에 저장합니다.
+     */
+    @PostConstruct
+    private void loadJobOpeningSkills() {
+        jobOpeningSkillsMap = new HashMap<>();  // Map 초기화
+        keywordMap = loadKeywords();  // 키워드 맵 로드
+
+        try {
+            // 절대 경로로 job_opening_keywords.csv 파일을 읽기
+            try (FileReader reader = new FileReader("src/main/resources/job_opening_keywords.csv")) {
+                Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader().parse(reader);
+                for (CSVRecord record : records) {
+                    Long jobOpeningId = Long.valueOf(record.get("job_opening_id"));
+                    Long keywordId = Long.valueOf(record.get("keyword_id"));
+
+                    String keyword = keywordMap.get(keywordId);
+
+                    if (keyword != null) {
+                        jobOpeningSkillsMap.computeIfAbsent(jobOpeningId, k -> new ArrayList<>()).add(keyword);
+                    } else {
+                        log.warn("Keyword ID " + keywordId + " not found in keywords.csv");
+                    }
+                }
+            }
+        } catch (IOException e) {
+            log.error("Error loading job opening skills", e);
+        }
+    }
+
+    /**
+     * keywords.csv에서 기술 데이터를 로드하고,
+     * 이를 키워드 ID와 키워드 이름의 맵으로 반환합니다.
+     */
+    private Map<Long, String> loadKeywords() {
+        Map<Long, String> keywordMap = new HashMap<>();
+
+        try (FileReader reader = new FileReader("src/main/resources/keywords.csv")) { // 절대 경로 사용
+            Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader().parse(reader);
+            for (CSVRecord record : records) {
+                Long keywordId = Long.valueOf(record.get("id"));
+                String keywordName = record.get("name");
+                keywordMap.put(keywordId, keywordName);
+            }
+        } catch (IOException e) {
+            log.error("Error loading keywords", e);
+        }
+
+        return keywordMap;
+    }
+
+    /**
+     * 스네이크 케이스를 카멜 케이스로 변환하는 메서드
+     */
+    private String convertToCamelCase(String snakeCase) {
+        StringBuilder camelCase = new StringBuilder();
+        boolean nextUpperCase = false;
+
+        for (char c : snakeCase.toCharArray()) {
+            if (c == '_') {
+                nextUpperCase = true;
+            } else {
+                if (nextUpperCase) {
+                    camelCase.append(Character.toUpperCase(c));
+                    nextUpperCase = false;
+                } else {
+                    camelCase.append(Character.toLowerCase(c));
+                }
+            }
+        }
+
+        return camelCase.toString();
     }
 }
