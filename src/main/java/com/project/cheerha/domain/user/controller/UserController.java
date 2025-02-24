@@ -7,9 +7,7 @@ import com.project.cheerha.domain.user.service.UserService;
 import com.project.cheerha.common.dto.ApiResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/user")
 @RestController
@@ -25,4 +23,39 @@ public class UserController {
         ReadUserResponseDto responseDto = userService.readUser(authUser);
         return ApiResponseDto.success(responseDto);
     }
+
+    @PatchMapping("/password")
+    public ResponseEntity<ApiResponseDto<UpdatePasswordResponseDto>> updatePassword(
+            @Auth AuthUser authUser,
+            @RequestBody UpdatePasswordRequestDto requestDto
+    ) {
+        UpdatePasswordResponseDto responseDto = userService.updatePassword(authUser, requestDto);
+        return ApiResponseDto.success(responseDto);
+    }
+
+    @PatchMapping("/password/email-verification")
+    public ResponseEntity<ApiResponseDto<UpdatePasswordWithEmailResponseDto>> updatePasswordWithEmailVerification(
+            @RequestBody UpdatePasswordWithEmailRequestDto requestDto
+    ) {
+        UpdatePasswordWithEmailResponseDto responseDto = userService.updatePasswordWithEmailVerification(requestDto);
+        return ApiResponseDto.success(responseDto);
+    }
+
+    @PostMapping("/email-verification")
+    public ResponseEntity<ApiResponseDto<SendEmailVerificationResponseDto>> sendEmailVerificationCode(
+            @RequestBody SendEmailVerificationRequestDto requestDto
+    ) {
+        SendEmailVerificationResponseDto responseDto = emailService.sendVerificationCode(requestDto);
+        return ApiResponseDto.success(responseDto);
+    }
+
+    @PostMapping("/email-verification/verify")
+    public ResponseEntity<ApiResponseDto<VerifyEmailCodeResponseDto>> verifyEmailCode(
+            @RequestBody VerifyEmailCodeRequestDto requestDto
+    ) {
+        VerifyEmailCodeResponseDto responseDto = emailService.verifyEmailCode(requestDto);
+        return ApiResponseDto.success(responseDto);
+    }
+
+
 }
