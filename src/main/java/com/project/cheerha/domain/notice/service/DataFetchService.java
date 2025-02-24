@@ -10,17 +10,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class EmailDataFetchService {
+public class DataFetchService {
 
     private final EmailRepositoryQuery repositoryQuery;
 
-    // 주어진 기준 시간(referenceTime) 이후에 생성된 채용 공고 키워드와 URL 목록을 조회하는 메서드
-    public Map<Long, List<String>> findJobOpeningKeywordMap(ZonedDateTime referenceTime) {
+    public Map<Long, List<String>> findKeywordIdToUrlList(ZonedDateTime referenceTime) {
         return repositoryQuery.findAllJobOpeningKeywords(referenceTime);
     }
 
-    // 모든 사용자의 이메일과 각 사용자가 선택한 키워드를 조회하는 메서드
-    public List<UserDto> findUserKeywordList() {
+    public List<UserDto> findUserDtoList() {
         return repositoryQuery.findAllUserKeywords();
     }
 }
