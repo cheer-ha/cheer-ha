@@ -84,7 +84,7 @@ public class AuthService {
      * @throws UnAuthorizedException 토큰이 유효하지 않은 경우
      */
     public CreateLogoutResponseDto logout(String authHeader) {
-        String prefix = jwtSecurityProperties.getToken().getPrefix();
+        String prefix = jwtSecurityProperties.token().prefix();
         if (!StringUtils.hasText(authHeader) || !authHeader.startsWith(prefix)) {
             throw new UnAuthorizedException(AuthErrorCode.TOKEN_UNAUTHORIZED);
         }

@@ -82,7 +82,7 @@ public class JwtFilter implements Filter {
             Long userId = Long.valueOf(decryptedData[0]);
             httpRequest.setAttribute("userId", userId);
 
-            if (bearerJwt.startsWith(securityProperties.getToken().getPrefix()) && decryptedData.length > 1) {
+            if (bearerJwt.startsWith(securityProperties.token().prefix()) && decryptedData.length > 1) {
                 Role role = Role.valueOf(decryptedData[1]);
                 httpRequest.setAttribute("userRole", role);
             }

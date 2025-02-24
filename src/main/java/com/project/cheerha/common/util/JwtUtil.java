@@ -34,7 +34,7 @@ public class JwtUtil {
      */
     @PostConstruct
     public void init() {
-        String secretKey = securityProperties.getSecret().getKey();
+        String secretKey = securityProperties.secret().key();
         if (!StringUtils.hasText(secretKey)) {
             log.error("JWT secret key is null or empty");
             throw new IllegalArgumentException("JWT secret key must not be null or empty");
@@ -59,8 +59,8 @@ public class JwtUtil {
         String payload = userId + ":" + role;
         String encryptedPayload = aes256Util.encrypt(payload);
         return generateJwt(encryptedPayload,
-            securityProperties.getToken().getPrefix(),
-            securityProperties.getToken().getExpiration());
+            securityProperties.token().prefix(),
+            securityProperties.token().expiration());
     }
 
     /**
@@ -72,8 +72,8 @@ public class JwtUtil {
         String payload = String.valueOf(userId);
         String encryptedPayload = aes256Util.encrypt(payload);
         return generateJwt(encryptedPayload,
-            securityProperties.getToken().getRefreshPrefix(),
-            securityProperties.getToken().getRefreshExpiration());
+            securityProperties.token().refreshPrefix(),
+            securityProperties.token().refreshExpiration());
     }
 
     /**
@@ -83,8 +83,8 @@ public class JwtUtil {
      * @throws IllegalArgumentException 유효하지 않은 토큰일 경우
      */
     public String substringToken(String token) {
-        String prefix = securityProperties.getToken().getPrefix();
-        String refreshPrefix = securityProperties.getToken().getRefreshPrefix();
+        String prefix = securityProperties.token().prefix();
+        String refreshPrefix = securityProperties.token().refreshPrefix();
         if (!StringUtils.hasText(token)) {
             throw new IllegalArgumentException("Token must not be null or empty");
         }

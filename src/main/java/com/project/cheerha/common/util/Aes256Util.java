@@ -20,7 +20,7 @@ public class Aes256Util {
 
     public String encrypt(String plainText) {
         try {
-            String aesSecretKey = jwtSecurityProperties.getSecret().getAesKey();
+            String aesSecretKey = jwtSecurityProperties.secret().aesKey();
             SecretKeySpec secretKey = new SecretKeySpec(aesSecretKey.getBytes(), "AES");
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
@@ -33,7 +33,7 @@ public class Aes256Util {
 
     public String decrypt(String encryptedText) {
         try {
-            String aesSecretKey = jwtSecurityProperties.getSecret().getAesKey();
+            String aesSecretKey = jwtSecurityProperties.secret().aesKey();
             SecretKeySpec secretKey = new SecretKeySpec(aesSecretKey.getBytes(), "AES");
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
