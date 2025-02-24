@@ -1,5 +1,6 @@
 package com.project.cheerha.domain.jobopening.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,7 +8,6 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.List;
 public class JobOpeningDocument {
 
     @Id
-    @Field(type = FieldType.Keyword)  // Elasticsearch에서 keyword 타입을 사용
+    @Field(type = FieldType.Keyword)
     private String id; // Elasticsearch ID 필드
 
     @Field(type = FieldType.Text)  // Text 타입으로 저장
@@ -51,14 +51,17 @@ public class JobOpeningDocument {
     @Field(type = FieldType.Text)  // Text 타입으로 저장
     private String position; // 직무
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
     @Field(type = FieldType.Date)  // Date 타입으로 저장
-    private LocalDateTime hiringStartAt; // 채용 시작일
+    private ZonedDateTime hiringStartAt; // 채용 시작일
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
     @Field(type = FieldType.Date)  // Date 타입으로 저장
-    private LocalDateTime hiringEndAt; // 채용 종료일
+    private ZonedDateTime hiringEndAt; // 채용 종료일
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
     @Field(type = FieldType.Date)  // Date 타입으로 저장
-    private LocalDateTime createdAt = LocalDateTime.now(); // 채용공고 생성일
+    private ZonedDateTime createdAt = ZonedDateTime.now(); // 채용공고 생성일
 
     @Field(type = FieldType.Integer)  // Integer 타입으로 저장
     private int viewCount; // 조회수
@@ -66,9 +69,18 @@ public class JobOpeningDocument {
     @Field(type = FieldType.Keyword)  // List<String>의 경우 Keyword 타입 사용
     private List<String> requiredSkills = new ArrayList<>(); // 자격 요건 키워드 리스트
 
+    /**
+     * JobOpening 엔티티를 기반으로 JobOpeningDocument 객체를 생성하는 메서드입니다.
+     *
+     * 이 메서드는 JobOpening 엔티티에서 필요한 정보를 추출하여 Elasticsearch에서 저장할 수 있는
+     * `JobOpeningDocument` 객체로 변환합니다. 변환된 객체는 Elasticsearch에 저장됩니다.
+     *
+     * @param jobOpening 변환할 JobOpening 엔티티 객체
+     * @return 변환된 JobOpeningDocument 객체
+     */
     public static JobOpeningDocument create(JobOpening jobOpening) {
         return new JobOpeningDocument(
-                jobOpening.getId().toString(),
+                jobOpening.getId().toString(), // jobOpening의 id를 String으로 변환하여 사용
                 jobOpening.getTitle(),
                 jobOpening.getCompany(),
                 jobOpening.getLocation(),
@@ -79,15 +91,11 @@ public class JobOpeningDocument {
                 jobOpening.getMinExperienceYears(),
                 jobOpening.getMaxExperienceYears(),
                 jobOpening.getPosition(),
-                convertZonedDateTimeToLocalDateTime(jobOpening.getHiringStartAt()),
-                convertZonedDateTimeToLocalDateTime(jobOpening.getHiringEndAt()),
-                convertZonedDateTimeToLocalDateTime(jobOpening.getCreatedAt()),
+                jobOpening.getHiringStartAt(),
+                jobOpening.getHiringEndAt(),
+                jobOpening.getCreatedAt(),
                 jobOpening.getViewCount(),
                 jobOpening.getRequiredSkillList()
         );
     }
-    private static LocalDateTime convertZonedDateTimeToLocalDateTime(ZonedDateTime zonedDateTime) {
-        return zonedDateTime != null ? zonedDateTime.toLocalDateTime() : null; // Convert or return null if zonedDateTime is null
-    }
-
 }
