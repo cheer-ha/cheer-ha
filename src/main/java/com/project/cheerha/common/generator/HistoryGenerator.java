@@ -11,7 +11,7 @@ public class HistoryGenerator {
 
     public static void main(String[] args) {
 
-        int historyCount = 10000; // 생성할 검색 기록 수
+        int historyCount = 50000; // 생성할 검색 기록 수
         int userCount = 2000; // 생성할 사용자 수
 
         // Randome 객체를 생성하여 난수 생성 준비
@@ -75,7 +75,7 @@ public class HistoryGenerator {
 
                 // 각 사용자가 검색할 휫수를 무작위로 결정
                 // 1~20 사이
-                int searchCount = random.nextInt(20) + 1;
+                int searchCount = random.nextInt(100) + 1;
 
                 // 해당 사용자의 검색 횟수만큼 기록 생성
                 for (int i = 0; i < searchCount && totalGenerated < historyCount; i++) {
