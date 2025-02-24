@@ -12,7 +12,7 @@ public class PasswordEncoder {
     private final BcryptSecurityProperties securityProperties;
 
     public String encode(String rawPassword) {
-        int cost = securityProperties.getBcrypt().getCost();
+        int cost = securityProperties.bcrypt().cost();
         return BCrypt.withDefaults().hashToString(cost, rawPassword.toCharArray());
     }
 

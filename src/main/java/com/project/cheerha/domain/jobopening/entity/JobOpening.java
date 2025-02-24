@@ -1,14 +1,18 @@
 package com.project.cheerha.domain.jobopening.entity;
 
 import com.project.cheerha.domain.keyword.entity.JobOpeningKeyword;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.ZonedDateTime;
-import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -95,42 +99,34 @@ public class JobOpening {
      *
      * 이 메서드는 제공된 파라미터들을 기반으로 새로운 JobOpening 객체를 생성합니다.
      * 이 메서드를 사용하여 새로운 JobOpening 객체를 편리하게 생성할 수 있습니다.
-     *
-     * @param title 직무 제목
-     * @param company 회사 이름
-     * @param location 근무지
-     * @param salary 연봉
-     * @param employmentType 고용 형태 (Enum)
-     * @param educationLevel 교육 수준 (Enum)
-     * @param jobOpeningUrl 채용 공고 URL
-     * @param minExperienceYears 최소 경력 연수
-     * @param maxExperienceYears 최대 경력 연수
-     * @param position 직무
-     * @param hiringStartAt 채용 시작일
-     * @param hiringEndAt 채용 종료일
-     * @param createdAt 생성일 (null일 경우 현재 시간 사용)
-     * @return 생성된 JobOpening 객체
      */
-    public static JobOpening toEntity(String title, String company, String location, int salary, String employmentType, String educationLevel,
-                                      String jobOpeningUrl, Integer minExperienceYears, Integer maxExperienceYears, String position,
-                                      ZonedDateTime hiringStartAt, ZonedDateTime hiringEndAt, ZonedDateTime createdAt) {
+    public static JobOpening toEntity(
+            String title,
+            String company,
+            String location,
+            int salary,
+            EmploymentType employmentType,
+            EducationLevel educationLevel,
+            String jobOpeningUrl,
+            Integer minExperienceYears,
+            Integer masExperienceYears,
+            String position,
+            ZonedDateTime hiringStartAt,
+            ZonedDateTime hiringEndAt
+    ){
         JobOpening jobOpening = new JobOpening();
-
         jobOpening.title = title;
         jobOpening.company = company;
         jobOpening.location = location;
         jobOpening.salary = salary;
-        jobOpening.employmentType = EmploymentType.valueOf(employmentType); // assuming EmploymentType is an enum
-        jobOpening.educationLevel = EducationLevel.valueOf(educationLevel); // assuming EducationLevel is an enum
+        jobOpening.employmentType = employmentType;
+        jobOpening.educationLevel = educationLevel;
         jobOpening.jobOpeningUrl = jobOpeningUrl;
         jobOpening.minExperienceYears = minExperienceYears;
-        jobOpening.maxExperienceYears = maxExperienceYears;
+        jobOpening.maxExperienceYears = masExperienceYears;
         jobOpening.position = position;
         jobOpening.hiringStartAt = hiringStartAt;
         jobOpening.hiringEndAt = hiringEndAt;
-        jobOpening.createdAt = createdAt != null ? createdAt : ZonedDateTime.now(); // default to current time if null
-        jobOpening.viewCount = 0; // default value for viewCount
-
         return jobOpening;
     }
 
