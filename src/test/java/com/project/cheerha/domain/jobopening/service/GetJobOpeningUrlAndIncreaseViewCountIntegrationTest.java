@@ -51,8 +51,8 @@ public class GetJobOpeningUrlAndIncreaseViewCountIntegrationTest {
      * @throws InterruptedException
      */
     @Test
-    @DisplayName("비관적 락 viewCount 테이블 동시성 제어 테스트")
-    void 집계테이블_viewCount_동시성_제어_테스트 () throws InterruptedException {
+    @DisplayName("비관적 락 viewCount 테이블 동시성 제어 통합 테스트")
+    void 집계테이블_viewCount_동시성_제어_통합테스트 () throws InterruptedException {
         //given
         Long jobOpeningId = 1L;
         int totalRequests = 100;
