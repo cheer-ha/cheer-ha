@@ -21,7 +21,7 @@ public class RedisRefreshTokenService {
      * @param refreshToken AuthService 에서 만들어진 현재 사용자의 refreshToken
      */
     public void createRefreshToken(Long userId, String refreshToken) {
-        long expiration = jwtSecurityProperties.getToken().getRefreshExpiration();
+        long expiration = jwtSecurityProperties.token().refreshExpiration();
         String key = getKey(userId);
         redisTemplate.opsForValue().set(key, refreshToken, expiration, TimeUnit.MILLISECONDS);
     }
@@ -47,7 +47,7 @@ public class RedisRefreshTokenService {
     }
 
     private String getKey(Long userId) {
-        String prefix = jwtSecurityProperties.getToken().getRefreshPrefix();
+        String prefix = jwtSecurityProperties.token().refreshPrefix();
         return prefix + userId;
     }
 }

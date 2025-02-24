@@ -36,6 +36,15 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, errorMessage);
     }
 
+    // 잘못된 인자 값이 전달될 때 발생
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, Object>> handleIllegalArgumentException(
+            HttpServletRequest request, IllegalArgumentException e) {
+        String errorMessage = "잘못된 입력 값: " + e.getMessage();
+        extracted(request, errorMessage);
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, errorMessage);
+    }
+
     // 파라미터 타입과 일치하지 않을 때 발생
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Map<String, Object>> handleMethodArgumentTypeMismatch(

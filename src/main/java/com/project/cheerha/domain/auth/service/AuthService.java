@@ -48,7 +48,7 @@ public class AuthService {
         }
         String encodedPassword = passwordEncoder.encode(dto.password());
 
-        User user = User.of(
+        User user = User.toEntity(
             dto.email(),
             dto.name(),
             dto.age(),
@@ -84,7 +84,7 @@ public class AuthService {
      * @throws UnAuthorizedException 토큰이 유효하지 않은 경우
      */
     public CreateLogoutResponseDto logout(String authHeader) {
-        String prefix = jwtSecurityProperties.getToken().getPrefix();
+        String prefix = jwtSecurityProperties.token().prefix();
         if (!StringUtils.hasText(authHeader) || !authHeader.startsWith(prefix)) {
             throw new UnAuthorizedException(AuthErrorCode.TOKEN_UNAUTHORIZED);
         }
@@ -95,7 +95,9 @@ public class AuthService {
         if (expirationMillis > 0) {
             redisBlackListService.addToBlackList(token);
         }
-        Long userId = Long.parseLong(jwtUtil.extractClaims(token).getSubject());
+        String[] accessTokenData = claims.getSubject().split(":");
+        Long userId = Long.valueOf(accessTokenData[0]);
+
         redisRefreshTokenService.deleteRefreshToken(userId);
 
         return CreateLogoutResponseDto.of();
@@ -120,7 +122,6 @@ public class AuthService {
         } catch (Exception e) {
             throw new UnAuthorizedException(AuthErrorCode.TOKEN_UNAUTHORIZED);
         }
-
         Long userId = Long.parseLong(claims.getSubject());
 
         String storedRefreshToken = redisRefreshTokenService.getRefreshToken(userId);

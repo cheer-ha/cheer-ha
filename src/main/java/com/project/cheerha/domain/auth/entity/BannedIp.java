@@ -23,7 +23,7 @@ public class BannedIp {
 
     private boolean isDeleted = false;
 
-    public static BannedIp of(String ip, String message) {
+    public static BannedIp toEntity(String ip, String message) {
         BannedIp bannedIp = new BannedIp();
         bannedIp.ip = ip;
         bannedIp.message = message;

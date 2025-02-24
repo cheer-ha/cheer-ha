@@ -83,4 +83,34 @@ public class JobOpening {
         }
         return skillList;
     }
+
+    public static JobOpening toEntity(
+            String title,
+            String company,
+            String location,
+            int salary,
+            EmploymentType employmentType,
+            EducationLevel educationLevel,
+            String jobOpeningUrl,
+            Integer minExperienceYears,
+            Integer masExperienceYears,
+            String position,
+            ZonedDateTime hiringStartAt,
+            ZonedDateTime hiringEndAt
+    ){
+        JobOpening jobOpening = new JobOpening();
+        jobOpening.title = title;
+        jobOpening.company = company;
+        jobOpening.location = location;
+        jobOpening.salary = salary;
+        jobOpening.employmentType = employmentType;
+        jobOpening.educationLevel = educationLevel;
+        jobOpening.jobOpeningUrl = jobOpeningUrl;
+        jobOpening.minExperienceYears = minExperienceYears;
+        jobOpening.maxExperienceYears = masExperienceYears;
+        jobOpening.position = position;
+        jobOpening.hiringStartAt = hiringStartAt;
+        jobOpening.hiringEndAt = hiringEndAt;
+        return jobOpening;
+    }
 }

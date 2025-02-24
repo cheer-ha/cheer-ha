@@ -65,7 +65,7 @@ public class EmailBlockingAspect {
                 //잘못된 시도 5회 시 이메일 차단
                 if (failedAttempts >= MAX_FAILED_COUNT) {
                     String message = BAN_MASSAGE;
-                    BannedEmail bannedEmail = BannedEmail.of(
+                    BannedEmail bannedEmail = BannedEmail.toEntity(
                             email,
                             message
                     );
