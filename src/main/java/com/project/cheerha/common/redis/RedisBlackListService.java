@@ -2,17 +2,16 @@ package com.project.cheerha.common.redis;
 
 import com.project.cheerha.common.properties.JwtSecurityProperties;
 import lombok.RequiredArgsConstructor;
-import org.redisson.api.RBucket;
-import org.redisson.api.RedissonClient;
-import org.springframework.stereotype.Service;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class RedisBlackListService {
 
-    private final RedissonClient redissonClient;
+    private final RedisTemplate<String, String> redisTemplate;
     private final JwtSecurityProperties jwtSecurityProperties;
 
     /**
@@ -22,8 +21,8 @@ public class RedisBlackListService {
     public void addToBlackList(String token) {
         String blackPrefix = jwtSecurityProperties.getToken().getBlackListPrefix();
         long blackExpiration = jwtSecurityProperties.getToken().getBlackListExpiration();
-        RBucket<String> bucket = redissonClient.getBucket(blackPrefix + token);
-        bucket.set("blackList", blackExpiration, TimeUnit.MILLISECONDS);
+        String key = blackPrefix + token;
+        redisTemplate.opsForValue().set(key, "blackList", blackExpiration, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -33,6 +32,7 @@ public class RedisBlackListService {
      */
     public boolean isBlackList(String token) {
         String blackPrefix = jwtSecurityProperties.getToken().getBlackListPrefix();
-        return redissonClient.getBucket(blackPrefix + token).isExists();
+        String key = blackPrefix + token;
+        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
     }
 }
