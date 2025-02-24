@@ -7,7 +7,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import java.time.ZonedDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -30,10 +29,7 @@ public class Mapping {
     private String jobOpeningUrl;
 
     @Column
-    private boolean isRead;
-
-    @Column
-    private ZonedDateTime readTime;
+    private boolean isEmailSent;
 
     public static Mapping toEntity(
         String email,
@@ -42,7 +38,11 @@ public class Mapping {
         Mapping mapping = new Mapping();
         mapping.email = email;
         mapping.jobOpeningUrl = jobOpeningUrl;
-        mapping.isRead = false;
+        mapping.isEmailSent = false;
         return mapping;
+    }
+
+    public void markEmailAsSent() {
+        this.isEmailSent = true;
     }
 }

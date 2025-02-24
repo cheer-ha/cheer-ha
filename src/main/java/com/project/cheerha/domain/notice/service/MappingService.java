@@ -19,14 +19,14 @@ public class MappingService {
     private final MappingRepository mappingRepository;
 
     @Transactional
-    public void saveEmailJobOpeningMappings(
+    public void saveMappings(
         List<UserDto> userDtoList,
-        Map<Long, List<String>> jobOpeningKeywordMap
+        Map<Long, List<String>> keywordIdToUrlList
     ) {
         Map<String, Set<String>> emailToUrl = new HashMap<>();
 
         for (UserDto dto : userDtoList) {
-            List<String> matchingUrlList = jobOpeningKeywordMap
+            List<String> matchingUrlList = keywordIdToUrlList
                 .getOrDefault(
                     dto.keywordId(),
                     List.of()
@@ -42,12 +42,15 @@ public class MappingService {
 
         emailToUrl.forEach((email, urlSet) -> {
             urlSet.forEach(jobOpeningUrl -> {
-                Mapping mapping = Mapping.toEntity(
+                boolean exists = mappingRepository.existsByEmailAndJobOpeningUrl(
                     email,
                     jobOpeningUrl
                 );
 
-                mappingRepository.save(mapping);
+                if (!exists) {
+                    Mapping mapping = Mapping.toEntity(email, jobOpeningUrl);
+                    mappingRepository.save(mapping);
+                }
             });
         });
     }
