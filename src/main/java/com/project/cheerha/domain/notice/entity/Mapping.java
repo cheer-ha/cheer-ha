@@ -15,9 +15,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Table(
-    name = "email_job_opening_mapping",
+    name = "mapping",
     uniqueConstraints = {@UniqueConstraint(columnNames = {"email", "job_opening_url"})})
-public class EmailJobOpeningMapping {
+public class Mapping {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,12 +35,14 @@ public class EmailJobOpeningMapping {
     @Column
     private ZonedDateTime readTime;
 
-    public static EmailJobOpeningMapping toEntity(String email, String jobOpeningUrl
+    public static Mapping toEntity(
+        String email,
+        String jobOpeningUrl
     ) {
-        EmailJobOpeningMapping emailJobOpeningMapping = new EmailJobOpeningMapping();
-        emailJobOpeningMapping.email = email;
-        emailJobOpeningMapping.jobOpeningUrl = jobOpeningUrl;
-        emailJobOpeningMapping.isRead = false;
-        return emailJobOpeningMapping;
+        Mapping mapping = new Mapping();
+        mapping.email = email;
+        mapping.jobOpeningUrl = jobOpeningUrl;
+        mapping.isRead = false;
+        return mapping;
     }
 }

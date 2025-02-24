@@ -1,8 +1,8 @@
 package com.project.cheerha.domain.notice.service;
 
 import com.project.cheerha.domain.notice.UserDto;
-import com.project.cheerha.domain.notice.entity.EmailJobOpeningMapping;
-import com.project.cheerha.domain.notice.repository.EmailJobOpeningMappingRepository;
+import com.project.cheerha.domain.notice.entity.Mapping;
+import com.project.cheerha.domain.notice.repository.MappingRepository;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,28 +16,39 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MappingService {
 
-    private final EmailJobOpeningMappingRepository mappingRepository;
+    private final MappingRepository mappingRepository;
 
     @Transactional
     public void saveEmailJobOpeningMappings(
         List<UserDto> userDtoList,
         Map<Long, List<String>> jobOpeningKeywordMap
     ) {
-        Map<String, Set<String>> emailUrlMap = new HashMap<>();
+        Map<String, Set<String>> emailToUrl = new HashMap<>();
 
         for (UserDto dto : userDtoList) {
-            List<String> matchingUrlList = jobOpeningKeywordMap.get(dto.keywordId());
+            List<String> matchingUrlList = jobOpeningKeywordMap
+                .getOrDefault(
+                    dto.keywordId(),
+                    List.of()
+                );
 
-            if (matchingUrlList != null && !matchingUrlList.isEmpty()) {
-                emailUrlMap.computeIfAbsent(dto.email(), email -> new HashSet<>()).addAll(matchingUrlList);
+            if (!matchingUrlList.isEmpty()) {
+                emailToUrl.computeIfAbsent(
+                    dto.email(),
+                    email -> new HashSet<>()
+                ).addAll(matchingUrlList);
             }
         }
 
-        emailUrlMap.forEach((email, urlSet) -> {
-            for (String jobOpeningUrl : urlSet) {
-                EmailJobOpeningMapping mapping = EmailJobOpeningMapping.toEntity(email, jobOpeningUrl);
+        emailToUrl.forEach((email, urlSet) -> {
+            urlSet.forEach(jobOpeningUrl -> {
+                Mapping mapping = Mapping.toEntity(
+                    email,
+                    jobOpeningUrl
+                );
+
                 mappingRepository.save(mapping);
-            }
+            });
         });
     }
 }

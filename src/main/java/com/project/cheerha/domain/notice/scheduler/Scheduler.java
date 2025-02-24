@@ -24,12 +24,19 @@ public class Scheduler {
     @Scheduled(cron = "*/30 * * * * *")
     @Transactional
     public void fetchData() {
-        ZonedDateTime referenceTime = ZonedDateTime.now().minusDays(7L).withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime referenceTime = ZonedDateTime.now()
+            .minusDays(7L)
+            .withZoneSameInstant(ZoneId.of("UTC"));
 
-        Map<Long, List<String>> keywordIdToUrlList = dataFetchService.findKeywordIdToUrlList(referenceTime);
+        Map<Long, List<String>> keywordIdToUrlList =
+            dataFetchService.findKeywordIdToUrlList(referenceTime);
 
-        List<UserDto> userDtoList = dataFetchService.findUserDtoList();
+        List<UserDto> userDtoList = dataFetchService
+            .findUserDtoList();
 
-        mappingService.saveEmailJobOpeningMappings(userDtoList, keywordIdToUrlList);
+        mappingService.saveEmailJobOpeningMappings(
+            userDtoList,
+            keywordIdToUrlList
+        );
     }
 }
