@@ -95,7 +95,9 @@ public class AuthService {
         if (expirationMillis > 0) {
             redisBlackListService.addToBlackList(token);
         }
-        Long userId = Long.parseLong(jwtUtil.extractClaims(token).getSubject());
+        String[] accessTokenData = claims.getSubject().split(":");
+        Long userId = Long.valueOf(accessTokenData[0]);
+
         redisRefreshTokenService.deleteRefreshToken(userId);
 
         return CreateLogoutResponseDto.of();
@@ -120,7 +122,6 @@ public class AuthService {
         } catch (Exception e) {
             throw new UnAuthorizedException(AuthErrorCode.TOKEN_UNAUTHORIZED);
         }
-
         Long userId = Long.parseLong(claims.getSubject());
 
         String storedRefreshToken = redisRefreshTokenService.getRefreshToken(userId);
