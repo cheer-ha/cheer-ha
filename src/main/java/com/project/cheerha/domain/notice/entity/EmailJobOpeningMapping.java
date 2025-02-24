@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import java.time.ZonedDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,9 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(
     name = "email_job_opening_mapping",
-    uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"email", "jobOpeningUrl"})
-    })
+    uniqueConstraints = {@UniqueConstraint(columnNames = {"email", "job_opening_url"})})
 public class EmailJobOpeningMapping {
 
     @Id
@@ -30,19 +29,18 @@ public class EmailJobOpeningMapping {
     @Column(nullable = false)
     private String jobOpeningUrl;
 
-    /**
-     * 이메일과 채용 공고 URL을 받아 EmailJobOpeningMapping 객체 생성
-     * @param email 사용자의 이메일 주소
-     * @param jobOpeningUrl 채용 공고 URL
-     * @return 생성된 EmailJobOpeningMapping 객체
-     */
-    public static EmailJobOpeningMapping toEntity(
-        String email,
-        String jobOpeningUrl
+    @Column
+    private boolean isRead;
+
+    @Column
+    private ZonedDateTime readTime;
+
+    public static EmailJobOpeningMapping toEntity(String email, String jobOpeningUrl
     ) {
         EmailJobOpeningMapping emailJobOpeningMapping = new EmailJobOpeningMapping();
         emailJobOpeningMapping.email = email;
         emailJobOpeningMapping.jobOpeningUrl = jobOpeningUrl;
+        emailJobOpeningMapping.isRead = false;
         return emailJobOpeningMapping;
     }
 }
