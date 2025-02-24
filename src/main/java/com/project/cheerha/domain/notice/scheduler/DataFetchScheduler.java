@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class Scheduler {
+public class DataFetchScheduler {
 
     private final DataFetchService dataFetchService;
     private final MappingService mappingService;
@@ -34,7 +34,7 @@ public class Scheduler {
         List<UserDto> userDtoList = dataFetchService
             .findUserDtoList();
 
-        mappingService.saveEmailJobOpeningMappings(
+        mappingService.saveMappings(
             userDtoList,
             keywordIdToUrlList
         );

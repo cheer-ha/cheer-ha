@@ -1,5 +1,6 @@
 package com.project.cheerha.domain.notice.service;
 
+import com.project.cheerha.domain.notice.entity.Mapping;
 import com.project.cheerha.domain.notice.repository.MappingRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -24,24 +25,20 @@ public class EmailSender {
     private static final String SENDER_EMAIL = "cheerha35@gmail.com";
 
     @Async
-    public void sendEmailNotifications() {
-        Map<String, Set<String>> emailUrlMap = new HashMap<>();
+    public void sendEmails() {
+        Map<String, Set<Mapping>> emailToMappings = new HashMap<>();
 
-        mappingRepository.findAll().
-            forEach(mapping -> {
-            emailUrlMap.computeIfAbsent(
+        mappingRepository.findByIsEmailSentFalse().forEach(mapping -> {
+            emailToMappings.computeIfAbsent(
                 mapping.getEmail(),
-                    k -> new HashSet<>()
-                ).add(mapping.getJobOpeningUrl());
+                emailAsKey -> new HashSet<>()
+            ).add(mapping);
         });
 
-        emailUrlMap.forEach(this::sendMail);
+        emailToMappings.forEach(this::sendMail);
     }
 
-    private void sendMail(
-        String recipientEmail,
-        Set<String> jobOpeningUrlSet
-    ) {
+    private void sendMail(String recipientEmail, Set<Mapping> mappings) {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(
@@ -60,9 +57,9 @@ public class EmailSender {
             content.append("<p>아래 링크에서 확인해보세요! ⬇️</p>");
             content.append("<ul>");
 
-            for (String url : jobOpeningUrlSet) {
+            for (Mapping mapping : mappings) {
                 content.append("<li>👉 <a href=\"")
-                    .append(url)
+                    .append(mapping.getJobOpeningUrl())
                     .append("\" target=\"_blank\">")
                     .append("채용 공고 자세히 보기</a></li>");
             }
@@ -75,6 +72,12 @@ public class EmailSender {
             javaMailSender.send(message);
 
             log.info("이메일 전송 완료: {}", recipientEmail);
+
+            mappings.forEach(mapping -> {
+                mapping.markEmailAsSent();
+                mappingRepository.save(mapping);
+            });
+
         } catch (MessagingException e) {
             log.error("이메일 전송 실패: {}", recipientEmail, e);
         }

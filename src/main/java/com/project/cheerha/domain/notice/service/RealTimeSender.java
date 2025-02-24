@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class NotificationSender {
+public class RealTimeSender {
 
     private final MappingRepository mappingRepository;
 
-    public void sendNotifications() {
+    public void sendRealTime() {
         List<Mapping> mappings = mappingRepository.findAll();
 
         mappings.forEach(mapping -> {
