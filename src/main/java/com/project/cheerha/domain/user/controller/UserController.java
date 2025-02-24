@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/user")
+@RequestMapping("/users")
 @RestController
 @RequiredArgsConstructor
 public class UserController {
@@ -45,17 +45,29 @@ public class UserController {
     public ResponseEntity<ApiResponseDto<SendEmailVerificationResponseDto>> sendEmailVerificationCode(
             @RequestBody SendEmailVerificationRequestDto requestDto
     ) {
-        SendEmailVerificationResponseDto responseDto = emailService.sendVerificationCode(requestDto);
+        SendEmailVerificationResponseDto responseDto = emailVerificationService.sendVerificationCode(requestDto);
         return ApiResponseDto.success(responseDto);
     }
 
     @PostMapping("/email-verification/verify")
-    public ResponseEntity<ApiResponseDto<VerifyEmailCodeResponseDto>> verifyEmailCode(
+    public ResponseEntity<ApiResponseDto<?>> verifyEmailCode(
             @RequestBody VerifyEmailCodeRequestDto requestDto
     ) {
-        VerifyEmailCodeResponseDto responseDto = emailService.verifyEmailCode(requestDto);
-        return ApiResponseDto.success(responseDto);
+        boolean isVerified = emailVerificationService.verifyEmailCode(requestDto.email(), requestDto.code());
+
+        if (isVerified) {
+            switch (requestDto.purpose()) {
+                case "PASSWORD_RESET":
+                    CreatePasswordResetTokenResponseDto resetToken = emailVerificationService.createPasswordResetToken(verifyDto.email());
+                    return ApiResponseDto.success(resetToken);
+                case "NOTIFICATION":
+                    ActivateNotificationResponseDTo responseDTo =  emailVerificationService.activateNotifications(verifyDto.email());
+                    return ApiResponseDto.success(responseDTo);
+                default:
+                    throw new IllegalArgumentException("알 수 없는 요청");    //고칠예정
+            }
+        } else {
+            throw new IllegalArgumentException("인증 코드가 잘못되었습니다");   //고칠예정
+        }
     }
-
-
 }
