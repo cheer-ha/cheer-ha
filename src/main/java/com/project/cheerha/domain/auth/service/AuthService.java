@@ -48,7 +48,7 @@ public class AuthService {
         }
         String encodedPassword = passwordEncoder.encode(dto.password());
 
-        User user = User.of(
+        User user = User.toEntity(
             dto.email(),
             dto.name(),
             dto.age(),
@@ -142,6 +142,6 @@ public class AuthService {
         User user = userFindByService.findById(userId);
 
         String refreshAccessToken = jwtUtil.createToken(userId, user.getRole());
-        return RefreshAccessTokenResponseDto.of(refreshAccessToken);
+        return RefreshAccessTokenResponseDto.of(refreshAccessToken, newRefreshToken);
     }
 }
