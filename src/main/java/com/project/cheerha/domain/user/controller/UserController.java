@@ -2,6 +2,10 @@ package com.project.cheerha.domain.user.controller;
 
 import com.project.cheerha.common.annotation.Auth;
 import com.project.cheerha.common.dto.AuthUser;
+import com.project.cheerha.domain.user.dto.request.SendEmailVerificationRequestDto;
+import com.project.cheerha.domain.user.dto.request.UpdatePasswordRequestDto;
+import com.project.cheerha.domain.user.dto.request.UpdatePasswordWithEmailRequestDto;
+import com.project.cheerha.domain.user.dto.request.VerifyEmailCodeRequestDto;
 import com.project.cheerha.domain.user.dto.response.ReadUserResponseDto;
 import com.project.cheerha.domain.user.service.UserService;
 import com.project.cheerha.common.dto.ApiResponseDto;
@@ -33,7 +37,7 @@ public class UserController {
         return ApiResponseDto.success(responseDto);
     }
 
-    @PatchMapping("/password/email-verification")
+    @PatchMapping("/password/email-verification")   //token 필요
     public ResponseEntity<ApiResponseDto<UpdatePasswordWithEmailResponseDto>> updatePasswordWithEmailVerification(
             @RequestBody UpdatePasswordWithEmailRequestDto requestDto
     ) {
