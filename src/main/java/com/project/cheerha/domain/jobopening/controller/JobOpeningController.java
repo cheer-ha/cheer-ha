@@ -108,16 +108,42 @@ public class JobOpeningController {
     }
 
     /**
-     * Elasticsearch를 사용하여 모든 채용 공고를 조회하는 API입니다.
+     * Elasticsearch를 사용하여 모든 채용 공고를 조회하는 메서드입니다.
      *
-     * 이 API는 Elasticsearch를 통해 저장된 모든 채용 공고 목록을 조회합니다.
-     * 응답은 채용 공고 DTO의 리스트로 반환됩니다.
+     * Elasticsearch에서 모든 채용 공고를 검색하고, 결과를 DTO로 반환합니다.
+     * 페이지네이션을 지원하여, 필요한 페이지 범위의 데이터만을 조회합니다.
      *
-     * @return 모든 채용 공고 목록을 포함한 API 응답 객체 (API 응답 형식: ApiResponseDto)
+     * @param page 조회할 페이지 번호 (기본값: 1)
+     * @param size 페이지 당 조회할 데이터 수 (기본값: 10)
+     * @return Elasticsearch에서 조회된 채용 공고 목록을 포함한 API 응답 객체
      */
     @GetMapping("/search/elastic")
-    public ResponseEntity<ApiResponseDto<List<ReadJobOpeningElasticResponseDto>>> readJobOpeningsUsingElasticsearch() {
-        List<ReadJobOpeningElasticResponseDto> dtoList = jobOpeningService.readAllJobOpeningsUsingElasticsearch();
+    public ResponseEntity<ApiResponseDto<Page<ReadJobOpeningElasticResponseDto>>> readJobOpeningsUsingElasticsearch(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = validatePageSize(page, size);
+        Page<ReadJobOpeningElasticResponseDto> dtoList = jobOpeningService.readAllJobOpeningsUsingElasticsearch(pageable);
         return ApiResponseDto.success(dtoList);
+    }
+
+    /**
+     * 조회수 기준으로 인기 채용 공고를 Elasticsearch에서 조회하는 메서드입니다.
+     *
+     * 이 API는 조회수 기준으로 내림차순 정렬된 인기 채용 공고를 100개까지 조회합니다.
+     * 페이지네이션을 지원하며, 페이지 번호와 크기를 매개변수로 전달받습니다.
+     *
+     * @param page 조회할 페이지 번호 (기본값: 1)
+     * @param size 페이지 당 조회할 데이터 수 (기본값: 10)
+     * @return Elasticsearch에서 조회된 인기 채용 공고 목록을 포함한 API 응답 객체
+     */
+    @GetMapping("/popular/elastic")
+    public ResponseEntity<ApiResponseDto<Page<ReadJobOpeningElasticResponseDto>>> readTop100PopularJobOpeningsUsingElasticsearch(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = validatePageSize(page, size);
+        Page<ReadJobOpeningElasticResponseDto> dtoPage = jobOpeningService.readTop100PopularJobOpeningsUsingElasticsearch(pageable);
+        return ApiResponseDto.success(dtoPage);
     }
 }
