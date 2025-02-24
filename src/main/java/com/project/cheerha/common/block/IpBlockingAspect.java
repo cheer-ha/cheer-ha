@@ -34,7 +34,6 @@ public class IpBlockingAspect {
     /**
      * 서로 다른 이메일 4개 이상 로그인 시도 시 해당 사용자의 ip 를 차단합니다.
      * 로그인 성공 시에도 시도 기록이 남아있습니다.(로그인 후 재로그인 악용 방지)
-     * TODO: 차단을 해제할 수 있는 방안도 고려해보아야 합니다.
      */
     @Around("execution(* com.project.cheerha.domain.auth.controller.AuthController.login(..))")
     public Object blockAbnormalIp(ProceedingJoinPoint joinPoint) throws Throwable {

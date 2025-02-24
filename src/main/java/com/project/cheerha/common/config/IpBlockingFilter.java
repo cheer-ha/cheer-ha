@@ -34,7 +34,7 @@ public class IpBlockingFilter implements Filter {
 
         if (Boolean.TRUE.equals(redisTemplate.hasKey(redisBlockKey))) {
             log.warn("차단된 IP 로그인 시도: {}", ip);
-            filterExceptionHandler.sendErrorResponse(httpResponse, HttpStatus.FORBIDDEN, "차단된 IP입니다. 관리자에게 문의하세요");
+            filterExceptionHandler.sendErrorResponse(httpResponse, HttpStatus.FORBIDDEN, "30초간 차단된 IP입니다.");
             return;
         }
 
