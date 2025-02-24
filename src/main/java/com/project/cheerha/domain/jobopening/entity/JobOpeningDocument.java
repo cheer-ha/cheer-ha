@@ -33,37 +33,37 @@ public class JobOpeningDocument {
     @Field(type = FieldType.Integer)  // Integer 타입으로 저장
     private int salary; // 연봉
 
-    @Field(name = "employment_type", type = FieldType.Keyword)  // Text 타입으로 저장
+    @Field(type = FieldType.Keyword)  // Text 타입으로 저장
     private String employmentType; // 고용 형태
 
-    @Field(name = "education_level", type = FieldType.Keyword)  // Text 타입으로 저장
+    @Field(type = FieldType.Keyword)  // Text 타입으로 저장
     private String educationLevel; // 교육 수준
 
     @Field(type = FieldType.Text)  // Text 타입으로 저장
     private String jobOpeningUrl; // 채용 공고 URL
 
-    @Field(name = "min_experience_years",type = FieldType.Integer)  // Integer 타입으로 저장
+    @Field(type = FieldType.Integer)  // Integer 타입으로 저장
     private Integer minExperienceYears; // 최소 경력 연수
 
-    @Field(name = "max_experience_years", type = FieldType.Integer)  // Integer 타입으로 저장
+    @Field(type = FieldType.Integer)  // Integer 타입으로 저장
     private Integer maxExperienceYears; // 최대 경력 연수
 
     @Field(type = FieldType.Text)  // Text 타입으로 저장
     private String position; // 직무
 
-    @Field(name = "hiring_start_at", type = FieldType.Date)  // Date 타입으로 저장
+    @Field(type = FieldType.Date)  // Date 타입으로 저장
     private LocalDateTime hiringStartAt; // 채용 시작일
 
-    @Field(name = "hiring_end_at", type = FieldType.Date)  // Date 타입으로 저장
+    @Field(type = FieldType.Date)  // Date 타입으로 저장
     private LocalDateTime hiringEndAt; // 채용 종료일
 
-    @Field(name = "created_at", type = FieldType.Date)  // Date 타입으로 저장
+    @Field(type = FieldType.Date)  // Date 타입으로 저장
     private LocalDateTime createdAt = LocalDateTime.now(); // 채용공고 생성일
 
-    @Field(name = "view_count", type = FieldType.Integer)  // Integer 타입으로 저장
+    @Field(type = FieldType.Integer)  // Integer 타입으로 저장
     private int viewCount; // 조회수
 
-    @Field(name = "required_skills", type = FieldType.Keyword)  // List<String>의 경우 Keyword 타입 사용
+    @Field(type = FieldType.Keyword)  // List<String>의 경우 Keyword 타입 사용
     private List<String> requiredSkills = new ArrayList<>(); // 자격 요건 키워드 리스트
 
     public static JobOpeningDocument create(JobOpening jobOpening) {
@@ -89,4 +89,5 @@ public class JobOpeningDocument {
     private static LocalDateTime convertZonedDateTimeToLocalDateTime(ZonedDateTime zonedDateTime) {
         return zonedDateTime != null ? zonedDateTime.toLocalDateTime() : null; // Convert or return null if zonedDateTime is null
     }
+
 }
