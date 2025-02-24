@@ -42,9 +42,9 @@ elasticsearch:
   index:
     name: job-opening
 
-csv:
-  file:
-    path: src/main/resources/job_openings_with_requiredSkills.csv
+#csv:
+#  file:
+#    path: src/main/resources/Job_Openings.csv
 
 jwt:
   secret:
