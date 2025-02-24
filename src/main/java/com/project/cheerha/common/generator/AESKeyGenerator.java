@@ -2,6 +2,8 @@ package com.project.cheerha.common.generator;
 
 import lombok.extern.slf4j.Slf4j;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 import java.security.SecureRandom;
 import java.util.Base64;
 
@@ -10,11 +12,11 @@ import java.util.Base64;
 public class AESKeyGenerator {
     public static void main(String[] args) {
         try {
-            byte[] key = new byte[32];
-            SecureRandom secureRandom = new SecureRandom();
-            secureRandom.nextBytes(key);
+            KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+            keyGen.init(256, new SecureRandom());
+            SecretKey secretKey = keyGen.generateKey();
 
-            String encodedKey = Base64.getEncoder().encodeToString(key);
+            String encodedKey = Base64.getEncoder().encodeToString(secretKey.getEncoded());
             log.info("생성된 AES 키: {}", encodedKey);
         } catch (Exception e) {
             e.printStackTrace();
