@@ -21,7 +21,7 @@ public class JobOpeningViewCountScheduler {
     /**
      * 조회수 정보를 관리하는 Repository와 채용공고 정보를 관리하는 Repository
      */
-    private final JobOpeningViewCountRepository jobOpeningViewsRepository;
+    private final JobOpeningViewCountRepository jobOpeningViewCountRepository;
     private final JobOpeningRepository jobOpeningRepository;
 
     /**
@@ -31,15 +31,14 @@ public class JobOpeningViewCountScheduler {
      * 트랜잭션 어노테이션을 사용하여 트랜잭션 단위로 실행하여 정합성을 유지
      */
     @Scheduled(fixedRate = 3600000) // 긴 버전 1시간
-//    @Scheduled(fixedRate = 60000) //미완성이라 테스트용으로 짧게
     @Transactional
     public void syncViewCounts() {
         // jobOpeningViewCount 테이블에서 viewCount값이 1이상인 jobOpening.id 목록 가져오기
-        List<Long> jobOpeningIds = jobOpeningViewsRepository.findAllJobOpeningId();
+        List<Long> jobOpeningIds = jobOpeningViewCountRepository.findViewedJobOpeningIds();
 
         // 각 jobOpening.id별로 viewCount 조회 및 업데이트
         for (Long jobOpeningId : jobOpeningIds) {
-            Long viewCount = jobOpeningViewsRepository.findViewCountByJobOpeningId(jobOpeningId);
+            Long viewCount = jobOpeningViewCountRepository.getViewCountByJobOpeningId(jobOpeningId);
 
             log.info("🔍 JobOpening ID: {}, ViewCount: {}", jobOpeningId, viewCount);
 
@@ -48,7 +47,7 @@ public class JobOpeningViewCountScheduler {
 
                 log.info("✅ JobOpening ID {}: ViewCount {} 적용 완료", jobOpeningId, viewCount);
 
-                jobOpeningViewsRepository.resetViewCount(jobOpeningId);
+                jobOpeningViewCountRepository.resetViewCountByJobOpeningId(jobOpeningId);
 
                 log.info("🔄 JobOpeningViewCount 초기화 완료 - ID: {}", jobOpeningId);
             }
