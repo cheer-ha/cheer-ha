@@ -62,7 +62,7 @@ public class UserController {
         boolean isVerified = emailVerificationService.verifyEmailCode(requestDto.email(), requestDto.code());
 
         if (isVerified) {
-            switch (requestDto.purpose()) {
+            switch (requestDto.purpose().name()) {
                 case "PASSWORD_RESET":
                     CreatePasswordResetTokenResponseDto responseDto = emailVerificationService.createPasswordResetToken(requestDto.email());
                     return ApiResponseDto.success(responseDto);

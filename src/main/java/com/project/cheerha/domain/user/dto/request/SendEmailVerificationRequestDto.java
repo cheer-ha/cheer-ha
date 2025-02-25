@@ -1,4 +1,6 @@
 package com.project.cheerha.domain.user.dto.request;
 
-public record SendEmailVerificationRequestDto(String email, String purpose) {
+import com.project.cheerha.domain.user.dto.Purpose;
+
+public record SendEmailVerificationRequestDto(String email, Purpose purpose) {
 }
