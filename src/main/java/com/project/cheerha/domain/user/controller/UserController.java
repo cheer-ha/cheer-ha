@@ -2,6 +2,8 @@ package com.project.cheerha.domain.user.controller;
 
 import com.project.cheerha.common.annotation.Auth;
 import com.project.cheerha.common.dto.AuthUser;
+import com.project.cheerha.common.exception.client.BadRequestException;
+import com.project.cheerha.common.exception.client.ClientErrorCode;
 import com.project.cheerha.domain.user.dto.request.SendEmailVerificationRequestDto;
 import com.project.cheerha.domain.user.dto.request.UpdatePasswordRequestDto;
 import com.project.cheerha.domain.user.dto.request.UpdatePasswordWithEmailRequestDto;
@@ -70,10 +72,10 @@ public class UserController {
                     ActivateNotificationResponseDto responseDTo =  emailVerificationService.activateNotifications(requestDto.email());
                     return ApiResponseDto.success(responseDTo);
                 default:
-                    throw new IllegalArgumentException("알 수 없는 요청");    //고칠예정
+                    throw new BadRequestException(ClientErrorCode.INVALID_ENUM_VALUE);
             }
         } else {
-            throw new IllegalArgumentException("인증 코드가 잘못되었습니다");   //고칠예정
+            throw new BadRequestException(ClientErrorCode.INVALID_EMAIL_VERIFICATION_CODE);   //고칠예정
         }
     }
 }
