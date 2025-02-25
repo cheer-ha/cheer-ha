@@ -13,11 +13,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -75,12 +77,68 @@ public class JobOpening {
     @OneToMany(mappedBy = "jobOpening", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<JobOpeningKeyword> jobOpeningKeywordList = new ArrayList<>();
 
-    // 자격 요건 키워드 리스트 반환
+    /**
+     * 자격 요건 키워드 리스트를 반환하는 메서드입니다.
+     *
+     * 이 메서드는 JobOpening에 연결된 JobOpeningKeyword 엔티티들을 순회하여,
+     * 각 JobOpeningKeyword의 Keyword 객체에서 키워드 이름을 추출해 List<String>으로 반환합니다.
+     * 자격 요건을 쉽게 조회할 수 있도록 합니다.
+     *
+     * @return 자격 요건 키워드 리스트
+     */
     public List<String> getRequiredSkillList() {
         List<String> skillList = new ArrayList<>();
         for (JobOpeningKeyword jobOpeningKeyword : jobOpeningKeywordList) {
             skillList.add(jobOpeningKeyword.getKeyword().getName());
         }
         return skillList;
+    }
+
+    /**
+     * JobOpening 엔티티를 생성하는 유틸리티 메서드입니다.
+     *
+     * 이 메서드는 제공된 파라미터들을 기반으로 새로운 JobOpening 객체를 생성합니다.
+     * 이 메서드를 사용하여 새로운 JobOpening 객체를 편리하게 생성할 수 있습니다.
+     */
+    public static JobOpening toEntity(
+            String title,
+            String company,
+            String location,
+            int salary,
+            EmploymentType employmentType,
+            EducationLevel educationLevel,
+            String jobOpeningUrl,
+            Integer minExperienceYears,
+            Integer masExperienceYears,
+            String position,
+            ZonedDateTime hiringStartAt,
+            ZonedDateTime hiringEndAt
+    ){
+        JobOpening jobOpening = new JobOpening();
+        jobOpening.title = title;
+        jobOpening.company = company;
+        jobOpening.location = location;
+        jobOpening.salary = salary;
+        jobOpening.employmentType = employmentType;
+        jobOpening.educationLevel = educationLevel;
+        jobOpening.jobOpeningUrl = jobOpeningUrl;
+        jobOpening.minExperienceYears = minExperienceYears;
+        jobOpening.maxExperienceYears = masExperienceYears;
+        jobOpening.position = position;
+        jobOpening.hiringStartAt = hiringStartAt;
+        jobOpening.hiringEndAt = hiringEndAt;
+        return jobOpening;
+    }
+
+    /**
+     * JobOpening의 id를 Integer로 변환하여 반환하는 메서드입니다.
+     *
+     * 이 메서드는 JobOpening의 id 값을 Integer로 변환하여 반환합니다.
+     * 이 값을 사용하여 다른 객체나 시스템에서 id를 활용할 수 있도록 합니다.
+     *
+     * @return JobOpening의 id 값 (Integer 형)
+     */
+    public Integer getJobOpeningId() {
+        return this.id != null ? this.id.intValue() : null;
     }
 }

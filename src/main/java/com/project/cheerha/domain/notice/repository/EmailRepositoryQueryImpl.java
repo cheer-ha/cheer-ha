@@ -1,11 +1,11 @@
 package com.project.cheerha.domain.notice.repository;
 
+import static com.project.cheerha.domain.jobopening.entity.QJobOpening.jobOpening;
+import static com.project.cheerha.domain.keyword.entity.QJobOpeningKeyword.jobOpeningKeyword;
+import static com.project.cheerha.domain.keyword.entity.QUserKeyword.userKeyword;
+import static com.project.cheerha.domain.user.entity.QUser.user;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
-import static com.project.cheerha.domain.keyword.entity.QUserKeyword.*;
-import static com.project.cheerha.domain.user.entity.QUser.*;
-import static com.project.cheerha.domain.jobopening.entity.QJobOpening.*;
-import static com.project.cheerha.domain.keyword.entity.QJobOpeningKeyword.*;
 
 import com.project.cheerha.domain.notice.QUserDto;
 import com.project.cheerha.domain.notice.UserDto;

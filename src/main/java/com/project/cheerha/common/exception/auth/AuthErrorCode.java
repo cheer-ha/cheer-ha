@@ -19,6 +19,7 @@ public enum AuthErrorCode {
     BANNED_EMAIL(HttpStatus.FORBIDDEN, "로그인이 임시차단된 이메일입니다. 관리자에게 문의하세요"),
 
     //UnAuthorizedException
+    TOKEN_DECRYPTION_FAILED(HttpStatus.UNAUTHORIZED, "토큰 복호화에 실패하였습니다."),
     TOKEN_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "존재하지 않는 토큰입니다."),
     INVALID_EMAIL(HttpStatus.UNAUTHORIZED, "이메일이 잘못되었습니다."),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "패스워드가 잘못되었습니다.");

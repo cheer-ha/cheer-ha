@@ -15,8 +15,9 @@ public enum EducationLevel {
         }
 
         return Arrays.stream(EducationLevel.values())
-            .filter(r -> r.name().equalsIgnoreCase(educationLevel))
-            .findFirst()
-            .orElseThrow(() -> new BadRequestException(ClientErrorCode.INVALID_ENUM_VALUE));
+                .filter(r -> r.name().equalsIgnoreCase(educationLevel))
+                .findFirst()
+                .orElseThrow(() -> new BadRequestException(ClientErrorCode.INVALID_ENUM_VALUE));
     }
 }
+

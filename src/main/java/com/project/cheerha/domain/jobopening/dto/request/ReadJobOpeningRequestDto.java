@@ -1,5 +1,7 @@
 package com.project.cheerha.domain.jobopening.dto.request;
 
+import com.project.cheerha.domain.jobopening.entity.EducationLevel;
+import com.project.cheerha.domain.jobopening.entity.EmploymentType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

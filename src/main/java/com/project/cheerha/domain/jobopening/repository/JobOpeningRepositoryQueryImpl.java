@@ -1,9 +1,5 @@
 package com.project.cheerha.domain.jobopening.repository;
 
-import static com.project.cheerha.domain.jobopening.entity.QJobOpening.jobOpening;
-import static com.project.cheerha.domain.keyword.entity.QJobOpeningKeyword.jobOpeningKeyword;
-import static com.project.cheerha.domain.keyword.entity.QKeyword.keyword;
-
 import com.project.cheerha.domain.jobopening.dto.request.ReadJobOpeningRequestDto;
 import com.project.cheerha.domain.jobopening.dto.response.QReadJobOpeningResponseDto;
 import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningResponseDto;
@@ -24,6 +20,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+
+import static com.project.cheerha.domain.jobopening.entity.QJobOpening.jobOpening;
+import static com.project.cheerha.domain.keyword.entity.QJobOpeningKeyword.jobOpeningKeyword;
+import static com.project.cheerha.domain.keyword.entity.QKeyword.keyword;
 
 @Repository
 @RequiredArgsConstructor
@@ -53,14 +53,16 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
                 jobOpening.company,
                 jobOpening.location,
                 jobOpening.salary,
-                jobOpening.employmentType,
-                jobOpening.educationLevel,
+                jobOpening.employmentType.stringValue(),
+                jobOpening.educationLevel.stringValue(),
                 jobOpening.jobOpeningUrl,
                 jobOpening.minExperienceYears,
                 jobOpening.maxExperienceYears,
+                jobOpening.position,
                 jobOpening.hiringStartAt,
                 jobOpening.hiringEndAt,
-                jobOpening.position
+                jobOpening.createdAt,
+                jobOpening.viewCount
             ))
             .from(jobOpening)
             .leftJoin(jobOpening.jobOpeningKeywordList, jobOpeningKeyword) // 데이터와 키워드 테이블 조인
@@ -136,14 +138,16 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
                         jobOpening.company,
                         jobOpening.location,
                         jobOpening.salary,
-                        jobOpening.employmentType,
-                        jobOpening.educationLevel,
+                        jobOpening.employmentType.stringValue(),
+                        jobOpening.educationLevel.stringValue(),
                         jobOpening.jobOpeningUrl,
                         jobOpening.minExperienceYears,
                         jobOpening.maxExperienceYears,
+                        jobOpening.position,
                         jobOpening.hiringStartAt,
                         jobOpening.hiringEndAt,
-                        jobOpening.position
+                        jobOpening.createdAt,
+                        jobOpening.viewCount
                 ))
                 .from(jobOpening)
                 .orderBy(jobOpening.viewCount.desc())
