@@ -2,7 +2,7 @@ name: CI/CD for Cheer-Ha
 
 on:
   push:
-    branches: [cd/setup] #테스트용으로 비워 둠
+    branches: [empty] #테스트용으로 비워 둠
   pull_request:
     branches: [release/1.0.0]
 
