@@ -88,6 +88,9 @@ dependencies {
 
 	//prometheus
 	implementation 'io.micrometer:micrometer-registry-prometheus'
+
+	// Firebase Admin SDK
+	implementation group: 'com.google.firebase', name: 'firebase-admin', version: '9.4.3'
 }
 
 tasks.named('test') {
