@@ -27,14 +27,14 @@ public class MysqlToElasticsearchService {
     private boolean isFirstExecutionDone = false;  // 최초 실행 여부를 체크하는 변수
 
     /**
-     * 최초 실행 후, 매일 자정에 실행되도록 하는 스케줄러입니다.
-     * 이 메서드는 최초 1초 후에 실행되고, 이후 매일 자정(00:00)마다 주기적으로 실행됩니다.
+     * 매일 자정에 실행되도록 하는 스케줄러입니다.
+     * 이 메서드는 매일 자정(00:00)마다 주기적으로 실행됩니다.
      *
      * 최초 실행 시 데이터 동기화를 한 번 실행한 후, 이후에는 정해진 주기에 맞춰
      * MySQL 데이터를 Elasticsearch로 동기화하는 작업이 계속해서 실행됩니다.
      *
      * @Scheduled(cron = "0 0 0 * * *")
-     * 최초 1회 실행되고, 이후 매일 자정에 반복적으로 실행됩니다.
+     * 매일 자정에 반복적으로 실행됩니다.
      */
     @Scheduled(cron = "0 0 0 * * *")  // 매일 자정(00:00) 실행
     @Transactional
