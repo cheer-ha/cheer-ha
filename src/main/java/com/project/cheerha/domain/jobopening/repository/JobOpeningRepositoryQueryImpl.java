@@ -80,6 +80,7 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
                 containsSearchTerm(requestDto.getSearchTerm())
             )
             .groupBy(jobOpening.id)
+            .orderBy(jobOpening.createdAt.desc())  // 최신순 정렬
             .limit(pageable.getPageSize())
             .offset(pageable.getOffset())
             .fetch();
