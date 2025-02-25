@@ -57,7 +57,7 @@ public class JobOpeningService {
      */
     @Transactional
     public void increaseViewCount(Long id) {
-        JobOpeningViewCount viewCount = jobOpeningViewCountRepository.findByForUpdateViewCount(id)
+        JobOpeningViewCount viewCount = jobOpeningViewCountRepository.findWithLockByJobOpeningId(id)
             .orElseGet(() -> {
                 JobOpening jobOpening = jobOpeningFindByService.findById(id);
                 return jobOpeningViewCountRepository.save(JobOpeningViewCount.create(jobOpening));
