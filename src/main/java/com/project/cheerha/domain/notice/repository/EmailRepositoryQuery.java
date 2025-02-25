@@ -1,6 +1,6 @@
 package com.project.cheerha.domain.notice.repository;
 
-import com.project.cheerha.domain.notice.UserDto;
+import com.project.cheerha.domain.notice.dto.UserDto;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;

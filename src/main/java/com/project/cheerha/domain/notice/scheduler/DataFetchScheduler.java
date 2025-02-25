@@ -1,6 +1,6 @@
 package com.project.cheerha.domain.notice.scheduler;
 
-import com.project.cheerha.domain.notice.UserDto;
+import com.project.cheerha.domain.notice.dto.UserDto;
 import com.project.cheerha.domain.notice.service.DataFetchService;
 import com.project.cheerha.domain.notice.service.MappingService;
 import java.time.ZoneId;

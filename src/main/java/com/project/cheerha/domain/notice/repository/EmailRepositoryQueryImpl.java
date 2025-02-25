@@ -7,8 +7,8 @@ import static com.project.cheerha.domain.user.entity.QUser.user;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
 
-import com.project.cheerha.domain.notice.QUserDto;
-import com.project.cheerha.domain.notice.UserDto;
+import com.project.cheerha.domain.notice.dto.QUserDto;
+import com.project.cheerha.domain.notice.dto.UserDto;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.ZonedDateTime;
 import java.util.List;
