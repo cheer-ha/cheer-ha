@@ -15,8 +15,8 @@ public enum EmploymentType {
         }
 
         return Arrays.stream(EmploymentType.values())
-            .filter(r -> r.name().equalsIgnoreCase(employmentType))
-            .findFirst()
-            .orElseThrow(() -> new BadRequestException(ClientErrorCode.INVALID_ENUM_VALUE));
+                .filter(r -> r.name().equalsIgnoreCase(employmentType))
+                .findFirst()
+                .orElseThrow(() -> new BadRequestException(ClientErrorCode.INVALID_ENUM_VALUE));
     }
 }

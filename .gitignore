@@ -41,3 +41,6 @@ out/
 ### properties ###
 myinfo.yml
 *.properties
+
+# macOS에서 생성된 숨겨진 파일 무시
+.DS_Store

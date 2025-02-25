@@ -21,6 +21,7 @@ public record CreateJobOpeningRequestDto(
         String position,
         ZonedDateTime hiringStartAt,
         ZonedDateTime hiringEndAt,
+        ZonedDateTime createdAt,
         List<String> jobOpeningKeywordList
 ) {
 

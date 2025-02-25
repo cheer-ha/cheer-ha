@@ -54,14 +54,16 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
                 jobOpening.company,
                 jobOpening.location,
                 jobOpening.salary,
-                jobOpening.employmentType,
-                jobOpening.educationLevel,
+                jobOpening.employmentType.stringValue(),
+                jobOpening.educationLevel.stringValue(),
                 jobOpening.jobOpeningUrl,
                 jobOpening.minExperienceYears,
                 jobOpening.maxExperienceYears,
+                jobOpening.position,
                 jobOpening.hiringStartAt,
                 jobOpening.hiringEndAt,
-                jobOpening.position
+                jobOpening.createdAt,
+                jobOpening.viewCount
             ))
             .from(jobOpening)
             .leftJoin(jobOpening.jobOpeningKeywordList, jobOpeningKeyword) // 데이터와 키워드 테이블 조인
@@ -137,14 +139,16 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
                         jobOpening.company,
                         jobOpening.location,
                         jobOpening.salary,
-                        jobOpening.employmentType,
-                        jobOpening.educationLevel,
+                        jobOpening.employmentType.stringValue(),
+                        jobOpening.educationLevel.stringValue(),
                         jobOpening.jobOpeningUrl,
                         jobOpening.minExperienceYears,
                         jobOpening.maxExperienceYears,
+                        jobOpening.position,
                         jobOpening.hiringStartAt,
                         jobOpening.hiringEndAt,
-                        jobOpening.position
+                        jobOpening.createdAt,
+                        jobOpening.viewCount
                 ))
                 .from(jobOpening)
                 .orderBy(jobOpening.viewCount.desc())
