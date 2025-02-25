@@ -73,7 +73,8 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
                 eqLocation(requestDto.getLocation()),
                 eqJobType(EmploymentType.toEnum(requestDto.getEmploymentType())),
                 eqEducation(EducationLevel.toEnum(requestDto.getEducationLevel())),
-                leoCareer(requestDto.getExperienceYears()),
+                geoMinExperienceYears(requestDto.getMinExperienceYears()),
+                leoMaxExperienceYears(requestDto.getMaxExperienceYears()),
                 geoHiringStartPeriod(requestDto.getHiringStartAt()),
                 leoHiringEndPeriod(requestDto.getHiringEndAt()),
                 containsSearchTerm(requestDto.getSearchTerm())
@@ -182,7 +183,11 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
         return location != null ? jobOpening.location.eq(location) : Expressions.asBoolean(true).isTrue();
     }
 
-    private BooleanExpression leoCareer(Integer maxExperienceYears) {
+    private  BooleanExpression geoMinExperienceYears(Integer minExperienceYears) {
+        return minExperienceYears != null ? jobOpening.minExperienceYears.goe(minExperienceYears) : Expressions.asBoolean(true).isTrue();
+    }
+
+    private BooleanExpression leoMaxExperienceYears(Integer maxExperienceYears) {
         return maxExperienceYears != null ? jobOpening.maxExperienceYears.loe(maxExperienceYears) : Expressions.asBoolean(true).isTrue();
     }
 
