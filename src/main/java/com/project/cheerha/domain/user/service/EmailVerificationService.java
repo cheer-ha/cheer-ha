@@ -48,8 +48,8 @@ public class EmailVerificationService {
     }
 
     @Transactional
-    public ActivateNotificationResponseDto activateNotifications(String email) {
-        User user = userFindByService.findByEmail(email);
+    public ActivateNotificationResponseDto activateNotifications(Long id) {
+        User user = userFindByService.findById(id);
         user.updateNotificationEnabled();
         return ActivateNotificationResponseDto.of();
     }

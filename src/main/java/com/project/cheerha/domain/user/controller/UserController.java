@@ -2,8 +2,6 @@ package com.project.cheerha.domain.user.controller;
 
 import com.project.cheerha.common.annotation.Auth;
 import com.project.cheerha.common.dto.AuthUser;
-import com.project.cheerha.common.exception.client.BadRequestException;
-import com.project.cheerha.common.exception.client.ClientErrorCode;
 import com.project.cheerha.domain.user.dto.request.UpdatePasswordRequestDto;
 import com.project.cheerha.domain.user.dto.request.UpdatePasswordWithEmailRequestDto;
 import com.project.cheerha.domain.user.dto.request.VerifyEmailCodeRequestDto;
@@ -36,7 +34,7 @@ public class UserController {
             @Auth AuthUser authUser,
             @RequestBody UpdatePasswordRequestDto requestDto
     ) {
-        UpdatePasswordResponseDto responseDto = userService.updatePassword(authUser, requestDto);
+        UpdatePasswordResponseDto responseDto = userService.updatePassword(authUser.id(), requestDto);
         return ApiResponseDto.success(responseDto);
     }
 
@@ -56,20 +54,23 @@ public class UserController {
         return ApiResponseDto.success(responseDto);
     }
 
-    @PostMapping("/email-verification/verify")
-    public ResponseEntity<ApiResponseDto<Object>> verifyEmailCode(
+    @PostMapping("/email-verification/verify-password-reset")
+    public ResponseEntity<ApiResponseDto<Object>> verifyPasswordResetCode(
             @RequestBody VerifyEmailCodeRequestDto requestDto
     ) {
         emailVerificationService.verifyEmailCode(requestDto.email(), requestDto.code());
-        switch (requestDto.purpose().name()) {
-            case "PASSWORD_RESET":
-                CreatePasswordResetTokenResponseDto responseDto = emailVerificationService.createPasswordResetToken(requestDto.email());
-                return ApiResponseDto.success(responseDto);
-            case "NOTIFICATION":
-                ActivateNotificationResponseDto responseDTo =  emailVerificationService.activateNotifications(requestDto.email());
-                return ApiResponseDto.success(responseDTo);
-            default:
-                throw new BadRequestException(ClientErrorCode.INVALID_ENUM_VALUE);
-        }
+        CreatePasswordResetTokenResponseDto responseDto = emailVerificationService.createPasswordResetToken(requestDto.email());
+        return ApiResponseDto.success(responseDto);
     }
+
+    @PostMapping("/email-verification/verify-notification")
+    public ResponseEntity<ApiResponseDto<Object>> verifyNotificationCode(
+            @RequestBody VerifyEmailCodeRequestDto requestDto,
+            @Auth AuthUser authUser
+    ) {
+        emailVerificationService.verifyEmailCode(requestDto.email(), requestDto.code());
+        ActivateNotificationResponseDto responseDto = emailVerificationService.activateNotifications(authUser.id());
+        return ApiResponseDto.success(responseDto);
+    }
+
 }
