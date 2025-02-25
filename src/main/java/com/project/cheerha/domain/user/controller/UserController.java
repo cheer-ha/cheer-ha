@@ -64,10 +64,10 @@ public class UserController {
         if (isVerified) {
             switch (requestDto.purpose()) {
                 case "PASSWORD_RESET":
-                    CreatePasswordResetTokenResponseDto responseDto = emailVerificationService.createPasswordResetToken(verifyDto.email());
+                    CreatePasswordResetTokenResponseDto responseDto = emailVerificationService.createPasswordResetToken(requestDto.email());
                     return ApiResponseDto.success(responseDto);
                 case "NOTIFICATION":
-                    ActivateNotificationResponseDto responseDTo =  emailVerificationService.activateNotifications(verifyDto.email());
+                    ActivateNotificationResponseDto responseDTo =  emailVerificationService.activateNotifications(requestDto.email());
                     return ApiResponseDto.success(responseDTo);
                 default:
                     throw new IllegalArgumentException("알 수 없는 요청");    //고칠예정
