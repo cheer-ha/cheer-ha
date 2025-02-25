@@ -2,16 +2,20 @@ package com.project.cheerha.domain.notice.service;
 
 import com.project.cheerha.domain.notice.entity.Mapping;
 import com.project.cheerha.domain.notice.repository.MappingRepository;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
+import com.sendgrid.Method;
+import com.sendgrid.Request;
+import com.sendgrid.SendGrid;
+import com.sendgrid.helpers.mail.Mail;
+import com.sendgrid.helpers.mail.objects.Content;
+import com.sendgrid.helpers.mail.objects.Email;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -21,46 +25,54 @@ import org.springframework.stereotype.Service;
 public class EmailSender {
 
     private final MappingRepository mappingRepository;
-    private final JavaMailSender javaMailSender;
-    private static final String SENDER_EMAIL = "cheerha35@gmail.com";
+
+    @Value("${SENDGRID_API_KEY}")
+    private String sendGridApiKey;
+
+    @Value("${SENDGRID_FROM_EMAIL}")
+    private String senderEmail;
 
     @Async
     public void sendEmails() {
+        // 이메일별로 해당하는 Mapping들을 묶는 Map
         Map<String, Set<Mapping>> emailToMappings = new HashMap<>();
 
+        // (1) 이메일로 발송되지 않은 Mapping 목록 조회
+        // (2) 이메일별로 emailToMappings에 Mapping을 묶음
         mappingRepository.findByIsEmailSentFalse()
             .forEach(mapping -> {
                 emailToMappings.computeIfAbsent(
                     mapping.getEmail(),
                     emailAsKey -> new HashSet<>()
                 ).add(mapping);
+                // 해당 이메일에 맞는 Mapping을 Set<Mapping>에 추가
             });
 
+        // 이메일 주소별로 이메일 발송
         emailToMappings.forEach(this::sendMail);
     }
 
+    // 이메일 발송
     private void sendMail(
         String recipientEmail,
         Set<Mapping> mappings
     ) {
         try {
-            MimeMessage message = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(
-                message,
-                true,
-                "UTF-8"
-            );
-
-            helper.setFrom(SENDER_EMAIL);
-            helper.setTo(recipientEmail);
-            helper.setSubject("📢 새로운 맞춤 채용 공고가 도착했어요!");
-
+            // 이메일 발송에 필요한 정보 설정
+            // from: 보내는 사람 이메일 주소
+            // to: 받는 사람 이메일 주소
+            Email from = new Email(senderEmail);
+            Email to = new Email(recipientEmail);
+            String subject = "📢 새로운 맞춤 채용 공고가 도착했어요!";
             StringBuilder content = new StringBuilder();
+
+            // 내용 추가
             content.append("<h1>🚀 새로운 채용 공고가 준비됐어요! 🎉</h1>");
             content.append("<p>맞춤형 채용 공고가 도착했답니다! 💼</p>");
             content.append("<p>아래 링크에서 확인해보세요! ⬇️</p>");
             content.append("<ul>");
 
+            // Mapping에 저장된 채용 공고 URL 목록을 내용에 추가
             for (Mapping mapping : mappings) {
                 content.append("<li>👉 <a href=\"")
                     .append(mapping.getJobOpeningUrl())
@@ -71,18 +83,46 @@ public class EmailSender {
             content.append("</ul>");
             content.append("<p>행운을 빕니다! 🙌</p>");
 
-            helper.setText(content.toString(), true);
+            // 내용 설정
+            Content emailContent = new Content(
+                "text/html", // HTML 형식의 이메일
+                content.toString() // 작성된 내용
+            );
 
-            javaMailSender.send(message);
+            // SendGrid Mail 객체 생성
+            Mail mail = new Mail(
+                from, // 보내는 사람 이메일
+                subject, // 이메일 제목
+                to, // 받는 사람 이메일
+                emailContent // 이메일 내용
+            );
+
+            // SendGrid API 호출에 필요한 Request 객체 설정
+            SendGrid sendGrid = new SendGrid(sendGridApiKey);
+            Request request = new Request();
+
+            // POST 방식으로 요청
+            request.setMethod(Method.POST);
+
+            // SendGrid의 이메일 발송 endpoint
+            request.setEndpoint("mail/send");
+
+            // 요청 본문에 Mail 객체 포함
+            request.setBody(mail.build());
+
+            // SendGrid API 호출
+            sendGrid.api(request);
 
             log.info("이메일 전송 완료: {}", recipientEmail);
 
+            // todo 이메일 전송하는 로직은 전부 주석 처리 후 사용자 500명으로 그대로 테스트하기
+            // todo 여기서 문제 생길 거다
             mappings.forEach(mapping -> {
-                mapping.markEmailAsSent();
-                mappingRepository.save(mapping);
+                mapping.markEmailAsSent(); // 발송 완료 상태로 변경
+                mappingRepository.save(mapping); // 변경된 상태 저장
             });
 
-        } catch (MessagingException e) {
+        } catch (IOException e) {
             log.error("이메일 전송 실패: {}", recipientEmail, e);
         }
     }
