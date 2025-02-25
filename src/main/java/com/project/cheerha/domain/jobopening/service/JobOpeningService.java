@@ -2,8 +2,11 @@ package com.project.cheerha.domain.jobopening.service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.SortOrder;
+import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
+import com.project.cheerha.common.IndexName;
 import com.project.cheerha.common.exception.data.DataErrorCode;
 import com.project.cheerha.common.exception.data.ElasticsearchQueryException;
 import com.project.cheerha.domain.history.service.HistoryService;
@@ -269,6 +272,157 @@ public class JobOpeningService {
                             job.getRequiredSkills()
                     )).collect(Collectors.toList());
             return new PageImpl<>(dtoList, pageable, Math.min(MAX_POPULAR_SIZE, searchResponse.hits().total().value()));  // Ensure total elements are capped at 100
+
+        } catch (IOException e) {
+            log.error("Elasticsearch 조회 실패", e);
+            throw new ElasticsearchQueryException(DataErrorCode.JOB_OPENING_NOT_FOUND);
+        }
+    }
+
+    @Transactional
+    public Page<ReadJobOpeningElasticResponseDto> readJobOpeningUsingElasticSearchFilter(
+        ReadJobOpeningRequestDto requestDto,
+        Long userId,
+        Pageable pageable
+    ) {
+        if (requestDto.getSearchTerm() != null) {
+            historyService.saveSearchTerm(userId, requestDto.getSearchTerm());
+        }
+
+        BoolQuery.Builder boolQueryBuilder = new BoolQuery.Builder();
+
+        // 지역 필터링
+        if (requestDto.getLocation() != null) {
+            boolQueryBuilder.filter(f -> f
+                .term(t -> t
+                    .field("location")
+                    .value(requestDto.getLocation())
+                )
+            );
+        }
+
+        // 고용 형태 필터링
+        if (requestDto.getEmploymentType() != null) {
+            boolQueryBuilder.filter(f -> f
+                .term(t -> t
+                    .field("employmentType")
+                    .value(requestDto.getEmploymentType())
+                )
+            );
+        }
+
+        // 학력 필터링
+        if (requestDto.getEducationLevel() != null) {
+            boolQueryBuilder.filter(f -> f
+                .term(t -> t
+                    .field("educationLevel")
+                    .value(requestDto.getEducationLevel())
+                )
+            );
+        }
+
+        // 최소 경력 필터링
+        if (requestDto.getMinExperienceYears() != null) {
+            boolQueryBuilder.filter(f -> f
+                .range(RangeQuery.of(r -> r
+                    .term(t -> t
+                        .field("minExperienceYears")
+                        .gte(String.valueOf(requestDto.getMinExperienceYears()))
+                    )
+                ))
+            );
+        }
+
+        // 최대 경력 필터링
+        if (requestDto.getMaxExperienceYears() != null) {
+            boolQueryBuilder.filter(f -> f
+                .range(RangeQuery.of(r -> r
+                    .term(t -> t
+                        .field("maxExperienceYears")
+                        .lte(String.valueOf(requestDto.getMaxExperienceYears()))
+                    )
+                ))
+            );
+        }
+
+        // 채용 시작 날짜 필터링
+        if (requestDto.getHiringStartAt() != null) {
+            boolQueryBuilder.filter(f -> f
+                .range(RangeQuery.of(r -> r
+                    .term(t -> t
+                        .field("hiringStartAt")
+                        .gte(String.valueOf(requestDto.getHiringStartAt()))
+                    )
+                ))
+            );
+        }
+
+        // 채용 마감 날짜 필터링
+        if (requestDto.getHiringEndAt() != null) {
+            boolQueryBuilder.filter(f -> f
+                .range(RangeQuery.of(r -> r
+                    .term(t -> t
+                        .field("hiringEndAt")
+                        .lte(String.valueOf(requestDto.getHiringEndAt()))
+                    )
+                ))
+            );
+        }
+
+        // 자격 요건 필터링
+        if (requestDto.getRequiredSkill() != null) {
+            boolQueryBuilder.filter(f -> f
+                .term(t -> t
+                    .field("requiredSkills.keyword")
+                    .value(requestDto.getRequiredSkill())
+                )
+            );
+        }
+
+        // 검색어 조회
+        if (requestDto.getSearchTerm() != null) {
+            boolQueryBuilder.must(m -> m
+                .match(mq -> mq
+                    .field("title")
+                    .query(requestDto.getSearchTerm())
+                )
+            );
+        }
+
+        SearchRequest searchRequest = new SearchRequest.Builder()
+            .index(IndexName.JOB_OPENING_DOCUMENT)
+            .query(q -> q.bool(boolQueryBuilder.build()))
+            .sort(s -> s.field(f -> f.field(CREATED_AT_FIELD).order(SortOrder.Desc)))  // 최신순 정렬
+            .from((int) pageable. getOffset())
+            .size(pageable.getPageSize())
+            .build();
+
+        try {
+            SearchResponse<JobOpeningDocument> searchResponse = elasticsearchClient.search(searchRequest, JobOpeningDocument.class);
+
+            List<JobOpeningDocument> jobOpeningDocuments = searchResponse.hits().hits().stream()
+                .map(hit -> hit.source())
+                .collect(Collectors.toList());
+
+            return new PageImpl<>(jobOpeningDocuments.stream()
+                .map(job -> new ReadJobOpeningElasticResponseDto(
+                    job.getId(),
+                    job.getTitle(),
+                    job.getCompany(),
+                    job.getLocation(),
+                    job.getSalary(),
+                    job.getEmploymentType(),
+                    job.getEducationLevel(),
+                    job.getJobOpeningUrl(),
+                    job.getMinExperienceYears(),
+                    job.getMaxExperienceYears(),
+                    job.getPosition(),
+                    job.getHiringStartAt(),
+                    job.getHiringEndAt(),
+                    job.getCreatedAt(),
+                    job.getViewCount(),
+                    job.getRequiredSkills()
+                )).collect(Collectors.toList()), pageable, jobOpeningDocuments.size());
 
         } catch (IOException e) {
             log.error("Elasticsearch 조회 실패", e);
