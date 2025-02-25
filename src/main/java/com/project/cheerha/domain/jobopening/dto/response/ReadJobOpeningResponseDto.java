@@ -22,6 +22,8 @@ public class ReadJobOpeningResponseDto {
     private final String position;
     private final ZonedDateTime hiringStartAt;
     private final ZonedDateTime hiringEndAt;
+    private final ZonedDateTime createdAt;
+    private final int viewCount;
 
 
     private List<String> requiredSkillList;
@@ -33,8 +35,8 @@ public class ReadJobOpeningResponseDto {
             int salary, String employmentType,
             String educationLevel, String jobOpeningUrl,
             Integer minExperienceYears, Integer maxExperienceYears,
-            ZonedDateTime hiringStartAt, ZonedDateTime hiringEndAt,
-            String position
+            String position, ZonedDateTime hiringStartAt, ZonedDateTime hiringEndAt,
+            ZonedDateTime createdAt, int viewCount
     ) {
         this.id = id;
         this.title = title;
@@ -46,9 +48,11 @@ public class ReadJobOpeningResponseDto {
         this.jobOpeningUrl = jobOpeningUrl;
         this.minExperienceYears = minExperienceYears;
         this.maxExperienceYears = maxExperienceYears;
+        this.position = position;
         this.hiringStartAt = hiringStartAt;
         this.hiringEndAt = hiringEndAt;
-        this.position = position;
+        this.createdAt = createdAt;
+        this.viewCount = viewCount;
     }
 
     public void addRequiredSkills(List<String> requiredSkillList) {
