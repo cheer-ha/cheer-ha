@@ -6,6 +6,7 @@ import com.project.cheerha.domain.keyword.entity.JobOpeningKeyword;
 import com.project.cheerha.domain.keyword.entity.Keyword;
 import com.project.cheerha.domain.jobopening.elasticrepository.JobOpeningDocumentRepository;
 import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,13 +18,11 @@ import java.util.List;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class MysqlToElasticsearchService {
 
-    @Autowired
-    private JobOpeningRepository jobOpeningRepository;
-
-    @Autowired
-    private JobOpeningDocumentRepository jobOpeningDocumentRepository;
+    private final JobOpeningRepository jobOpeningRepository;
+    private final JobOpeningDocumentRepository jobOpeningDocumentRepository;
 
     private boolean isFirstExecutionDone = false;  // 최초 실행 여부를 체크하는 변수
 
@@ -73,13 +72,13 @@ public class MysqlToElasticsearchService {
         try {
             log.info("MySQL에서 데이터를 조회하는 중...");
             // JobOpening과 관련된 키워드를 조회
-            List<JobOpening> jobOpenings = jobOpeningRepository.findAllWithJobOpeningKeywords();  // 적절한 ID 또는 쿼리 매개변수를 사용하여 조회
-            log.info("총 {}개의 JobOpening 데이터를 조회했습니다.", jobOpenings.size());
+            List<JobOpening> jobOpeningList = jobOpeningRepository.findAllWithJobOpeningKeywords();  // 적절한 ID 또는 쿼리 매개변수를 사용하여 조회
+            log.info("총 {}개의 JobOpening 데이터를 조회했습니다.", jobOpeningList.size());
 
             List<JobOpeningDocument> jobOpeningDocuments = new ArrayList<>();
 
             // 각 JobOpening에 대해 키워드 리스트를 추출하여 requiredSkills에 추가
-            for (JobOpening jobOpening : jobOpenings) {
+            for (JobOpening jobOpening : jobOpeningList) {
                 List<String> requiredSkills = new ArrayList<>();
                 for (JobOpeningKeyword jobOpeningKeyword : jobOpening.getJobOpeningKeywordList()) {
                     Keyword keyword = jobOpeningKeyword.getKeyword();
