@@ -1,12 +1,13 @@
 package com.project.cheerha.common.generator;
 
-import com.project.cheerha.domain.jobopening.entity.EducationLevel;
-import com.project.cheerha.domain.jobopening.entity.EmploymentType;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Random;
+
+import com.project.cheerha.domain.jobopening.entity.EducationLevel;
+import com.project.cheerha.domain.jobopening.entity.EmploymentType;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
