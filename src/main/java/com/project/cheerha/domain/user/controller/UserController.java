@@ -3,7 +3,7 @@ package com.project.cheerha.domain.user.controller;
 import com.project.cheerha.common.annotation.Auth;
 import com.project.cheerha.common.dto.AuthUser;
 import com.project.cheerha.domain.user.dto.request.UpdatePasswordRequestDto;
-import com.project.cheerha.domain.user.dto.request.UpdatePasswordWithEmailRequestDto;
+import com.project.cheerha.domain.user.dto.request.ResetPasswordRequestDto;
 import com.project.cheerha.domain.user.dto.request.VerifyEmailCodeRequestDto;
 import com.project.cheerha.domain.user.dto.response.*;
 import com.project.cheerha.domain.user.service.EmailVerificationService;
@@ -38,11 +38,11 @@ public class UserController {
         return ApiResponseDto.success(responseDto);
     }
 
-    @PatchMapping("/password/email-verification")   //TODO token 필요
-    public ResponseEntity<ApiResponseDto<UpdatePasswordResponseDto>> updatePasswordWithEmailVerification(
-            @RequestBody UpdatePasswordWithEmailRequestDto requestDto
+    @PatchMapping("/password-reset")
+    public ResponseEntity<ApiResponseDto<UpdatePasswordResponseDto>> resetPassword(
+            @RequestBody ResetPasswordRequestDto requestDto
     ) {
-        UpdatePasswordResponseDto responseDto = userService.updatePasswordWithEmailVerification(requestDto);
+        UpdatePasswordResponseDto responseDto = userService.resetPassword(requestDto);
         return ApiResponseDto.success(responseDto);
     }
 

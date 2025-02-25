@@ -2,6 +2,7 @@ package com.project.cheerha.domain.user.service;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
+import com.project.cheerha.common.util.SecureRandomUtil;
 import com.project.cheerha.domain.user.dto.response.ActivateNotificationResponseDto;
 import com.project.cheerha.domain.user.dto.response.CreatePasswordResetTokenResponseDto;
 import com.project.cheerha.domain.user.dto.response.SendEmailVerificationResponseDto;
@@ -25,7 +26,9 @@ public class EmailVerificationService {
     private final UserFindByService userFindByService;
 
     private static final long CODE_EXPIRATION_MINUTES = 5;  // 인증 코드 유효 시간 (5분)
+    private static final long PASSWORD_EXPIRATION_MINUTES = 5;
     private static final String VERIFICATION_CODE_PREFIX = "email_verification";
+    private static final String PASSWORD_TOKEN_PREFIX = "password_verification";
 
     public SendEmailVerificationResponseDto sendVerificationCode(Long id) {
         User user = userFindByService.findById(id);
@@ -56,7 +59,11 @@ public class EmailVerificationService {
 
     //TODO: 다음 풀리퀘스트
     public CreatePasswordResetTokenResponseDto createPasswordResetToken(String email) {
-        return null;
+        User user = userFindByService.findByEmail(email);
+        String redisKey = PASSWORD_TOKEN_PREFIX + ":" + user.getEmail();
+        String token = SecureRandomUtil.generateSecureToken();
+        redisTemplate.opsForValue().set(redisKey, token, PASSWORD_EXPIRATION_MINUTES, TimeUnit.MINUTES);
+        return CreatePasswordResetTokenResponseDto.of(token);
     }
 
     private String generateRandomCode() {
