@@ -39,7 +39,7 @@ public interface JobOpeningViewCountRepository extends JpaRepository<JobOpeningV
      * @return JobOpeningViewCount에 저장된 고유한 JobOpening ID 목록(List<Long>)
      */
     @Query("SELECT DISTINCT b.jobOpening.id FROM JobOpeningViewCount b WHERE b.viewCount > 0")
-    List<Long> findViewedJobOpeningIds();
+    List<Long> findDistinctViewedJobOpeningIdList();
 
     /**
      * 특정 JobOpening ID에 해당하는 ViewCount 값을 조회하여 조회수 동기화에 사용되는 메서드입니다.

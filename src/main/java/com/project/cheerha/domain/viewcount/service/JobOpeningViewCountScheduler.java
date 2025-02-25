@@ -34,7 +34,7 @@ public class JobOpeningViewCountScheduler {
     @Transactional
     public void syncViewCounts() {
         // jobOpeningViewCount 테이블에서 viewCount값이 1이상인 jobOpening.id 목록 가져오기
-        List<Long> jobOpeningIdList = jobOpeningViewCountRepository.findViewedJobOpeningIds();
+        List<Long> jobOpeningIdList = jobOpeningViewCountRepository.findDistinctViewedJobOpeningIdList();
 
         // 각 jobOpening.id별로 viewCount 조회 및 업데이트
         for (Long jobOpeningId : jobOpeningIdList) {

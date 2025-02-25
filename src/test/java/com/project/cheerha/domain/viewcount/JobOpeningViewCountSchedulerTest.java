@@ -32,7 +32,7 @@ public class JobOpeningViewCountSchedulerTest {
         Long id = 1L;
         Long viewCount = 10L;
 
-        when(jobOpeningViewCountRepository.findViewedJobOpeningIds()).thenReturn(List.of(id));
+        when(jobOpeningViewCountRepository.findDistinctViewedJobOpeningIdList()).thenReturn(List.of(id));
         when(jobOpeningViewCountRepository.getViewCountByJobOpeningId(id)).thenReturn(viewCount);
 
         //when
