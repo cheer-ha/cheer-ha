@@ -6,7 +6,8 @@ import com.project.cheerha.domain.user.dto.request.SendEmailVerificationRequestD
 import com.project.cheerha.domain.user.dto.request.UpdatePasswordRequestDto;
 import com.project.cheerha.domain.user.dto.request.UpdatePasswordWithEmailRequestDto;
 import com.project.cheerha.domain.user.dto.request.VerifyEmailCodeRequestDto;
-import com.project.cheerha.domain.user.dto.response.ReadUserResponseDto;
+import com.project.cheerha.domain.user.dto.response.*;
+import com.project.cheerha.domain.user.service.EmailVerificationService;
 import com.project.cheerha.domain.user.service.UserService;
 import com.project.cheerha.common.dto.ApiResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final EmailVerificationService emailVerificationService;
 
     @GetMapping
     public ResponseEntity<ApiResponseDto<ReadUserResponseDto>> readUser(
@@ -38,10 +40,10 @@ public class UserController {
     }
 
     @PatchMapping("/password/email-verification")   //token 필요
-    public ResponseEntity<ApiResponseDto<UpdatePasswordWithEmailResponseDto>> updatePasswordWithEmailVerification(
+    public ResponseEntity<ApiResponseDto<UpdatePasswordResponseDto>> updatePasswordWithEmailVerification(
             @RequestBody UpdatePasswordWithEmailRequestDto requestDto
     ) {
-        UpdatePasswordWithEmailResponseDto responseDto = userService.updatePasswordWithEmailVerification(requestDto);
+        UpdatePasswordResponseDto responseDto = userService.updatePasswordWithEmailVerification(requestDto);
         return ApiResponseDto.success(responseDto);
     }
 
@@ -54,7 +56,7 @@ public class UserController {
     }
 
     @PostMapping("/email-verification/verify")
-    public ResponseEntity<ApiResponseDto<?>> verifyEmailCode(
+    public ResponseEntity<ApiResponseDto<Object>> verifyEmailCode(
             @RequestBody VerifyEmailCodeRequestDto requestDto
     ) {
         boolean isVerified = emailVerificationService.verifyEmailCode(requestDto.email(), requestDto.code());
@@ -62,10 +64,10 @@ public class UserController {
         if (isVerified) {
             switch (requestDto.purpose()) {
                 case "PASSWORD_RESET":
-                    CreatePasswordResetTokenResponseDto resetToken = emailVerificationService.createPasswordResetToken(verifyDto.email());
-                    return ApiResponseDto.success(resetToken);
+                    CreatePasswordResetTokenResponseDto responseDto = emailVerificationService.createPasswordResetToken(verifyDto.email());
+                    return ApiResponseDto.success(responseDto);
                 case "NOTIFICATION":
-                    ActivateNotificationResponseDTo responseDTo =  emailVerificationService.activateNotifications(verifyDto.email());
+                    ActivateNotificationResponseDto responseDTo =  emailVerificationService.activateNotifications(verifyDto.email());
                     return ApiResponseDto.success(responseDTo);
                 default:
                     throw new IllegalArgumentException("알 수 없는 요청");    //고칠예정
