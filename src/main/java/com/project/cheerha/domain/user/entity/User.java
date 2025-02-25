@@ -49,4 +49,8 @@ public class User {
     public void updateNotificationEnabled() {
         this.isNotificationEnabled = true;
     }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }
