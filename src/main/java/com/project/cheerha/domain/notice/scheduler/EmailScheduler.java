@@ -29,7 +29,7 @@ public class EmailScheduler {
     private final ThreadPoolTaskScheduler threadPoolScheduler;
 
     // 아침 9시와 오후 5시에 실행
-    @Scheduled(cron = "0 0 9,17 * * *")
+//    @Scheduled(cron = "0 0 9,17 * * *")
     @PostConstruct
     @Transactional
     public void sendJobOpeningMatchingNotices() {
