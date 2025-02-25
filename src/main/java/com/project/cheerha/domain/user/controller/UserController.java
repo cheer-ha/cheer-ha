@@ -4,7 +4,6 @@ import com.project.cheerha.common.annotation.Auth;
 import com.project.cheerha.common.dto.AuthUser;
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
-import com.project.cheerha.domain.user.dto.request.SendEmailVerificationRequestDto;
 import com.project.cheerha.domain.user.dto.request.UpdatePasswordRequestDto;
 import com.project.cheerha.domain.user.dto.request.UpdatePasswordWithEmailRequestDto;
 import com.project.cheerha.domain.user.dto.request.VerifyEmailCodeRequestDto;
@@ -49,11 +48,11 @@ public class UserController {
         return ApiResponseDto.success(responseDto);
     }
 
-    @PostMapping("/email-verification")
+    @PostMapping("/email-verification/notification-verify")
     public ResponseEntity<ApiResponseDto<SendEmailVerificationResponseDto>> sendEmailVerificationCode(
-            @RequestBody SendEmailVerificationRequestDto requestDto
+            @Auth AuthUser authUser
     ) {
-        SendEmailVerificationResponseDto responseDto = emailVerificationService.sendVerificationCode(requestDto);
+        SendEmailVerificationResponseDto responseDto = emailVerificationService.sendVerificationCode(authUser.id());
         return ApiResponseDto.success(responseDto);
     }
 
@@ -61,21 +60,16 @@ public class UserController {
     public ResponseEntity<ApiResponseDto<Object>> verifyEmailCode(
             @RequestBody VerifyEmailCodeRequestDto requestDto
     ) {
-        boolean isVerified = emailVerificationService.verifyEmailCode(requestDto.email(), requestDto.code());
-
-        if (isVerified) {
-            switch (requestDto.purpose().name()) {
-                case "PASSWORD_RESET":
-                    CreatePasswordResetTokenResponseDto responseDto = emailVerificationService.createPasswordResetToken(requestDto.email());
-                    return ApiResponseDto.success(responseDto);
-                case "NOTIFICATION":
-                    ActivateNotificationResponseDto responseDTo =  emailVerificationService.activateNotifications(requestDto.email());
-                    return ApiResponseDto.success(responseDTo);
-                default:
-                    throw new BadRequestException(ClientErrorCode.INVALID_ENUM_VALUE);
-            }
-        } else {
-            throw new BadRequestException(ClientErrorCode.INVALID_EMAIL_VERIFICATION_CODE);   //고칠예정
+        emailVerificationService.verifyEmailCode(requestDto.email(), requestDto.code());
+        switch (requestDto.purpose().name()) {
+            case "PASSWORD_RESET":
+                CreatePasswordResetTokenResponseDto responseDto = emailVerificationService.createPasswordResetToken(requestDto.email());
+                return ApiResponseDto.success(responseDto);
+            case "NOTIFICATION":
+                ActivateNotificationResponseDto responseDTo =  emailVerificationService.activateNotifications(requestDto.email());
+                return ApiResponseDto.success(responseDTo);
+            default:
+                throw new BadRequestException(ClientErrorCode.INVALID_ENUM_VALUE);
         }
     }
 }
