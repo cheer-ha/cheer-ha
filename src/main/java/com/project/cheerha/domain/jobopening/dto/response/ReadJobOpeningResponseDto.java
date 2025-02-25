@@ -24,7 +24,7 @@ public class ReadJobOpeningResponseDto {
     private final ZonedDateTime hiringEndAt;
 
 
-    private List<String> requiredSkills;
+    private List<String> requiredSkillList;
 
     @QueryProjection
     public ReadJobOpeningResponseDto(
@@ -51,7 +51,7 @@ public class ReadJobOpeningResponseDto {
         this.position = position;
     }
 
-    public void addRequiredSkills(List<String> requiredSkills) {
-        this.requiredSkills = requiredSkills;
+    public void addRequiredSkills(List<String> requiredSkillList) {
+        this.requiredSkillList = requiredSkillList;
     }
 }

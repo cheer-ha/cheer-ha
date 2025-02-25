@@ -129,8 +129,8 @@ public class JobOpeningService {
             JobOpening jobOpening = jobOpeningFindByService.findById(dto.getId());
             if (jobOpening != null) {
                 // JobOpening에서 requiredSkills를 가져오기
-                List<String> requiredSkills = jobOpening.getRequiredSkillList();
-                dto.addRequiredSkills(requiredSkills); // DTO에 requiredSkills 추가
+                List<String> requiredSkillList = jobOpening.getRequiredSkillList();
+                dto.addRequiredSkills(requiredSkillList); // DTO에 requiredSkills 추가
             }
         }
 
@@ -176,12 +176,12 @@ public class JobOpeningService {
         try {
             // Elasticsearch 쿼리 실행
             SearchResponse<JobOpeningDocument> searchResponse = elasticsearchClient.search(searchRequest, JobOpeningDocument.class);
-            List<JobOpeningDocument> jobOpeningDocuments = searchResponse.hits().hits().stream()
+            List<JobOpeningDocument> jobOpeningDocumentList = searchResponse.hits().hits().stream()
                     .map(hit -> hit.source())
                     .collect(Collectors.toList());
 
             // 반환된 결과를 DTO로 매핑
-            List<ReadJobOpeningElasticResponseDto> dtoList = jobOpeningDocuments.stream()
+            List<ReadJobOpeningElasticResponseDto> dtoList = jobOpeningDocumentList.stream()
                     .map(job -> new ReadJobOpeningElasticResponseDto(
                             job.getId(),
                             job.getTitle(),
