@@ -10,14 +10,14 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class RealTimeSender {
+public class PushSender {
 
     private final MappingRepository mappingRepository;
 
-    public void sendRealTime() {
-        List<Mapping> mappings = mappingRepository.findAll();
+    public void sendPushMessage() {
+        List<Mapping> mappingList = mappingRepository.findAll();
 
-        mappings.forEach(mapping -> {
+        mappingList.forEach(mapping -> {
             log.info("이메일: {}, URL: {}",
                 mapping.getEmail(),
                 mapping.getJobOpeningUrl()

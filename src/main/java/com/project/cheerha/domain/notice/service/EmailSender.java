@@ -28,17 +28,21 @@ public class EmailSender {
     public void sendEmails() {
         Map<String, Set<Mapping>> emailToMappings = new HashMap<>();
 
-        mappingRepository.findByIsEmailSentFalse().forEach(mapping -> {
-            emailToMappings.computeIfAbsent(
-                mapping.getEmail(),
-                emailAsKey -> new HashSet<>()
-            ).add(mapping);
-        });
+        mappingRepository.findByIsEmailSentFalse()
+            .forEach(mapping -> {
+                emailToMappings.computeIfAbsent(
+                    mapping.getEmail(),
+                    emailAsKey -> new HashSet<>()
+                ).add(mapping);
+            });
 
         emailToMappings.forEach(this::sendMail);
     }
 
-    private void sendMail(String recipientEmail, Set<Mapping> mappings) {
+    private void sendMail(
+        String recipientEmail,
+        Set<Mapping> mappings
+    ) {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(

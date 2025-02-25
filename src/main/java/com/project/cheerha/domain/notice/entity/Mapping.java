@@ -15,7 +15,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(
     name = "mapping",
-    uniqueConstraints = {@UniqueConstraint(columnNames = {"email", "job_opening_url"})})
+    uniqueConstraints = {@UniqueConstraint(
+        columnNames = {"email", "job_opening_url"}
+    )}
+)
 public class Mapping {
 
     @Id
@@ -31,6 +34,18 @@ public class Mapping {
     @Column
     private boolean isEmailSent;
 
+    @Column
+    private boolean isPushSent;
+
+    /**
+     * Mapping 객체를 생성하는 정적 팩토리 메서드
+     *
+     * @param email         : 사용자 이메일
+     * @param jobOpeningUrl : 채용 공고 URL
+     * @return 생성된 Mapping 객체
+     * <p>
+     * 기본값 1: 이메일 미발송 기본값 2: 푸시 미발송
+     */
     public static Mapping toEntity(
         String email,
         String jobOpeningUrl
@@ -39,10 +54,17 @@ public class Mapping {
         mapping.email = email;
         mapping.jobOpeningUrl = jobOpeningUrl;
         mapping.isEmailSent = false;
+        mapping.isPushSent = false;
         return mapping;
     }
 
+    // 이메일 발송 상태를 '발송됨'으로 변경
     public void markEmailAsSent() {
         this.isEmailSent = true;
+    }
+
+    // 푸시 발송 상태를 '발송됨'으로 변경
+    public void markPushAsSent() {
+        this.isPushSent = true;
     }
 }
