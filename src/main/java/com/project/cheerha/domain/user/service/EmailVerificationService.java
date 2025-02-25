@@ -48,6 +48,7 @@ public class EmailVerificationService {
         if(storedCode == null || !storedCode.equals(code)) {
             throw new BadRequestException(ClientErrorCode.INVALID_EMAIL_VERIFICATION_CODE);
         }
+        redisTemplate.delete(redisKey);
     }
 
     @Transactional
@@ -57,7 +58,6 @@ public class EmailVerificationService {
         return ActivateNotificationResponseDto.of();
     }
 
-    //TODO: 다음 풀리퀘스트
     public CreatePasswordResetTokenResponseDto createPasswordResetToken(String email) {
         User user = userFindByService.findByEmail(email);
         String redisKey = PASSWORD_TOKEN_PREFIX + ":" + user.getEmail();
