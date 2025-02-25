@@ -39,7 +39,7 @@ public class UserController {
         return ApiResponseDto.success(responseDto);
     }
 
-    @PatchMapping("/password/email-verification")   //token 필요
+    @PatchMapping("/password/email-verification")   //TODO token 필요
     public ResponseEntity<ApiResponseDto<UpdatePasswordResponseDto>> updatePasswordWithEmailVerification(
             @RequestBody UpdatePasswordWithEmailRequestDto requestDto
     ) {

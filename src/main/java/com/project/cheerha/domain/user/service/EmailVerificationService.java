@@ -16,11 +16,12 @@ public class EmailVerificationService {
         return true;
     }
 
-    public CreatePasswordResetTokenResponseDto createPasswordResetToken(String email) {
+    public ActivateNotificationResponseDto activateNotifications(String email) {
         return null;
     }
 
-    public ActivateNotificationResponseDto activateNotifications(String email) {
+    //TODO: 다음 풀리퀘스트
+    public CreatePasswordResetTokenResponseDto createPasswordResetToken(String email) {
         return null;
     }
 }
