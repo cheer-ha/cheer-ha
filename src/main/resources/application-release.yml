@@ -20,6 +20,10 @@ spring:
           auth: true
           starttls:
             enable: true
+          connection-pool:
+            enabled: true  # 연결 풀 활성화
+            maxConnections: 10  # 최대 연결 수
+            timeout: 30000  # 연결 타임아웃 시간 (밀리초)
   data:
     redis:
       port: ${REDIS_PORT}
