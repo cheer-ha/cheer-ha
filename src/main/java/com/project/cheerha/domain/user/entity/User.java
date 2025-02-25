@@ -33,6 +33,8 @@ public class User {
     @Column(length = 5, nullable = false )
     private Role role;
 
+    private boolean isNotificationEnabled = false;
+
     public static User toEntity(String email, String name, int age, int career, String password) {
         User user = new User();
         user.email = email;
