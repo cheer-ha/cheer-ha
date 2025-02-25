@@ -39,10 +39,10 @@ public class GetJobOpeningUrlAndIncreaseViewCountIntegrationTest {
      */
     @BeforeEach
     public void resetViewCount() {
-        List<JobOpening> jobOpenings = jobOpeningRepository.findAll();
-        jobOpenings.forEach(jobOpening ->
+        List<JobOpening> jobOpeningList = jobOpeningRepository.findAll();
+        jobOpeningList.forEach(jobOpening ->
             ReflectionTestUtils.setField(jobOpening, "viewCount", 0));
-        jobOpeningRepository.saveAll(jobOpenings);
+        jobOpeningRepository.saveAll(jobOpeningList);
     }
 
     /**
