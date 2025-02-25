@@ -6,6 +6,8 @@ import static org.mockito.Mockito.*;
 import com.project.cheerha.domain.bookmark.dto.response.ReadBookmarkResponseDto;
 import com.project.cheerha.domain.bookmark.entity.Bookmark;
 import com.project.cheerha.domain.bookmark.repository.BookmarkRepository;
+import com.project.cheerha.domain.jobopening.entity.EducationLevel;
+import com.project.cheerha.domain.jobopening.entity.EmploymentType;
 import com.project.cheerha.domain.jobopening.entity.JobOpening;
 import com.project.cheerha.domain.jobopening.service.JobOpeningFindByService;
 import com.project.cheerha.domain.user.entity.User;
@@ -44,7 +46,7 @@ class BookmarkServiceTest {
     void setUp() {
         // Given: Mock 객체들 초기화
         Long userId = 1L;
-        user = User.of(
+        user = User.toEntity(
                 "user2001@gmail.com",
                 "user2001",
                 30,
@@ -58,15 +60,14 @@ class BookmarkServiceTest {
                 "네이버",
                 "서울",
                 60000,
-                "정규직",
-                "학사",
+                EmploymentType.toEnum("정규직"),  // EmploymentType 사용
+                EducationLevel.toEnum("학사"),
                 "http://example.com/job/1",
                 0,
                 3,
                 "Software Engineer",
                 ZonedDateTime.now(),
-                ZonedDateTime.now().plusDays(30),
-                ZonedDateTime.now()
+                ZonedDateTime.now().plusDays(30)
         );
     }
 

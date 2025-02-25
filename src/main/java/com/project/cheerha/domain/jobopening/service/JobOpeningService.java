@@ -126,7 +126,7 @@ public class JobOpeningService {
 
         // 조회된 채용공고 DTO에 requiredSkills 추가
         for (ReadJobOpeningResponseDto dto : dtoPage) {
-            JobOpening jobOpening = jobOpeningRepository.findById(dto.getId()).orElse(null);
+            JobOpening jobOpening = jobOpeningFindByService.findById(dto.getId());
             if (jobOpening != null) {
                 // JobOpening에서 requiredSkills를 가져오기
                 List<String> requiredSkills = jobOpening.getRequiredSkillList();
