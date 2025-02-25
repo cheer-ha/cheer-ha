@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -28,6 +30,7 @@ public class EmailScheduler {
 
     // 아침 9시와 오후 5시에 실행
     @Scheduled(cron = "0 0 9,17 * * *")
+    @PostConstruct
     @Transactional
     public void sendJobOpeningMatchingNotices() {
 
