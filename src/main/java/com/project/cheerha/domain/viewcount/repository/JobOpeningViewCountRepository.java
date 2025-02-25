@@ -20,7 +20,16 @@ public interface JobOpeningViewCountRepository extends JpaRepository<JobOpeningV
      */
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT b FROM JobOpeningViewCount b WHERE b.jobOpening.id = :id")
-    Optional<JobOpeningViewCount> findByForUpdateViewCount(@Param("id") Long id);
+    Optional<JobOpeningViewCount> findWithLockByJobOpeningId(@Param("id") Long id);
+
+    /**
+     * 특정 JobOpening ID에 해당하는 ViewCount 엔티티를 조회하는 메서드입니다.
+     * 비관적 락을 적용하지 않은 단순 조회 메서드
+     * @param id 조회를 위한 jobOpening의 ID
+     * @return 락 없이 일반적으로 조회된 JobOpeningViewCount 엔티티(Optional 형태)
+     */
+    @Query("SELECT b FROM JobOpeningViewCount b WHERE b.jobOpening.id = :id")
+    Optional<JobOpeningViewCount> findByJobOpeningId(@Param("id") Long id);
 
     /**
      * JobOpeningViewCount 테이블에서 고유한 JobOpening ID 목록을 조회하는 메서드입니다.
@@ -30,7 +39,7 @@ public interface JobOpeningViewCountRepository extends JpaRepository<JobOpeningV
      * @return JobOpeningViewCount에 저장된 고유한 JobOpening ID 목록(List<Long>)
      */
     @Query("SELECT DISTINCT b.jobOpening.id FROM JobOpeningViewCount b WHERE b.viewCount > 0")
-    List<Long> findAllJobOpeningId();
+    List<Long> findDistinctViewedJobOpeningIdList();
 
     /**
      * 특정 JobOpening ID에 해당하는 ViewCount 값을 조회하여 조회수 동기화에 사용되는 메서드입니다.
@@ -40,7 +49,7 @@ public interface JobOpeningViewCountRepository extends JpaRepository<JobOpeningV
      * @return JobOpeningViewCount 테이블에서 해당 ID에 대한 viewCount 값(Long)
      */
     @Query("SELECT b.viewCount FROM JobOpeningViewCount b WHERE b.jobOpening.id = :id")
-    Long findViewCountByJobOpeningId(@Param("id") Long id);
+    Long getViewCountByJobOpeningId(@Param("id") Long id);
 
     /**
      * 특정 JobOpening ID에 해당하는 ViewCount를 초기화(0으로 설정)하는 메서드입니다.
@@ -50,7 +59,6 @@ public interface JobOpeningViewCountRepository extends JpaRepository<JobOpeningV
      */
     @Modifying
     @Query("UPDATE JobOpeningViewCount v SET v.viewCount = 0 WHERE v.jobOpening.id = :jobOpeningId")
-    void resetViewCount(@Param("jobOpeningId") Long jobOpeningId);
-
+    void resetViewCountByJobOpeningId(@Param("jobOpeningId") Long jobOpeningId);
 
 }

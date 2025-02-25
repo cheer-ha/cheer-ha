@@ -1,6 +1,6 @@
 spring:
   config:
-    import: optional:file:.env[.properties]
+    import: optional:file:.env[.properties]  # .env 파일 로드
   datasource:
     url: jdbc:mysql://localhost:${DB_PORT}/${DB_NAME}
     username: ${DB_USER}
@@ -12,11 +12,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-  data:
-    redis:
-      port: ${REDIS_PORT}
-      host: localhost
-      database: ${REDIS_DATABASE}
   mail:
     host: smtp.gmail.com
     port: 587
@@ -33,10 +28,27 @@ spring:
               maxConnections: 10  # 최대 연결 수
               timeout: 30000  # 연결 타임아웃 시간 (밀리초)
 
+  data:
+    redis:
+      port: ${REDIS_PORT}
+      host: localhost
+      database: ${REDIS_DATABASE}
+
   cache:
     type: redis
     redis:
       time-to-live: 3600  # 캐시 항목의 TTL(Time To Live)을 1시간으로 설정
+
+elasticsearch:
+  uris: http://localhost:${ELASTICSEARCH_PORT}  # Elasticsearch REST API URL
+  username: ${ELASTICSEARCH_USERNAME}
+  password: ${ELASTICSEARCH_PASSWORD}
+  index:
+    name: job-opening
+
+#csv:
+#  file:
+#    path: src/main/resources/Job_Openings.csv
 
 jwt:
   secret:
@@ -50,9 +62,11 @@ jwt:
     expiration: ${JWT_EXPIRATION}
     refreshExpiration: ${REFRESH_EXPIRATION}
     blackListExpiration: ${BLACK_EXPIRATION}
+
 security:
   bcrypt:
     cost: ${SECURITY_COST}
+
 logging:
   level:
     org:
