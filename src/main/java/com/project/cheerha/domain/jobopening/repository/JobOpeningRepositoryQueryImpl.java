@@ -1,9 +1,5 @@
 package com.project.cheerha.domain.jobopening.repository;
 
-import static com.project.cheerha.domain.jobopening.entity.QJobOpening.jobOpening;
-import static com.project.cheerha.domain.keyword.entity.QJobOpeningKeyword.jobOpeningKeyword;
-import static com.project.cheerha.domain.keyword.entity.QKeyword.keyword;
-
 import com.project.cheerha.domain.jobopening.dto.request.ReadJobOpeningRequestDto;
 import com.project.cheerha.domain.jobopening.dto.response.QReadJobOpeningResponseDto;
 import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningResponseDto;
@@ -13,17 +9,22 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static com.project.cheerha.domain.jobopening.entity.QJobOpening.jobOpening;
+import static com.project.cheerha.domain.keyword.entity.QJobOpeningKeyword.jobOpeningKeyword;
+import static com.project.cheerha.domain.keyword.entity.QKeyword.keyword;
 
 @Repository
 @RequiredArgsConstructor
