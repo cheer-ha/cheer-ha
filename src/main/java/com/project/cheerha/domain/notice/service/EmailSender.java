@@ -90,28 +90,7 @@ public class EmailSender {
             );
 
             // SendGrid Mail 객체 생성
-            Mail mail = new Mail(
-                from, // 보내는 사람 이메일
-                subject, // 이메일 제목
-                to, // 받는 사람 이메일
-                emailContent // 이메일 내용
-            );
-
-            // SendGrid API 호출에 필요한 Request 객체 설정
-            SendGrid sendGrid = new SendGrid(sendGridApiKey);
-            Request request = new Request();
-
-            // POST 방식으로 요청
-            request.setMethod(Method.POST);
-
-            // SendGrid의 이메일 발송 endpoint
-            request.setEndpoint("mail/send");
-
-            // 요청 본문에 Mail 객체 포함
-            request.setBody(mail.build());
-
-            // SendGrid API 호출
-            sendGrid.api(request);
+            sendSendGridEmail(from, subject, to, emailContent);
 
             log.info("이메일 전송 완료: {}", recipientEmail);
 
@@ -123,5 +102,32 @@ public class EmailSender {
         } catch (IOException e) {
             log.error("이메일 전송 실패: {}", recipientEmail, e);
         }
+    }
+
+    public void sendVerificationEmail(String recipientEmail, String code) {
+        try {
+            Email from = new Email(senderEmail);
+            Email to = new Email(recipientEmail);
+            String subject = "이메일 인증 코드";
+            String content = "<p>인증 코드: <strong>" + code + "</strong></p>";
+            Content emailContent = new Content("text/html", content);
+            sendSendGridEmail(from, subject, to, emailContent);
+
+            log.info("인증 코드 이메일 전송 완료: {}", recipientEmail);
+        } catch (IOException e) {
+            log.error("인증 코드 이메일 전송 실패: {}", recipientEmail, e);
+        }
+    }
+
+    private void sendSendGridEmail(Email from, String subject, Email to, Content emailContent) throws IOException {
+        Mail mail = new Mail(from, subject, to, emailContent);
+
+        SendGrid sendGrid = new SendGrid(sendGridApiKey);
+        Request request = new Request();
+        request.setMethod(Method.POST);
+        request.setEndpoint("mail/send");
+        request.setBody(mail.build());
+
+        sendGrid.api(request);
     }
 }

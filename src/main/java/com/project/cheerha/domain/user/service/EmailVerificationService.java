@@ -3,14 +3,13 @@ package com.project.cheerha.domain.user.service;
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
 import com.project.cheerha.common.util.SecureRandomUtil;
+import com.project.cheerha.domain.notice.service.EmailSender;
 import com.project.cheerha.domain.user.dto.response.ActivateNotificationResponseDto;
 import com.project.cheerha.domain.user.dto.response.CreatePasswordResetTokenResponseDto;
 import com.project.cheerha.domain.user.dto.response.SendEmailVerificationResponseDto;
 import com.project.cheerha.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class EmailVerificationService {
 
-    private final JavaMailSender javaMailSender;
+    private final EmailSender emailSender;
     private final RedisTemplate<String, String> redisTemplate;
     private final UserFindByService userFindByService;
 
@@ -38,7 +37,7 @@ public class EmailVerificationService {
         String code = generateRandomCode();
         String redisKey = VERIFICATION_CODE_PREFIX + ":"+  user.getEmail();
         redisTemplate.opsForValue().set(redisKey, code, CODE_EXPIRATION_MINUTES, TimeUnit.MINUTES);
-        sendEmail(user.getEmail(), code);
+        emailSender.sendVerificationEmail(user.getEmail(), code);
         return SendEmailVerificationResponseDto.of();
     }
 
@@ -70,14 +69,5 @@ public class EmailVerificationService {
         SecureRandom random = new SecureRandom();
         int code = 100000 + random.nextInt(900000);
         return String.valueOf(code);
-    }
-
-    //TODO: email 지현님 로직으로 구현
-    private void sendEmail(String email, String code) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(email);
-        message.setSubject("이메일 인증 코드");
-        message.setText("인증 코드: " + code);
-        javaMailSender.send(message);
     }
 }
