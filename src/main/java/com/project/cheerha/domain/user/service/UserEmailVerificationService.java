@@ -120,8 +120,10 @@ public class UserEmailVerificationService {
      * @return 패스워드 리셋용 토큰(passwordService 에서 사용)
      */
     public VerifyPasswordResetCodeResponseDto createPasswordResetToken(String email) {
-        User user = userFindByService.findByEmail(email);
-        String redisKey = PASSWORD_TOKEN_PREFIX + ":" + user.getEmail();
+        if(!userRepository.existsByEmail(email)){
+            throw new NotFoundException(DataErrorCode.USER_NOT_FOUND);
+        }
+        String redisKey = PASSWORD_TOKEN_PREFIX + ":" + email;
         String token = SecureRandomUtil.generateSecureToken();
         redisTemplate.opsForValue().set(redisKey, token, PASSWORD_TOKEN_EXPIRATION_MINUTES, TimeUnit.MINUTES);
         return VerifyPasswordResetCodeResponseDto.of(email, token);
