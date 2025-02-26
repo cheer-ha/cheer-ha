@@ -2,11 +2,14 @@ package com.project.cheerha.domain.user.service;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
+import com.project.cheerha.common.exception.data.DataErrorCode;
+import com.project.cheerha.common.exception.data.NotFoundException;
 import com.project.cheerha.common.util.PasswordEncoder;
 import com.project.cheerha.domain.user.dto.request.ResetPasswordRequestDto;
 import com.project.cheerha.domain.user.dto.request.UpdatePasswordRequestDto;
 import com.project.cheerha.domain.user.dto.response.UpdatePasswordResponseDto;
 import com.project.cheerha.domain.user.entity.User;
+import com.project.cheerha.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -19,6 +22,7 @@ public class UserPasswordService {
     private final UserFindByService userFindByService;
     private final PasswordEncoder passwordEncoder;
     private final RedisTemplate<String, String> redisTemplate;
+    private final UserRepository userRepository;
 
     private static final String PASSWORD_TOKEN_PREFIX = "password_verification";
 
@@ -41,9 +45,11 @@ public class UserPasswordService {
      */
     @Transactional
     public UpdatePasswordResponseDto resetPassword(ResetPasswordRequestDto requestDto) {
+        if(userRepository.existsByEmail(requestDto.email())) {
+            throw new NotFoundException(DataErrorCode.USER_NOT_FOUND);
+        }
         String redisKey = PASSWORD_TOKEN_PREFIX + ":" + requestDto.email();
         String storedToken = redisTemplate.opsForValue().get(redisKey);
-
         if (storedToken == null || !storedToken.equals(requestDto.token())) {
             throw new BadRequestException(ClientErrorCode.INVALID_PASSWORD_RESET_TOKEN);
         }
