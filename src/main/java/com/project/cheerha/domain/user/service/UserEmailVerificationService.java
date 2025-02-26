@@ -74,7 +74,7 @@ public class UserEmailVerificationService {
      * @param id 현재사용자의 id
      */
     @Transactional
-    public ActivateNotificationResponseDto activateNotifications(Long id) {
+    public ActivateNotificationResponseDto activateNotification(Long id) {
         User user = userFindByService.findById(id);
         user.updateNotificationEnabled();
         return ActivateNotificationResponseDto.of();

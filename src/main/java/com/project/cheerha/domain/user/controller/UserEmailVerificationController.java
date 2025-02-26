@@ -38,7 +38,7 @@ public class UserEmailVerificationController {
             @Auth AuthUser authUser
     ) {
         userEmailVerificationService.verifyNotificationEmailCode(authUser.id(), requestDto.code());
-        ActivateNotificationResponseDto responseDto = userEmailVerificationService.activateNotifications(authUser.id());
+        ActivateNotificationResponseDto responseDto = userEmailVerificationService.activateNotification(authUser.id());
         return ApiResponseDto.success(responseDto);
     }
 
