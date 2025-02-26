@@ -31,7 +31,7 @@ public class VerificationFailCount {
                 .orElse(0);
         failCount++;
 
-        if (failCount >= MAX_FAIL_COUNT) {
+        if (failCount > MAX_FAIL_COUNT) {
             throw new BadRequestException(ClientErrorCode.MAX_FAIL_COUNT_EXCEEDED);
         }
 
