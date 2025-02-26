@@ -3,8 +3,8 @@ package com.project.cheerha.domain.user.controller;
 import com.project.cheerha.common.annotation.Auth;
 import com.project.cheerha.common.dto.ApiResponseDto;
 import com.project.cheerha.common.dto.AuthUser;
-import com.project.cheerha.domain.user.dto.request.NotificationVerifyEmailCodeRequestDto;
-import com.project.cheerha.domain.user.dto.request.PasswordResetVerifyEmailCodeRequestDto;
+import com.project.cheerha.domain.user.dto.request.VerifyNotificationCodeRequestDto;
+import com.project.cheerha.domain.user.dto.request.VerifyPasswordResetCodeRequestDto;
 import com.project.cheerha.domain.user.dto.request.SendPasswordResetEmailVerificationCodeRequestDto;
 import com.project.cheerha.domain.user.dto.response.ActivateNotificationResponseDto;
 import com.project.cheerha.domain.user.dto.response.VerifyPasswordResetCodeResponseDto;
@@ -34,7 +34,7 @@ public class UserEmailVerificationController {
 
     @PostMapping("/verify-notification")
     public ResponseEntity<ApiResponseDto<ActivateNotificationResponseDto>> verifyNotificationCode(
-            @RequestBody NotificationVerifyEmailCodeRequestDto requestDto,
+            @RequestBody VerifyNotificationCodeRequestDto requestDto,
             @Auth AuthUser authUser
     ) {
         userEmailVerificationService.verifyNotificationEmailCode(authUser.id(), requestDto.code());
@@ -52,7 +52,7 @@ public class UserEmailVerificationController {
 
     @PostMapping("/verify-password-reset")
     public ResponseEntity<ApiResponseDto<VerifyPasswordResetCodeResponseDto>> verifyPasswordResetCode(
-            @RequestBody PasswordResetVerifyEmailCodeRequestDto requestDto
+            @RequestBody VerifyPasswordResetCodeRequestDto requestDto
     ) {
         userEmailVerificationService.verifyPasswordResetEmailCode(requestDto.email(), requestDto.code());
         VerifyPasswordResetCodeResponseDto responseDto = userEmailVerificationService.createPasswordResetToken(requestDto.email());
