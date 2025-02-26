@@ -45,7 +45,7 @@ public class UserEmailVerificationService {
         if(user.isNotificationEnabled()){
             throw new BadRequestException(ClientErrorCode.ALREADY_VERIFIED_EMAIL);
         }
-        checkDailyEmailCount.checkAndIncrementDailyLimit(user.getEmail(), NOTIFICATION_VERIFICATION_CODE_PREFIX);
+        checkDailyEmailCount.incrementDailyLimit(user.getEmail(), NOTIFICATION_VERIFICATION_CODE_PREFIX);
         String code = generateRandomCode();
         String redisKey = NOTIFICATION_VERIFICATION_CODE_PREFIX + ":"+  user.getEmail();
         redisTemplate.opsForValue().set(redisKey, code, CODE_EXPIRATION_MINUTES, TimeUnit.MINUTES);
@@ -88,7 +88,7 @@ public class UserEmailVerificationService {
         if(!userRepository.existsByEmail(email)){
             throw new NotFoundException(DataErrorCode.USER_NOT_FOUND);
         }
-        checkDailyEmailCount.checkAndIncrementDailyLimit(email, PASSWORD_VERIFICATION_CODE_PREFIX);
+        checkDailyEmailCount.incrementDailyLimit(email, PASSWORD_VERIFICATION_CODE_PREFIX);
         String code = generateRandomCode();
         String redisKey = PASSWORD_VERIFICATION_CODE_PREFIX + ":"+  email;
         redisTemplate.opsForValue().set(redisKey, code, CODE_EXPIRATION_MINUTES, TimeUnit.MINUTES);

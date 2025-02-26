@@ -26,7 +26,7 @@ public class CheckDailyEmailCount {
      * @param email 이메일
      * @param operationKey 어떤 목적의 이메일인지 구분하는 키
      */
-    public void checkAndIncrementDailyLimit(String email, String operationKey) {
+    public void incrementDailyLimit(String email, String operationKey) {
         String today = LocalDate.now().toString();
         String dailyCountKey = DAILY_EMAIL_COUNT_PREFIX + ":" + operationKey + ":" + email + ":" + today;
 
