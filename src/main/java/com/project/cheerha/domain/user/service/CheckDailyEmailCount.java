@@ -34,7 +34,7 @@ public class CheckDailyEmailCount {
                 .map(Integer::valueOf)
                 .orElse(0);
 
-        if (requestCount > MAX_SEND_COUNT) {
+        if (requestCount >= MAX_SEND_COUNT) {
             throw new BadRequestException(ClientErrorCode.EXCEEDED_DAILY_LIMIT);
         }
 
