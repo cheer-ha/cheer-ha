@@ -102,6 +102,9 @@ public class UserEmailVerificationService {
      * @param code 사용자의 이메일에 보낸 코드
      */
     public void verifyPasswordResetEmailCode(String email, String code) {
+        if(!userRepository.existsByEmail(email)){
+            throw new NotFoundException(DataErrorCode.USER_NOT_FOUND);
+        }
         String redisKey = PASSWORD_VERIFICATION_CODE_PREFIX + ":" + email;
         String storedCode = redisTemplate.opsForValue().get(redisKey);
         if(storedCode == null || !storedCode.equals(code)) {
