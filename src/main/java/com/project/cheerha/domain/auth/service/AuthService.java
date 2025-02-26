@@ -20,11 +20,9 @@ import com.project.cheerha.domain.user.repository.UserRepository;
 import com.project.cheerha.domain.user.service.UserFindByService;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -125,12 +123,10 @@ public class AuthService {
         String storedRefreshToken = redisRefreshTokenService.getRefreshToken(userId);
 
         if (storedRefreshToken == null || storedRefreshToken.isBlank()) {
-            log.error("Refresh Token not found in Redis for userId: {}", userId);
             throw new UnAuthorizedException(AuthErrorCode.TOKEN_UNAUTHORIZED);
         }
 
         if (!refreshToken.equals(jwtUtil.substringToken(storedRefreshToken))) {
-            log.error("Refresh Token mismatch for userId: {}", userId);
             throw new UnAuthorizedException(AuthErrorCode.TOKEN_UNAUTHORIZED);
         }
 

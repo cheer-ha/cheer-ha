@@ -53,8 +53,6 @@ public class IpBlockingAspect {
         try {
             return joinPoint.proceed();
         } catch (Exception e) {
-            log.error("로그인 실패: IP={}, 이메일={}", ip, email);
-
             //해당 ip 에서 로그인 시도한 이메일 리스트 가져오기
             List<String> attemptedEmails = redisTemplate.opsForList().range(redisAttemptKey, 0, -1);
             if (attemptedEmails == null || !attemptedEmails.contains(email)) {
