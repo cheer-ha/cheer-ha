@@ -115,8 +115,6 @@ public class EmailSender {
 
             log.info("이메일 전송 완료: {}", recipientEmail);
 
-            // todo 이메일 전송하는 로직은 전부 주석 처리 후 사용자 500명으로 그대로 테스트하기
-            // todo 여기서 문제 생길 거다
             mappings.forEach(mapping -> {
                 mapping.markEmailAsSent(); // 발송 완료 상태로 변경
                 mappingRepository.save(mapping); // 변경된 상태 저장
