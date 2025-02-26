@@ -2,6 +2,8 @@ package com.project.cheerha.domain.user.service;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
+import com.project.cheerha.common.exception.data.DataErrorCode;
+import com.project.cheerha.common.exception.data.NotFoundException;
 import com.project.cheerha.common.util.SecureRandomUtil;
 import com.project.cheerha.domain.notice.service.EmailSender;
 import com.project.cheerha.domain.user.dto.response.ActivateNotificationResponseDto;
@@ -79,7 +81,9 @@ public class UserEmailVerificationService {
      * @param email 비밀번호를 바꾸고자 하는 이메일
      */
     public SendEmailVerificationResponseDto sendPasswordResetEmailVerificationCode(String email) {
-        userRepository.existsByEmail(email);
+        if(userRepository.existsByEmail(email)){
+            throw new NotFoundException(DataErrorCode.USER_NOT_FOUND);
+        }
         String code = generateRandomCode();
         String redisKey = PASSWORD_VERIFICATION_CODE_PREFIX + ":"+  email;
         redisTemplate.opsForValue().set(redisKey, code, CODE_EXPIRATION_MINUTES, TimeUnit.MINUTES);
