@@ -45,7 +45,7 @@ public class UserPasswordService {
      */
     @Transactional
     public UpdatePasswordResponseDto resetPassword(ResetPasswordRequestDto requestDto) {
-        if(userRepository.existsByEmail(requestDto.email())) {
+        if(!userRepository.existsByEmail(requestDto.email())) {
             throw new NotFoundException(DataErrorCode.USER_NOT_FOUND);
         }
         String redisKey = PASSWORD_TOKEN_PREFIX + ":" + requestDto.email();

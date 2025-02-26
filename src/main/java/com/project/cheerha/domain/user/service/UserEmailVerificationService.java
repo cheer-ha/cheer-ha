@@ -86,7 +86,7 @@ public class UserEmailVerificationService {
      * @param email 비밀번호를 바꾸고자 하는 이메일
      */
     public SendEmailVerificationResponseDto sendPasswordResetEmailVerificationCode(String email) {
-        if(userRepository.existsByEmail(email)){
+        if(!userRepository.existsByEmail(email)){
             throw new NotFoundException(DataErrorCode.USER_NOT_FOUND);
         }
         checkDailyEmailCount.checkAndIncrementDailyLimit(email, PASSWORD_VERIFICATION_CODE_PREFIX, EMAIL_SEND_COUNT);
