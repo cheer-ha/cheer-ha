@@ -7,6 +7,7 @@ import com.project.cheerha.domain.user.dto.request.ResetPasswordRequestDto;
 import com.project.cheerha.domain.user.dto.request.VerifyEmailCodeRequestDto;
 import com.project.cheerha.domain.user.dto.response.*;
 import com.project.cheerha.domain.user.service.EmailVerificationService;
+import com.project.cheerha.domain.user.service.UserPasswordService;
 import com.project.cheerha.domain.user.service.UserService;
 import com.project.cheerha.common.dto.ApiResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final UserPasswordService userPasswordService;
     private final EmailVerificationService emailVerificationService;
 
     @GetMapping
@@ -34,7 +36,7 @@ public class UserController {
             @Auth AuthUser authUser,
             @RequestBody UpdatePasswordRequestDto requestDto
     ) {
-        UpdatePasswordResponseDto responseDto = userService.updatePassword(authUser.id(), requestDto);
+        UpdatePasswordResponseDto responseDto = userPasswordService.updatePassword(authUser.id(), requestDto);
         return ApiResponseDto.success(responseDto);
     }
 
@@ -42,7 +44,7 @@ public class UserController {
     public ResponseEntity<ApiResponseDto<UpdatePasswordResponseDto>> resetPassword(
             @RequestBody ResetPasswordRequestDto requestDto
     ) {
-        UpdatePasswordResponseDto responseDto = userService.resetPassword(requestDto);
+        UpdatePasswordResponseDto responseDto = userPasswordService.resetPassword(requestDto);
         return ApiResponseDto.success(responseDto);
     }
 
