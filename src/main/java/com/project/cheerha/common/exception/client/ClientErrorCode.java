@@ -22,6 +22,7 @@ public enum ClientErrorCode {
     MIN_AGE_EXCEEDS_MAX_AGE(HttpStatus.BAD_REQUEST, "최소 나이는 최대 나이보다 작거나 같아야 합니다."),
     INVALID_EMAIL_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "이메일 인증 코드가 유효하지 않습니다."),
     EXCEEDED_DAILY_LIMIT(HttpStatus.BAD_REQUEST, "일일 이메일 발송 횟수가 초과되었습니다."),
+    MAX_FAIL_COUNT_EXCEEDED(HttpStatus.BAD_REQUEST, "코드 인증 횟수가 초과되었습니다."),
     INVALID_PASSWORD_RESET_TOKEN(HttpStatus.BAD_REQUEST, "패스워드 변경용 코드가 유효하지 않습니다.");
 
 
