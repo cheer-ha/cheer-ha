@@ -4,9 +4,10 @@ public record ReadUserResponseDto(
     String email,
     String name,
     int career,
-    int age
+    int age,
+    boolean isNotificationEnabled
 ) {
-    public static ReadUserResponseDto of(String email, String name, int career, int age) {
-        return new ReadUserResponseDto(email, name, career, age);
+    public static ReadUserResponseDto of(String email, String name, int career, int age, boolean isNotificationEnabled) {
+        return new ReadUserResponseDto(email, name, career, age, isNotificationEnabled);
     }
 }
