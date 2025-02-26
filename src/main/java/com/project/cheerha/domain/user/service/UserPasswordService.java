@@ -51,6 +51,7 @@ public class UserPasswordService {
         String redisKey = PASSWORD_TOKEN_PREFIX + ":" + requestDto.email();
         String storedToken = redisTemplate.opsForValue().get(redisKey);
         if (storedToken == null || !storedToken.equals(requestDto.token())) {
+            redisTemplate.delete(redisKey);
             throw new BadRequestException(ClientErrorCode.INVALID_PASSWORD_RESET_TOKEN);
         }
 
