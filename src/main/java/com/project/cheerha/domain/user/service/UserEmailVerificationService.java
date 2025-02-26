@@ -19,19 +19,23 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
-public class EmailVerificationService {
+public class UserEmailVerificationService {
 
     private final EmailSender emailSender;
     private final RedisTemplate<String, String> redisTemplate;
     private final UserFindByService userFindByService;
+    private final UserRepository userRepository;
 
-    private static final long CODE_EXPIRATION_MINUTES = 5;  // 인증 코드 유효 시간 (5분)
+    private static final long CODE_EXPIRATION_MINUTES = 5;
     private static final long PASSWORD_EXPIRATION_MINUTES = 5;
     private static final String NOTIFICATION_VERIFICATION_CODE_PREFIX = "notification_email_verification_code";
     private static final String PASSWORD_VERIFICATION_CODE_PREFIX = "password_verification_code";
     private static final String PASSWORD_TOKEN_PREFIX = "password_verification";
-    private final UserRepository userRepository;
 
+    /**
+     * 이메일 알림을 받기 위해 이메일인증을 보내는 메서드
+     * @param id 현재 사용자의 id
+     */
     public SendEmailVerificationResponseDto sendNotificationVerifyEmailVerificationCode(Long id) {
         User user = userFindByService.findById(id);
         if(user.isNotificationEnabled()){
@@ -44,6 +48,11 @@ public class EmailVerificationService {
         return SendEmailVerificationResponseDto.of();
     }
 
+    /**
+     * 이메일 알림 인증 코드 검증용 메서드
+     * @param id 현재 사용자의 id
+     * @param code 사용자의 이메일에 보낸 코드
+     */
     public void verifyNotificationEmailCode(Long id, String code) {
         User user = userFindByService.findById(id);
         String redisKey = NOTIFICATION_VERIFICATION_CODE_PREFIX + ":" + user.getEmail();
@@ -54,6 +63,10 @@ public class EmailVerificationService {
         redisTemplate.delete(redisKey);
     }
 
+    /**
+     * 이메일 알림 허용유무를 업데이트하는 메서드
+     * @param id 현재사용자의 id
+     */
     @Transactional
     public ActivateNotificationResponseDto activateNotifications(Long id) {
         User user = userFindByService.findById(id);
@@ -61,6 +74,10 @@ public class EmailVerificationService {
         return ActivateNotificationResponseDto.of();
     }
 
+    /**
+     * 비로그인 사용자의 패스워드 리셋을 위해 이메일인증을 보내는 메서드
+     * @param email 비밀번호를 바꾸고자 하는 이메일
+     */
     public SendEmailVerificationResponseDto sendPasswordResetEmailVerificationCode(String email) {
         userRepository.existsByEmail(email);
         String code = generateRandomCode();
@@ -70,6 +87,11 @@ public class EmailVerificationService {
         return SendEmailVerificationResponseDto.of();
     }
 
+    /**
+     * 패스워드 리셋 코드 검증용 메서드
+     * @param email 비밀번호를 바꾸고자 하는 이메일
+     * @param code 사용자의 이메일에 보낸 코드
+     */
     public void verifyPasswordResetEmailCode(String email, String code) {
         String redisKey = PASSWORD_VERIFICATION_CODE_PREFIX + ":" + email;
         String storedCode = redisTemplate.opsForValue().get(redisKey);
@@ -79,6 +101,11 @@ public class EmailVerificationService {
         redisTemplate.delete(redisKey);
     }
 
+    /**
+     * 패스워드 리셋용 토큰을 반환하는 메서드
+     * @param email 비밀번호를 바꾸고자 하는 이메일
+     * @return 패스워드 리셋용 토큰(passwordService 에서 사용)
+     */
     public CreatePasswordResetTokenResponseDto createPasswordResetToken(String email) {
         User user = userFindByService.findByEmail(email);
         String redisKey = PASSWORD_TOKEN_PREFIX + ":" + user.getEmail();
@@ -87,6 +114,9 @@ public class EmailVerificationService {
         return CreatePasswordResetTokenResponseDto.of(token);
     }
 
+    /**
+     * 이메일 인증코드 생성
+     */
     private String generateRandomCode() {
         SecureRandom random = new SecureRandom();
         int code = 100000 + random.nextInt(900000);

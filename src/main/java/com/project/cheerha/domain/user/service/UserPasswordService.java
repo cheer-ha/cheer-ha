@@ -22,6 +22,9 @@ public class UserPasswordService {
 
     private static final String PASSWORD_TOKEN_PREFIX = "password_verification";
 
+    /**
+     * 로그인 사용자의 패스워드 업데이트
+     */
     @Transactional
     public UpdatePasswordResponseDto updatePassword(Long id, UpdatePasswordRequestDto requestDto) {
         User user = userFindByService.findById(id);
@@ -32,6 +35,10 @@ public class UserPasswordService {
         return UpdatePasswordResponseDto.of();
     }
 
+    /**
+     * 비로그인 사용자의 패스워드 리셋
+     * @param requestDto 이메일, 토큰, 새 비밀번호
+     */
     @Transactional
     public UpdatePasswordResponseDto resetPassword(ResetPasswordRequestDto requestDto) {
         String redisKey = PASSWORD_TOKEN_PREFIX + ":" + requestDto.email();
@@ -45,7 +52,6 @@ public class UserPasswordService {
         user.updatePassword(passwordEncoder.encode(requestDto.newPassword()));
 
         redisTemplate.delete(redisKey);
-
         return UpdatePasswordResponseDto.of();
     }
 }

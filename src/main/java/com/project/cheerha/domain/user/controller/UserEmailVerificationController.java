@@ -9,7 +9,7 @@ import com.project.cheerha.domain.user.dto.request.SendPasswordResetEmailVerific
 import com.project.cheerha.domain.user.dto.response.ActivateNotificationResponseDto;
 import com.project.cheerha.domain.user.dto.response.CreatePasswordResetTokenResponseDto;
 import com.project.cheerha.domain.user.dto.response.SendEmailVerificationResponseDto;
-import com.project.cheerha.domain.user.service.EmailVerificationService;
+import com.project.cheerha.domain.user.service.UserEmailVerificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,13 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserEmailVerificationController {
 
-    private final EmailVerificationService emailVerificationService;
+    private final UserEmailVerificationService userEmailVerificationService;
 
     @PostMapping("/notification-verify")
     public ResponseEntity<ApiResponseDto<SendEmailVerificationResponseDto>> sendNotificationVerifyEmailVerificationCode(
             @Auth AuthUser authUser
     ) {
-        SendEmailVerificationResponseDto responseDto = emailVerificationService.sendNotificationVerifyEmailVerificationCode(authUser.id());
+        SendEmailVerificationResponseDto responseDto = userEmailVerificationService.sendNotificationVerifyEmailVerificationCode(authUser.id());
         return ApiResponseDto.success(responseDto);
     }
 
@@ -37,8 +37,8 @@ public class UserEmailVerificationController {
             @RequestBody NotificationVerifyEmailCodeRequestDto requestDto,
             @Auth AuthUser authUser
     ) {
-        emailVerificationService.verifyNotificationEmailCode(authUser.id(), requestDto.code());
-        ActivateNotificationResponseDto responseDto = emailVerificationService.activateNotifications(authUser.id());
+        userEmailVerificationService.verifyNotificationEmailCode(authUser.id(), requestDto.code());
+        ActivateNotificationResponseDto responseDto = userEmailVerificationService.activateNotifications(authUser.id());
         return ApiResponseDto.success(responseDto);
     }
 
@@ -46,7 +46,7 @@ public class UserEmailVerificationController {
     public ResponseEntity<ApiResponseDto<SendEmailVerificationResponseDto>> sendPasswordResetEmailVerificationCode(
             @RequestBody SendPasswordResetEmailVerificationCodeRequestDto requestDto
     ) {
-        SendEmailVerificationResponseDto responseDto = emailVerificationService.sendPasswordResetEmailVerificationCode(requestDto.email());
+        SendEmailVerificationResponseDto responseDto = userEmailVerificationService.sendPasswordResetEmailVerificationCode(requestDto.email());
         return ApiResponseDto.success(responseDto);
     }
 
@@ -54,8 +54,8 @@ public class UserEmailVerificationController {
     public ResponseEntity<ApiResponseDto<Object>> verifyPasswordResetCode(
             @RequestBody PasswordResetVerifyEmailCodeRequestDto requestDto
     ) {
-        emailVerificationService.verifyPasswordResetEmailCode(requestDto.email(), requestDto.code());
-        CreatePasswordResetTokenResponseDto responseDto = emailVerificationService.createPasswordResetToken(requestDto.email());
+        userEmailVerificationService.verifyPasswordResetEmailCode(requestDto.email(), requestDto.code());
+        CreatePasswordResetTokenResponseDto responseDto = userEmailVerificationService.createPasswordResetToken(requestDto.email());
         return ApiResponseDto.success(responseDto);
     }
 
