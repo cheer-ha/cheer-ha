@@ -14,12 +14,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Table(
-    name = "mapping",
+    name = "user_to_job_opening_mapping",
     uniqueConstraints = {@UniqueConstraint(
         columnNames = {"email", "job_opening_url"}
     )}
 )
-public class Mapping {
+public class UserToJobOpeningMapping {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,16 +46,16 @@ public class Mapping {
      * <p>
      * 기본값 1: 이메일 미발송 기본값 2: 푸시 미발송
      */
-    public static Mapping toEntity(
+    public static UserToJobOpeningMapping toEntity(
         String email,
         String jobOpeningUrl
     ) {
-        Mapping mapping = new Mapping();
-        mapping.email = email;
-        mapping.jobOpeningUrl = jobOpeningUrl;
-        mapping.isEmailSent = false;
-        mapping.isPushSent = false;
-        return mapping;
+        UserToJobOpeningMapping userToJobOpeningMapping = new UserToJobOpeningMapping();
+        userToJobOpeningMapping.email = email;
+        userToJobOpeningMapping.jobOpeningUrl = jobOpeningUrl;
+        userToJobOpeningMapping.isEmailSent = false;
+        userToJobOpeningMapping.isPushSent = false;
+        return userToJobOpeningMapping;
     }
 
     // 이메일 발송 상태를 '발송됨'으로 변경
