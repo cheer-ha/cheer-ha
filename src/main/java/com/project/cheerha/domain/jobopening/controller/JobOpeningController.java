@@ -149,7 +149,7 @@ public class JobOpeningController {
      * @param size 페이지 당 조회할 데이터 수
      * @return 필터링된 채용 공고 목록을 페이지네이션 형태로 반환
      */
-    @GetMapping("/search/elastic/filter")
+    @GetMapping("/search/elastic/filters")
     public ResponseEntity<ApiResponseDto<Page<ReadJobOpeningElasticResponseDto>>> readJobOpeningElasticsearch(
         @ModelAttribute ReadJobOpeningRequestDto requestDto,
         @Auth AuthUser authUser,
