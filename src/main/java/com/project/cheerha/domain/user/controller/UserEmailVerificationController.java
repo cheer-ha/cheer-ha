@@ -7,7 +7,7 @@ import com.project.cheerha.domain.user.dto.request.NotificationVerifyEmailCodeRe
 import com.project.cheerha.domain.user.dto.request.PasswordResetVerifyEmailCodeRequestDto;
 import com.project.cheerha.domain.user.dto.request.SendPasswordResetEmailVerificationCodeRequestDto;
 import com.project.cheerha.domain.user.dto.response.ActivateNotificationResponseDto;
-import com.project.cheerha.domain.user.dto.response.CreatePasswordResetTokenResponseDto;
+import com.project.cheerha.domain.user.dto.response.VerifyPasswordResetCodeResponseDto;
 import com.project.cheerha.domain.user.dto.response.SendEmailVerificationResponseDto;
 import com.project.cheerha.domain.user.service.UserEmailVerificationService;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ public class UserEmailVerificationController {
     }
 
     @PostMapping("/verify-notification")
-    public ResponseEntity<ApiResponseDto<Object>> verifyNotificationCode(
+    public ResponseEntity<ApiResponseDto<ActivateNotificationResponseDto>> verifyNotificationCode(
             @RequestBody NotificationVerifyEmailCodeRequestDto requestDto,
             @Auth AuthUser authUser
     ) {
@@ -51,11 +51,11 @@ public class UserEmailVerificationController {
     }
 
     @PostMapping("/verify-password-reset")
-    public ResponseEntity<ApiResponseDto<Object>> verifyPasswordResetCode(
+    public ResponseEntity<ApiResponseDto<VerifyPasswordResetCodeResponseDto>> verifyPasswordResetCode(
             @RequestBody PasswordResetVerifyEmailCodeRequestDto requestDto
     ) {
         userEmailVerificationService.verifyPasswordResetEmailCode(requestDto.email(), requestDto.code());
-        CreatePasswordResetTokenResponseDto responseDto = userEmailVerificationService.createPasswordResetToken(requestDto.email());
+        VerifyPasswordResetCodeResponseDto responseDto = userEmailVerificationService.createPasswordResetToken(requestDto.email());
         return ApiResponseDto.success(responseDto);
     }
 

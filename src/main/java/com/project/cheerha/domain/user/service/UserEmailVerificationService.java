@@ -7,7 +7,7 @@ import com.project.cheerha.common.exception.data.NotFoundException;
 import com.project.cheerha.common.util.SecureRandomUtil;
 import com.project.cheerha.domain.notice.service.EmailSender;
 import com.project.cheerha.domain.user.dto.response.ActivateNotificationResponseDto;
-import com.project.cheerha.domain.user.dto.response.CreatePasswordResetTokenResponseDto;
+import com.project.cheerha.domain.user.dto.response.VerifyPasswordResetCodeResponseDto;
 import com.project.cheerha.domain.user.dto.response.SendEmailVerificationResponseDto;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.repository.UserRepository;
@@ -116,12 +116,12 @@ public class UserEmailVerificationService {
      * @param email 비밀번호를 바꾸고자 하는 이메일
      * @return 패스워드 리셋용 토큰(passwordService 에서 사용)
      */
-    public CreatePasswordResetTokenResponseDto createPasswordResetToken(String email) {
+    public VerifyPasswordResetCodeResponseDto createPasswordResetToken(String email) {
         User user = userFindByService.findByEmail(email);
         String redisKey = PASSWORD_TOKEN_PREFIX + ":" + user.getEmail();
         String token = SecureRandomUtil.generateSecureToken();
         redisTemplate.opsForValue().set(redisKey, token, PASSWORD_TOKEN_EXPIRATION_MINUTES, TimeUnit.MINUTES);
-        return CreatePasswordResetTokenResponseDto.of(token);
+        return VerifyPasswordResetCodeResponseDto.of(token);
     }
 
     /**
