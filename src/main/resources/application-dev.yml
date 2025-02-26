@@ -69,6 +69,7 @@ security:
 
 logging:
   level:
+    tracer: TRACE
     org:
       hibernate:
         SQL: debug

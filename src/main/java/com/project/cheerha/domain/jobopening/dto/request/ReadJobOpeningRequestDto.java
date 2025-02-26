@@ -1,7 +1,5 @@
 package com.project.cheerha.domain.jobopening.dto.request;
 
-import com.project.cheerha.domain.jobopening.entity.EducationLevel;
-import com.project.cheerha.domain.jobopening.entity.EmploymentType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,7 +20,8 @@ public class ReadJobOpeningRequestDto {
     private ZonedDateTime hiringEndAt;
 
     private String location;
-    private Integer experienceYears;
+    private Integer minExperienceYears;
+    private Integer maxExperienceYears;
     private String employmentType;
     private String requiredSkill;
 
