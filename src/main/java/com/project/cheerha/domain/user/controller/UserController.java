@@ -2,10 +2,7 @@ package com.project.cheerha.domain.user.controller;
 
 import com.project.cheerha.common.annotation.Auth;
 import com.project.cheerha.common.dto.AuthUser;
-import com.project.cheerha.domain.user.dto.request.PasswordResetVerifyEmailCodeRequestDto;
-import com.project.cheerha.domain.user.dto.request.UpdatePasswordRequestDto;
-import com.project.cheerha.domain.user.dto.request.ResetPasswordRequestDto;
-import com.project.cheerha.domain.user.dto.request.NotificationVerifyEmailCodeRequestDto;
+import com.project.cheerha.domain.user.dto.request.*;
 import com.project.cheerha.domain.user.dto.response.*;
 import com.project.cheerha.domain.user.service.EmailVerificationService;
 import com.project.cheerha.domain.user.service.UserPasswordService;
@@ -49,11 +46,19 @@ public class UserController {
         return ApiResponseDto.success(responseDto);
     }
 
+    @PostMapping("/email-verification/password-reset-verify")
+    public ResponseEntity<ApiResponseDto<SendEmailVerificationResponseDto>> sendPasswordResetEmailVerificationCode(
+            @RequestBody SendPasswordResetEmailVerificationCodeRequestDto requestDto
+    ) {
+        SendEmailVerificationResponseDto responseDto = emailVerificationService.sendPasswordResetEmailVerificationCode(requestDto.email());
+        return ApiResponseDto.success(responseDto);
+    }
+
     @PostMapping("/email-verification/notification-verify")
-    public ResponseEntity<ApiResponseDto<SendEmailVerificationResponseDto>> sendEmailVerificationCode(
+    public ResponseEntity<ApiResponseDto<SendEmailVerificationResponseDto>> sendNotificationVerifyEmailVerificationCode(
             @Auth AuthUser authUser
     ) {
-        SendEmailVerificationResponseDto responseDto = emailVerificationService.sendVerificationCode(authUser.id());
+        SendEmailVerificationResponseDto responseDto = emailVerificationService.sendNotificationVerifyEmailVerificationCode(authUser.id());
         return ApiResponseDto.success(responseDto);
     }
 

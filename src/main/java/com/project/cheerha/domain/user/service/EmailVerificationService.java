@@ -8,6 +8,7 @@ import com.project.cheerha.domain.user.dto.response.ActivateNotificationResponse
 import com.project.cheerha.domain.user.dto.response.CreatePasswordResetTokenResponseDto;
 import com.project.cheerha.domain.user.dto.response.SendEmailVerificationResponseDto;
 import com.project.cheerha.domain.user.entity.User;
+import com.project.cheerha.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -29,8 +30,9 @@ public class EmailVerificationService {
     private static final String NOTIFICATION_VERIFICATION_CODE_PREFIX = "notification_email_verification_code";
     private static final String PASSWORD_VERIFICATION_CODE_PREFIX = "password_verification_code";
     private static final String PASSWORD_TOKEN_PREFIX = "password_verification";
+    private final UserRepository userRepository;
 
-    public SendEmailVerificationResponseDto sendVerificationCode(Long id) {
+    public SendEmailVerificationResponseDto sendNotificationVerifyEmailVerificationCode(Long id) {
         User user = userFindByService.findById(id);
         if(user.isNotificationEnabled()){
             throw new BadRequestException(ClientErrorCode.ALREADY_VERIFIED_EMAIL);
@@ -42,8 +44,9 @@ public class EmailVerificationService {
         return SendEmailVerificationResponseDto.of();
     }
 
-    public void verifyPasswordResetEmailCode(String email, String code) {
-        String redisKey = PASSWORD_VERIFICATION_CODE_PREFIX + ":" + email;
+    public void verifyNotificationEmailCode(Long id, String code) {
+        User user = userFindByService.findById(id);
+        String redisKey = NOTIFICATION_VERIFICATION_CODE_PREFIX + ":" + user.getEmail();
         String storedCode = redisTemplate.opsForValue().get(redisKey);
         if(storedCode == null || !storedCode.equals(code)) {
             throw new BadRequestException(ClientErrorCode.INVALID_EMAIL_VERIFICATION_CODE);
@@ -51,9 +54,17 @@ public class EmailVerificationService {
         redisTemplate.delete(redisKey);
     }
 
-    public void verifyNotificationEmailCode(Long id, String code) {
-        User user = userFindByService.findById(id);
-        String redisKey = NOTIFICATION_VERIFICATION_CODE_PREFIX + ":" + user.getEmail();
+    public SendEmailVerificationResponseDto sendPasswordResetEmailVerificationCode(String email) {
+        userRepository.existsByEmail(email);
+        String code = generateRandomCode();
+        String redisKey = PASSWORD_VERIFICATION_CODE_PREFIX + ":"+  email;
+        redisTemplate.opsForValue().set(redisKey, code, CODE_EXPIRATION_MINUTES, TimeUnit.MINUTES);
+        emailSender.sendVerificationEmail(email, code);
+        return SendEmailVerificationResponseDto.of();
+    }
+
+    public void verifyPasswordResetEmailCode(String email, String code) {
+        String redisKey = PASSWORD_VERIFICATION_CODE_PREFIX + ":" + email;
         String storedCode = redisTemplate.opsForValue().get(redisKey);
         if(storedCode == null || !storedCode.equals(code)) {
             throw new BadRequestException(ClientErrorCode.INVALID_EMAIL_VERIFICATION_CODE);
