@@ -17,7 +17,7 @@ public class VerificationFailCount {
 
     private static final String VERIFICATION_FAIL_COUNT_PREFIX = "verification_fail_count";
     private static final long FAIL_COUNT_EXPIRE_MINUTES = 5;
-    private static final int MAX_FAIL_COUNT = 3;
+    private static final int MAX_FAIL_COUNT = 5;
 
     /**
      * 인증 실패 시 카운트를 1 증가시키고
@@ -29,12 +29,11 @@ public class VerificationFailCount {
         int failCount = Optional.ofNullable(redisTemplate.opsForValue().get(failCountKey))
                 .map(Integer::valueOf)
                 .orElse(0);
-        failCount++;
 
-        if (failCount > MAX_FAIL_COUNT) {
+        if (failCount >= MAX_FAIL_COUNT) {
             throw new BadRequestException(ClientErrorCode.MAX_FAIL_COUNT_EXCEEDED);
         }
-
+        failCount++;
         redisTemplate.opsForValue().set(failCountKey,
                 String.valueOf(failCount),
                 FAIL_COUNT_EXPIRE_MINUTES,
