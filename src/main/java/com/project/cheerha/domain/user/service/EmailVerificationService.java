@@ -54,6 +54,13 @@ public class EmailVerificationService {
         redisTemplate.delete(redisKey);
     }
 
+    @Transactional
+    public ActivateNotificationResponseDto activateNotifications(Long id) {
+        User user = userFindByService.findById(id);
+        user.updateNotificationEnabled();
+        return ActivateNotificationResponseDto.of();
+    }
+
     public SendEmailVerificationResponseDto sendPasswordResetEmailVerificationCode(String email) {
         userRepository.existsByEmail(email);
         String code = generateRandomCode();
@@ -70,13 +77,6 @@ public class EmailVerificationService {
             throw new BadRequestException(ClientErrorCode.INVALID_EMAIL_VERIFICATION_CODE);
         }
         redisTemplate.delete(redisKey);
-    }
-
-    @Transactional
-    public ActivateNotificationResponseDto activateNotifications(Long id) {
-        User user = userFindByService.findById(id);
-        user.updateNotificationEnabled();
-        return ActivateNotificationResponseDto.of();
     }
 
     public CreatePasswordResetTokenResponseDto createPasswordResetToken(String email) {
