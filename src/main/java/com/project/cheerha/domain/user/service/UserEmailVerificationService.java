@@ -121,7 +121,7 @@ public class UserEmailVerificationService {
         String redisKey = PASSWORD_TOKEN_PREFIX + ":" + user.getEmail();
         String token = SecureRandomUtil.generateSecureToken();
         redisTemplate.opsForValue().set(redisKey, token, PASSWORD_TOKEN_EXPIRATION_MINUTES, TimeUnit.MINUTES);
-        return VerifyPasswordResetCodeResponseDto.of(token);
+        return VerifyPasswordResetCodeResponseDto.of(email, token);
     }
 
     /**
