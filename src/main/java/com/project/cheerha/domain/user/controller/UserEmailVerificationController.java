@@ -24,7 +24,7 @@ public class UserEmailVerificationController {
 
     private final UserEmailVerificationService userEmailVerificationService;
 
-    @PostMapping("/notification-verify")
+    @PostMapping("/send-notification-verify")
     public ResponseEntity<ApiResponseDto<SendEmailVerificationResponseDto>> sendNotificationVerifyEmailVerificationCode(
             @Auth AuthUser authUser
     ) {
@@ -32,7 +32,7 @@ public class UserEmailVerificationController {
         return ApiResponseDto.success(responseDto);
     }
 
-    @PostMapping("/verify-notification")
+    @PostMapping("/notification-verify")
     public ResponseEntity<ApiResponseDto<ActivateNotificationResponseDto>> verifyNotificationCode(
             @RequestBody VerifyNotificationCodeRequestDto requestDto,
             @Auth AuthUser authUser
@@ -42,7 +42,7 @@ public class UserEmailVerificationController {
         return ApiResponseDto.success(responseDto);
     }
 
-    @PostMapping("/password-reset-verify")
+    @PostMapping("/send-password-reset-verify")
     public ResponseEntity<ApiResponseDto<SendEmailVerificationResponseDto>> sendPasswordResetEmailVerificationCode(
             @RequestBody SendPasswordResetEmailVerificationCodeRequestDto requestDto
     ) {
@@ -50,7 +50,7 @@ public class UserEmailVerificationController {
         return ApiResponseDto.success(responseDto);
     }
 
-    @PostMapping("/verify-password-reset")
+    @PostMapping("/password-reset-verify")
     public ResponseEntity<ApiResponseDto<VerifyPasswordResetCodeResponseDto>> verifyPasswordResetCode(
             @RequestBody VerifyPasswordResetCodeRequestDto requestDto
     ) {
