@@ -282,6 +282,10 @@ public class JobOpeningService {
     /**
      * 사용자가 제공한 필터 조건과 검색어를 기반으로 Elasticsearch에서 채용 공고 데이터를 조회하는 메서드입니다.
      *
+     * 특정 필터 조건이 존재하면 해당 조건을 Elasticsearch의 BoolQuery에 추가하여 원하는 데이터만 조회할 수 있습니다.
+     * 필터 조건이 하나도 추가되지 않은 경우, 전체 채용 공고 데이터를 조회합니다.
+     * 검색 결과는 최신순으로 정렬하여 반환됩니다.
+     *
      * @param requestDto 필터링 및 검색 조건을 포함한 요청 DTO
      * @param userId 현재 로그인한 사용자의 ID
      * @param pageable 페이지네이션 정보 (페이지 번호 및 페이지 크기)
