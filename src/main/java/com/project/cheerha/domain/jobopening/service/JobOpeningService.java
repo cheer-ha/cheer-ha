@@ -279,6 +279,14 @@ public class JobOpeningService {
         }
     }
 
+    /**
+     * 사용자가 제공한 필터 조건과 검색어를 기반으로 Elasticsearch에서 채용 공고 데이터를 조회하는 메서드입니다.
+     *
+     * @param requestDto 필터링 및 검색 조건을 포함한 요청 DTO
+     * @param userId 현재 로그인한 사용자의 ID
+     * @param pageable 페이지네이션 정보 (페이지 번호 및 페이지 크기)
+     * @return 필터링된 채용 공고 목록을 페이지네이션 형태로 반환
+     */
     @Transactional
     public Page<ReadJobOpeningElasticResponseDto> readJobOpeningUsingElasticSearchFilter(
         ReadJobOpeningRequestDto requestDto,
@@ -289,6 +297,7 @@ public class JobOpeningService {
             historyService.saveSearchTerm(userId, requestDto.getSearchTerm());
         }
 
+        // BoolQuery를 사용하여 필터링 조건을 설정
         BoolQuery.Builder boolQueryBuilder = new BoolQuery.Builder();
 
         // 지역 필터링
@@ -389,6 +398,7 @@ public class JobOpeningService {
             );
         }
 
+        // Elasticsearch 검색 요청 객체 생성
         SearchRequest searchRequest = new SearchRequest.Builder()
             .index(IndexName.JOB_OPENING_DOCUMENT)
             .query(q -> q.bool(boolQueryBuilder.build()))
@@ -398,8 +408,10 @@ public class JobOpeningService {
             .build();
 
         try {
+            // Elasticsearch 검색 요청 실행
             SearchResponse<JobOpeningDocument> searchResponse = elasticsearchClient.search(searchRequest, JobOpeningDocument.class);
 
+            // 검색 결과에서 문서 리스트 추출
             List<JobOpeningDocument> jobOpeningDocuments = searchResponse.hits().hits().stream()
                 .map(hit -> hit.source())
                 .collect(Collectors.toList());

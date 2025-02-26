@@ -140,6 +140,15 @@ public class JobOpeningController {
         return ApiResponseDto.success(dtoPage);
     }
 
+    /**
+     * 전체 채용 공고 데이터와 필터링 및 검색어를 통해 Elasticsearch에서 데이터를 조회하는 API입니다.
+     *
+     * @param requestDto 사용자가 입력한 필터링 조건을 포함한 DTO
+     * @param authUser 현재 로그인한 사용자의 정보
+     * @param page 조회할 페이지 번호
+     * @param size 페이지 당 조회할 데이터 수
+     * @return 필터링된 채용 공고 목록을 페이지네이션 형태로 반환
+     */
     @GetMapping("/search/elastic/filter")
     public ResponseEntity<ApiResponseDto<Page<ReadJobOpeningElasticResponseDto>>> readJobOpeningElasticsearch(
         @ModelAttribute ReadJobOpeningRequestDto requestDto,
