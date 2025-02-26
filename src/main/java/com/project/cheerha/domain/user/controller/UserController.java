@@ -2,9 +2,10 @@ package com.project.cheerha.domain.user.controller;
 
 import com.project.cheerha.common.annotation.Auth;
 import com.project.cheerha.common.dto.AuthUser;
+import com.project.cheerha.domain.user.dto.request.PasswordResetVerifyEmailCodeRequestDto;
 import com.project.cheerha.domain.user.dto.request.UpdatePasswordRequestDto;
 import com.project.cheerha.domain.user.dto.request.ResetPasswordRequestDto;
-import com.project.cheerha.domain.user.dto.request.VerifyEmailCodeRequestDto;
+import com.project.cheerha.domain.user.dto.request.NotificationVerifyEmailCodeRequestDto;
 import com.project.cheerha.domain.user.dto.response.*;
 import com.project.cheerha.domain.user.service.EmailVerificationService;
 import com.project.cheerha.domain.user.service.UserPasswordService;
@@ -58,19 +59,19 @@ public class UserController {
 
     @PostMapping("/email-verification/verify-password-reset")
     public ResponseEntity<ApiResponseDto<Object>> verifyPasswordResetCode(
-            @RequestBody VerifyEmailCodeRequestDto requestDto
+            @RequestBody PasswordResetVerifyEmailCodeRequestDto requestDto
     ) {
-        emailVerificationService.verifyEmailCode(requestDto.email(), requestDto.code());
+        emailVerificationService.verifyPasswordResetEmailCode(requestDto.email(), requestDto.code());
         CreatePasswordResetTokenResponseDto responseDto = emailVerificationService.createPasswordResetToken(requestDto.email());
         return ApiResponseDto.success(responseDto);
     }
 
     @PostMapping("/email-verification/verify-notification")
     public ResponseEntity<ApiResponseDto<Object>> verifyNotificationCode(
-            @RequestBody VerifyEmailCodeRequestDto requestDto,
+            @RequestBody NotificationVerifyEmailCodeRequestDto requestDto,
             @Auth AuthUser authUser
     ) {
-        emailVerificationService.verifyEmailCode(requestDto.email(), requestDto.code());
+        emailVerificationService.verifyNotificationEmailCode(authUser.id(), requestDto.code());
         ActivateNotificationResponseDto responseDto = emailVerificationService.activateNotifications(authUser.id());
         return ApiResponseDto.success(responseDto);
     }

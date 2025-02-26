@@ -26,7 +26,8 @@ public class EmailVerificationService {
 
     private static final long CODE_EXPIRATION_MINUTES = 5;  // 인증 코드 유효 시간 (5분)
     private static final long PASSWORD_EXPIRATION_MINUTES = 5;
-    private static final String VERIFICATION_CODE_PREFIX = "email_verification";
+    private static final String NOTIFICATION_VERIFICATION_CODE_PREFIX = "notification_email_verification_code";
+    private static final String PASSWORD_VERIFICATION_CODE_PREFIX = "password_verification_code";
     private static final String PASSWORD_TOKEN_PREFIX = "password_verification";
 
     public SendEmailVerificationResponseDto sendVerificationCode(Long id) {
@@ -35,14 +36,24 @@ public class EmailVerificationService {
             throw new BadRequestException(ClientErrorCode.ALREADY_VERIFIED_EMAIL);
         }
         String code = generateRandomCode();
-        String redisKey = VERIFICATION_CODE_PREFIX + ":"+  user.getEmail();
+        String redisKey = NOTIFICATION_VERIFICATION_CODE_PREFIX + ":"+  user.getEmail();
         redisTemplate.opsForValue().set(redisKey, code, CODE_EXPIRATION_MINUTES, TimeUnit.MINUTES);
         emailSender.sendVerificationEmail(user.getEmail(), code);
         return SendEmailVerificationResponseDto.of();
     }
 
-    public void verifyEmailCode(String email, String code) {
-        String redisKey = VERIFICATION_CODE_PREFIX + ":" + email;
+    public void verifyPasswordResetEmailCode(String email, String code) {
+        String redisKey = PASSWORD_VERIFICATION_CODE_PREFIX + ":" + email;
+        String storedCode = redisTemplate.opsForValue().get(redisKey);
+        if(storedCode == null || !storedCode.equals(code)) {
+            throw new BadRequestException(ClientErrorCode.INVALID_EMAIL_VERIFICATION_CODE);
+        }
+        redisTemplate.delete(redisKey);
+    }
+
+    public void verifyNotificationEmailCode(Long id, String code) {
+        User user = userFindByService.findById(id);
+        String redisKey = NOTIFICATION_VERIFICATION_CODE_PREFIX + ":" + user.getEmail();
         String storedCode = redisTemplate.opsForValue().get(redisKey);
         if(storedCode == null || !storedCode.equals(code)) {
             throw new BadRequestException(ClientErrorCode.INVALID_EMAIL_VERIFICATION_CODE);
