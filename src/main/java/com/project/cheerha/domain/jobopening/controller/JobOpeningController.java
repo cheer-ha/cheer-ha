@@ -14,15 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
-
-import java.util.List;
 
 @RequestMapping("/job-opening")
 @RestController
@@ -145,5 +138,29 @@ public class JobOpeningController {
         Pageable pageable = validatePageSize(page, size);
         Page<ReadJobOpeningElasticResponseDto> dtoPage = jobOpeningService.readTop100PopularJobOpeningsUsingElasticsearch(pageable);
         return ApiResponseDto.success(dtoPage);
+    }
+
+    /**
+     * 전체 채용 공고 데이터와 필터링 및 검색어를 통해 Elasticsearch에서 데이터를 조회하는 API입니다.
+     *
+     * @param requestDto 사용자가 입력한 필터링 조건을 포함한 DTO
+     * @param authUser 현재 로그인한 사용자의 정보
+     * @param page 조회할 페이지 번호
+     * @param size 페이지 당 조회할 데이터 수
+     * @return 필터링된 채용 공고 목록을 페이지네이션 형태로 반환
+     */
+    @GetMapping("/search/elastic/filters")
+    public ResponseEntity<ApiResponseDto<Page<ReadJobOpeningElasticResponseDto>>> readJobOpeningElasticsearch(
+        @ModelAttribute ReadJobOpeningRequestDto requestDto,
+        @Auth AuthUser authUser,
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = validatePageSize(page, size);
+        Long userId = authUser.id();
+
+        Page<ReadJobOpeningElasticResponseDto> jobOpeningElasticResponseDtoPage = jobOpeningService.readJobOpeningUsingElasticSearchFilter(requestDto, userId, pageable);
+
+        return ApiResponseDto.success(jobOpeningElasticResponseDtoPage);
     }
 }

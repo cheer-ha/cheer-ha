@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 @Configuration
-@EnableElasticsearchRepositories(basePackages = "com.project.cheerha.domain.jobOpening.elasticRepository")
+@EnableElasticsearchRepositories(basePackages = "com.project.cheerha.domain.jobopening.elasticrepository")
 public class ElasticsearchConfig {
 
     @Value("${elasticsearch.uris}")

@@ -9,17 +9,18 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.project.cheerha.domain.jobopening.entity.QJobOpening.jobOpening;
 import static com.project.cheerha.domain.keyword.entity.QJobOpeningKeyword.jobOpeningKeyword;
@@ -72,12 +73,14 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
                 eqLocation(requestDto.getLocation()),
                 eqJobType(EmploymentType.toEnum(requestDto.getEmploymentType())),
                 eqEducation(EducationLevel.toEnum(requestDto.getEducationLevel())),
-                leoCareer(requestDto.getExperienceYears()),
+                geoMinExperienceYears(requestDto.getMinExperienceYears()),
+                leoMaxExperienceYears(requestDto.getMaxExperienceYears()),
                 geoHiringStartPeriod(requestDto.getHiringStartAt()),
                 leoHiringEndPeriod(requestDto.getHiringEndAt()),
                 containsSearchTerm(requestDto.getSearchTerm())
             )
             .groupBy(jobOpening.id)
+            .orderBy(jobOpening.createdAt.desc())  // 최신순 정렬
             .limit(pageable.getPageSize())
             .offset(pageable.getOffset())
             .fetch();
@@ -181,7 +184,11 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
         return location != null ? jobOpening.location.eq(location) : Expressions.asBoolean(true).isTrue();
     }
 
-    private BooleanExpression leoCareer(Integer maxExperienceYears) {
+    private  BooleanExpression geoMinExperienceYears(Integer minExperienceYears) {
+        return minExperienceYears != null ? jobOpening.minExperienceYears.goe(minExperienceYears) : Expressions.asBoolean(true).isTrue();
+    }
+
+    private BooleanExpression leoMaxExperienceYears(Integer maxExperienceYears) {
         return maxExperienceYears != null ? jobOpening.maxExperienceYears.loe(maxExperienceYears) : Expressions.asBoolean(true).isTrue();
     }
 
