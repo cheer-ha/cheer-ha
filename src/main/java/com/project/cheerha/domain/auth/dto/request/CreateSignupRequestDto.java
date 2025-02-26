@@ -9,7 +9,7 @@ public record CreateSignupRequestDto(
     @Email String email,
     @NotBlank String password,
     @NotBlank String name,
-    @NotNull @Min(1) int age,
+    @NotNull @Min(20) int age,
     @NotNull @Min(0) int career
 ) {
 
