@@ -2,16 +2,14 @@ package com.project.cheerha.domain.user.controller;
 
 import com.project.cheerha.common.annotation.Auth;
 import com.project.cheerha.common.dto.AuthUser;
-import com.project.cheerha.domain.user.dto.response.ReadUserResponseDto;
+import com.project.cheerha.domain.user.dto.response.*;
 import com.project.cheerha.domain.user.service.UserService;
 import com.project.cheerha.common.dto.ApiResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/user")
+@RequestMapping("/users")
 @RestController
 @RequiredArgsConstructor
 public class UserController {

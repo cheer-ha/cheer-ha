@@ -45,6 +45,9 @@ public class DoFilterTest {
     @Mock
     private FilterExceptionHandler filterExceptionHandler;
 
+    @Mock
+    private JwtSecurityProperties jwtSecurityProperties;
+
     @InjectMocks
     private JwtFilter jwtFilter;
 
@@ -84,13 +87,12 @@ public class DoFilterTest {
         Claims claims = mock(Claims.class);
         when(jwtUtil.extractClaims("validToken")).thenReturn(claims);
         when(claims.getSubject()).thenReturn("1");
-        when(claims.get("userRole", String.class)).thenReturn("USER");
 
         JwtSecurityProperties securityProperties = mock(JwtSecurityProperties.class);
         JwtSecurityProperties.Token token = mock(JwtSecurityProperties.Token.class);
 
-        when(securityProperties.getToken()).thenReturn(token);
-        when(token.getPrefix()).thenReturn("Bearer ");
+        when(securityProperties.token()).thenReturn(token);
+        when(token.prefix()).thenReturn("Bearer ");
 
         jwtFilter = new JwtFilter(securityProperties, redisBlackListService, jwtUtil, filterExceptionHandler);
         jwtFilter.doFilter(request, response, filterChain);
@@ -167,23 +169,15 @@ public class DoFilterTest {
         when(jwtUtil.substringToken("Bearer validToken")).thenReturn("validToken");
         when(redisBlackListService.isBlackList("validToken")).thenReturn(false);
 
-        Claims claims = mock(Claims.class);
-        when(jwtUtil.extractClaims("validToken")).thenReturn(claims);
-        when(claims.getSubject()).thenReturn("1");
+        when(jwtUtil.extractClaims("validToken"))
+                .thenThrow(new IllegalArgumentException("Invalid or expired JWT token"));
 
-        when(claims.get("userRole", String.class)).thenReturn("INVALID_ROLE");
-
-        JwtSecurityProperties securityProperties = mock(JwtSecurityProperties.class);
-        JwtSecurityProperties.Token token = mock(JwtSecurityProperties.Token.class);
-
-        when(securityProperties.getToken()).thenReturn(token);
-        when(token.getPrefix()).thenReturn("Bearer ");
-
-        jwtFilter = new JwtFilter(securityProperties, redisBlackListService, jwtUtil, filterExceptionHandler);
+        jwtFilter = new JwtFilter(jwtSecurityProperties, redisBlackListService, jwtUtil, filterExceptionHandler);
         jwtFilter.doFilter(request, response, filterChain);
 
         verify(filterExceptionHandler, times(1))
                 .sendErrorResponse(any(HttpServletResponse.class), eq(HttpStatus.BAD_REQUEST), anyString());
     }
+
 
 }

@@ -28,7 +28,10 @@ import org.springframework.util.PatternMatchUtils;
 @RequiredArgsConstructor
 public class JwtFilter implements Filter {
 
-    private static final String[] WHITE_LIST = {"/auth/signup", "/auth/login", "/actuator/health", "/actuator/prometheus"};
+    private static final String[] WHITE_LIST = {
+            "/auth/signup", "/auth/login", "/actuator/health", "/actuator/prometheus",
+            "/users/email-verification/password-reset-verify",
+            "/users/password-reset", "/users/email-verification/verify-password-reset"};
     private final JwtSecurityProperties securityProperties;
     private final RedisBlackListService redisBlackListService;
     private final JwtUtil jwtUtil;

@@ -54,8 +54,6 @@ public class EmailBlockingAspect {
             return result;
         } catch (Exception e) {
             if(Objects.equals(e.getMessage(), "패스워드가 잘못되었습니다.")){
-                log.error("로그인 실패: {}", email);
-
                 //잘못된 비밀번호 입력 시 count 1회 추가, 첫 추가 시 ttl 설정
                 long failedAttempts = redisTemplate.opsForValue().increment(failCountKey);
                 if (failedAttempts == 1) {
