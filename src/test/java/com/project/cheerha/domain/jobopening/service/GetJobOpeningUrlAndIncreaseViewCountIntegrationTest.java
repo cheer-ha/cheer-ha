@@ -4,9 +4,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import com.project.cheerha.domain.jobopening.entity.JobOpening;
 import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
-import com.project.cheerha.domain.viewcount.entity.JobOpeningViewCount;
-import com.project.cheerha.domain.viewcount.repository.JobOpeningViewCountRepository;
-import java.util.List;
+import com.project.cheerha.domain.viewcount.service.JobOpeningViewCountScheduler;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -30,24 +28,20 @@ public class GetJobOpeningUrlAndIncreaseViewCountIntegrationTest {
     private JobOpeningRepository jobOpeningRepository;
 
     @Autowired
-    private JobOpeningViewCountRepository jobOpeningViewCountRepository;
+    private JobOpeningViewCountScheduler jobOpeningViewCountScheduler;
 
-    /**
-     * 테스트 시작 전, resetViewCount 메서드를 무조건 실행하도록 @BeforeEach를 사용합니다.
-     * 모든 테스트가 실행될 때 적용되는 부분입니다.
-     * JobOpeningRepository에서 모든 파일을 가져와 리스트로 뽑고, 그 중 viewCount에 해당되는 값만
-     */
     @BeforeEach
     public void resetViewCount() {
-        List<JobOpening> jobOpeningList = jobOpeningRepository.findAll();
-        jobOpeningList.forEach(jobOpening ->
-            ReflectionTestUtils.setField(jobOpening, "viewCount", 0));
-        jobOpeningRepository.saveAll(jobOpeningList);
+        jobOpeningRepository.findById(1L).ifPresent(jobOpening -> {
+            ReflectionTestUtils.setField(jobOpening, "viewCount", 0);
+            jobOpeningRepository.save(jobOpening);
+            log.info("초기화 완료 - JobOpening ID: {}, 초기 viewCount: {}", jobOpening.getId(), jobOpening.getViewCount());
+        });
     }
 
     /**
      * 테이블 분리 후 비관적 락을 집계 테이블(ViewCount)로 별도로 두었을 때의 테스트 코드입니다.
-     * 집계테이블에서 동시성 제어가 잘 이루어지는지만 테스트합니다.
+     * 집계테이블의 비관적 락 적용 후 테스트입니다.
      * @throws InterruptedException
      */
     @Test
@@ -82,10 +76,11 @@ public class GetJobOpeningUrlAndIncreaseViewCountIntegrationTest {
 
         latch.await();
         executorService.shutdown();
-
         long duration = System.nanoTime() - startTime;
+        jobOpeningViewCountScheduler.syncViewCounts();
+
         //then
-        JobOpeningViewCount finalViewCount = jobOpeningViewCountRepository.findByJobOpeningId(jobOpeningId)
+        JobOpening finalViewCount = jobOpeningRepository.findById(jobOpeningId)
             .orElseThrow(() -> new IllegalArgumentException("테스트에 사용할 집계테이블이 존재하지 않습니다."));
         log.info("총 소요시간: {}", duration / 1_000_000);
         log.info("초기 요청 수: {}", totalRequests);
