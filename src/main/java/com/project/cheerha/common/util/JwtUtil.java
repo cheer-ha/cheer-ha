@@ -1,7 +1,8 @@
 package com.project.cheerha.common.util;
 
 import com.project.cheerha.common.properties.JwtSecurityProperties;
-import com.project.cheerha.domain.user.entity.User.Role;
+
+import com.project.cheerha.domain.user.entity.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
@@ -22,6 +23,7 @@ import org.springframework.util.StringUtils;
 public class JwtUtil {
 
     private final JwtSecurityProperties securityProperties;
+    private final Aes256Util aes256Util;
 
     private Key key;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
@@ -32,7 +34,7 @@ public class JwtUtil {
      */
     @PostConstruct
     public void init() {
-        String secretKey = securityProperties.getSecret().getKey();
+        String secretKey = securityProperties.secret().key();
         if (!StringUtils.hasText(secretKey)) {
             log.error("JWT secret key is null or empty");
             throw new IllegalArgumentException("JWT secret key must not be null or empty");
@@ -54,9 +56,11 @@ public class JwtUtil {
      * @return 생성된 AccessToken 문자열(prefix, ttl 포함)
      */
     public String createToken(Long userId, Role role) {
-        return generateJwt(userId, role,
-            securityProperties.getToken().getPrefix(),
-            securityProperties.getToken().getExpiration());
+        String payload = userId + ":" + role;
+        String encryptedPayload = aes256Util.encrypt(payload);
+        return generateJwt(encryptedPayload,
+            securityProperties.token().prefix(),
+            securityProperties.token().expiration());
     }
 
     /**
@@ -65,9 +69,11 @@ public class JwtUtil {
      * @return 생성된 RefreshToken 문자열(prefix, ttl 포함)
      */
     public String createRefreshToken(Long userId) {
-        return generateJwt(userId, null,
-            securityProperties.getToken().getRefreshPrefix(),
-            securityProperties.getToken().getRefreshExpiration());
+        String payload = String.valueOf(userId);
+        String encryptedPayload = aes256Util.encrypt(payload);
+        return generateJwt(encryptedPayload,
+            securityProperties.token().refreshPrefix(),
+            securityProperties.token().refreshExpiration());
     }
 
     /**
@@ -77,8 +83,8 @@ public class JwtUtil {
      * @throws IllegalArgumentException 유효하지 않은 토큰일 경우
      */
     public String substringToken(String token) {
-        String prefix = securityProperties.getToken().getPrefix();
-        String refreshPrefix = securityProperties.getToken().getRefreshPrefix();
+        String prefix = securityProperties.token().prefix();
+        String refreshPrefix = securityProperties.token().refreshPrefix();
         if (!StringUtils.hasText(token)) {
             throw new IllegalArgumentException("Token must not be null or empty");
         }
@@ -96,12 +102,16 @@ public class JwtUtil {
 
     /**
      * JWT 를 파싱하여 Claims(토큰의 본문) 추출
+     * AES256 복호화를 수행합니다
      * @param token prefix 가 제거된 순수 token
      * @return Claims 객체(토큰의 본문)
      */
     public Claims extractClaims(String token) {
         try {
-            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+            Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+            String decryptedSubject = aes256Util.decrypt(claims.getSubject());
+            claims.setSubject(decryptedSubject);
+            return claims;
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid or expired JWT token");
         }
@@ -109,21 +119,18 @@ public class JwtUtil {
 
     /**
      * JWT 를 생성하는 내부 메서드
-     * @param userId 현재 사용자의 식별자
-     * @param role 현재 사용자의 권한정보
+     * @param encryptedPayload AES256 암호화 된 유저 정보
      * @param prefix 토큰 접두어(Access 와 Refresh 가 다름)
      * @param expiration 토큰 만료 시간(밀리초 단위)
      * @return 생성된 prefix 포함 JWT token
      */
-    private String generateJwt(Long userId, Role role, String prefix, long expiration) {
+    private String generateJwt(String encryptedPayload, String prefix, long expiration) {
         Date now = new Date();
         JwtBuilder jwtBuilder = Jwts.builder()
-            .setSubject(String.valueOf(userId))
+            .setSubject(encryptedPayload)
             .setExpiration(new Date(now.getTime() + expiration))
             .setIssuedAt(now)
             .signWith(key, signatureAlgorithm);
-
-        if (role != null) jwtBuilder.claim("userRole", role);
 
         return prefix + jwtBuilder.compact();
     }

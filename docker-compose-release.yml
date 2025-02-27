@@ -1,0 +1,77 @@
+services:
+  app:
+    image: lcyoun9/cheer-ha:latest
+    container_name: cheer-ha-app
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - monitoring
+    env_file: .env
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - monitoring
+    depends_on:
+      - app
+    restart: always
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - monitoring
+    depends_on:
+      - prometheus
+    restart: always
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - grafana-config:/etc/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=비번
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    networks:
+      - monitoring
+    restart: always
+
+  mysqld-exporter:
+    image: prom/mysqld-exporter:latest
+    container_name: mysqld-exporter
+    ports:
+      - "9104:9104"
+    networks:
+      - monitoring
+    environment:
+      - DATA_SOURCE_NAME="exporter:비번@(cheerha.c3iaaaic47mw.ap-northeast-2.rds.amazonaws.com:3306)/"
+    command:
+      - "--mysqld.username=exporter:비번"
+      - "--mysqld.address=cheerha.c3iaaaic47mw.ap-northeast-2.rds.amazonaws.com:3306"
+    restart: always
+
+  redis-exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: redis-exporter
+    restart: always
+    ports:
+      - "9121:9121"
+    environment:
+      - REDIS_ADDR=rediss://master.cheerha-redis.tlrpjs.apn2.cache.amazonaws.com:6379
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
+    driver: bridge

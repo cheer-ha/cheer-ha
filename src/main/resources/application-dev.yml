@@ -1,0 +1,66 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]  # .env 파일 로드
+  datasource:
+    url: jdbc:mysql://localhost:${DB_PORT}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+  sendgrid:
+    api-key: ${SENDGRID_API_KEY}
+    from-email: ${SENDGRID_FROM_EMAIL}
+
+  data:
+    redis:
+      port: ${REDIS_PORT}
+      host: localhost
+      database: ${REDIS_DATABASE}
+
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600  # 캐시 항목의 TTL(Time To Live)을 1시간으로 설정
+
+elasticsearch:
+  uris: http://localhost:${ELASTICSEARCH_PORT}  # Elasticsearch REST API URL
+  username: ${ELASTICSEARCH_USERNAME}
+  password: ${ELASTICSEARCH_PASSWORD}
+  index:
+    name: job-opening
+
+#csv:
+#  file:
+#    path: src/main/resources/Job_Openings.csv
+
+jwt:
+  secret:
+    aesKey: ${AES_KEY}
+    key: ${JWT_KEY}
+
+  token:
+    prefix: ${JWT_PREFIX}
+    refreshPrefix: ${REFRESH_PREFIX}
+    blackListPrefix: ${BLACK_PREFIX}
+    expiration: ${JWT_EXPIRATION}
+    refreshExpiration: ${REFRESH_EXPIRATION}
+    blackListExpiration: ${BLACK_EXPIRATION}
+
+security:
+  bcrypt:
+    cost: ${SECURITY_COST}
+
+logging:
+  level:
+    tracer: TRACE
+    org:
+      hibernate:
+        SQL: debug
+        orm:
+          jdbc:
+            bind: trace

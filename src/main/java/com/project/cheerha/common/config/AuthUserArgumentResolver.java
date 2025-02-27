@@ -3,7 +3,8 @@ package com.project.cheerha.common.config;
 import com.project.cheerha.common.dto.AuthUser;
 import com.project.cheerha.common.exception.auth.AuthErrorCode;
 import com.project.cheerha.common.exception.auth.ForbiddenException;
-import com.project.cheerha.domain.user.entity.User.Role;
+
+import com.project.cheerha.domain.user.entity.Role;
 import io.micrometer.common.lang.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;

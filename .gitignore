@@ -2,6 +2,7 @@ HELP.md
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
 !**/src/main/**/build/
 !**/src/test/**/build/
 .env
@@ -40,3 +41,6 @@ out/
 ### properties ###
 myinfo.yml
 *.properties
+
+# macOS에서 생성된 숨겨진 파일 무시
+.DS_Store

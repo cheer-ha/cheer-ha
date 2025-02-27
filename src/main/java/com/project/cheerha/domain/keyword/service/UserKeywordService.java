@@ -52,7 +52,7 @@ public class UserKeywordService {
                 if (!isKeywordAlreadyChosen(userId, keywordId)) {
                     User user = userFindByIdService.findById(userId);
 
-                    UserKeyword newUserKeyword = UserKeyword.of(
+                    UserKeyword newUserKeyword = UserKeyword.toEntity(
                         user,
                         keyword
                     );

@@ -1,21 +1,14 @@
 package com.project.cheerha.domain.user.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "user")
+@Table(name = "`user`")
 public class User {
-
-    public enum Role {USER, ADMIN}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,19 +23,34 @@ public class User {
     @Column(nullable = false)
     private int career;
 
+    @Column(nullable = false)
+    private int age;
+
     @Column(length = 255, nullable = false )
     private String password;
 
+    @Enumerated(EnumType.STRING)
     @Column(length = 5, nullable = false )
     private Role role;
 
-    public static User of(String email, String name, int career, String password) {
+    private boolean isNotificationEnabled = false;
+
+    public static User toEntity(String email, String name, int age, int career, String password) {
         User user = new User();
         user.email = email;
         user.name = name;
         user.career = career;
         user.password = password;
+        user.age = age;
         user.role = Role.USER;
         return user;
+    }
+
+    public void updateNotificationEnabled() {
+        this.isNotificationEnabled = true;
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
     }
 }

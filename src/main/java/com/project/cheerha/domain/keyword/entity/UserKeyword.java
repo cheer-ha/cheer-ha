@@ -33,7 +33,7 @@ public class UserKeyword {
     @JoinColumn(name = "keyword_id")
     private Keyword keyword;
 
-    public static UserKeyword of(
+    public static UserKeyword toEntity(
         User user,
         Keyword keyword
     ) {
