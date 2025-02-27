@@ -19,7 +19,7 @@ public class CheckDailyEmailCount {
     private final RedisTemplate<String, String> redisTemplate;
 
     private static final String DAILY_EMAIL_COUNT_PREFIX = "daily_email_count";
-    private static final int MAX_SEND_COUNT = 3;
+    private static final int MAX_SENT_COUNT = 3;
 
     /**
      * 하루 발송 제한을 체크하고 발송 카운트를 1 증가시키는 메서드(자정에 초기화됨)
@@ -34,8 +34,8 @@ public class CheckDailyEmailCount {
                 .map(Integer::valueOf)
                 .orElse(0);
 
-        if (requestCount >= MAX_SEND_COUNT) {
-            throw new BadRequestException(ClientErrorCode.EXCEEDED_DAILY_LIMIT);
+        if (requestCount >= MAX_SENT_COUNT) {
+            throw new BadRequestException(ClientErrorCode.DAILY_LIMIT_EXCEEDED);
         }
 
         LocalDateTime now = LocalDateTime.now();

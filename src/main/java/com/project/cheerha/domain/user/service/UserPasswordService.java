@@ -36,7 +36,7 @@ public class UserPasswordService {
             throw new BadRequestException(ClientErrorCode.INVALID_CURRENT_PASSWORD);
         }
         user.updatePassword(passwordEncoder.encode(requestDto.newPassword()));
-        return UpdatePasswordResponseDto.of();
+        return UpdatePasswordResponseDto.toDto();
     }
 
     /**
@@ -59,6 +59,6 @@ public class UserPasswordService {
         user.updatePassword(passwordEncoder.encode(requestDto.newPassword()));
 
         redisTemplate.delete(redisKey);
-        return UpdatePasswordResponseDto.of();
+        return UpdatePasswordResponseDto.toDto();
     }
 }

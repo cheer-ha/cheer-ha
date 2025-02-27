@@ -50,7 +50,7 @@ public class UserEmailVerificationService {
         String redisKey = NOTIFICATION_VERIFICATION_CODE_PREFIX + ":"+  user.getEmail();
         redisTemplate.opsForValue().set(redisKey, code, CODE_EXPIRATION_MINUTES, TimeUnit.MINUTES);
         emailSender.sendVerificationEmail(user.getEmail(), code);
-        return SendEmailVerificationResponseDto.of();
+        return SendEmailVerificationResponseDto.toDto();
     }
 
     /**
@@ -77,7 +77,7 @@ public class UserEmailVerificationService {
     public ActivateNotificationResponseDto activateNotification(Long id) {
         User user = userFindByService.findById(id);
         user.updateNotificationEnabled();
-        return ActivateNotificationResponseDto.of();
+        return ActivateNotificationResponseDto.toDto();
     }
 
     /**
@@ -93,7 +93,7 @@ public class UserEmailVerificationService {
         String redisKey = PASSWORD_VERIFICATION_CODE_PREFIX + ":"+  email;
         redisTemplate.opsForValue().set(redisKey, code, CODE_EXPIRATION_MINUTES, TimeUnit.MINUTES);
         emailSender.sendVerificationEmail(email, code);
-        return SendEmailVerificationResponseDto.of();
+        return SendEmailVerificationResponseDto.toDto();
     }
 
     /**
@@ -126,7 +126,7 @@ public class UserEmailVerificationService {
         String redisKey = PASSWORD_TOKEN_PREFIX + ":" + email;
         String token = SecureRandomUtil.generateSecureToken();
         redisTemplate.opsForValue().set(redisKey, token, PASSWORD_TOKEN_EXPIRATION_MINUTES, TimeUnit.MINUTES);
-        return VerifyPasswordResetCodeResponseDto.of(email, token);
+        return VerifyPasswordResetCodeResponseDto.toDto(email, token);
     }
 
     /**

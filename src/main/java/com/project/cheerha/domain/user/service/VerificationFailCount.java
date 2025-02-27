@@ -31,7 +31,7 @@ public class VerificationFailCount {
                 .orElse(0);
 
         if (failCount >= MAX_FAIL_COUNT) {
-            throw new BadRequestException(ClientErrorCode.MAX_FAIL_COUNT_EXCEEDED);
+            throw new BadRequestException(ClientErrorCode.MAX_FAILURE_COUNT_EXCEEDED);
         }
         failCount++;
         redisTemplate.opsForValue().set(failCountKey,

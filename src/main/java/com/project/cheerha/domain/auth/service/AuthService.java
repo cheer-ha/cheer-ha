@@ -53,7 +53,7 @@ public class AuthService {
             encodedPassword
         );
         userRepository.save(user);
-        return CreateSignupResponseDto.of();
+        return CreateSignupResponseDto.toDto();
     }
 
     /**
@@ -71,7 +71,7 @@ public class AuthService {
 
         redisRefreshTokenService.createRefreshToken(user.getId(), refreshToken);
 
-        return CreateLoginResponseDto.of(accessToken, refreshToken);
+        return CreateLoginResponseDto.toDto(accessToken, refreshToken);
     }
 
     /**
@@ -96,7 +96,7 @@ public class AuthService {
 
         redisRefreshTokenService.deleteRefreshToken(userId);
 
-        return CreateLogoutResponseDto.of();
+        return CreateLogoutResponseDto.toDto();
     }
 
     /**
@@ -136,6 +136,6 @@ public class AuthService {
         User user = userFindByService.findById(userId);
 
         String refreshAccessToken = jwtUtil.createToken(userId, user.getRole());
-        return RefreshAccessTokenResponseDto.of(refreshAccessToken, newRefreshToken);
+        return RefreshAccessTokenResponseDto.toDto(refreshAccessToken, newRefreshToken);
     }
 }
