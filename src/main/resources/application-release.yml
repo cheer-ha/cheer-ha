@@ -57,4 +57,9 @@ server:
     enabled: false
   port: 8080
 
-
+elasticsearch:
+  uris: http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}  # Elasticsearch REST API URL
+  username: ${ELASTICSEARCH_USERNAME}
+  password: ${ELASTICSEARCH_PASSWORD}
+  index:
+    name: job-opening

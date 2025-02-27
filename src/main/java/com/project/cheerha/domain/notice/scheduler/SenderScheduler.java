@@ -13,7 +13,7 @@ public class SenderScheduler {
 
     private final EmailSender emailSender;
 
-//    @Scheduled(fixedDelay = 60_000)
+    @Scheduled(fixedDelay = 60_000)
     public void sendEmails() {
         log.info("이메일 알림 전송 시작");
 
