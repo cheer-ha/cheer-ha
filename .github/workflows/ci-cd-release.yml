@@ -2,9 +2,9 @@ name: CI/CD for Cheer-Ha
 
 on:
   push:
-    branches: [release/1.0.1]
+    branches: [empty]
   pull_request:
-    branches: []
+    branches: [release/1.0.2]
 
 jobs:
   build:
