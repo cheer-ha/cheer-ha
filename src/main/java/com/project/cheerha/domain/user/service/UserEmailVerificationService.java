@@ -50,7 +50,7 @@ public class UserEmailVerificationService {
      */
     public void verifyNotificationEmailToken(Long id, String token) {
         User user = userFindByService.findById(id);
-        emailTokenService.verifyNotificationEmailToken(user.getEmail(), token);
+        emailTokenService.verifyEmailToken(NOTIFICATION_VERIFICATION_TOKEN_PREFIX, user.getEmail(), token);
     }
 
     /**
@@ -82,7 +82,7 @@ public class UserEmailVerificationService {
         if(!userRepository.existsByEmail(email)){
             throw new NotFoundException(DataErrorCode.USER_NOT_FOUND);
         }
-        emailTokenService.verifyPasswordResetEmailToken(email, token);
+        emailTokenService.verifyEmailToken(PASSWORD_VERIFICATION_TOKEN_PREFIX ,email, token);
     }
 
     /**

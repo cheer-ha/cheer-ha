@@ -24,33 +24,21 @@ public class EmailTokenService {
     private static final long PASSWORD_TOKEN_EXPIRATION_MINUTES = 5;
 
     /**
-     * 이메일 알림 인증 코드 검증용 메서드
-     * @param email 현재 사용자의 email
-     * @param token 사용자의 이메일에 보낸 코드
-     */
-    public void verifyNotificationEmailToken(String email, String token) {
-        String redisKey = getRedisKey(NOTIFICATION_VERIFICATION_TOKEN_PREFIX, email, token);
-        redisTemplate.delete(redisKey);
-    }
-
-    /**
-     * 패스워드 리셋 코드 검증용 메서드
-     * @param email 비밀번호를 바꾸고자 하는 이메일
-     * @param token 사용자의 이메일에 보낸 코드
-     */
-    public void verifyPasswordResetEmailToken(String email, String token) {
-        String redisKey = getRedisKey(PASSWORD_VERIFICATION_TOKEN_PREFIX, email, token);
-        redisTemplate.delete(redisKey);
-    }
-
-    /**
-     * 인증코드를 redis 에 저장
+     * 인증코드 생성 후 redis 에 저장
      */
     public String saveToken(String notificationVerificationTokenPrefix, String email) {
         String token = generateRandomToken();
         String redisKey = notificationVerificationTokenPrefix + ":" + email;
         redisTemplate.opsForValue().set(redisKey, token, TOKEN_EXPIRATION_MINUTES, TimeUnit.MINUTES);
         return token;
+    }
+
+    /**
+     * 이메일 인증 코드 검증 후 해당 코드 무효화
+     */
+    public void verifyEmailToken(String prefix, String email, String token) {
+        String redisKey = getRedisKey(prefix, email, token);
+        redisTemplate.delete(redisKey);
     }
 
     /**
