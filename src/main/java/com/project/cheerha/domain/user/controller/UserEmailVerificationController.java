@@ -3,11 +3,11 @@ package com.project.cheerha.domain.user.controller;
 import com.project.cheerha.common.annotation.Auth;
 import com.project.cheerha.common.dto.ApiResponseDto;
 import com.project.cheerha.common.dto.AuthUser;
-import com.project.cheerha.domain.user.dto.request.VerifyNotificationCodeRequestDto;
-import com.project.cheerha.domain.user.dto.request.VerifyPasswordResetCodeRequestDto;
-import com.project.cheerha.domain.user.dto.request.SendPasswordResetEmailVerificationCodeRequestDto;
+import com.project.cheerha.domain.user.dto.request.VerifyNotificationTokenRequestDto;
+import com.project.cheerha.domain.user.dto.request.VerifyPasswordResetTokenRequestDto;
+import com.project.cheerha.domain.user.dto.request.SendPasswordResetEmailVerificationTokenRequestDto;
 import com.project.cheerha.domain.user.dto.response.ActivateNotificationResponseDto;
-import com.project.cheerha.domain.user.dto.response.VerifyPasswordResetCodeResponseDto;
+import com.project.cheerha.domain.user.dto.response.VerifyPasswordResetTokenResponseDto;
 import com.project.cheerha.domain.user.dto.response.SendEmailVerificationResponseDto;
 import com.project.cheerha.domain.user.service.UserEmailVerificationService;
 import lombok.RequiredArgsConstructor;
@@ -25,37 +25,37 @@ public class UserEmailVerificationController {
     private final UserEmailVerificationService userEmailVerificationService;
 
     @PostMapping("/send-notification-verify")
-    public ResponseEntity<ApiResponseDto<SendEmailVerificationResponseDto>> sendNotificationVerifyEmailVerificationCode(
+    public ResponseEntity<ApiResponseDto<SendEmailVerificationResponseDto>> sendNotificationVerifyEmailVerificationToken(
             @Auth AuthUser authUser
     ) {
-        SendEmailVerificationResponseDto responseDto = userEmailVerificationService.sendNotificationVerifyEmailVerificationCode(authUser.id());
+        SendEmailVerificationResponseDto responseDto = userEmailVerificationService.sendNotificationVerifyEmailVerificationToken(authUser.id());
         return ApiResponseDto.success(responseDto);
     }
 
     @PostMapping("/notification-verify")
-    public ResponseEntity<ApiResponseDto<ActivateNotificationResponseDto>> verifyNotificationCode(
-            @RequestBody VerifyNotificationCodeRequestDto requestDto,
+    public ResponseEntity<ApiResponseDto<ActivateNotificationResponseDto>> verifyNotificationToken(
+            @RequestBody VerifyNotificationTokenRequestDto requestDto,
             @Auth AuthUser authUser
     ) {
-        userEmailVerificationService.verifyNotificationEmailCode(authUser.id(), requestDto.code());
+        userEmailVerificationService.verifyNotificationEmailToken(authUser.id(), requestDto.token());
         ActivateNotificationResponseDto responseDto = userEmailVerificationService.activateNotification(authUser.id());
         return ApiResponseDto.success(responseDto);
     }
 
     @PostMapping("/send-password-reset-verify")
-    public ResponseEntity<ApiResponseDto<SendEmailVerificationResponseDto>> sendPasswordResetEmailVerificationCode(
-            @RequestBody SendPasswordResetEmailVerificationCodeRequestDto requestDto
+    public ResponseEntity<ApiResponseDto<SendEmailVerificationResponseDto>> sendPasswordResetEmailVerificationToken(
+            @RequestBody SendPasswordResetEmailVerificationTokenRequestDto requestDto
     ) {
-        SendEmailVerificationResponseDto responseDto = userEmailVerificationService.sendPasswordResetEmailVerificationCode(requestDto.email());
+        SendEmailVerificationResponseDto responseDto = userEmailVerificationService.sendPasswordResetEmailVerificationToken(requestDto.email());
         return ApiResponseDto.success(responseDto);
     }
 
     @PostMapping("/password-reset-verify")
-    public ResponseEntity<ApiResponseDto<VerifyPasswordResetCodeResponseDto>> verifyPasswordResetCode(
-            @RequestBody VerifyPasswordResetCodeRequestDto requestDto
+    public ResponseEntity<ApiResponseDto<VerifyPasswordResetTokenResponseDto>> verifyPasswordResetToken(
+            @RequestBody VerifyPasswordResetTokenRequestDto requestDto
     ) {
-        userEmailVerificationService.verifyPasswordResetEmailCode(requestDto.email(), requestDto.code());
-        VerifyPasswordResetCodeResponseDto responseDto = userEmailVerificationService.createPasswordResetToken(requestDto.email());
+        userEmailVerificationService.verifyPasswordResetEmailToken(requestDto.email(), requestDto.token());
+        VerifyPasswordResetTokenResponseDto responseDto = userEmailVerificationService.createPasswordResetToken(requestDto.email());
         return ApiResponseDto.success(responseDto);
     }
 
