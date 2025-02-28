@@ -15,9 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.project.cheerha.common.redis.EmailTokenService.NOTIFICATION_VERIFICATION_TOKEN_PREFIX;
-import static com.project.cheerha.common.redis.EmailTokenService.PASSWORD_VERIFICATION_TOKEN_PREFIX;
-
 @Service
 @RequiredArgsConstructor
 public class UserEmailVerificationService {
@@ -26,6 +23,9 @@ public class UserEmailVerificationService {
     private final UserFindByService userFindByService;
     private final UserRepository userRepository;
     private final EmailTokenService emailTokenService;
+
+    private static final String NOTIFICATION_VERIFICATION_TOKEN_PREFIX = "notification_email_verification_token";
+    private static final String PASSWORD_VERIFICATION_TOKEN_PREFIX = "password_verification_token";
 
     /**
      * 이메일 알림을 받기 위해 이메일인증을 보내는 메서드

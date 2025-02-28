@@ -18,8 +18,6 @@ public class EmailTokenService {
     private final VerificationFailCount verificationFailCount;
     private final CheckDailyEmailCount checkDailyEmailCount;
 
-    public static final String NOTIFICATION_VERIFICATION_TOKEN_PREFIX = "notification_email_verification_token";
-    public static final String PASSWORD_VERIFICATION_TOKEN_PREFIX = "password_verification_token";
     private static final String PASSWORD_TOKEN_PREFIX = "password_verification";
     private static final long TOKEN_EXPIRATION_MINUTES = 5;
     private static final long PASSWORD_TOKEN_EXPIRATION_MINUTES = 5;
