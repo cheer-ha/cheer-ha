@@ -4,6 +4,8 @@ import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
 import com.project.cheerha.common.exception.data.DataErrorCode;
 import com.project.cheerha.common.exception.data.NotFoundException;
+import com.project.cheerha.common.redis.CheckDailyEmailCount;
+import com.project.cheerha.common.redis.TokenService;
 import com.project.cheerha.domain.notice.service.EmailSender;
 import com.project.cheerha.domain.user.dto.response.ActivateNotificationResponseDto;
 import com.project.cheerha.domain.user.dto.response.VerifyPasswordResetTokenResponseDto;
@@ -14,8 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.project.cheerha.domain.user.service.TokenService.NOTIFICATION_VERIFICATION_TOKEN_PREFIX;
-import static com.project.cheerha.domain.user.service.TokenService.PASSWORD_VERIFICATION_TOKEN_PREFIX;
+import static com.project.cheerha.common.redis.TokenService.NOTIFICATION_VERIFICATION_TOKEN_PREFIX;
+import static com.project.cheerha.common.redis.TokenService.PASSWORD_VERIFICATION_TOKEN_PREFIX;
 
 @Service
 @RequiredArgsConstructor

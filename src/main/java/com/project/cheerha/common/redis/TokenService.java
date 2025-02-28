@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.user.service;
+package com.project.cheerha.common.redis;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
