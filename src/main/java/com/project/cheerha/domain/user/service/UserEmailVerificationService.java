@@ -4,7 +4,6 @@ import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
 import com.project.cheerha.common.exception.data.DataErrorCode;
 import com.project.cheerha.common.exception.data.NotFoundException;
-import com.project.cheerha.common.redis.CheckDailyEmailCount;
 import com.project.cheerha.common.redis.EmailTokenService;
 import com.project.cheerha.domain.notice.service.EmailSender;
 import com.project.cheerha.domain.user.dto.response.ActivateNotificationResponseDto;
@@ -26,7 +25,6 @@ public class UserEmailVerificationService {
     private final EmailSender emailSender;
     private final UserFindByService userFindByService;
     private final UserRepository userRepository;
-    private final CheckDailyEmailCount checkDailyEmailCount;
     private final EmailTokenService emailTokenService;
 
     /**
@@ -38,7 +36,6 @@ public class UserEmailVerificationService {
         if(user.isNotificationEnabled()){
             throw new BadRequestException(ClientErrorCode.ALREADY_VERIFIED_EMAIL);
         }
-        checkDailyEmailCount.incrementDailyLimit(user.getEmail(), NOTIFICATION_VERIFICATION_TOKEN_PREFIX);
         String token = emailTokenService.saveToken(NOTIFICATION_VERIFICATION_TOKEN_PREFIX, user.getEmail());
         emailSender.sendVerificationEmail(user.getEmail(), token);
         return SendEmailVerificationResponseDto.toDto();
@@ -72,7 +69,6 @@ public class UserEmailVerificationService {
         if(!userRepository.existsByEmail(email)){
             throw new NotFoundException(DataErrorCode.USER_NOT_FOUND);
         }
-        checkDailyEmailCount.incrementDailyLimit(email, PASSWORD_VERIFICATION_TOKEN_PREFIX);
         String token = emailTokenService.saveToken(PASSWORD_VERIFICATION_TOKEN_PREFIX, email);
         emailSender.sendVerificationEmail(email, token);
         return SendEmailVerificationResponseDto.toDto();

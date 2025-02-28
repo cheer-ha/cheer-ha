@@ -16,6 +16,7 @@ public class EmailTokenService {
 
     private final RedisTemplate<String, String> redisTemplate;
     private final VerificationFailCount verificationFailCount;
+    private final CheckDailyEmailCount checkDailyEmailCount;
 
     public static final String NOTIFICATION_VERIFICATION_TOKEN_PREFIX = "notification_email_verification_token";
     public static final String PASSWORD_VERIFICATION_TOKEN_PREFIX = "password_verification_token";
@@ -26,10 +27,11 @@ public class EmailTokenService {
     /**
      * 인증코드 생성 후 redis 에 저장
      */
-    public String saveToken(String notificationVerificationTokenPrefix, String email) {
+    public String saveToken(String prefix, String email) {
         String token = generateRandomToken();
-        String redisKey = notificationVerificationTokenPrefix + ":" + email;
+        String redisKey = prefix + ":" + email;
         redisTemplate.opsForValue().set(redisKey, token, TOKEN_EXPIRATION_MINUTES, TimeUnit.MINUTES);
+        checkDailyEmailCount.incrementDailyLimit(email, prefix);
         return token;
     }
 
@@ -54,14 +56,14 @@ public class EmailTokenService {
     /**
      * token 이 유효한지 확인
      */
-    private String getRedisKey(String notificationVerificationTokenPrefix, String user, String token) {
-        String redisKey = notificationVerificationTokenPrefix + ":" + user;
+    private String getRedisKey(String prefix, String user, String token) {
+        String redisKey = prefix + ":" + user;
         String storedToken = redisTemplate.opsForValue().get(redisKey);
         if(storedToken == null){
             throw new BadRequestException(ClientErrorCode.EMAIL_NOT_SENT_YET);
         }
         if (!storedToken.equals(token)) {
-            verificationFailCount.incrementFailCount(user, notificationVerificationTokenPrefix);
+            verificationFailCount.incrementFailCount(user, prefix);
             throw new BadRequestException(ClientErrorCode.INVALID_EMAIL_VERIFICATION_TOKEN);
         }
         return redisKey;
