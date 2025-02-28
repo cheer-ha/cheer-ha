@@ -69,7 +69,10 @@ public class TokenService {
     private String getRedisKey(String notificationVerificationTokenPrefix, String user, String token) {
         String redisKey = notificationVerificationTokenPrefix + ":" + user;
         String storedToken = redisTemplate.opsForValue().get(redisKey);
-        if (storedToken == null || !storedToken.equals(token)) {
+        if(storedToken == null){
+            throw new BadRequestException(ClientErrorCode.EMAIL_NOT_SENT_YET);
+        }
+        if (!storedToken.equals(token)) {
             verificationFailCount.incrementFailCount(user, notificationVerificationTokenPrefix);
             throw new BadRequestException(ClientErrorCode.INVALID_EMAIL_VERIFICATION_TOKEN);
         }
