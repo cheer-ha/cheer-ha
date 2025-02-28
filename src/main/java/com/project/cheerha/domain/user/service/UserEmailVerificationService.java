@@ -5,7 +5,7 @@ import com.project.cheerha.common.exception.client.ClientErrorCode;
 import com.project.cheerha.common.exception.data.DataErrorCode;
 import com.project.cheerha.common.exception.data.NotFoundException;
 import com.project.cheerha.common.redis.CheckDailyEmailCount;
-import com.project.cheerha.common.redis.TokenService;
+import com.project.cheerha.common.redis.EmailTokenService;
 import com.project.cheerha.domain.notice.service.EmailSender;
 import com.project.cheerha.domain.user.dto.response.ActivateNotificationResponseDto;
 import com.project.cheerha.domain.user.dto.response.VerifyPasswordResetTokenResponseDto;
@@ -16,8 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.project.cheerha.common.redis.TokenService.NOTIFICATION_VERIFICATION_TOKEN_PREFIX;
-import static com.project.cheerha.common.redis.TokenService.PASSWORD_VERIFICATION_TOKEN_PREFIX;
+import static com.project.cheerha.common.redis.EmailTokenService.NOTIFICATION_VERIFICATION_TOKEN_PREFIX;
+import static com.project.cheerha.common.redis.EmailTokenService.PASSWORD_VERIFICATION_TOKEN_PREFIX;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +27,7 @@ public class UserEmailVerificationService {
     private final UserFindByService userFindByService;
     private final UserRepository userRepository;
     private final CheckDailyEmailCount checkDailyEmailCount;
-    private final TokenService tokenService;
+    private final EmailTokenService emailTokenService;
 
     /**
      * 이메일 알림을 받기 위해 이메일인증을 보내는 메서드
@@ -39,7 +39,7 @@ public class UserEmailVerificationService {
             throw new BadRequestException(ClientErrorCode.ALREADY_VERIFIED_EMAIL);
         }
         checkDailyEmailCount.incrementDailyLimit(user.getEmail(), NOTIFICATION_VERIFICATION_TOKEN_PREFIX);
-        String token = tokenService.saveToken(NOTIFICATION_VERIFICATION_TOKEN_PREFIX, user.getEmail());
+        String token = emailTokenService.saveToken(NOTIFICATION_VERIFICATION_TOKEN_PREFIX, user.getEmail());
         emailSender.sendVerificationEmail(user.getEmail(), token);
         return SendEmailVerificationResponseDto.toDto();
     }
@@ -50,7 +50,7 @@ public class UserEmailVerificationService {
      */
     public void verifyNotificationEmailToken(Long id, String token) {
         User user = userFindByService.findById(id);
-        tokenService.verifyNotificationEmailToken(user.getEmail(), token);
+        emailTokenService.verifyNotificationEmailToken(user.getEmail(), token);
     }
 
     /**
@@ -73,7 +73,7 @@ public class UserEmailVerificationService {
             throw new NotFoundException(DataErrorCode.USER_NOT_FOUND);
         }
         checkDailyEmailCount.incrementDailyLimit(email, PASSWORD_VERIFICATION_TOKEN_PREFIX);
-        String token = tokenService.saveToken(PASSWORD_VERIFICATION_TOKEN_PREFIX, email);
+        String token = emailTokenService.saveToken(PASSWORD_VERIFICATION_TOKEN_PREFIX, email);
         emailSender.sendVerificationEmail(email, token);
         return SendEmailVerificationResponseDto.toDto();
     }
@@ -82,7 +82,7 @@ public class UserEmailVerificationService {
         if(!userRepository.existsByEmail(email)){
             throw new NotFoundException(DataErrorCode.USER_NOT_FOUND);
         }
-        tokenService.verifyPasswordResetEmailToken(email, token);
+        emailTokenService.verifyPasswordResetEmailToken(email, token);
     }
 
     /**
@@ -94,7 +94,7 @@ public class UserEmailVerificationService {
         if(!userRepository.existsByEmail(email)){
             throw new NotFoundException(DataErrorCode.USER_NOT_FOUND);
         }
-        String token = tokenService.saveSecureToken(email);
+        String token = emailTokenService.saveSecureToken(email);
         return VerifyPasswordResetTokenResponseDto.toDto(email, token);
     }
 

@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
-public class TokenService {
+public class EmailTokenService {
 
     private final RedisTemplate<String, String> redisTemplate;
     private final VerificationFailCount verificationFailCount;
