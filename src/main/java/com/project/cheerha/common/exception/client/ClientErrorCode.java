@@ -20,11 +20,11 @@ public enum ClientErrorCode {
     INVALID_CURRENT_PASSWORD(HttpStatus.BAD_REQUEST, "현재 패스워드가 잘못되었습니다."),
     INVALID_ENUM_VALUE(HttpStatus.BAD_REQUEST, "유효하지 않은 값입니다. 허용된 값 중에서 선택해주세요."),
     MIN_AGE_EXCEEDS_MAX_AGE(HttpStatus.BAD_REQUEST, "최소 나이는 최대 나이보다 작거나 같아야 합니다."),
-    INVALID_EMAIL_VERIFICATION_TOKEN(HttpStatus.BAD_REQUEST, "이메일 인증 코드가 유효하지 않습니다."),
+    INVALID_EMAIL_VERIFICATION_TOKEN(HttpStatus.BAD_REQUEST, "이메일 인증 토큰이 유효하지 않습니다."),
     DAILY_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "일일 이메일 발송 횟수가 초과되었습니다."),
-    MAX_FAILURE_COUNT_EXCEEDED(HttpStatus.BAD_REQUEST, "코드 인증 횟수가 초과되었습니다."),
+    MAX_FAILURE_COUNT_EXCEEDED(HttpStatus.BAD_REQUEST, "이메일 토큰 인증 횟수가 초과되었습니다."),
     EMAIL_NOT_SENT_YET(HttpStatus.BAD_REQUEST, "이메일을 보낸 적이 없습니다"),
-    INVALID_PASSWORD_RESET_TOKEN(HttpStatus.BAD_REQUEST, "패스워드 변경용 코드가 유효하지 않습니다.");
+    INVALID_PASSWORD_RESET_TOKEN(HttpStatus.BAD_REQUEST, "패스워드 변경용 토큰이 유효하지 않습니다.");
 
 
     private final HttpStatus status;
