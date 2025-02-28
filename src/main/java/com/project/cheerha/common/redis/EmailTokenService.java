@@ -39,7 +39,15 @@ public class EmailTokenService {
      * 이메일 인증 코드 검증 후 해당 코드 무효화
      */
     public void verifyEmailToken(String prefix, String email, String token) {
-        String redisKey = getRedisKey(prefix, email, token);
+        String redisKey = prefix + ":" + email;
+        String storedToken = redisTemplate.opsForValue().get(redisKey);
+        if(storedToken == null){
+            throw new BadRequestException(ClientErrorCode.EMAIL_NOT_SENT_YET);
+        }
+        if (!storedToken.equals(token)) {
+            verificationFailCount.incrementFailCount(email, prefix);
+            throw new BadRequestException(ClientErrorCode.INVALID_EMAIL_VERIFICATION_TOKEN);
+        }
         redisTemplate.delete(redisKey);
     }
 
@@ -51,22 +59,6 @@ public class EmailTokenService {
         String token = SecureRandomUtil.generateSecureToken();
         redisTemplate.opsForValue().set(redisKey, token, PASSWORD_TOKEN_EXPIRATION_MINUTES, TimeUnit.MINUTES);
         return token;
-    }
-
-    /**
-     * token 이 유효한지 확인
-     */
-    private String getRedisKey(String prefix, String user, String token) {
-        String redisKey = prefix + ":" + user;
-        String storedToken = redisTemplate.opsForValue().get(redisKey);
-        if(storedToken == null){
-            throw new BadRequestException(ClientErrorCode.EMAIL_NOT_SENT_YET);
-        }
-        if (!storedToken.equals(token)) {
-            verificationFailCount.incrementFailCount(user, prefix);
-            throw new BadRequestException(ClientErrorCode.INVALID_EMAIL_VERIFICATION_TOKEN);
-        }
-        return redisKey;
     }
 
     /**
