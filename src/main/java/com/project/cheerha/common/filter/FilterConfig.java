@@ -1,4 +1,4 @@
-package com.project.cheerha.common.config;
+package com.project.cheerha.common.filter;
 
 import com.project.cheerha.common.exception.handler.FilterExceptionHandler;
 import com.project.cheerha.common.properties.JwtSecurityProperties;
