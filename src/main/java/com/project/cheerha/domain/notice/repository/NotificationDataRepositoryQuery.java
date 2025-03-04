@@ -5,7 +5,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
-public interface EmailRepositoryQuery {
+public interface NotificationDataRepositoryQuery {
 
     /**
      * 조회 기준으로 모든 채용 공고 정보를 조회하는 메서드

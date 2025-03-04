@@ -1,10 +1,10 @@
 package com.project.cheerha.domain.notice.repository;
 
-import com.project.cheerha.domain.notice.entity.UserToJobOpeningMapping;
+import com.project.cheerha.domain.notice.entity.Notification;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserToJobOpeningMappingRepository extends JpaRepository<UserToJobOpeningMapping, Long> {
+public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
     /**
      * 특정 이메일과 채용 공고 URL 목록에 해당하는 Mapping 목록 조회
@@ -13,7 +13,7 @@ public interface UserToJobOpeningMappingRepository extends JpaRepository<UserToJ
      * @param jobOpeningUrlList 조회할 채용 공고 URL 목록
      * @return 해당 이메일과 채용 공고 URL이 연결된 Mapping 목록
      */
-    List<UserToJobOpeningMapping> findAllByEmailAndJobOpeningUrlIn(
+    List<Notification> findAllByEmailAndJobOpeningUrlIn(
         String email,
         List<String> jobOpeningUrlList
     );
@@ -23,5 +23,5 @@ public interface UserToJobOpeningMappingRepository extends JpaRepository<UserToJ
      *
      * @return 이메일이 발송되지 않은 Mapping 목록
      */
-    List<UserToJobOpeningMapping> findByIsEmailSentFalse();
+    List<Notification> findByIsEmailSentFalse();
 }

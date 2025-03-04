@@ -1,7 +1,7 @@
-package com.project.cheerha.domain.notice.service;
+package com.project.cheerha.domain.notice.sender;
 
-import com.project.cheerha.domain.notice.entity.UserToJobOpeningMapping;
-import com.project.cheerha.domain.notice.repository.UserToJobOpeningMappingRepository;
+import com.project.cheerha.domain.notice.entity.Notification;
+import com.project.cheerha.domain.notice.repository.NotificationRepository;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.SendGrid;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class EmailSender {
 
-    private final UserToJobOpeningMappingRepository userToJobOpeningMappingRepository;
+    private final NotificationRepository notificationRepository;
 
     @Value("${SENDGRID_API_KEY}")
     private String sendGridApiKey;
@@ -35,11 +35,11 @@ public class EmailSender {
     @Async
     public void sendEmails() {
         // 이메일별로 해당하는 Mapping들을 묶는 Map
-        Map<String, Set<UserToJobOpeningMapping>> emailToMappings = new HashMap<>();
+        Map<String, Set<Notification>> emailToMappings = new HashMap<>();
 
         // (1) 이메일로 발송되지 않은 Mapping 목록 조회
         // (2) 이메일별로 emailToMappings에 Mapping을 묶음
-        userToJobOpeningMappingRepository.findByIsEmailSentFalse()
+        notificationRepository.findByIsEmailSentFalse()
             .forEach(mapping -> {
                 emailToMappings.computeIfAbsent(
                     mapping.getEmail(),
@@ -55,7 +55,7 @@ public class EmailSender {
     // 이메일 발송
     private void sendMail(
         String recipientEmail,
-        Set<UserToJobOpeningMapping> userToJobOpeningMappings
+        Set<Notification> notifications
     ) {
         try {
             // 이메일 발송에 필요한 정보 설정
@@ -73,9 +73,9 @@ public class EmailSender {
             content.append("<ul>");
 
             // Mapping에 저장된 채용 공고 URL 목록을 내용에 추가
-            for (UserToJobOpeningMapping userToJobOpeningMapping : userToJobOpeningMappings) {
+            for (Notification notification : notifications) {
                 content.append("<li>👉 <a href=\"")
-                    .append(userToJobOpeningMapping.getJobOpeningUrl())
+                    .append(notification.getJobOpeningUrl())
                     .append("\" target=\"_blank\">")
                     .append("채용 공고 자세히 보기</a></li>");
             }
@@ -94,9 +94,9 @@ public class EmailSender {
 
             log.info("이메일 전송 완료: {}", recipientEmail);
 
-            userToJobOpeningMappings.forEach(mapping -> {
+            notifications.forEach(mapping -> {
                 mapping.markEmailAsSent(); // 발송 완료 상태로 변경
-                userToJobOpeningMappingRepository.save(mapping); // 변경된 상태 저장
+                notificationRepository.save(mapping); // 변경된 상태 저장
             });
 
         } catch (IOException e) {
