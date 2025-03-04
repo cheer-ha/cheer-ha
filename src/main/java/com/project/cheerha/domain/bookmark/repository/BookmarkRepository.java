@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long>, BookmarkRepositoryQuery {
 
     /**
@@ -30,6 +32,20 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long>, Bookm
             "JOIN FETCH jokl.keyword k " +
             "WHERE b.user.id = :userId")
     Page<Bookmark> findByUserId(Long userId, Pageable pageable);
+
+    /**
+     * 사용자의 북마크 목록을 조회하는 메서드입니다.
+     *
+     * 이 메서드는 주어진 사용자 ID와 북마크된 채용 공고 ID 목록을 기반으로,
+     * 해당하는 북마크들을 페이지 처리하여 조회합니다. Redis에서 가져온 채용 공고 ID 목록을 사용하여
+     * 해당 채용 공고들의 정보를 조회합니다.
+     *
+     * @param userId 사용자의 ID
+     * @param jobOpeningIds 채용 공고 ID 목록
+     * @param pageable 페이지 처리 정보 (페이지 번호와 페이지 크기)
+     * @return 주어진 사용자에 해당하는 북마크 목록 (페이징 처리된 결과)
+     */
+    Page<Bookmark> findByUserIdAndJobOpeningIdIn(Long userId, List<Long> jobOpeningIds, Pageable pageable);
 
     /**
      * 사용자가 특정 채용 공고에 대한 북마크를 삭제하는 메서드입니다.
