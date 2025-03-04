@@ -478,6 +478,7 @@ groupBy(jobOpeningKeyword.keyword.id)
 
 <details>
   <summary>SendGridConfig 펼치기</summary>
+    
 ```java
 @Configuration
 public class SendGridConfig {
@@ -495,6 +496,7 @@ public class SendGridConfig {
 
 <details>
   <summary>SendGrid로 대체된 EmailSender 펼치기</summary>
+
 ```java
 @Slf4j
 @Service
