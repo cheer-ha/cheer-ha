@@ -24,14 +24,12 @@ public class NotificationDataFetchingScheduler {
     @Scheduled(cron = "*/30 * * * * *")
     @Transactional
     public void fetchNotificationData() {
-        ZonedDateTime referenceTime = ZonedDateTime.now()
-            .minusSeconds(30L)
-            .withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime referenceTime = ZonedDateTime.now().minusSeconds(30L).withZoneSameInstant(ZoneId.of("UTC"));
 
         Map<Long, List<String>> keywordIdToUrlList = notificationDataRepositoryQuery.findAllJobOpeningKeywords(referenceTime);
 
         List<UserDto> userDtoList = notificationDataRepositoryQuery.findAllUserKeywords();
 
-        notificationService.saveMappings(userDtoList, keywordIdToUrlList);
+        notificationService.createNotification(userDtoList, keywordIdToUrlList);
     }
 }

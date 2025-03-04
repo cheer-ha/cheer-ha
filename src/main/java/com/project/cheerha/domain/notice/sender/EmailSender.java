@@ -52,6 +52,33 @@ public class EmailSender {
         emailToMappings.forEach(this::sendMail);
     }
 
+    public void sendVerificationEmail(String recipientEmail, String code) {
+        try {
+            Email from = new Email(senderEmail);
+            Email to = new Email(recipientEmail);
+            String subject = "이메일 인증 코드";
+            String content = "<p>인증 코드: <strong>" + code + "</strong></p>";
+            Content emailContent = new Content("text/html", content);
+            sendSendGridEmail(from, subject, to, emailContent);
+
+            log.info("인증 코드 이메일 전송 완료: {}", recipientEmail);
+        } catch (IOException e) {
+            log.error("인증 코드 이메일 전송 실패: {}", recipientEmail, e);
+        }
+    }
+
+    private void sendSendGridEmail(Email from, String subject, Email to, Content emailContent) throws IOException {
+        Mail mail = new Mail(from, subject, to, emailContent);
+
+        SendGrid sendGrid = new SendGrid(sendGridApiKey);
+        Request request = new Request();
+        request.setMethod(Method.POST);
+        request.setEndpoint("mail/send");
+        request.setBody(mail.build());
+
+        sendGrid.api(request);
+    }
+
     // 이메일 발송
     private void sendMail(
         String recipientEmail,
@@ -102,32 +129,5 @@ public class EmailSender {
         } catch (IOException e) {
             log.error("이메일 전송 실패: {}", recipientEmail, e);
         }
-    }
-
-    public void sendVerificationEmail(String recipientEmail, String code) {
-        try {
-            Email from = new Email(senderEmail);
-            Email to = new Email(recipientEmail);
-            String subject = "이메일 인증 코드";
-            String content = "<p>인증 코드: <strong>" + code + "</strong></p>";
-            Content emailContent = new Content("text/html", content);
-            sendSendGridEmail(from, subject, to, emailContent);
-
-            log.info("인증 코드 이메일 전송 완료: {}", recipientEmail);
-        } catch (IOException e) {
-            log.error("인증 코드 이메일 전송 실패: {}", recipientEmail, e);
-        }
-    }
-
-    private void sendSendGridEmail(Email from, String subject, Email to, Content emailContent) throws IOException {
-        Mail mail = new Mail(from, subject, to, emailContent);
-
-        SendGrid sendGrid = new SendGrid(sendGridApiKey);
-        Request request = new Request();
-        request.setMethod(Method.POST);
-        request.setEndpoint("mail/send");
-        request.setBody(mail.build());
-
-        sendGrid.api(request);
     }
 }
