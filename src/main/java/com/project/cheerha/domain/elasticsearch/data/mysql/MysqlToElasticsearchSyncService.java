@@ -1,10 +1,10 @@
-package com.project.cheerha.domain.jobopening.elasticsearch.data.mysql;
+package com.project.cheerha.domain.elasticsearch.data.mysql;
 
 import com.project.cheerha.domain.jobopening.entity.JobOpening;
-import com.project.cheerha.domain.jobopening.elasticsearch.entity.JobOpeningDocument;
+import com.project.cheerha.domain.elasticsearch.entity.JobOpeningDocument;
 import com.project.cheerha.domain.keyword.entity.JobOpeningKeyword;
 import com.project.cheerha.domain.keyword.entity.Keyword;
-import com.project.cheerha.domain.jobopening.elasticsearch.repository.JobOpeningDocumentRepository;
+import com.project.cheerha.domain.elasticsearch.repository.JobOpeningDocumentRepository;
 import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MysqlToElasticsearchService {
+public class MysqlToElasticsearchSyncService {
 
     private final JobOpeningRepository jobOpeningRepository;
     private final JobOpeningDocumentRepository jobOpeningDocumentRepository;
