@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.jobopening.elasticsearch.service;
+package com.project.cheerha.domain.elasticsearch.service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.SortOrder;
@@ -6,13 +6,13 @@ import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
-import com.project.cheerha.domain.jobopening.elasticsearch.IndexName;
+import com.project.cheerha.domain.elasticsearch.IndexName;
 import com.project.cheerha.common.exception.data.DataErrorCode;
 import com.project.cheerha.common.exception.data.ElasticsearchQueryException;
 import com.project.cheerha.domain.history.service.HistoryService;
 import com.project.cheerha.domain.jobopening.dto.request.ReadJobOpeningRequestDto;
-import com.project.cheerha.domain.jobopening.elasticsearch.dto.response.ReadJobOpeningElasticResponseDto;
-import com.project.cheerha.domain.jobopening.elasticsearch.entity.JobOpeningDocument;
+import com.project.cheerha.domain.elasticsearch.dto.response.ReadJobOpeningElasticResponseDto;
+import com.project.cheerha.domain.elasticsearch.entity.JobOpeningDocument;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

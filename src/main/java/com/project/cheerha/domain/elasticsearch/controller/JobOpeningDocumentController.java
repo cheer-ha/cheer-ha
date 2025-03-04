@@ -1,18 +1,17 @@
-package com.project.cheerha.domain.jobopening.elasticsearch.controller;
+package com.project.cheerha.domain.elasticsearch.controller;
 
 import com.project.cheerha.common.annotation.Auth;
 import com.project.cheerha.common.dto.ApiResponseDto;
 import com.project.cheerha.common.dto.AuthUser;
 import com.project.cheerha.domain.jobopening.dto.request.ReadJobOpeningRequestDto;
-import com.project.cheerha.domain.jobopening.elasticsearch.dto.response.ReadJobOpeningElasticResponseDto;
-import com.project.cheerha.domain.jobopening.elasticsearch.service.JobOpeningDocumentService;
+import com.project.cheerha.domain.elasticsearch.dto.response.ReadJobOpeningElasticResponseDto;
+import com.project.cheerha.domain.elasticsearch.service.JobOpeningDocumentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
 
 @RequestMapping("/job-opening")
 @RestController
