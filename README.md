@@ -74,19 +74,13 @@
 ---
 
 ## 🏆 **Architecture**
-![Cloud Architecture](https://private-user-images.githubusercontent.com/184512169/417580161-aef8e881-c60b-4444-947e-aceb0681dedb.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDA2NTc3OTEsIm5iZiI6MTc0MDY1NzQ5MSwicGF0aCI6Ii8xODQ1MTIxNjkvNDE3NTgwMTYxLWFlZjhlODgxLWM2MGItNDQ0NC05NDdlLWFjZWIwNjgxZGVkYi5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMjI3JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDIyN1QxMTU4MTFaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT0yNmFiNzAyZGQxZWNmYzRjODViNWJhYzIzMjZjNmFmZjUyMGIxMDJmYzBhMDk3ZTYzNWFlMTc1M2JkZWQ5M2U2JlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.Q0vpKfxzsItNQpUXpdvnb-8hIB6RBpykFjV5_vrmMyk)
+![스크린샷 2025-03-04 오후 12 47 08](https://github.com/user-attachments/assets/47637fc0-e844-49be-9ccb-96264604ed0e)
 
 ## 🏆 **CI/CD Pipeline**
-![CI/CD Pipeline](https://private-user-images.githubusercontent.com/184512169/417580684-972e0561-69e8-4642-92be-f69130bb025b.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDA2NTc5MDIsIm5iZiI6MTc0MDY1NzYwMiwicGF0aCI6Ii8xODQ1MTIxNjkvNDE3NTgwNjg0LTk3MmUwNTYxLTY5ZTgtNDY0Mi05MmJlLWY2OTEzMGJiMDI1Yi5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMjI3JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDIyN1QxMjAwMDJaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT1jOTY1MGYzYjlkMDc3YjU4OThmOWM0ZWYwMTc3NjUyNWQ2ZWIxNDVmNjMyNWEyYTYzM2UwZTJiOWUyY2NmMTk0JlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.1j6dNzXfDCWAw_w2kMlBgFdHFGgB36YSTKrqTP9EHj4)
-
-## 📄 **발표 보고서 보러가기**
-[발표 보고서](https://www.canva.com/design/DAGgQfVWdzw/1kASu1k27NP0T2rh9yUAew/edit)
-
-## 🎬 **발표 영상 보러가기**
-[발표 영상](https://www.youtube.com/watch?v=IpCdp2d5DV0)
+![스크린샷 2025-03-04 오후 12 48 23](https://github.com/user-attachments/assets/d46de36a-4bb8-47b0-bcf3-ab5bcf94e81c)
 
 ## 📝 **와이어프레임**
-![와이어프레임 이미지](https://private-user-images.githubusercontent.com/184512169/417512117-c2bf253c-a767-4c99-9cd3-d870c15cb23c.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDA2NDY4OTEsIm5iZiI6MTc0MDY0NjU5MSwicGF0aCI6Ii8xODQ1MTIxNjkvNDE3NTEyMTE3LWMyYmYyNTNjLWE3NjctNGM5OS05Y2QzLWQ4NzBjMTVjYjIzYy5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMjI3JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDIyN1QwODU2MzFaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT0yNGJlNjBhMWU3ZmM2MWNhYzJiZDc5YjE3ZTRlYzAzMDM0M2M4MTFiM2JjMjQwMDI2NjM4MzgwNDVkNDM1ODU5JlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9._uTY47qyb_zu2dYzeXo_3rVL-hvkaVkWWC-Hw3LEasE)
+![스크린샷 2025-03-04 오후 12 49 30](https://github.com/user-attachments/assets/a414c1f1-2d7b-4124-9b70-6b1b7442e48d)
 
 ## 💬 **ERD**
 ```mermaid
@@ -171,6 +165,11 @@ job_opening {
     dev_keyword ||--o{ user_subscribed_dev_keyword : subscribes_to
 
 ```
+## 📄 **발표 보고서 보러가기**
+[발표 보고서](https://www.canva.com/design/DAGgQfVWdzw/1kASu1k27NP0T2rh9yUAew/edit)
+
+## 🎬 **발표 영상 보러가기**
+[발표 영상](https://www.youtube.com/watch?v=IpCdp2d5DV0)
 ---
 
 ## 📚 **기술 스택**
