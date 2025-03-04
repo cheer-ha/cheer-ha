@@ -73,13 +73,13 @@
 
 ---
 
-## 🏆 **Architecture**
+## 🏆 **Cloud Architecture**
 ![스크린샷 2025-03-04 오후 12 47 08](https://github.com/user-attachments/assets/47637fc0-e844-49be-9ccb-96264604ed0e)
 
 ## 🏆 **CI/CD Pipeline**
 ![스크린샷 2025-03-04 오후 12 51 18](https://github.com/user-attachments/assets/df36f2d2-1002-4e25-8c3b-f68f69f2e469)
 
-## 📝 **와이어프레임**
+## 📝 **Wireframe**
 ![스크린샷 2025-03-04 오후 12 49 30](https://github.com/user-attachments/assets/a414c1f1-2d7b-4124-9b70-6b1b7442e48d)
 
 ## 💬 **ERD**
@@ -165,15 +165,17 @@ job_opening {
     dev_keyword ||--o{ user_subscribed_dev_keyword : subscribes_to
 
 ```
-## 📄 **중간 발표 보고서 보러가기**
-[발표 보고서](https://www.canva.com/design/DAGgQfVWdzw/1kASu1k27NP0T2rh9yUAew/edit)
 
-## 🎬 **시연 영상 보러가기**
-[시연 영상](https://www.youtube.com/watch?v=IpCdp2d5DV0)
+## 📑 **API 명세서**
+- [API 명세서](https://docs.google.com/spreadsheets/d/1CQm7sV-ETn0w-FFe7nOCRKrPIp3i5TQWhKw9B1IDT9s/edit?gid=0#gid=0)
+
+## 🎬 **보러 가기**
+- [중간 발표 PPT](https://www.canva.com/design/DAGgQfVWdzw/1kASu1k27NP0T2rh9yUAew/edit)
+- [중간 발표 시연 영상](https://www.youtube.com/watch?v=IpCdp2d5DV0)
 
 ---
 
-## 📚 **기술 스택**
+## 🧰 **기술 스택**
 ### 배지 목록
 
 1. ##### Back-end
