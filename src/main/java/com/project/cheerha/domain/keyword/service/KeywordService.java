@@ -2,7 +2,6 @@ package com.project.cheerha.domain.keyword.service;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
-import com.project.cheerha.domain.keyword.dto.request.ReadKeywordAgeRequestDto;
 import com.project.cheerha.domain.keyword.dto.response.KeywordCustomAgeResponseDto;
 import com.project.cheerha.domain.keyword.dto.response.KeywordDto;
 import com.project.cheerha.domain.keyword.dto.response.ReadKeywordResponseDto;
@@ -42,15 +41,12 @@ public class KeywordService {
 
     /**
      * 커스텀 연령대 키워드 로직 중, 나이에 대한 예외처리가 진행됩니다.
-     * @param requestDto Controller에서 가져온 ReadKeywordAgeRequestDto 값
+     * @param minAge 최소 연령
+     * @param maxAge 최대 연령
      * @return 커스텀 연령대 키워드 상위 10개 리스트
      */
-    public List<KeywordCustomAgeResponseDto> readTop10KeywordsByAgeGroup (
-        ReadKeywordAgeRequestDto requestDto)
+    public List<KeywordCustomAgeResponseDto> readTop10KeywordsByAgeBetween(int minAge, int maxAge)
     {
-        int minAge = requestDto.minAge();
-        int maxAge = requestDto.maxAge();
-
         // 최소나이가 최대나이보다 클 때 예외처리하는 로직 추가
         if (minAge > maxAge) {
             throw new BadRequestException(ClientErrorCode.MIN_AGE_EXCEEDS_MAX_AGE);
