@@ -1,6 +1,7 @@
-package com.project.cheerha.domain.jobopening.entity;
+package com.project.cheerha.domain.jobopening.elasticsearch.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.project.cheerha.domain.jobopening.entity.JobOpening;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

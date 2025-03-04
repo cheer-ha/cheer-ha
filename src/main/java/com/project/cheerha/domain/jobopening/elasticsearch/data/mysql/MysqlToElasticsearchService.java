@@ -1,14 +1,13 @@
-package com.project.cheerha.domain.jobopening.data.mysql;
+package com.project.cheerha.domain.jobopening.elasticsearch.data.mysql;
 
 import com.project.cheerha.domain.jobopening.entity.JobOpening;
-import com.project.cheerha.domain.jobopening.entity.JobOpeningDocument;
+import com.project.cheerha.domain.jobopening.elasticsearch.entity.JobOpeningDocument;
 import com.project.cheerha.domain.keyword.entity.JobOpeningKeyword;
 import com.project.cheerha.domain.keyword.entity.Keyword;
-import com.project.cheerha.domain.jobopening.elasticrepository.JobOpeningDocumentRepository;
+import com.project.cheerha.domain.jobopening.elasticsearch.repository.JobOpeningDocumentRepository;
 import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

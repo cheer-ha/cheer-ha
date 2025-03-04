@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.jobopening.data.mysql;
+package com.project.cheerha.domain.jobopening.elasticsearch.data.mysql;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.jobopening.dto.response;
+package com.project.cheerha.domain.jobopening.elasticsearch.dto.response;
 
 import java.time.ZonedDateTime;
 import java.util.List;
