@@ -100,16 +100,17 @@ public class BookmarkController {
     }
 
     /**
-     * 최소, 최대 연령대를 사용자가 커스터마이징하여 추가된 즐겨찾기를 상위 10개를 조회할 수 있는 로직입니다.
-     * Valid 어노테이션으로 해당 연령대가 아닌 값이 나오면 예외가 발생하도록 설정했습니다.
-     * @param requestDto 사용자가 body에 json 형태로 minAge, maxAge 입력
+     *  최소, 최대 연령대를 사용자가 커스터마이징하여 추가된 즐겨찾기를 상위 10개를 조회할 수 있는 로직입니다.
+     * @param minAge 최소연령
+     * @param maxAge 최대연령
      * @return 커스텀 된 즐겨찾기 상위 10개를 List로 반환
      */
     @GetMapping("/popular")
-    public ResponseEntity<ApiResponseDto<List<BookmarkCustomAgeResponseDto>>> readTop10BookmarkByAgeGroup(
-        @Valid @RequestBody ReadBookmarkAgeRequestDto requestDto
+    public ResponseEntity<ApiResponseDto<List<BookmarkCustomAgeResponseDto>>> readTop10BookmarkByAgeBetween(
+        @RequestParam(value = "minAge") int minAge,
+        @RequestParam(value = "maxAge") int maxAge
     ) {
-        List<BookmarkCustomAgeResponseDto> dtoList = bookmarkService.readTop10BookmarkByAgeGroup(requestDto);
+        List<BookmarkCustomAgeResponseDto> dtoList = bookmarkService.readTop10BookmarkByAgeBetween(minAge, maxAge);
         return ApiResponseDto.success(dtoList);
     }
 

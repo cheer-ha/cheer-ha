@@ -31,7 +31,7 @@ public class BookmarkRepositoryQueryImpl implements BookmarkRepositoryQuery {
      * @return 상위 내용을 return 합니다.
      */
     @Override
-    public List<BookmarkCustomAgeResponseDto> readTop10BookmarksByAgeGroup(int minAge, int maxAge) {
+    public List<BookmarkCustomAgeResponseDto> readTop10BookmarksByAgeBetween(int minAge, int maxAge) {
 
         return jpaQueryFactory.select(
             new QBookmarkCustomAgeResponseDto(
