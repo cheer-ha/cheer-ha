@@ -3,6 +3,7 @@ package com.project.cheerha.domain.jobopening.service;
 import com.project.cheerha.domain.history.service.HistoryService;
 import com.project.cheerha.domain.jobopening.dto.request.ReadJobOpeningRequestDto;
 import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningResponseDto;
+import com.project.cheerha.domain.jobopening.elasticsearch.IndexName;
 import com.project.cheerha.domain.jobopening.entity.JobOpening;
 import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
 import com.project.cheerha.domain.user.entity.User;
@@ -12,6 +13,7 @@ import com.project.cheerha.domain.viewcount.repository.JobOpeningViewCountReposi
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -101,6 +103,7 @@ public class JobOpeningService {
      */
     @Transactional(readOnly = true)
     public Page<ReadJobOpeningResponseDto> readTop100PopularJobOpenings(Pageable pageable) {
+        Pageable adjustedPageable = adjustPageable(pageable);
         // 인기 채용공고 조회
         Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningRepository.findTop100PopularJobOpenings(pageable);
 
@@ -115,5 +118,19 @@ public class JobOpeningService {
         }
 
         return dtoPage;
+    }
+
+    private Pageable adjustPageable(Pageable pageable) {
+        int pageSize = Math.min(pageable.getPageSize(), 10);
+        int pageNumber = pageable.getPageNumber();
+        int totalPages = (int) Math.ceil((double) IndexName.MAX_POPULAR_SIZE / pageSize);
+
+        // 페이지 번호가 10페이지를 초과하면 마지막 페이지로 설정
+        if (pageNumber >= totalPages) {
+            pageNumber = totalPages - 1;  // 마지막 페이지로 설정
+        }
+
+        // PageRequest를 사용하여 페이지 번호와 페이지 크기 설정
+        return PageRequest.of(pageNumber, pageSize);
     }
 }

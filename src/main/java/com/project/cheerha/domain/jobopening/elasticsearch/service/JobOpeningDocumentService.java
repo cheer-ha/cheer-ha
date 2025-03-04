@@ -30,9 +30,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class JobOpeningDocumentService {
 
-    private static final int MAX_JOP_OPENING_SIZE = 10000;  // 최대 페이지 크기 (10000)
-    private static final int MAX_POPULAR_SIZE = 100; // 인기 채용공고 최대 개수 (100)
-
     private final HistoryService historyService;
     private final ElasticsearchClient elasticsearchClient;
 
@@ -51,12 +48,12 @@ public class JobOpeningDocumentService {
     public Page<ReadJobOpeningElasticResponseDto> readAllJobOpeningsUsingElasticsearch(Pageable pageable) {
 
         // 페이지 크기 및 페이지 번호 계산
-        int pageSize = Math.min(pageable.getPageSize(), MAX_JOP_OPENING_SIZE);
+        int pageSize = Math.min(pageable.getPageSize(), IndexName.MAX_JOP_OPENING_SIZE);
         int pageNumber = pageable.getPageNumber();  // 페이지 번호
         int from = pageNumber * pageSize;  // "from" 값 계산 (페이지 번호 * 페이지 크기)
 
         // 총 페이지 수가 초과되지 않도록 처리
-        int totalPages = (int) Math.ceil((double) MAX_JOP_OPENING_SIZE / pageSize); // totalElements = 10000
+        int totalPages = (int) Math.ceil((double) IndexName.MAX_JOP_OPENING_SIZE / pageSize); // totalElements = 10000
         if (pageNumber >= totalPages) {
             pageNumber = totalPages - 1;  // 페이지 번호가 totalPages보다 크면 마지막 페이지로 설정
             from = pageNumber * pageSize;  // 새로운 offset 계산
@@ -120,12 +117,12 @@ public class JobOpeningDocumentService {
     @Transactional(readOnly = true)
     public Page<ReadJobOpeningElasticResponseDto> readTop100PopularJobOpeningsUsingElasticsearch(Pageable pageable) {
         // 페이지 크기를 100개로 제한 (사용자가 요청한 크기가 100보다 크다면 100으로 제한)
-        int pageSize = Math.min(pageable.getPageSize(), MAX_POPULAR_SIZE);  // 최대 100개까지 가져오기
+        int pageSize = Math.min(pageable.getPageSize(), IndexName.MAX_POPULAR_SIZE);  // 최대 100개까지 가져오기
         int pageNumber = pageable.getPageNumber();  // 페이지 번호
         int from = pageNumber * pageSize;  // Elasticsearch에서 가져올 시작 인덱스 계산
 
         // 총 페이지 수가 초과되지 않도록 처리
-        int totalPages = (int) Math.ceil((double) MAX_POPULAR_SIZE / pageSize); // totalElements = 100
+        int totalPages = (int) Math.ceil((double) IndexName.MAX_JOP_OPENING_SIZE / pageSize); // totalElements = 100
         if (pageNumber >= totalPages) {
             pageNumber = totalPages - 1;  // 페이지 번호가 totalPages보다 크면 마지막 페이지로 설정
             from = pageNumber * pageSize;  // 새로운 offset 계산
@@ -166,7 +163,7 @@ public class JobOpeningDocumentService {
                             job.getViewCount(),
                             job.getRequiredSkills()
                     )).collect(Collectors.toList());
-            return new PageImpl<>(dtoList, pageable, Math.min(MAX_POPULAR_SIZE, searchResponse.hits().total().value()));  // Ensure total elements are capped at 100
+            return new PageImpl<>(dtoList, pageable, Math.min(IndexName.MAX_JOP_OPENING_SIZE, searchResponse.hits().total().value()));  // Ensure total elements are capped at 100
 
         } catch (IOException e) {
             log.error("Elasticsearch 조회 실패", e);
