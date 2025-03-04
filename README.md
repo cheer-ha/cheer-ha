@@ -476,6 +476,8 @@ groupBy(jobOpeningKeyword.keyword.id)
     - `SendGrid` API를 사용하여 이메일 발송을 대체하는 방법이 있었습니다.
 일주일 동안 이메일을 200개 미만 보냈는데도 로그인 횟수 초과 오류가 발생한 점을 고려할 때, 이메일 발송에 특화된 API를 사용하는 방안이 앞으로 서버 운영에 더 유리해 보였습니다. 
 
+<details>
+  <summary>SendGridConfig 펼치기</summary>
 ```java
 @Configuration
 public class SendGridConfig {
@@ -489,6 +491,87 @@ public class SendGridConfig {
     }
 }
 ```
+</details>
+
+<details>
+  <summary>SendGrid로 대체된 EmailSender 펼치기</summary>
+```java
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class EmailSender {
+
+    private final MappingRepository mappingRepository;
+
+    @Value("${SENDGRID_API_KEY}")
+    private String sendGridApiKey;
+
+    @Value("${SENDGRID_FROM_EMAIL}")
+    private String senderEmail;
+
+    @Async
+    public void sendEmails() {
+        Map<String, Set<Mapping>> emailToMappings = new HashMap<>();
+
+        mappingRepository.findByIsEmailSentFalse()
+            .forEach(mapping -> {
+                emailToMappings.computeIfAbsent(mapping.getEmail(), emailAsKey -> new HashSet<>()).add(mapping);
+            });
+
+        emailToMappings.forEach(this::sendMail);
+    }
+
+    private void sendMail(
+        String recipientEmail,
+        Set<Mapping> mappings
+    ) {
+        try {
+            Email from = new Email(senderEmail); 
+            Email to = new Email(recipientEmail);
+            String subject = "📢 새로운 맞춤 채용 공고가 도착했어요!";
+            StringBuilder content = new StringBuilder();
+
+            content.append("<h1>🚀 새로운 채용 공고가 준비됐어요! 🎉</h1>");
+            content.append("<p>맞춤형 채용 공고가 도착했답니다! 💼</p>");
+            content.append("<p>아래 링크에서 확인해보세요! ⬇️</p>");
+            content.append("<ul>");
+
+            for (Mapping mapping : mappings) {
+                content.append("<li>👉 <a href=\"")
+                    .append(mapping.getJobOpeningUrl())
+                    .append("\" target=\"_blank\">")
+                    .append("채용 공고 자세히 보기</a></li>");
+            }
+
+            content.append("</ul>");
+            content.append("<p>행운을 빕니다! 🙌</p>");
+
+            Content emailContent = new Content("text/html", content.toString());
+
+            Mail mail = new Mail(from, subject, to, emailContent);
+            SendGrid sendGrid = new SendGrid(sendGridApiKey);
+
+            Request request = new Request();
+            request.setMethod(Method.POST); 
+            request.setEndpoint("mail/send");
+            request.setBody(mail.build()); 
+            sendGrid.api(request);
+
+            log.info("이메일 전송 완료: {}", recipientEmail);
+
+            mappings.forEach(mapping -> {
+                mapping.markEmailAsSent(); 
+                mappingRepository.save(mapping);
+            });
+
+        } catch (IOException e) {
+            log.error("이메일 전송 실패: {}", recipientEmail, e);
+        }
+    }
+}
+```
+</details>
+
 2번째 방안을 선택하여 `SendGrid` 회원가입 및 `Gmail` 대체를 마쳤습니다.
 
 ### 해결 완료 
@@ -504,7 +587,7 @@ public class SendGridConfig {
 </details>
 
 <details> 
-<summary>🧩 채용 공고 생성일이 UTC로 저장되며 발생한 채용 공고 중복 조회 해결</summary> 
+<summary>🧩이메일 알림 생성용 데이터 조회 시, 채용 공고 생성일이 UTC로 저장되어 발생한 중복 조회 해결</summary> 
 
 ### 요약
 채용 공고 중복 조회를 방지하고자 생성일을 `ZonedDateTime`으로 추가했는데, 여전히 중복 조회되는 문제가 발생하여 해결해야 했습니다.
@@ -519,7 +602,7 @@ public class SendGridConfig {
   - 공식 문서에 나왔다시피, MySQL은 `TIMESTAMP` 값을 현재 시간대에서 `UTC`로 변환하여 저장하고, 저장된 값을 다시 `UTC`에서 현재 시간대로 변환하여 조회한다는 점을 알 수 있었습니다.
 
 ### 해결 방안
-로그와 데이터베이스 시간 일관성 문제를 해결하고자, 위와 같이 조회 시간을 `UTC`로 변경했습니다. 
+로그와 데이터베이스 시간 일관성 문제를 해결하고자, 조회 시간을 `UTC`로 변경했습니다. 
 
 ```java
 ZonedDateTime referenceTime = ZonedDateTime.now()
