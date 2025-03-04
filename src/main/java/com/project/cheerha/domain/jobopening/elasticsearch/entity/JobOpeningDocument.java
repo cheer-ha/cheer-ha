@@ -1,6 +1,7 @@
 package com.project.cheerha.domain.jobopening.elasticsearch.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.project.cheerha.domain.jobopening.elasticsearch.IndexName;
 import com.project.cheerha.domain.jobopening.entity.JobOpening;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-@Document(indexName = "job-opening")
+@Document(indexName = IndexName.JOB_OPENING_DOCUMENT)
 public class JobOpeningDocument {
 
     @Id
