@@ -27,7 +27,6 @@ public enum ClientErrorCode {
     INVALID_PASSWORD_RESET_TOKEN(HttpStatus.BAD_REQUEST, "패스워드 변경용 토큰이 유효하지 않습니다."),
     EXPIRED_JOB_OPENING(HttpStatus.BAD_REQUEST, "마감된 채용공고입니다.");
 
-
     private final HttpStatus status;
     private final String message;
 }
