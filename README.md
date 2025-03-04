@@ -1,7 +1,7 @@
 ## **취하여: 맞춤형 채용 공고 조회 & 알림 서비스**
 
 ## 🚀 **프로젝트 소개**
-### 📌**한 줄 소개**
+### 📌 **한 줄 소개**
 '취하여'는 '취업을 위하여'의 줄임말로, 사용자가 원하는 채용 공고를 쉽고 빠르게 검색하고, 다양한 알림을 받아보며 자신에게 꼭 맞는 채용 공고에 지원하도록 돕는 서비스입니다.
 ### 💡**기획 배경**
 현재 다양한 채용 공고 사이트가 있지만, 사용자는 여러 가지 불편을 겪습니다.
@@ -174,32 +174,58 @@ job_opening {
 ---
 
 ## 📚 **기술 스택**
-| 분류                           | 사용 기술 / 도구                          | 배지                                                                                                                                                                                                                                                                                                                                         | Description                                                                                                                                                                                            |
-|------------------------------|-------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Language**                 | Java 17                             | ![Java](https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white)                                                                                                                                                                                                                                            | - Spring Boot 기반 서버 개발                                                                                                                                                                                 |
-| **IDE**                      | IntelliJ IDEA                       | ![IntelliJ IDEA](https://img.shields.io/badge/IntelliJ_IDEA-000000?style=for-the-badge&logo=intellijidea&logoColor=white)                                                                                                                                                                                                                  | - Java 개발에 최적화된 통합 개발 환경(IDE)                                                                                                                                                                          |
-| **Back-end**                 | Spring <br> Spring Boot             | ![Spring](https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white) <br> ![Spring Boot](https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=spring&logoColor=white)                                                                                                                  | - 의존성 주입 및 AOP, 트랜잭션 관리 등 다양한 엔터프라이즈 기능을 제공하는 프레임워크                                                                                                                                                    |
-| **DB & Optimization**        | MySQL <br> Redis <br> Elasticsearch | ![MySQL](https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white) <br> ![Redis](https://img.shields.io/badge/redis-DC382D?style=for-the-badge&logo=redis&logoColor=white) <br> ![Elasticsearch](https://img.shields.io/badge/elasticsearch-47A248?style=for-the-badge&logo=elasticsearch&logoColor=white) | - AWS RDS에서 제공되는 관계형 데이터베이스 <br> - 캐시 관리 및 분산 락을 통한 동시성 제어 <br> - 인기 검색어 순위 및 빠른 검색 기능 제공                                                                                                              |
-| **Security**                 | JWT                                 | ![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=json-web-tokens&logoColor=white)                                                                                                                                                                                                                                   | - JSON Web Tokens를 사용한 인증 및 권한 관리                                                                                                                                                                      |
-| **Deployment & Distribution** | EC2 <br> S3 <br> Route 53 <br> Loadbalancer <br> Auto Scaling Group <br> Amazon ElastiCache  | ![EC2](https://img.shields.io/badge/amazon_ec2-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white) <br> ![S3](https://img.shields.io/badge/amazon_s3-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white) <br> ![Route 53](https://img.shields.io/badge/route_53-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white) <br> ![Loadbalancer](https://img.shields.io/badge/amazon_loadbalancer-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white) <br> ![Auto Scaling Group](https://img.shields.io/badge/Auto_Scaling_Group-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white) <br> ![Amazon ElastiCache](https://img.shields.io/badge/Amazon_ElastiCache-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white) | - 애플리케이션 서버 운영 <br> - 이미지 및 기타 파일 저장 관리 <br> - AWS Route 53을 통한 도메인 설정 <br> - 트래픽을 여러 EC2 인스턴스에 분산하여 처리 <br> - EC2 인스턴스의 자동 확장 및 축소를 통해 트래픽 변화에 대응 <br> - Redis와 Memcached를 지원하는 분산 캐시 서비스 제공          |
-| **Test**                     | JMeter <br> Postman                 | ![JMeter](https://img.shields.io/badge/jmeter-F5A500?style=for-the-badge&logo=apachejmeter&logoColor=white) <br> ![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)                                                                                                                  | - 성능 테스트 및 로드 테스트를 통한 시스템 안정성 검증 <br> - API 테스트 및 개발을 지원하는 도구                                                                                                                                          |
-| **Teamwork**                 | Git <br> GitHub <br> Jira           | ![Git](https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white) <br> ![GitHub](https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white) <br> ![Jira](https://img.shields.io/badge/Jira-blue?style=for-the-badge&logo=jira&logoColor=white)                                 | - 버전 관리 시스템 <br> - GitHub을 사용한 협업 및 코드 관리 <br> - 프로젝트 관리 및 이슈 추적 도구                                                                                                                                    |
-| **Notification Service**     | SendGrid                            | ![SendGrid](https://img.shields.io/badge/SendGrid-00B9F1?style=for-the-badge&logo=sendgrid&logoColor=white)                                                                                                                                                                                                                                 | - 이메일 발송 서비스 및 API 제공                                                                                                                                                                                  |
-| **Monitoring & Analytics**   | Kibana <br> Prometheus <br> Grafana | ![Kibana](https://img.shields.io/badge/Kibana-005C3C?style=for-the-badge&logo=kibana&logoColor=white) <br> ![Prometheus](https://img.shields.io/badge/Prometheus-009E73?style=for-the-badge&logo=prometheus&logoColor=white) <br> ![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white) | - Elasticsearch 데이터를 시각화하여 로그 분석 및 모니터링을 지원 <br> - 시계열 데이터를 수집하고 분석하는 시스템 모니터링 툴 <br> - 실시간 대시보드 제공                                                                                                    |
-| **Containerization**         | Docker                              | ![Docker](https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)                                                                                                                                                                                                                                     | - 개발 및 배포 환경을 컨테이너화하여 일관성 있는 개발 환경 제공                                                                                                                                                                  |
+### 배지 목록
+
+1. ##### Back-end
+![Java](https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white)
+![Spring](https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![MySQL](https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![Redis](https://img.shields.io/badge/redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
+![Elasticsearch](https://img.shields.io/badge/elasticsearch-47A248?style=for-the-badge&logo=elasticsearch&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=json-web-tokens&logoColor=white
+)
+
+2. ##### AWS
+![EC2](https://img.shields.io/badge/amazon_ec2-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white)
+![RDS](https://img.shields.io/badge/amazon_rds-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white)
+![Loadbalancer](https://img.shields.io/badge/amazon_loadbalancer-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white)
+![S3](https://img.shields.io/badge/amazon_s3-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white)
+![Route 53](https://img.shields.io/badge/route_53-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white)
+![Auto Scaling Group](https://img.shields.io/badge/Auto_Scaling_Group-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white)
+![Amazon ElastiCache](https://img.shields.io/badge/Amazon_ElastiCache-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white
+)
+
+3. ##### Tools
+![JMeter](https://img.shields.io/badge/jmeter-F5A500?style=for-the-badge&logo=apachejmeter&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Git](https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white)
+![GitHub](https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white)
+![Jira](https://img.shields.io/badge/Jira-blue?style=for-the-badge&logo=jira&logoColor=white)
+![Kibana](https://img.shields.io/badge/Kibana-005C3C?style=for-the-badge&logo=kibana&logoColor=white)
+![Prometheus](https://img.shields.io/badge/Prometheus-009E73?style=for-the-badge&logo=prometheus&logoColor=white)
+![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white)
+![IntelliJ IDEA](https://img.shields.io/badge/IntelliJ_IDEA-000000?style=for-the-badge&logo=intellijidea&logoColor=white)
+![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)
+![SendGrid](https://img.shields.io/badge/SendGrid-00B9F1?style=for-the-badge&logo=sendgrid&logoColor=white)
+
+### 상세 설명
+| 분류                           | 사용 기술 및 도구                                                                               | Description                                                                                                                                                                                       |
+|------------------------------|------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Language**                 | Java 17                                                                                  | - Spring Boot 기반 서버 개발                                                                                                                                                                             |
+| **IDE**                      | IntelliJ IDEA                                                                            | - Java 개발에 최적화된 통합 개발 환경(IDE)                                                                                                                                                                       |
+| **Back-end**                 | Spring <br> Spring Boot                                                                  | - 의존성 주입 및 AOP, 트랜잭션 관리 등 다양한 엔터프라이즈 기능을 제공하는 프레임워크                                                                                                                                                 |
+| **DB & Optimization**        | MySQL <br> Redis <br> Elasticsearch                                                      | - AWS RDS에서 제공되는 관계형 데이터베이스 <br> - 캐시 관리 및 분산 락을 통한 동시성 제어 <br> - 인기 검색어 순위 및 빠른 검색 기능 제공                                                                                                            |
+| **Security**                 | JWT                                                                                      | - JSON Web Tokens를 사용한 인증 및 권한 관리                                                                                                                                                                  |
+| **Deployment & Distribution** | EC2 <br> S3 <br> Route 53 <br> Loadbalancer <br> Auto Scaling Group <br> Amazon ElastiCache | - 애플리케이션 서버 운영 <br> - 이미지 및 기타 파일 저장 관리 <br> - AWS Route 53을 통한 도메인 설정 <br> - 트래픽을 여러 EC2 인스턴스에 분산하여 처리 <br> - EC2 인스턴스의 자동 확장 및 축소를 통해 트래픽 변화에 대응 <br> - Redis와 Memcached를 지원하는 분산 캐시 서비스 제공     |
+| **Test**                     | JMeter <br> Postman                                                                      | - 성능 테스트 및 로드 테스트를 통한 시스템 안정성 검증 <br> - API 테스트 및 개발을 지원하는 도구                                                                                                                                     |
+| **Teamwork**                 | Git <br> GitHub <br> Jira                                                                | - 버전 관리 시스템 <br> - GitHub을 사용한 협업 및 코드 관리 <br> - 프로젝트 관리 및 이슈 추적 도구                                                                                                                               |
+| **Notification Service**     | SendGrid                                                                                 | - 이메일 발송 서비스 및 API 제공                                                                                                                                                                             |
+| **Monitoring & Analytics**   | Kibana <br> Prometheus <br> Grafana                                                      | - Elasticsearch 데이터를 시각화하여 로그 분석 및 모니터링을 지원 <br> - 시계열 데이터를 수집하고 분석하는 시스템 모니터링 툴 <br> - 실시간 대시보드 제공                                                                                               |
+| **Containerization**         | Docker                                                                                   | - 개발 및 배포 환경을 컨테이너화하여 일관성 있는 개발 환경 제공                                                                                                                                                             |
 
 ---
 ## 🛠️ **기술적 의사결정**
-<details> 
-<summary>🔩 제목 입력</summary> 
-
-<!-- 내용 입력 --> </details> 
-
-<details> <summary>🔩 제목 입력</summary> 
-
-<!-- 내용 입력 --> 
-</details>
-
 <details>
   <summary>🔩 이메일 알림 기능은 어떤 서버로 구현해야 할까요?</summary>
 
@@ -281,7 +307,7 @@ job_opening {
 </details>
 
 <details> 
-<summary> 🔩 사용자 맞춤형 채용 공고 검색 시스템은 어떻게 구현할까요?</summary> 
+<summary>🔩 사용자 맞춤형 채용 공고 검색 시스템은 어떻게 구현할까요?</summary> 
 
 ## 주요 로직
 - 사용자 맞춤형 채용 공고 검색 시스템을 구현했습니다. 이 시스템은 Elasticsearch를 활용하여 사용자 관점에서 편리한 검색기능을 제공합니다.
@@ -316,23 +342,8 @@ job_opening {
 
 </details> 
 
-<details> <summary> 🔩 제목 입력</summary> 
-
-<!-- 내용 입력 --> 
-</details>
-
 <details> 
-<summary> 🔩 제목 입력</summary> 
-
-<!-- 내용 입력 --> </details> 
-
-<details> <summary> 🔩 제목 입력</summary> 
-
-<!-- 내용 입력 --> 
-</details>
-
-<details> 
-<summary> 🔩 조회수 집계는 어떻게 해야 할까요?</summary> 
+<summary>🔩 조회수 집계는 어떻게 해야 할까요?</summary> 
 
 ### 구현한 기능
 채용공고 페이지 조회 및 조회수 집계를 구현하였습니다.
@@ -365,26 +376,6 @@ job_opening {
 </details>
 
 ## 🚨 **트러블슈팅**
-<details> 
-<summary> 🧩 제목 입력</summary> 
-
-<!-- 내용 입력 --> </details> 
-
-<details> <summary> 🧩 제목 입력</summary> 
-
-<!-- 내용 입력 --> 
-</details>
-
-<details> 
-<summary>🧩 제목 입력</summary> 
-
-<!-- 내용 입력 --> </details> 
-
-<details> <summary>🧩 제목 입력</summary> 
-
-<!-- 내용 입력 --> 
-</details>
-
 <details> 
 <summary>🧩 이메일 전송 속도를 7초에서 3초로 단축</summary> 
 
