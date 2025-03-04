@@ -11,7 +11,6 @@ import com.project.cheerha.domain.user.service.UserFindByService;
 import com.project.cheerha.domain.viewcount.entity.JobOpeningViewCount;
 import com.project.cheerha.domain.viewcount.repository.JobOpeningViewCountRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Slf4j
+
 @Service
 @RequiredArgsConstructor
 public class JobOpeningService {
@@ -121,13 +120,15 @@ public class JobOpeningService {
     }
 
     private Pageable adjustPageable(Pageable pageable) {
-        int pageSize = Math.min(pageable.getPageSize(), 10);
+        int pageSize = Math.min(pageable.getPageSize(), IndexName.MAX_POPULAR_SIZE);
         int pageNumber = pageable.getPageNumber();
-        int totalPages = (int) Math.ceil((double) IndexName.MAX_POPULAR_SIZE / pageSize);
+        int from = pageNumber * pageSize;
 
-        // 페이지 번호가 10페이지를 초과하면 마지막 페이지로 설정
+        // 총 페이지 수가 초과되지 않도록 처리
+        int totalPages = (int) Math.ceil((double) IndexName.MAX_JOP_OPENING_SIZE / pageSize); // totalElements = 100
         if (pageNumber >= totalPages) {
-            pageNumber = totalPages - 1;  // 마지막 페이지로 설정
+            pageNumber = totalPages - 1;  // 페이지 번호가 totalPages보다 크면 마지막 페이지로 설정
+            from = pageNumber * pageSize;  // 새로운 offset 계산
         }
 
         // PageRequest를 사용하여 페이지 번호와 페이지 크기 설정

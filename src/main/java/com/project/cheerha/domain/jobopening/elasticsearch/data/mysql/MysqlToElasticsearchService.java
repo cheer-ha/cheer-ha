@@ -69,8 +69,6 @@ public class MysqlToElasticsearchService {
      */
     private void syncDataOnce() {
         try {
-            log.info("MySQL에서 데이터를 조회하는 중...");
-            // JobOpening과 관련된 키워드를 조회
             List<JobOpening> jobOpeningList = jobOpeningRepository.findAllWithJobOpeningKeywords();  // 적절한 ID 또는 쿼리 매개변수를 사용하여 조회
             log.info("총 {}개의 JobOpening 데이터를 조회했습니다.", jobOpeningList.size());
 
