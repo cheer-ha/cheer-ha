@@ -1,14 +1,13 @@
-package com.project.cheerha.domain.jobopening.data.mysql;
+package com.project.cheerha.domain.elasticsearch.data.mysql;
 
 import com.project.cheerha.domain.jobopening.entity.JobOpening;
-import com.project.cheerha.domain.jobopening.entity.JobOpeningDocument;
+import com.project.cheerha.domain.elasticsearch.entity.JobOpeningDocument;
 import com.project.cheerha.domain.keyword.entity.JobOpeningKeyword;
 import com.project.cheerha.domain.keyword.entity.Keyword;
-import com.project.cheerha.domain.jobopening.elasticrepository.JobOpeningDocumentRepository;
+import com.project.cheerha.domain.elasticsearch.repository.JobOpeningDocumentRepository;
 import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +18,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MysqlToElasticsearchService {
+public class MysqlToElasticsearchSyncService {
 
     private final JobOpeningRepository jobOpeningRepository;
     private final JobOpeningDocumentRepository jobOpeningDocumentRepository;
@@ -70,8 +69,6 @@ public class MysqlToElasticsearchService {
      */
     private void syncDataOnce() {
         try {
-            log.info("MySQL에서 데이터를 조회하는 중...");
-            // JobOpening과 관련된 키워드를 조회
             List<JobOpening> jobOpeningList = jobOpeningRepository.findAllWithJobOpeningKeywords();  // 적절한 ID 또는 쿼리 매개변수를 사용하여 조회
             log.info("총 {}개의 JobOpening 데이터를 조회했습니다.", jobOpeningList.size());
 

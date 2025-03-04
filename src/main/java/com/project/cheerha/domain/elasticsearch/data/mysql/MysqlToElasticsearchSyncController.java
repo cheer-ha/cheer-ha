@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.jobopening.data.mysql;
+package com.project.cheerha.domain.elasticsearch.data.mysql;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class DataSyncController {
+public class MysqlToElasticsearchSyncController {
 
-    private final MysqlToElasticsearchService mysqlToElasticsearchService;
+    private final MysqlToElasticsearchSyncService mysqlToElasticsearchService;
 
     /**
      * 사용자가 원할 때 데이터를 동기화할 수 있는 엔드포인트입니다.
