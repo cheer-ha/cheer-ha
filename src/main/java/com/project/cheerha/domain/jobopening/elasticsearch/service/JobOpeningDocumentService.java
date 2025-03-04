@@ -278,7 +278,7 @@ public class JobOpeningDocumentService {
         if (requestDto.getRequiredSkill() != null) {
             boolQueryBuilder.filter(f -> f
                     .term(t -> t
-                            .field(IndexName.REQUIRED_SKILLS + ".keyword")  // 변경된 부분
+                            .field(IndexName.REQUIRED_SKILLS + IndexName.KEYWORD_SUFFIX)  // 변경된 부분
                             .value(requestDto.getRequiredSkill())
                     )
             );
