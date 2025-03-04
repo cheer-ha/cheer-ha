@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.jobopening.elasticsearch;
+package com.project.cheerha.domain.elasticsearch;
 
 public class IndexName {
 
