@@ -616,6 +616,7 @@ groupBy(jobOpeningKeyword.keyword.id)
 ① 기술의 장단점
 - `SendGrid`는 `Too many login attempts` 오류를 해결하는 데 도움이 되었고, 이메일 전송 상태를 통계 데이터로 확인할 수 있어 유용했습니다.
 - 다만, `SendGrid`의 무료 계정은 하루에 100개의 이메일 전송 제한이 있다는 점이 아쉬웠습니다.
+  
 ② 다시 시도한다면?
 - `Gmail`과 `SendGrid`를 사용하면서 각 서비스의 장단점을 명확히 파악할 수 있었기 때문에, 다시 시도하더라도 동일한 순서로 작업을 진행할 듯합니다.
 - API 적용을 처음부터 선택하지 않았기에 더 많은 시행착오를 겪으며 값진 경험을 쌓을 수 있었기 때문입니다.
@@ -652,6 +653,7 @@ ZonedDateTime referenceTime = ZonedDateTime.now()
 ① 기술의 장단점
 - 조회 시간을 `UTC`로 바꾸어 국외 사용자를 고려한 `ZonedDateTime`을 계속 사용할 수 있었습니다.
 - 다만 테스트할 때마다 `KST`를 `UTC`로 변환해야 한다는 한계가 있었습니다
+  
 ② 다시 시도한다면?
 - 데이터베이스 `Timezone` 설정을 `KST`로 변경하여 테스트 시 시간을 더 직관적으로 다룰 수 있도록 개선해 보고 싶습니다. 
 </details>
