@@ -82,19 +82,16 @@ public class BookmarkService {
 
     /**
      * 커스텀 연령대 즐겨찾기 로직 중, 나이에 대한 예외처리가 진행됩니다.
-     * @param requestDto Controller에서 가져온 ReadBookmarkAgeRequestDto 값
+
      * @return 커스텀 연령대 즐겨찾기 상위 10개 리스트
      */
-    public List<BookmarkCustomAgeResponseDto> readTop10BookmarkByAgeGroup (
-        ReadBookmarkAgeRequestDto requestDto
-    ) {
-        int minAge = requestDto.minAge();
-        int maxAge = requestDto.maxAge();
+
+    public List<BookmarkCustomAgeResponseDto> readTop10BookmarkByAgeBetween (int minAge, int maxAge) {
 
          // 최소나이가 최대나이보다 클 때 예외처리하는 로직 추가
         if (minAge > maxAge) {
             throw new BadRequestException(ClientErrorCode.MIN_AGE_EXCEEDS_MAX_AGE);
         }
-       return bookmarkRepository.readTop10BookmarksByAgeGroup(minAge, maxAge);
+       return bookmarkRepository.readTop10BookmarksByAgeBetween(minAge, maxAge);
     }
 }
