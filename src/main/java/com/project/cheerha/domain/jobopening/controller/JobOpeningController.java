@@ -65,14 +65,6 @@ public class JobOpeningController {
         return ApiResponseDto.success(dtoPage);
     }
 
-    private Pageable validatePageSize(int page, int size) {
-        if (page < 1 || size < 1) {
-            page = Math.max(1, page);
-            size = Math.max(1, size);
-        }
-        return PageRequest.of(page - 1, size);
-    }
-
     /**
      * 조회수를 기준으로 상위 100개의 인기 채용 공고를 조회하는 API입니다.
      *
@@ -97,5 +89,24 @@ public class JobOpeningController {
         Pageable pageable = validatePageSize(page, size);
         Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningService.readTop100PopularJobOpenings(pageable);
         return ApiResponseDto.success(dtoPage);
+    }
+
+    /**
+     * 페이지 번호와 페이지 크기를 검증하여 유효한 값으로 반환하는 메서드입니다.
+     *
+     * 이 메서드는 페이지 번호(page)와 페이지 크기(size)가 유효한지 확인하고,
+     * 페이지 번호는 최소 1부터 시작하도록 보정하며,
+     * 페이지 크기는 최소 1 이상으로 보정한 후, PageRequest 객체를 반환합니다.
+     *
+     * @param page 페이지 번호 (1 이상이어야 함)
+     * @param size 페이지 크기 (1 이상이어야 함)
+     * @return 검증된 페이지 번호와 크기를 반영한 PageRequest 객체
+     */
+    private Pageable validatePageSize(int page, int size) {
+        if (page < 1 || size < 1) {
+            page = Math.max(1, page);
+            size = Math.max(1, size);
+        }
+        return PageRequest.of(page - 1, size);
     }
 }

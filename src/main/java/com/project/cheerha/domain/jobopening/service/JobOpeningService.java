@@ -1,5 +1,7 @@
 package com.project.cheerha.domain.jobopening.service;
 
+import com.project.cheerha.common.exception.client.BadRequestException;
+import com.project.cheerha.common.exception.client.ClientErrorCode;
 import com.project.cheerha.domain.history.service.HistoryService;
 import com.project.cheerha.domain.jobopening.dto.request.ReadJobOpeningRequestDto;
 import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningResponseDto;
@@ -17,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 
@@ -133,5 +136,18 @@ public class JobOpeningService {
 
         // PageRequest를 사용하여 페이지 번호와 페이지 크기 설정
         return PageRequest.of(pageNumber, pageSize);
+    }
+
+    /**
+     * 채용 공고의 마감일을 확인하여 마감된 경우 예외를 던집니다.
+     *
+     * @param jobOpeningId 채용 공고 ID
+     */
+    public void checkJobOpeningExpired(Long jobOpeningId) {
+        JobOpening jobOpening = jobOpeningFindByService.findById(jobOpeningId);
+        // 마감일이 지나면 예외 발생
+        if (jobOpening.getHiringEndAt().isBefore(ZonedDateTime.now())) {
+            throw new BadRequestException(ClientErrorCode.EXPIRED_JOB_OPENING);
+        }
     }
 }
