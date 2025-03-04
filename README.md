@@ -438,6 +438,41 @@ groupBy(jobOpeningKeyword.keyword.id)
 </details> 
 
 <details> 
+<summary>🧩 채용 공고 생성일이 UTC로 저장되며 발생한 채용 공고 중복 조회 해결</summary> 
+
+### 요약
+채용 공고 중복 조회를 방지하고자 생성일을 `ZonedDateTime`으로 추가했는데, 여전히 중복 조회되는 문제가 발생하여 해결해야 했습니다.
+
+### 문제 정의
+조회 시간이 로그를 찍을 때에는 `KST(한국 표준시)`로 출력되지만, 채용 공고 생성일은 `UTC(협정 세계시)`로 저장되었습니다. 
+
+### 가설
+- `ZonedDateTime`을 사용하면 `MySQL`에서 서버 시간과 무관하게 자동으로 `UTC`로 저장해서 해당 문제가 발생했다고 가정했습니다. 
+- 그다음 공식 문서를 조회하여 가설을 검증했습니다. 
+  - MySQL converts TIMESTAMP values from the current time zone to UTC for storage, and back from UTC to the current time zone for retrieval. 
+  - 공식 문서에 나왔다시피, MySQL은 `TIMESTAMP` 값을 현재 시간대에서 `UTC`로 변환하여 저장하고, 저장된 값을 다시 `UTC`에서 현재 시간대로 변환하여 조회한다는 점을 알 수 있었습니다.
+
+### 해결 방안
+로그와 데이터베이스 시간 일관성 문제를 해결하고자, 위와 같이 조회 시간을 `UTC`로 변경했습니다. 
+
+```java
+ZonedDateTime referenceTime = ZonedDateTime.now()
+    .minusSeconds(30L)
+    .withZoneSameInstant(ZoneId.of("UTC"));
+```
+
+### 해결 완료 
+조회 시간을 `UTC`로 통일한 결과, 한 번 조회된 채용 공고 목록이 다시 조회되지 않았습니다. 
+
+### 회고 
+① 기술의 장단점
+- 조회 시간을 `UTC`로 바꾸어 국외 사용자를 고려한 `ZonedDateTime`을 계속 사용할 수 있었습니다.
+- 다만 테스트할 때마다 `KST`를 `UTC`로 변환해야 한다는 한계가 있었습니다
+② 다시 시도한다면?
+- 데이터베이스 `Timezone` 설정을 `KST`로 변경하여 테스트 시 시간을 더 직관적으로 다룰 수 있도록 개선해 보고 싶습니다. 
+</details>
+
+<details> 
 <summary>🧩 채용 공고 조회 속도 개선</summary> 
 
 ### 요약
