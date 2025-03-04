@@ -8,11 +8,9 @@ import com.project.cheerha.domain.bookmark.entity.Bookmark;
 import com.project.cheerha.domain.bookmark.repository.BookmarkRepository;
 import com.project.cheerha.domain.jobopening.entity.JobOpening;
 import com.project.cheerha.domain.jobopening.service.JobOpeningFindByService;
-import com.project.cheerha.domain.jobopening.service.JobOpeningService;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.service.UserFindByService;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
