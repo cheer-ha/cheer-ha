@@ -24,8 +24,8 @@ public enum ClientErrorCode {
     DAILY_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "일일 이메일 발송 횟수가 초과되었습니다."),
     MAX_FAILURE_COUNT_EXCEEDED(HttpStatus.BAD_REQUEST, "이메일 토큰 인증 횟수가 초과되었습니다."),
     EMAIL_NOT_SENT_YET(HttpStatus.BAD_REQUEST, "이메일을 보낸 적이 없습니다"),
-    INVALID_PASSWORD_RESET_TOKEN(HttpStatus.BAD_REQUEST, "패스워드 변경용 토큰이 유효하지 않습니다.");
-
+    INVALID_PASSWORD_RESET_TOKEN(HttpStatus.BAD_REQUEST, "패스워드 변경용 토큰이 유효하지 않습니다."),
+    EXPIRED_JOB_OPENING(HttpStatus.BAD_REQUEST, "마감된 채용공고입니다.");
 
     private final HttpStatus status;
     private final String message;
