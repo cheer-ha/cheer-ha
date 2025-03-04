@@ -1,4 +1,4 @@
-package com.project.cheerha.common.config;
+package com.project.cheerha.common.filter;
 
 import com.project.cheerha.common.exception.handler.FilterExceptionHandler;
 import com.project.cheerha.common.properties.JwtSecurityProperties;
@@ -28,7 +28,10 @@ import org.springframework.util.PatternMatchUtils;
 @RequiredArgsConstructor
 public class JwtFilter implements Filter {
 
-    private static final String[] WHITE_LIST = {"/auth/signup", "/auth/login", "/actuator/health", "/actuator/prometheus"};
+    private static final String[] WHITE_LIST = {
+            "/auth/signup", "/auth/login", "/actuator/health", "/actuator/prometheus",
+            "/users/email-verification/send-password-reset-verify", "/users/email-verification/password-reset-verify",
+            "/users/password/reset"};
     private final JwtSecurityProperties securityProperties;
     private final RedisBlackListService redisBlackListService;
     private final JwtUtil jwtUtil;

@@ -50,7 +50,7 @@ public class historyUserAndJobOpeningKeywordIdFetchTaskSchedulerTest {
         when(redisTemplate.opsForZSet()).thenReturn(zSetOperations);
         when(zSetOperations.range(key, 0, -1)).thenReturn(searchTerms);
 
-        User mockUser = User.of(
+        User mockUser = User.toEntity(
             "test@example.com",
             "testUser",
             25,

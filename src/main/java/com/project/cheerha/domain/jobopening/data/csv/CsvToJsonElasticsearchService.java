@@ -114,7 +114,7 @@
 //                        .document(recordMap)
 //                        .build();
 //
-//                BulkOperation bulkOperation = BulkOperation.of(op -> op.index(indexOperation));
+//                BulkOperation bulkOperation = BulkOperation.toDto(op -> op.index(indexOperation));
 //
 //                bulkOperations.add(bulkOperation);
 //

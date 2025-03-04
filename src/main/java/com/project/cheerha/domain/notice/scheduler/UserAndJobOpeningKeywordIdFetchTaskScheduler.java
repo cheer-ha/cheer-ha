@@ -25,7 +25,7 @@ public class UserAndJobOpeningKeywordIdFetchTaskScheduler {
     @Transactional
     public void fetchUserAndJobOpeningKeywordIds() {
         ZonedDateTime referenceTime = ZonedDateTime.now()
-            .minusDays(7L)
+            .minusSeconds(30L)
             .withZoneSameInstant(ZoneId.of("UTC"));
 
         Map<Long, List<String>> keywordIdToUrlList =

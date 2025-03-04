@@ -63,8 +63,8 @@ public class DynamicScheduledTaskRegistrar implements BeanPostProcessor {
      * @param task 등록된 태스크
      */
     private void scheduleNextRun(Runnable task, ScheduledDynamic annotation) {
-        long interval = getRandomInterval(annotation.minMinutes(), annotation.maxMinutes());
         taskScheduler.schedule(task, triggerContext -> {
+            long interval = getRandomInterval(annotation.minMinutes(), annotation.maxMinutes());
             long nextExecutionTime = System.currentTimeMillis() + interval;
             log.info("다음 스케줄링 시간 : {}", new Date(nextExecutionTime));
             return new Date(nextExecutionTime).toInstant();
