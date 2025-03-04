@@ -24,7 +24,7 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long>, Bookm
      * @param pageable 페이징 처리 정보
      * @return 주어진 사용자에 대한 북마크 목록 (페이징 처리된 결과)
      */
-    @Query("SELECT b FROM Bookmark b " +
+    @Query("SELECT DISTINCT b FROM Bookmark b " +
             "JOIN FETCH b.jobOpening jo " +
             "JOIN FETCH jo.jobOpeningKeywordList jokl " +
             "JOIN FETCH jokl.keyword k " +
