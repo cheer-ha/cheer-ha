@@ -59,7 +59,7 @@ public class NotificationDataRepositoryQueryImpl implements NotificationDataRepo
                 )
             ).from(userKeyword)
             .join(userKeyword.user, user) // 사용자와 키워드 조인
-//            .where(user.isNotificationEnabled.isTrue()) //이메일알림 활성화 된 사람만
+            .where(user.isNotificationEnabled.isTrue()) // 이메일 알림 활성화 된 사람만
             .fetch();
     }
 }
