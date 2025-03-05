@@ -2,6 +2,7 @@ package com.project.cheerha.domain.jobopening.service;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
+import com.project.cheerha.common.redis.RedisViewCountManager;
 import com.project.cheerha.domain.history.service.HistoryService;
 import com.project.cheerha.domain.jobopening.dto.request.ReadJobOpeningRequestDto;
 import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningResponseDto;
@@ -33,7 +34,7 @@ public class JobOpeningService {
     private final HistoryService historyService;
     private final UserFindByService userFindByIdService;
     private final JobOpeningFindByService jobOpeningFindByService;
-    private final JobOpeningViewCountRepository jobOpeningViewCountRepository;
+    private final RedisViewCountManager redisViewCountManager;
 
     /**
      * 채용공고 리다이렉트 동시성 제어를 위한 집계 테이블 조회수 카운팅 메서드 입니다.
@@ -43,20 +44,22 @@ public class JobOpeningService {
      */
     @Transactional
     public void increaseViewCount(Long id) {
-        JobOpeningViewCount viewCount = jobOpeningViewCountRepository.findWithLockByJobOpeningId(id)
-            .orElseGet(() -> {
-                JobOpening jobOpening = jobOpeningFindByService.findById(id);
-                return jobOpeningViewCountRepository.save(JobOpeningViewCount.create(jobOpening));
-            });
-        viewCount.increaseViewCount();
+        redisViewCountManager.increaseViewCount(id);
+//        JobOpeningViewCount viewCount = jobOpeningViewCountRepository.findWithLockByJobOpeningId(id)
+//            .orElseGet(() -> {
+//                JobOpening jobOpening = jobOpeningFindByService.findById(id);
+//                return jobOpeningViewCountRepository.save(JobOpeningViewCount.create(jobOpening));
+//            });
+//        viewCount.increaseViewCount();
     }
 
     /**
      * 페이지 리다이렉트를 위한 서비스 로직입니다.
-     * @param jobOpening
+     * @param id jobOpening의 id
      * @return 리다이렉트 될 페이지 URL
      */
-    public String getJobOpeningUrl(JobOpening jobOpening) {
+    public String getJobOpeningUrl(Long id) {
+        JobOpening jobOpening = jobOpeningFindByService.findById(id);
         String url = jobOpening.getJobOpeningUrl();
         if (!url.startsWith("http")) {
             url = "https://" + url;

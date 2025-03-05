@@ -22,7 +22,6 @@ import org.springframework.web.servlet.view.RedirectView;
 public class JobOpeningController {
 
     private final JobOpeningService jobOpeningService;
-    private final JobOpeningFindByService jobOpeningFindByService;
 
     /**
      * 원하는 채용공고에 리다이렉팅 되게 하는 API입니다.
@@ -33,10 +32,8 @@ public class JobOpeningController {
 
     @GetMapping("/{id}")
     public RedirectView getRedirectedView(@PathVariable Long id) {
-        JobOpening jobOpening = jobOpeningFindByService.findById(id);
         jobOpeningService.increaseViewCount(id);
-        String url = jobOpeningService.getJobOpeningUrl(jobOpening);
-        return new RedirectView(url);
+        return new RedirectView(jobOpeningService.getJobOpeningUrl(id));
     }
 
     /**

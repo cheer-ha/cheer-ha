@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.viewcount.service;
+package com.project.cheerha.domain.viewcount.scheduler;
 
 import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
 import com.project.cheerha.domain.viewcount.repository.JobOpeningViewCountRepository;

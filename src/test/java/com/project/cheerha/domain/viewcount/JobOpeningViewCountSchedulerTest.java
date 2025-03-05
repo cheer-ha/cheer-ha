@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 
 import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
 import com.project.cheerha.domain.viewcount.repository.JobOpeningViewCountRepository;
-import com.project.cheerha.domain.viewcount.service.JobOpeningViewCountScheduler;
+import com.project.cheerha.domain.viewcount.scheduler.JobOpeningViewCountScheduler;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
