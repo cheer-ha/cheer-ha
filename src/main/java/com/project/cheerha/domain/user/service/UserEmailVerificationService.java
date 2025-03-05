@@ -1,15 +1,14 @@
 package com.project.cheerha.domain.user.service;
 
+import com.project.cheerha.common.email.sender.VerificationEmailSender;
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
 import com.project.cheerha.common.exception.data.DataErrorCode;
 import com.project.cheerha.common.exception.data.NotFoundException;
 import com.project.cheerha.common.redis.EmailTokenService;
-import com.project.cheerha.domain.notification.sender.EmailSenderInit;
-import com.project.cheerha.common.email.sender.VerificationEmailSender;
 import com.project.cheerha.domain.user.dto.response.ActivateNotificationResponseDto;
-import com.project.cheerha.domain.user.dto.response.VerifyPasswordResetTokenResponseDto;
 import com.project.cheerha.domain.user.dto.response.SendEmailVerificationResponseDto;
+import com.project.cheerha.domain.user.dto.response.VerifyPasswordResetTokenResponseDto;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package com.project.cheerha.domain.notification.scheduler;
 
-import com.project.cheerha.domain.notification.sender.NotificationEmailSender;
+import com.project.cheerha.common.email.sender.NotificationEmailSender;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
