@@ -8,6 +8,7 @@ import com.project.cheerha.domain.elasticsearch.dto.request.ReadJobOpeningElasti
 import com.project.cheerha.domain.elasticsearch.dto.response.ReadJobOpeningElasticResponseDto;
 import com.project.cheerha.domain.elasticsearch.entity.JobOpeningDocument;
 import com.project.cheerha.domain.elasticsearch.filter.JobOpeningDocumentFilter;
+import com.project.cheerha.domain.history.service.HistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -15,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
@@ -23,6 +23,7 @@ import java.util.List;
 public class JobOpeningDocumentService {
 
     private final ElasticsearchClientService elasticsearchClientService;
+    private final HistoryService historyService;
 
     /**
      * 전체 채용공고 조회
@@ -61,6 +62,10 @@ public class JobOpeningDocumentService {
             Long userId,
             Pageable pageable
     ) {
+        if (requestDto.getSearchTerm() != null) {
+            historyService.saveSearchTerm(userId, requestDto.getSearchTerm());
+        }
+
         JobOpeningDocumentFilter filter = new JobOpeningDocumentFilter(requestDto);
         var boolQueryBuilder = filter.build();
         int pageSize = pageable.getPageSize();
