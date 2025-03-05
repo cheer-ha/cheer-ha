@@ -10,16 +10,23 @@ import com.project.cheerha.domain.jobopening.entity.JobOpening;
 import com.project.cheerha.domain.jobopening.service.JobOpeningFindByService;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.service.UserFindByService;
-
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookmarkService {
@@ -27,60 +34,46 @@ public class BookmarkService {
     private final BookmarkRepository bookmarkRepository;
     private final UserFindByService userFindByIdService;
     private final JobOpeningFindByService jobOpeningFindByService;
-    private final RedisTemplate<String, Long> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     private static final int MAX_BOOKMARK_COUNT = 200;
     private static final int MAX_PAGES = 20;
+    private boolean firstFetchFromDB = true; // 첫 번째 데이터 조회 여부를 추적하는 플래그
 
     /**
      * 사용자가 채용 공고를 북마크하는 메서드입니다.
+     * 북마크가 이미 존재하면 아무 작업도 하지 않고, 최대 북마크 개수를 초과하면 가장 오래된 북마크를 삭제합니다.
+     * 새로운 북마크를 DB에 저장하고, 캐시에도 반영합니다.
      *
-     * 이 메서드는 사용자가 북마크할 채용 공고를 추가하며,
-     * 사용자가 이미 북마크한 채용 공고라면 추가하지 않습니다.
-     * 또한, 사용자가 저장할 수 있는 북마크의 개수가 최대값을 초과하는 경우,
-     * 가장 오래된 북마크를 삭제하여 새로운 북마크를 추가합니다.
-     * 그리고 Redis 캐시를 업데이트합니다.
-     *
-     * @param userId 사용자의 ID
-     * @param jobOpeningId 채용 공고의 ID
+     * @param userId 사용자 ID
+     * @param jobOpeningId 채용 공고 ID
      */
     @Transactional
     public void createBookmark(Long userId, Long jobOpeningId) {
         JobOpening jobOpening = jobOpeningFindByService.findById(jobOpeningId);
         boolean isBookmarkExists = bookmarkRepository.existsByUserIdAndJobOpeningId(userId, jobOpeningId);
-
-        // 이미 북마크된 채용공고라면 추가하지 않음
         if (isBookmarkExists) {
             return;
         }
-
-        // 사용자의 북마크가 최대 개수를 초과하면, 가장 오래된 북마크를 삭제
         long bookmarkCount = bookmarkRepository.countByUserId(userId);
         if (bookmarkCount >= MAX_BOOKMARK_COUNT) {
             Bookmark oldestBookmark = bookmarkRepository.findFirstByUserIdOrderByIdAsc(userId);
             bookmarkRepository.delete(oldestBookmark);
         }
-
-        // 새로운 북마크를 추가
         User user = userFindByIdService.findById(userId);
         Bookmark bookmark = Bookmark.toEntity(user, jobOpening);
         bookmarkRepository.save(bookmark);
-
-        // Redis 캐시 업데이트 (북마크가 추가되었을 때 캐시 갱신)
-        redisTemplate.opsForList().leftPush("user:" + userId + ":bookmarks", jobOpeningId);
+        // 캐시에 바로 저장하지 않고 DB에서 조회된 데이터를 기준으로 처리하도록 처리
+        updateCacheOnBookmarkAdd(userId);
     }
 
     /**
      * 사용자의 모든 북마크를 페이징 처리하여 조회하는 메서드입니다.
+     * 캐시에 저장된 북마크를 우선 조회하고, 캐시에 없으면 DB에서 조회한 후 캐시에 저장합니다.
      *
-     * 이 메서드는 사용자의 북마크 목록을 페이징 처리하여 조회합니다.
-     * 캐시에서 북마크 ID를 먼저 가져와서, 캐시가 있는 경우 이를 사용하여 DB에서 조회하고,
-     * 캐시가 비어있을 경우 DB에서 직접 조회합니다.
-     * 페이지 번호가 최대 페이지 번호(20)를 넘지 않도록 설정됩니다.
-     *
-     * @param userId 사용자의 ID
-     * @param pageable 페이지 번호와 크기를 포함한 Pageable 객체
-     * @return 페이징된 북마크 목록 (ReadBookmarkResponseDto 형태)
+     * @param userId 사용자 ID
+     * @param pageable 페이징 정보
+     * @return 페이징된 북마크 리스트
      */
     @Transactional(readOnly = true)
     public Page<ReadBookmarkResponseDto> readAllBookmarks(Long userId, Pageable pageable) {
@@ -91,49 +84,106 @@ public class BookmarkService {
         }
         Pageable limitedPageable = PageRequest.of(pageNumber, pageable.getPageSize());
 
-        // 캐시에서 데이터를 가져오는 경우
-        List<Long> cachedBookmarks = redisTemplate.opsForList().range("user:" + userId + ":bookmarks", 0, -1);
+        Page<Bookmark> bookmarkPage;
 
-        // 캐시에서 가져온 북마크들의 ID에 해당하는 데이터를 DB에서 페이징 처리하여 조회
-        if (!cachedBookmarks.isEmpty()) {
-            Page<Bookmark> bookmarkPage = bookmarkRepository.findByUserIdAndJobOpeningIdIn(userId, cachedBookmarks, limitedPageable);
-            return bookmarkPage.map(ReadBookmarkResponseDto::toDto);
+        if (firstFetchFromDB && pageNumber == 0) {
+            // 첫 번째 페이지 데이터만 DB에서 조회하고 캐시에 저장
+            bookmarkPage = fetchAndCacheBookmarks(userId, limitedPageable);
+            firstFetchFromDB = false; // 첫 번째 페이지 조회 후 DB에서만 데이터를 가져오는 플래그 설정
         } else {
-            // 캐시가 비어있으면 DB에서 조회
-            Page<Bookmark> bookmarkPage = bookmarkRepository.findByUserId(userId, limitedPageable);
-            return bookmarkPage.map(ReadBookmarkResponseDto::toDto);
+            // 2페이지부터는 캐시에서 조회하고, 캐시에 없으면 DB에서 가져옵니다.
+            List<Object> cachedBookmarks = getAllBookmarksFromCache(userId);
+            if (cachedBookmarks.isEmpty() || pageNumber > 0) {
+                log.info("캐시에서 북마크를 찾을 수 없거나 2페이지 이상 조회됩니다. DB에서 데이터를 조회합니다.");
+                bookmarkPage = fetchAndCacheBookmarks(userId, limitedPageable);
+            } else {
+                // 캐시에서 전체 북마크를 불러오고 페이징 처리
+                List<Bookmark> bookmarks = cachedBookmarks.stream()
+                        .filter(Objects::nonNull)
+                        .map(obj -> (Bookmark) obj)
+                        .collect(Collectors.toList());
+
+                log.info("캐시에서 불러온 북마크들: {}", bookmarks);
+
+                // 페이징 처리 후, ReadBookmarkResponseDto로 변환
+                int skipCount = limitedPageable.getPageNumber() * limitedPageable.getPageSize();
+                List<ReadBookmarkResponseDto> dtoList = bookmarks.stream()
+                        .skip(skipCount)
+                        .limit(limitedPageable.getPageSize())
+                        .map(ReadBookmarkResponseDto::toDto)
+                        .collect(Collectors.toList());
+
+                return new PageImpl<>(dtoList, pageable, bookmarks.size());
+            }
         }
+
+        // 페이지에 맞는 DTO 리스트로 변환
+        List<ReadBookmarkResponseDto> dtoList = bookmarkPage.getContent().stream()
+                .map(ReadBookmarkResponseDto::toDto)
+                .collect(Collectors.toList());
+
+        // 페이징된 결과를 PageImpl로 반환
+        return new PageImpl<>(dtoList, pageable, bookmarkPage.getTotalElements());
     }
 
     /**
      * 사용자가 저장한 채용 공고의 북마크를 삭제하는 메서드입니다.
-     *
-     * 이 메서드는 사용자가 저장한 특정 채용 공고의 북마크를 삭제하며,
-     * 삭제된 후 Redis에서 해당 북마크를 제거합니다.
-     *
-     * @param userId 사용자의 ID
-     * @param jobOpeningId 삭제할 채용 공고의 ID
      */
     @Transactional
     public void deleteBookmark(Long userId, Long jobOpeningId) {
         bookmarkRepository.deleteByUserIdAndJobOpeningId(userId, jobOpeningId);
-
-        // Redis에서 북마크 삭제
-        redisTemplate.opsForList().remove("user:" + userId + ":bookmarks", 1, jobOpeningId);
+        // 캐시에서 해당 북마크 삭제
+        redisTemplate.opsForHash().delete("user:" + userId + ":bookmarks", jobOpeningId);
     }
 
     /**
      * 커스텀 연령대 즐겨찾기 로직 중, 나이에 대한 예외처리가 진행됩니다.
-
-     * @return 커스텀 연령대 즐겨찾기 상위 10개 리스트
      */
-
-    public List<BookmarkCustomAgeResponseDto> readTop10BookmarkByAgeBetween (int minAge, int maxAge) {
-
-         // 최소나이가 최대나이보다 클 때 예외처리하는 로직 추가
+    public List<BookmarkCustomAgeResponseDto> readTop10BookmarkByAgeBetween(int minAge, int maxAge) {
         if (minAge > maxAge) {
             throw new BadRequestException(ClientErrorCode.MIN_AGE_EXCEEDS_MAX_AGE);
         }
-       return bookmarkRepository.readTop10BookmarksByAgeBetween(minAge, maxAge);
+        return bookmarkRepository.readTop10BookmarksByAgeBetween(minAge, maxAge);
+    }
+
+    /**
+     * DB에서 데이터를 페이징 처리하여 가져오고 캐시에 저장하는 메서드입니다.
+     */
+    private Page<Bookmark> fetchAndCacheBookmarks(Long userId, Pageable pageable) {
+        // DB에서 북마크들을 페이징 처리하여 가져옵니다.
+        Page<Bookmark> bookmarkPage = bookmarkRepository.findByUserId(userId, pageable);
+
+        // DB에서 가져온 데이터를 캐시에 저장
+        List<Bookmark> bookmarks = bookmarkPage.getContent();
+        for (Bookmark bookmark : bookmarks) {
+            redisTemplate.opsForHash().put("user:" + userId + ":bookmarks", bookmark.getJobOpening().getId(), bookmark);
+        }
+
+        log.info("DB에서 가져온 데이터를 캐시에 저장하였습니다: {}", bookmarks);
+
+        return bookmarkPage;
+    }
+
+    /**
+     * 캐시에서 모든 북마크를 불러오는 메서드입니다.
+     * @param userId 사용자 ID
+     * @return 모든 북마크
+     */
+    private List<Object> getAllBookmarksFromCache(Long userId) {
+        Set<Object> cachedBookmarkIdsSet = redisTemplate.opsForHash().keys("user:" + userId + ":bookmarks");
+        List<Object> cachedBookmarkIds = new ArrayList<>(cachedBookmarkIdsSet);
+        if (!cachedBookmarkIds.isEmpty()) {
+            return redisTemplate.opsForHash().multiGet("user:" + userId + ":bookmarks", cachedBookmarkIds);
+        }
+        return new ArrayList<>();
+    }
+
+    /**
+     * 북마크 추가 후 캐시를 갱신하는 메서드입니다.
+     */
+    private void updateCacheOnBookmarkAdd(Long userId) {
+        // 새로운 북마크를 추가한 후, DB에서 다시 데이터를 가져와 캐시를 갱신합니다.
+        // 이후 캐시를 최신 상태로 유지하기 위해 DB에서 데이터를 가져오는 방식으로 처리.
+        firstFetchFromDB = true;
     }
 }
