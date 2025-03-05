@@ -1,14 +1,14 @@
 package com.project.cheerha.domain.user.service;
 
+import com.project.cheerha.common.email.sender.VerificationEmailSender;
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
 import com.project.cheerha.common.exception.data.DataErrorCode;
 import com.project.cheerha.common.exception.data.NotFoundException;
 import com.project.cheerha.common.redis.EmailTokenService;
-import com.project.cheerha.domain.notice.service.EmailSender;
 import com.project.cheerha.domain.user.dto.response.ActivateNotificationResponseDto;
-import com.project.cheerha.domain.user.dto.response.VerifyPasswordResetTokenResponseDto;
 import com.project.cheerha.domain.user.dto.response.SendEmailVerificationResponseDto;
+import com.project.cheerha.domain.user.dto.response.VerifyPasswordResetTokenResponseDto;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserEmailVerificationService {
 
-    private final EmailSender emailSender;
+    private final VerificationEmailSender verificationEmailSender;
     private final UserFindByService userFindByService;
     private final UserRepository userRepository;
     private final EmailTokenService emailTokenService;
@@ -37,7 +37,7 @@ public class UserEmailVerificationService {
             throw new BadRequestException(ClientErrorCode.ALREADY_VERIFIED_EMAIL);
         }
         String token = emailTokenService.saveToken(NOTIFICATION_VERIFICATION_TOKEN_PREFIX, user.getEmail());
-        emailSender.sendVerificationEmail(user.getEmail(), token);
+        verificationEmailSender.sendVerificationEmail(user.getEmail(), token);
         return SendEmailVerificationResponseDto.toDto();
     }
 
@@ -70,7 +70,7 @@ public class UserEmailVerificationService {
             throw new NotFoundException(DataErrorCode.USER_NOT_FOUND);
         }
         String token = emailTokenService.saveToken(PASSWORD_VERIFICATION_TOKEN_PREFIX, email);
-        emailSender.sendVerificationEmail(email, token);
+        verificationEmailSender.sendVerificationEmail(email, token);
         return SendEmailVerificationResponseDto.toDto();
     }
 

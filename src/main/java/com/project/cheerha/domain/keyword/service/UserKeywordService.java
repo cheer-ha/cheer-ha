@@ -1,7 +1,6 @@
 package com.project.cheerha.domain.keyword.service;
 
 import com.project.cheerha.domain.keyword.dto.request.CreateUserKeywordRequestDto;
-import com.project.cheerha.domain.keyword.dto.request.DeleteUserKeywordRequestDto;
 import com.project.cheerha.domain.keyword.dto.response.CreateUserKeywordResponseDto;
 import com.project.cheerha.domain.keyword.dto.response.KeywordDto;
 import com.project.cheerha.domain.keyword.dto.response.ReadUserKeywordResponseDto;
@@ -10,12 +9,11 @@ import com.project.cheerha.domain.keyword.entity.UserKeyword;
 import com.project.cheerha.domain.keyword.repository.UserKeywordRepository;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.service.UserFindByService;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -75,10 +73,8 @@ public class UserKeywordService {
     @Transactional
     public void deleteUserKeyword(
         Long userId,
-        DeleteUserKeywordRequestDto requestDto
+        List<Long> userKeywordIdList
     ) {
-        List<Long> userKeywordIdList = requestDto.userKeywordIdList();
-
         userKeywordIdList.forEach(userKeywordId -> {
 
                 boolean isUserKeywordExist = userKeywordRepository.existsByUserIdAndId(

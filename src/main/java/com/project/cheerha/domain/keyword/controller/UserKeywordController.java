@@ -1,13 +1,13 @@
 package com.project.cheerha.domain.keyword.controller;
 
 import com.project.cheerha.common.annotation.Auth;
+import com.project.cheerha.common.dto.ApiResponseDto;
 import com.project.cheerha.common.dto.AuthUser;
 import com.project.cheerha.domain.keyword.dto.request.CreateUserKeywordRequestDto;
-import com.project.cheerha.domain.keyword.dto.request.DeleteUserKeywordRequestDto;
 import com.project.cheerha.domain.keyword.dto.response.CreateUserKeywordResponseDto;
 import com.project.cheerha.domain.keyword.dto.response.ReadUserKeywordResponseDto;
 import com.project.cheerha.domain.keyword.service.UserKeywordService;
-import com.project.cheerha.common.dto.ApiResponseDto;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/users/keywords")
@@ -48,11 +49,11 @@ public class UserKeywordController {
 
     @DeleteMapping
     public ResponseEntity<ApiResponseDto<Void>> deleteUserKeyword(
-            @RequestBody DeleteUserKeywordRequestDto requestDto,
+        @RequestParam List<Long> userKeywordIdList,
             @Auth AuthUser authUser
     ) {
         Long userId = authUser.id();
-        userKeywordService.deleteUserKeyword(userId, requestDto);
+        userKeywordService.deleteUserKeyword(userId, userKeywordIdList);
         return ApiResponseDto.noContent();
     }
 }
