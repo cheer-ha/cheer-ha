@@ -59,7 +59,7 @@ public class HistoryService {
 
         Set<String> searchTerms = redisTemplate.opsForZSet().reverseRange(key, 0, 9);
         if (searchTerms == null || searchTerms.isEmpty()) {
-            return fetchAndCacheSearchHistory(userId);
+            return dbSearchTermList(userId);
         }
 
         return new ArrayList<>(searchTerms);
@@ -71,7 +71,7 @@ public class HistoryService {
      * Redis에 검색 기록이 없는 경우, 이 메서드를 호출하여 DB에서 데이터를 가져온다.
      * 가져온 데이터를 Redis에 저장하여 이후 빠른 검색을 가능하게 한다.
      */
-    private List<String> fetchAndCacheSearchHistory(Long userId) {
+    private List<String> dbSearchTermList(Long userId) {
         List<String> dbSearchTerms = historyRepository.findTop10ByUserIdOrderByCreatedAtDesc(userId)
             .stream()
             .sorted(Comparator.comparing(History::getCreatedAt))
