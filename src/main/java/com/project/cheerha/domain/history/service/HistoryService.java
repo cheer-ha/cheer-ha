@@ -59,19 +59,29 @@ public class HistoryService {
 
         Set<String> searchTerms = redisTemplate.opsForZSet().reverseRange(key, 0, 9);
         if (searchTerms == null || searchTerms.isEmpty()) {
-            List<String> dbSearchTerms = historyRepository.findTop10ByUserIdOrderByCreatedAtDesc(userId)
-                .stream()
-                .sorted(Comparator.comparing(History::getCreatedAt))
-                .map(History::getName)
-                .collect(Collectors.toList());
-
-            dbSearchTerms.forEach(term -> saveSearchTerm(userId, term));
-            Collections.reverse(dbSearchTerms);
-
-            return dbSearchTerms;
+            return fetchAndCacheSearchHistory(userId);
         }
 
         return new ArrayList<>(searchTerms);
+    }
+
+    /**
+     * 사용자의 최근 검색 기록을 DB에서 조회하여 Redis에 캐싱한 후 반환한다.
+     *
+     * Redis에 검색 기록이 없는 경우, 이 메서드를 호출하여 DB에서 데이터를 가져온다.
+     * 가져온 데이터를 Redis에 저장하여 이후 빠른 검색을 가능하게 한다.
+     */
+    private List<String> fetchAndCacheSearchHistory(Long userId) {
+        List<String> dbSearchTerms = historyRepository.findTop10ByUserIdOrderByCreatedAtDesc(userId)
+            .stream()
+            .sorted(Comparator.comparing(History::getCreatedAt))
+            .map(History::getName)
+            .collect(Collectors.toList());
+
+        dbSearchTerms.forEach(term -> saveSearchTerm(userId, term));
+        Collections.reverse(dbSearchTerms);
+
+        return dbSearchTerms;
     }
 
 }
