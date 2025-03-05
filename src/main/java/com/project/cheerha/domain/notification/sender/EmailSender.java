@@ -2,7 +2,6 @@ package com.project.cheerha.domain.notification.sender;
 
 import com.project.cheerha.domain.notification.entity.Notification;
 import com.project.cheerha.domain.notification.repository.NotificationRepository;
-import com.project.cheerha.domain.notification.service.NotificationService;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.SendGrid;
@@ -33,26 +32,32 @@ public class EmailSender {
     @Value("${SENDGRID_FROM_EMAIL}")
     private String senderEmail;
 
+    // Notification을 이메일로 비동기 전송
     @Async
     public void sendEmails() {
-        // 이메일별로 해당하는 Mapping들을 묶는 Map
-        Map<String, Set<Notification>> emailToMappings = new HashMap<>();
+        // key: 알림 받을 이메일, value: Notification Set
+        Map<String, Set<Notification>> emailToNotificationSet = new HashMap<>();
 
-        // (1) 이메일로 발송되지 않은 Mapping 목록 조회
-        // (2) 이메일별로 emailToMappings에 Mapping을 묶음
-        notificationRepository.findByIsEmailSentFalse()
-            .forEach(mapping -> {
-                emailToMappings.computeIfAbsent(
-                    mapping.getEmail(),
+        // (1) 이메일로 전송되지 않은 Notification 조회
+        // (2) 이메일 주소별로 해당 Notification Set 그룹화하여 저장
+        notificationRepository.findByIsEmailSentFalse().forEach(
+            notification -> {
+                emailToNotificationSet.computeIfAbsent(
+                    notification.getEmail(),
                     emailAsKey -> new HashSet<>()
-                ).add(mapping);
-                // 해당 이메일에 맞는 Mapping을 Set<Mapping>에 추가
+                ).add(notification);
             });
 
-        // 이메일 주소별로 이메일 발송
-        emailToMappings.forEach(this::sendMail);
+        // 묶은 알림을 각 이메일로 전송
+        emailToNotificationSet.forEach(this::sendMail);
     }
 
+    /**
+     * 이메일 인증 코드 전송
+     *
+     * @param recipientEmail 이메일 수신자
+     * @param code           인증 코드
+     */
     public void sendVerificationEmail(String recipientEmail, String code) {
         try {
             Email from = new Email(senderEmail);
@@ -68,7 +73,17 @@ public class EmailSender {
         }
     }
 
-    private void sendSendGridEmail(Email from, String subject, Email to, Content emailContent) throws IOException {
+    /**
+     * SendGrid로 이메일 전송
+     *
+     * @param from         발신자 이메일
+     * @param subject      이메일 제목
+     * @param to           수신자 이메일
+     * @param emailContent 이메일 내용
+     * @throws IOException 이메일 전송 시 발생할 수 있는 예외
+     */
+    private void sendSendGridEmail(Email from, String subject, Email to, Content emailContent)
+        throws IOException {
         Mail mail = new Mail(from, subject, to, emailContent);
 
         SendGrid sendGrid = new SendGrid(sendGridApiKey);
@@ -80,28 +95,27 @@ public class EmailSender {
         sendGrid.api(request);
     }
 
-    // 이메일 발송
-    private void sendMail(
-        String recipientEmail,
-        Set<Notification> notifications
-    ) {
+    /**
+     * 수신자에게 맞춤형 채용 공고 알림을 이메일로 전송
+     *
+     * @param recipientEmail  수신자 이메일
+     * @param notificationSet 해당 수신자에게 보낼 알림 목록
+     */
+    private void sendMail(String recipientEmail, Set<Notification> notificationSet) {
         try {
-            // 이메일 발송에 필요한 정보 설정
-            // from: 보내는 사람 이메일 주소
-            // to: 받는 사람 이메일 주소
+            // 이메일 설정
             Email from = new Email(senderEmail);
             Email to = new Email(recipientEmail);
             String subject = "📢 새로운 맞춤 채용 공고가 도착했어요!";
             StringBuilder content = new StringBuilder();
 
-            // 내용 추가
             content.append("<h1>🚀 새로운 채용 공고가 준비됐어요! 🎉</h1>");
             content.append("<p>맞춤형 채용 공고가 도착했답니다! 💼</p>");
             content.append("<p>아래 링크에서 확인해보세요! ⬇️</p>");
             content.append("<ul>");
 
-            // Mapping에 저장된 채용 공고 URL 목록을 내용에 추가
-            for (Notification notification : notifications) {
+            // 알림 목록을 이메일 내용에 추가
+            for (Notification notification : notificationSet) {
                 content.append("<li>👉 <a href=\"")
                     .append(notification.getJobOpeningUrl())
                     .append("\" target=\"_blank\">")
@@ -111,20 +125,15 @@ public class EmailSender {
             content.append("</ul>");
             content.append("<p>행운을 빕니다! 🙌</p>");
 
-            // 내용 설정
-            Content emailContent = new Content(
-                "text/html", // HTML 형식의 이메일
-                content.toString() // 작성된 내용
-            );
-
-            // SendGrid Mail 객체 생성
+            // 이메일 전송
+            Content emailContent = new Content("text/html", content.toString());
             sendSendGridEmail(from, subject, to, emailContent);
 
             log.info("이메일 전송 완료: {}", recipientEmail);
 
-            notifications.forEach(notification -> {
-                notification.markEmailAsSent(); // 발송 완료 상태로 변경
-                notificationRepository.save(notification); // 변경된 상태 저장
+            notificationSet.forEach(notification -> {
+                notification.markEmailAsSent();
+                notificationRepository.save(notification);
             });
 
         } catch (IOException e) {

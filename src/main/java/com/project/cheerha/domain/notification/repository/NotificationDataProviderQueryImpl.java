@@ -19,7 +19,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class NotificationDataRepositoryQueryImpl implements NotificationDataRepositoryQuery {
+public class NotificationDataProviderQueryImpl implements NotificationDataProviderQuery {
 
     private final JPAQueryFactory queryFactory;
 
@@ -31,13 +31,13 @@ public class NotificationDataRepositoryQueryImpl implements NotificationDataRepo
      *         (Key: KeywordId, Value: 해당 키워드에 매칭되는 URL 목록)
      */
     @Override
-    public Map<Long, List<String>> findAllJobOpeningKeywords(
+    public Map<Long, List<String>> findKeywordIdToUrlList(
         ZonedDateTime referenceTime
     ) {
         return queryFactory
             .from(jobOpeningKeyword)
             .join(jobOpeningKeyword.jobOpening, jobOpening)
-            .where(jobOpening.createdAt.after(referenceTime)) // 기준 시간 이후 생성된 채용 공고
+            .where(jobOpening.createdAt.after(referenceTime)) // 조회 시간 이후 생성된 채용 공고
             .transform(
                 groupBy(jobOpeningKeyword.keyword.id) // 키워드 ID별로 그룹화
                     .as(list(jobOpening.jobOpeningUrl)) // URL 목록을 그룹에 매핑
@@ -45,12 +45,12 @@ public class NotificationDataRepositoryQueryImpl implements NotificationDataRepo
     }
 
     /**
-     * 모든 유저의 이메일과 해당 키워드를 조회하는 메서드
+     * 모든 사용자의 이메일과 해당 키워드를 조회하는 메서드
      *
-     * @return 유저의 이메일과 그들의 관심 키워드를 포함한 UserDto 리스트
+     * @return 사용자의 이메일과 그들의 키워드를 포함한 Dto 목록
      */
     @Override
-    public List<NotificationRecipientDto> findAllUserKeywords() {
+    public List<NotificationRecipientDto> findNotificationRecipientDtoList() {
 
         return queryFactory
             .select(

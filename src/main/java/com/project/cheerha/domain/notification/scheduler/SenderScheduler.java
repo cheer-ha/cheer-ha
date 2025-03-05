@@ -13,6 +13,7 @@ public class SenderScheduler {
 
     private final EmailSender emailSender;
 
+    // Notification 생성 작업 완료 후 60초 간격으로 다시 실행
     @Scheduled(fixedDelay = 60_000)
     public void sendEmailNotification() {
         log.info("이메일 알림 전송 시작");
