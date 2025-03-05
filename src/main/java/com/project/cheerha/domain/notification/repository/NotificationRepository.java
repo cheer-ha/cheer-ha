@@ -1,6 +1,6 @@
-package com.project.cheerha.domain.notice.repository;
+package com.project.cheerha.domain.notification.repository;
 
-import com.project.cheerha.domain.notice.entity.Notification;
+import com.project.cheerha.domain.notification.entity.Notification;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 

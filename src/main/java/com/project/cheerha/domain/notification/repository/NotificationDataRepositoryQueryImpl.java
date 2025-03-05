@@ -1,4 +1,5 @@
-package com.project.cheerha.domain.notice.repository;
+package com.project.cheerha.domain.notification.repository;
+
 
 import static com.project.cheerha.domain.jobopening.entity.QJobOpening.jobOpening;
 import static com.project.cheerha.domain.keyword.entity.QJobOpeningKeyword.jobOpeningKeyword;
@@ -7,8 +8,8 @@ import static com.project.cheerha.domain.user.entity.QUser.user;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
 
-import com.project.cheerha.domain.notice.dto.QUserDto;
-import com.project.cheerha.domain.notice.dto.UserDto;
+import com.project.cheerha.domain.notification.dto.NotificationRecipientDto;
+import com.project.cheerha.domain.notification.dto.QNotificationRecipientDto;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -49,17 +50,17 @@ public class NotificationDataRepositoryQueryImpl implements NotificationDataRepo
      * @return 유저의 이메일과 그들의 관심 키워드를 포함한 UserDto 리스트
      */
     @Override
-    public List<UserDto> findAllUserKeywords() {
+    public List<NotificationRecipientDto> findAllUserKeywords() {
 
         return queryFactory
             .select(
-                new QUserDto(
+                new QNotificationRecipientDto(
                     userKeyword.keyword.id, // 사용자가 선택한 키워드 ID
                     user.email // 사용자 이메일
                 )
             ).from(userKeyword)
             .join(userKeyword.user, user) // 사용자와 키워드 조인
-            .where(user.isNotificationEnabled.isTrue()) // 이메일 알림 활성화 된 사람만
+//            .where(user.isNotificationEnabled.isTrue()) // 이메일 알림 활성화 된 사람만
             .fetch();
     }
 }

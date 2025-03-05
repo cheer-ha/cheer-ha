@@ -1,6 +1,6 @@
-package com.project.cheerha.domain.notice.scheduler;
+package com.project.cheerha.domain.notification.scheduler;
 
-import com.project.cheerha.domain.notice.sender.EmailSender;
+import com.project.cheerha.domain.notification.sender.EmailSender;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -14,7 +14,7 @@ public class SenderScheduler {
     private final EmailSender emailSender;
 
     @Scheduled(fixedDelay = 60_000)
-    public void sendEmails() {
+    public void sendEmailNotification() {
         log.info("이메일 알림 전송 시작");
 
         emailSender.sendEmails();

@@ -1,7 +1,8 @@
-package com.project.cheerha.domain.notice.sender;
+package com.project.cheerha.domain.notification.sender;
 
-import com.project.cheerha.domain.notice.entity.Notification;
-import com.project.cheerha.domain.notice.repository.NotificationRepository;
+import com.project.cheerha.domain.notification.entity.Notification;
+import com.project.cheerha.domain.notification.repository.NotificationRepository;
+import com.project.cheerha.domain.notification.service.NotificationService;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.SendGrid;
@@ -121,9 +122,9 @@ public class EmailSender {
 
             log.info("이메일 전송 완료: {}", recipientEmail);
 
-            notifications.forEach(mapping -> {
-                mapping.markEmailAsSent(); // 발송 완료 상태로 변경
-                notificationRepository.save(mapping); // 변경된 상태 저장
+            notifications.forEach(notification -> {
+                notification.markEmailAsSent(); // 발송 완료 상태로 변경
+                notificationRepository.save(notification); // 변경된 상태 저장
             });
 
         } catch (IOException e) {

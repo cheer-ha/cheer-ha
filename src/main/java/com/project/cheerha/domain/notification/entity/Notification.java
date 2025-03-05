@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.notice.entity;
+package com.project.cheerha.domain.notification.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

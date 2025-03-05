@@ -1,8 +1,8 @@
-package com.project.cheerha.domain.notice.scheduler;
+package com.project.cheerha.domain.notification.scheduler;
 
-import com.project.cheerha.domain.notice.dto.UserDto;
-import com.project.cheerha.domain.notice.repository.NotificationDataRepositoryQuery;
-import com.project.cheerha.domain.notice.service.NotificationService;
+import com.project.cheerha.domain.notification.dto.NotificationRecipientDto;
+import com.project.cheerha.domain.notification.repository.NotificationDataRepositoryQuery;
+import com.project.cheerha.domain.notification.service.NotificationService;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -28,8 +28,8 @@ public class NotificationDataFetchingScheduler {
 
         Map<Long, List<String>> keywordIdToUrlList = notificationDataRepositoryQuery.findAllJobOpeningKeywords(referenceTime);
 
-        List<UserDto> userDtoList = notificationDataRepositoryQuery.findAllUserKeywords();
+        List<NotificationRecipientDto> notificationRecipientDtoList = notificationDataRepositoryQuery.findAllUserKeywords();
 
-        notificationService.createNotification(userDtoList, keywordIdToUrlList);
+        notificationService.createNotification(notificationRecipientDtoList, keywordIdToUrlList);
     }
 }

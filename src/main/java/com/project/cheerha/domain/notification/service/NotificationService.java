@@ -1,8 +1,8 @@
-package com.project.cheerha.domain.notice.service;
+package com.project.cheerha.domain.notification.service;
 
-import com.project.cheerha.domain.notice.dto.UserDto;
-import com.project.cheerha.domain.notice.entity.Notification;
-import com.project.cheerha.domain.notice.repository.NotificationRepository;
+import com.project.cheerha.domain.notification.dto.NotificationRecipientDto;
+import com.project.cheerha.domain.notification.entity.Notification;
+import com.project.cheerha.domain.notification.repository.NotificationRepository;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -20,11 +20,11 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     @Transactional
-    public void createNotification(List<UserDto> userDtoList,
+    public void createNotification(List<NotificationRecipientDto> notificationRecipientDtoList,
         Map<Long, List<String>> keywordIdToUrlList) {
         Map<String, Set<String>> emailToUrl = new HashMap<>();
 
-        mapEmailToUrls(userDtoList, keywordIdToUrlList, emailToUrl);
+        mapEmailToUrls(notificationRecipientDtoList, keywordIdToUrlList, emailToUrl);
 
         emailToUrl.forEach((email, urlSet) -> {
 
@@ -38,9 +38,9 @@ public class NotificationService {
         });
     }
 
-    private void mapEmailToUrls(List<UserDto> userDtoList,
+    private void mapEmailToUrls(List<NotificationRecipientDto> notificationRecipientDtoList,
         Map<Long, List<String>> keywordIdToUrlList, Map<String, Set<String>> emailToUrl) {
-        for (UserDto dto : userDtoList) {
+        for (NotificationRecipientDto dto : notificationRecipientDtoList) {
             List<String> matchingUrlList = keywordIdToUrlList.getOrDefault(dto.keywordId(), List.of());
 
             if (!matchingUrlList.isEmpty()) {
