@@ -3,13 +3,9 @@ package com.project.cheerha.domain.bookmark.controller;
 import com.project.cheerha.common.annotation.Auth;
 import com.project.cheerha.common.dto.ApiResponseDto;
 import com.project.cheerha.common.dto.AuthUser;
-import com.project.cheerha.domain.bookmark.dto.request.CreateBookmarkRequestDto;
-import com.project.cheerha.domain.bookmark.dto.request.DeleteBookmarkRequestDto;
-import com.project.cheerha.domain.bookmark.dto.request.ReadBookmarkAgeRequestDto;
 import com.project.cheerha.domain.bookmark.dto.response.BookmarkCustomAgeResponseDto;
 import com.project.cheerha.domain.bookmark.dto.response.ReadBookmarkResponseDto;
 import com.project.cheerha.domain.bookmark.service.BookmarkService;
-import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,17 +28,17 @@ public class BookmarkController {
      * 인증된 사용자의 ID를 받아 북마크를 생성합니다.
      * 서비스 계층에서 북마크를 생성한 후 성공 메시지를 반환합니다.
      *
-     * @param dto 채용 공고 ID를 포함한 북마크 생성 요청 데이터
+     * @param jobOpeningId 채용 공고 ID
      * @param authUser 인증된 사용자의 정보
      * @return 북마크 생성 완료 메시지와 함께 응답
      */
     @PostMapping
     public ResponseEntity<ApiResponseDto<String>> createBookmark(
-            @Valid @RequestBody CreateBookmarkRequestDto dto,
+            @RequestParam Long jobOpeningId,
             @Auth AuthUser authUser
     ) {
         Long userId = authUser.id();
-        bookmarkService.createBookmark(userId, dto.jobOpeningId());
+        bookmarkService.createBookmark(userId, jobOpeningId);
         return ApiResponseDto.created("즐겨찾기 추가 완료");
     }
 
@@ -65,8 +61,8 @@ public class BookmarkController {
             @RequestParam(defaultValue = "10") int size
     ) {
         Long userId = authUser.id();
-        Pageable pageable = validatePageSize(page, size);  // validatePageSize 메서드를 호출하여 Pageable 객체 생성
-        Page<ReadBookmarkResponseDto> responsePage = bookmarkService.readAllBookmarks(userId, pageable);  // 서비스에 Pageable 전달
+        Pageable pageable = validatePageSize(page, size);
+        Page<ReadBookmarkResponseDto> responsePage = bookmarkService.readAllBookmarks(userId, pageable);
         return ApiResponseDto.success(responsePage);
     }
 
@@ -77,20 +73,46 @@ public class BookmarkController {
      * 인증된 사용자의 ID를 받아 해당 북마크를 삭제합니다.
      * 삭제 후, 삭제 성공 응답을 반환합니다.
      *
-     * @param dto 삭제할 채용 공고 ID를 포함한 요청 데이터
+     * @param jobOpeningId 삭제할 채용 공고 ID
      * @param authUser 인증된 사용자의 정보
      * @return 북마크 삭제 성공 응답
      */
     @DeleteMapping
     public ResponseEntity<ApiResponseDto<Void>> deleteBookmark(
-            @Valid @RequestBody DeleteBookmarkRequestDto dto,
+            @RequestParam Long jobOpeningId,
             @Auth AuthUser authUser
     ) {
         Long userId = authUser.id();
-        bookmarkService.deleteBookmark(userId, dto.jobOpeningId());
+        bookmarkService.deleteBookmark(userId, jobOpeningId);
         return ApiResponseDto.noContent();
     }
 
+    /**
+     *  최소, 최대 연령대를 사용자가 커스터마이징하여 추가된 즐겨찾기를 상위 10개를 조회할 수 있는 로직입니다.
+     * @param minAge 최소연령
+     * @param maxAge 최대연령
+     * @return 커스텀 된 즐겨찾기 상위 10개를 List로 반환
+     */
+    @GetMapping("/popular")
+    public ResponseEntity<ApiResponseDto<List<BookmarkCustomAgeResponseDto>>> readTop10BookmarkByAgeBetween(
+        @RequestParam(value = "minAge") int minAge,
+        @RequestParam(value = "maxAge") int maxAge
+    ) {
+        List<BookmarkCustomAgeResponseDto> dtoList = bookmarkService.readTop10BookmarkByAgeBetween(minAge, maxAge);
+        return ApiResponseDto.success(dtoList);
+    }
+
+    /**
+     * 페이지 번호와 페이지 크기를 검증하여 유효한 값으로 반환하는 메서드입니다.
+     *
+     * 이 메서드는 페이지 번호(page)와 페이지 크기(size)가 유효한지 확인하고,
+     * 페이지 번호는 최소 1부터 시작하도록 보정하며,
+     * 페이지 크기는 최소 1 이상으로 보정한 후, PageRequest 객체를 반환합니다.
+     *
+     * @param page 페이지 번호 (1 이상이어야 함)
+     * @param size 페이지 크기 (1 이상이어야 함)
+     * @return 검증된 페이지 번호와 크기를 반영한 PageRequest 객체
+     */
     private Pageable validatePageSize(int page, int size) {
         if (page < 1 || size < 1) {
             page = Math.max(1, page);
@@ -98,19 +120,4 @@ public class BookmarkController {
         }
         return PageRequest.of(page - 1, size);
     }
-
-    /**
-     * 최소, 최대 연령대를 사용자가 커스터마이징하여 추가된 즐겨찾기를 상위 10개를 조회할 수 있는 로직입니다.
-     * Valid 어노테이션으로 해당 연령대가 아닌 값이 나오면 예외가 발생하도록 설정했습니다.
-     * @param requestDto 사용자가 body에 json 형태로 minAge, maxAge 입력
-     * @return 커스텀 된 즐겨찾기 상위 10개를 List로 반환
-     */
-    @GetMapping("/popular")
-    public ResponseEntity<ApiResponseDto<List<BookmarkCustomAgeResponseDto>>> readTop10BookmarkByAgeGroup(
-        @Valid @RequestBody ReadBookmarkAgeRequestDto requestDto
-    ) {
-        List<BookmarkCustomAgeResponseDto> dtoList = bookmarkService.readTop10BookmarkByAgeGroup(requestDto);
-        return ApiResponseDto.success(dtoList);
-    }
-
 }

@@ -20,11 +20,9 @@ import com.project.cheerha.domain.user.repository.UserRepository;
 import com.project.cheerha.domain.user.service.UserFindByService;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -38,7 +36,6 @@ public class AuthService {
     private final UserFindByService userFindByService;
 
     /**
-     * TODO: 비정상적인 사용자 차단 고려
      * 회원가입 처리하는 메서드
      * @throws BadRequestException 이메일이 이미 존재하는 경우
      */
@@ -56,11 +53,10 @@ public class AuthService {
             encodedPassword
         );
         userRepository.save(user);
-        return CreateSignupResponseDto.of();
+        return CreateSignupResponseDto.toDto();
     }
 
     /**
-     * TODO: aop 기능 : 사용자 ip 추출 하고, 한 ip 에서 같은 email 로 n번 이상 로그인 실패 시 해당 아이디에 대한 로그인 일시 차단
      * 로그인 메서드 - AccessToken 과 RefreshToken 생성
      * @return 로그인 응답 객체(AccessToken, RefreshToken 포함)
      */
@@ -75,7 +71,7 @@ public class AuthService {
 
         redisRefreshTokenService.createRefreshToken(user.getId(), refreshToken);
 
-        return CreateLoginResponseDto.of(accessToken, refreshToken);
+        return CreateLoginResponseDto.toDto(accessToken, refreshToken);
     }
 
     /**
@@ -100,7 +96,7 @@ public class AuthService {
 
         redisRefreshTokenService.deleteRefreshToken(userId);
 
-        return CreateLogoutResponseDto.of();
+        return CreateLogoutResponseDto.toDto();
     }
 
     /**
@@ -127,12 +123,10 @@ public class AuthService {
         String storedRefreshToken = redisRefreshTokenService.getRefreshToken(userId);
 
         if (storedRefreshToken == null || storedRefreshToken.isBlank()) {
-            log.error("Refresh Token not found in Redis for userId: {}", userId);
             throw new UnAuthorizedException(AuthErrorCode.TOKEN_UNAUTHORIZED);
         }
 
         if (!refreshToken.equals(jwtUtil.substringToken(storedRefreshToken))) {
-            log.error("Refresh Token mismatch for userId: {}", userId);
             throw new UnAuthorizedException(AuthErrorCode.TOKEN_UNAUTHORIZED);
         }
 
@@ -142,6 +136,6 @@ public class AuthService {
         User user = userFindByService.findById(userId);
 
         String refreshAccessToken = jwtUtil.createToken(userId, user.getRole());
-        return RefreshAccessTokenResponseDto.of(refreshAccessToken, newRefreshToken);
+        return RefreshAccessTokenResponseDto.toDto(refreshAccessToken, newRefreshToken);
     }
 }

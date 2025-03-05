@@ -11,5 +11,5 @@ public interface BookmarkRepositoryQuery {
      * @param maxAge 최대나이
      * @return 즐겨찾기 상위 10개 리스트
      */
-    List<BookmarkCustomAgeResponseDto> readTop10BookmarksByAgeGroup(int minAge, int maxAge);
+    List<BookmarkCustomAgeResponseDto> readTop10BookmarksByAgeBetween (int minAge, int maxAge);
 }

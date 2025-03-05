@@ -33,6 +33,8 @@ public class User {
     @Column(length = 20, nullable = false )
     private Role role;
 
+    private boolean isNotificationEnabled = false;
+
     public static User toEntity(String email, String name, int age, int career, String password) {
         User user = new User();
         user.email = email;
@@ -42,5 +44,13 @@ public class User {
         user.age = age;
         user.role = Role.USER;
         return user;
+    }
+
+    public void updateNotificationEnabled() {
+        this.isNotificationEnabled = true;
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
     }
 }
