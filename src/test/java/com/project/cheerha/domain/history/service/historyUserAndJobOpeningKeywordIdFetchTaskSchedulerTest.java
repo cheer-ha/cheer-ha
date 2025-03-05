@@ -59,14 +59,14 @@ public class historyUserAndJobOpeningKeywordIdFetchTaskSchedulerTest {
         );
         when(userFindByService.findById(1L)).thenReturn(mockUser);
 
-        when(historyRepository.existsByUserIdAndName(1L, "Redis")).thenReturn(false);
-        when(historyRepository.existsByUserIdAndName(1L, "Java")).thenReturn(true);
+        Set<String> existingSearchTermSet = Set.of("Java");
+        when(historyRepository.findNamesByUserId(1L)).thenReturn(existingSearchTermSet);
 
         // when
         historyScheduler.saveSearchHistoryToDb();
 
         // then
-        verify(historyRepository,times(1)).save(any(History.class));
+        verify(historyRepository,times(1)).saveAll(anyList());
     }
 
     @Test
