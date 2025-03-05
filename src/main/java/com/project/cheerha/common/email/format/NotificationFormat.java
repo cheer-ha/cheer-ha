@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.notification.sender;
+package com.project.cheerha.common.email.format;
 
 import com.project.cheerha.domain.notification.entity.Notification;
 import java.util.Set;

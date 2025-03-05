@@ -1,5 +1,6 @@
-package com.project.cheerha.domain.notification.sender;
+package com.project.cheerha.common.email.sender;
 
+import com.project.cheerha.common.email.format.VerificationFormat;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

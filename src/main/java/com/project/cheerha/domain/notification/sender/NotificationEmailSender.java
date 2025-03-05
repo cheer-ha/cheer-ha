@@ -1,5 +1,7 @@
 package com.project.cheerha.domain.notification.sender;
 
+import com.project.cheerha.common.email.format.NotificationFormat;
+import com.project.cheerha.common.email.sender.EmailSender;
 import com.project.cheerha.domain.notification.entity.Notification;
 import com.project.cheerha.domain.notification.repository.NotificationRepository;
 import java.io.IOException;

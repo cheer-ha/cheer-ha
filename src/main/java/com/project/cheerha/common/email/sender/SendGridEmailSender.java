@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.notification.sender;
+package com.project.cheerha.common.email.sender;
 
 import com.sendgrid.Method;
 import com.sendgrid.Request;

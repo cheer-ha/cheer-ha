@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.notification.sender;
+package com.project.cheerha.common.email.format;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
