@@ -11,12 +11,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class VerificationEmailSender {
 
-    private final VerificationFormat verificationFormat;
     private final EmailSender emailSender;
 
     public void sendVerificationEmail(String recipientEmail, String code) {
         try {
-            String[] emailData = verificationFormat.createVerification(code);
+            String[] emailData = VerificationFormat.createVerification(code);
             String subject = emailData[0];
             String content = emailData[1];
 

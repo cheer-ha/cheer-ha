@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 public class NotificationEmailSender {
 
     private final NotificationRepository notificationRepository;
-    private final NotificationFormat notificationFormat;
     private final EmailSender emailSender;
 
     // Notification을 이메일로 비동기 전송
@@ -43,7 +42,7 @@ public class NotificationEmailSender {
     private void sendNotificationEmail(String recipientEmail, Set<Notification> notificationSet) {
         try {
             // 이메일 내용 생성
-            String[] emailData = notificationFormat.createEmailNotification(notificationSet);
+            String[] emailData = NotificationFormat.createEmailNotification(notificationSet);
             String subject = emailData[0];
             String content = emailData[1];
 
