@@ -14,6 +14,7 @@ import com.project.cheerha.domain.viewcount.entity.JobOpeningViewCount;
 import com.project.cheerha.domain.viewcount.repository.JobOpeningViewCountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -62,7 +64,6 @@ public class JobOpeningService {
         return url;
     }
 
-
     /**
      * 채용 공고 목록을 조회하는 메서드입니다.
      *
@@ -85,9 +86,12 @@ public class JobOpeningService {
         if (requestDto.getSearchTerm() != null) {
             historyService.saveSearchTerm(userId, requestDto.getSearchTerm());
         }
-
         Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningRepository.findAllByCondition(
                 requestDto, pageable);
+
+        // 마감된 채용공고를 제외하도록 필터링
+        dtoPage = filterExpiredJobOpenings(dtoPage);
+
 
         return dtoPage;
     }
@@ -109,6 +113,9 @@ public class JobOpeningService {
         // 인기 채용공고 조회
         Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningRepository.findTop100PopularJobOpenings(pageable);
 
+        // 마감된 채용공고를 제외하도록 필터링
+        dtoPage = filterExpiredJobOpenings(dtoPage);
+
         // 조회된 채용공고 DTO에 requiredSkills 추가
         for (ReadJobOpeningResponseDto dto : dtoPage) {
             JobOpening jobOpening = jobOpeningFindByService.findById(dto.getId());
@@ -122,6 +129,29 @@ public class JobOpeningService {
         return dtoPage;
     }
 
+    /**
+     * 마감된 채용공고를 제외하는 메서드
+     */
+    private Page<ReadJobOpeningResponseDto> filterExpiredJobOpenings(Page<ReadJobOpeningResponseDto> dtoPage) {
+        // 마감된 채용공고를 제외하는 로직
+        ZonedDateTime now = ZonedDateTime.now();
+        List<ReadJobOpeningResponseDto> filteredDtos = dtoPage.getContent().stream()
+                .filter(dto -> dto.getHiringEndAt().isAfter(now))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(filteredDtos, dtoPage.getPageable(), dtoPage.getTotalElements());
+    }
+
+    /**
+     * 페이지 번호와 페이지 크기를 조정하여 유효한 값으로 반환하는 메서드입니다.
+     *
+     * 이 메서드는 주어진 페이지 번호(pageable.getPageNumber())와 페이지 크기(pageable.getPageSize())를 기준으로,
+     * 총 페이지 수를 넘지 않도록 페이지 번호를 조정합니다. 또한, 페이지 크기는 최대값인 `MAX_POPULAR_SIZE`를 기준으로 설정됩니다.
+     * 만약 사용자가 요청한 페이지 번호가 전체 페이지 수를 초과하는 경우, 마지막 페이지로 자동 조정됩니다.
+     *
+     * @param pageable 페이징 처리 정보 (페이지 번호와 페이지 크기)
+     * @return 유효한 페이지 번호와 페이지 크기를 기준으로 설정된 PageRequest 객체
+     */
     private Pageable adjustPageable(Pageable pageable) {
         int pageSize = Math.min(pageable.getPageSize(), IndexName.MAX_POPULAR_SIZE);
         int pageNumber = pageable.getPageNumber();
@@ -136,18 +166,5 @@ public class JobOpeningService {
 
         // PageRequest를 사용하여 페이지 번호와 페이지 크기 설정
         return PageRequest.of(pageNumber, pageSize);
-    }
-
-    /**
-     * 채용 공고의 마감일을 확인하여 마감된 경우 예외를 던집니다.
-     *
-     * @param jobOpeningId 채용 공고 ID
-     */
-    public void checkJobOpeningExpired(Long jobOpeningId) {
-        JobOpening jobOpening = jobOpeningFindByService.findById(jobOpeningId);
-        // 마감일이 지나면 예외 발생
-        if (jobOpening.getHiringEndAt().isBefore(ZonedDateTime.now())) {
-            throw new BadRequestException(ClientErrorCode.EXPIRED_JOB_OPENING);
-        }
     }
 }
