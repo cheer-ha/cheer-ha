@@ -135,11 +135,11 @@ public class JobOpeningService {
     private Page<ReadJobOpeningResponseDto> filterExpiredJobOpenings(Page<ReadJobOpeningResponseDto> dtoPage) {
         // 마감된 채용공고를 제외하는 로직
         ZonedDateTime now = ZonedDateTime.now();
-        List<ReadJobOpeningResponseDto> filteredDtos = dtoPage.getContent().stream()
+        List<ReadJobOpeningResponseDto> filteredDtoList = dtoPage.getContent().stream()
                 .filter(dto -> dto.getHiringEndAt().isAfter(now))
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(filteredDtos, dtoPage.getPageable(), dtoPage.getTotalElements());
+        return new PageImpl<>(filteredDtoList, dtoPage.getPageable(), dtoPage.getTotalElements());
     }
 
     /**

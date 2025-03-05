@@ -27,7 +27,7 @@ public record ReadJobOpeningElasticResponseDto(
         ZonedDateTime hiringEndAt, // 채용 마감일
         ZonedDateTime createdAt, // 채용공고 생성일
         Integer viewCount, // 조회수
-        List<String> requiredSkills // 요구되는 기술 목록
+        List<String> requiredSkillList // 요구되는 기술 목록
 ) {
     /**
      * 주어진 `JobOpeningDocument` 목록을 `ReadJobOpeningElasticResponseDto` 목록으로 변환하는 팩토리 메서드입니다.
@@ -35,11 +35,11 @@ public record ReadJobOpeningElasticResponseDto(
      * 이 메서드는 `JobOpeningDocument` 엔티티의 각 필드를 `ReadJobOpeningElasticResponseDto`로 매핑하여,
      * 클라이언트에 전달할 수 있는 DTO 객체 리스트를 생성합니다.
      *
-     * @param jobOpeningDocuments 변환할 `JobOpeningDocument` 객체의 리스트
+     * @param jobOpeningDocumentList 변환할 `JobOpeningDocument` 객체의 리스트
      * @return 변환된 `ReadJobOpeningElasticResponseDto` 객체의 리스트
      */
-    public static List<ReadJobOpeningElasticResponseDto> toDto(List<JobOpeningDocument> jobOpeningDocuments) {
-        return jobOpeningDocuments.stream()
+    public static List<ReadJobOpeningElasticResponseDto> toDto(List<JobOpeningDocument> jobOpeningDocumentList) {
+        return jobOpeningDocumentList.stream()
                 .map(job -> new ReadJobOpeningElasticResponseDto(
                         job.getId(),
                         job.getTitle(),
