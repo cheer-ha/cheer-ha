@@ -1,8 +1,5 @@
 package com.project.cheerha.common.redis;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -29,20 +26,36 @@ public class RedisViewCountManager {
     }
 
     /**
-     * 채용공고의 조회수를 가져오는 메서드입니다.
-     * @return 현재 Redis에 저장된 조회수 중 0보다 큰 값 전부
+     * 직접 동기화
+     * @param jobOpeningId
+     * @return 동기화 할 viewCount값
      */
-    public Map<Long, Integer> getViewCount() {
-        Set<String> keys = redisTemplate.keys(VIEW_COUNT_KEY_PREFIX + "*"); // 모든 조회수 키 찾기
-        Map<Long, Integer> viewCounts = new HashMap<>();
-
-        for (String key : keys) {
-            String count = redisTemplate.opsForValue().get(key);
-            Long jobOpeningId = Long.parseLong(key.replace(VIEW_COUNT_KEY_PREFIX, ""));
-            viewCounts.put(jobOpeningId, count == null ? 0 : Integer.parseInt(count));
-        }
-
-        return viewCounts;
+    public long getViewCount(Long jobOpeningId) {
+        String key = VIEW_COUNT_KEY_PREFIX + jobOpeningId;
+        String count = redisTemplate.opsForValue().get(key);
+        return count == null ? 0 : Long.parseLong(count);
     }
+
+    public void resetViewCount(Long jobOpeningId) {
+        String key = VIEW_COUNT_KEY_PREFIX + jobOpeningId;
+        redisTemplate.delete(key);
+    }
+
+//    /**
+//     * 채용공고의 조회수를 전체 가져오는 메서드입니다. (배치할 용도)
+//     * @return 현재 Redis에 저장된 조회수 중 0보다 큰 값 전부
+//     */
+//    public Map<Long, Integer> findAllViewCount() {
+//        Set<String> keys = redisTemplate.keys(VIEW_COUNT_KEY_PREFIX + "*"); // 모든 조회수 키 찾기
+//        Map<Long, Integer> viewCounts = new HashMap<>();
+//
+//        for (String key : keys) {
+//            String count = redisTemplate.opsForValue().get(key);
+//            Long jobOpeningId = Long.parseLong(key.replace(VIEW_COUNT_KEY_PREFIX, ""));
+//            viewCounts.put(jobOpeningId, count == null ? 0 : Integer.parseInt(count));
+//        }
+//
+//        return viewCounts;
+//    }
 }
 

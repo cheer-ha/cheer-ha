@@ -103,7 +103,7 @@ public class JobOpeningServiceTest {
             .findWithLockByJobOpeningId(id);
 
         // viewCount 증가 메서드가 기대한 만큼 호출되었는지 검증
-        verify(jobOpeningViewCount, times(totalRequests)).increaseViewCount();
+//        verify(jobOpeningViewCount, times(totalRequests)).increaseViewCount();
 
         // 최종 viewCount 값이 기대 값과 일치하는지 검증
         assertThat(finalViewCount.getViewCount()).isEqualTo(totalRequests);

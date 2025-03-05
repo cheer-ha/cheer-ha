@@ -1,18 +1,19 @@
 package com.project.cheerha.domain.jobopening.service;
 
-import com.project.cheerha.common.exception.client.BadRequestException;
-import com.project.cheerha.common.exception.client.ClientErrorCode;
 import com.project.cheerha.common.redis.RedisViewCountManager;
+import com.project.cheerha.domain.elasticsearch.IndexName;
 import com.project.cheerha.domain.history.service.HistoryService;
 import com.project.cheerha.domain.jobopening.dto.request.ReadJobOpeningRequestDto;
 import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningResponseDto;
-import com.project.cheerha.domain.elasticsearch.IndexName;
 import com.project.cheerha.domain.jobopening.entity.JobOpening;
 import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.service.UserFindByService;
 import com.project.cheerha.domain.viewcount.entity.JobOpeningViewCount;
 import com.project.cheerha.domain.viewcount.repository.JobOpeningViewCountRepository;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -20,10 +21,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -35,23 +32,34 @@ public class JobOpeningService {
     private final UserFindByService userFindByIdService;
     private final JobOpeningFindByService jobOpeningFindByService;
     private final RedisViewCountManager redisViewCountManager;
+    private final JobOpeningViewCountRepository jobOpeningViewCountRepository;
 
     /**
      * 채용공고 리다이렉트 동시성 제어를 위한 집계 테이블 조회수 카운팅 메서드 입니다.
      * viewCount 정보를 관리하는 집계 테이블에서 조회수가 카운팅됩니다.
      * viewcount 테이블에서 비관 락이 작동하여 count 값의 정합성을 유지합니다.
-     * @param id 채용공고 식별 id
      */
     @Transactional
-    public void increaseViewCount(Long id) {
-        redisViewCountManager.increaseViewCount(id);
-//        JobOpeningViewCount viewCount = jobOpeningViewCountRepository.findWithLockByJobOpeningId(id)
-//            .orElseGet(() -> {
-//                JobOpening jobOpening = jobOpeningFindByService.findById(id);
-//                return jobOpeningViewCountRepository.save(JobOpeningViewCount.create(jobOpening));
-//            });
-//        viewCount.increaseViewCount();
+    public void increaseViewCount(Long jobOpeningId) {
+        redisViewCountManager.increaseViewCount(jobOpeningId);
+        updateViewCount(jobOpeningId);
     }
+
+    /**
+     * 레디스에 있는 채용공고 조회수를 집계테이블로 업데이트 하는데 사용하는 메서드
+     * @param jobOpeningId
+     */
+    public void updateViewCount(Long jobOpeningId) {
+        Long redisViewCount = redisViewCountManager.getViewCount(jobOpeningId);
+        JobOpeningViewCount jobOpeningViewCount =  jobOpeningViewCountRepository.findWithLockByJobOpeningId(jobOpeningId)
+            .orElseGet(() -> {
+                JobOpening jobOpening = jobOpeningFindByService.findById(jobOpeningId);
+                return jobOpeningViewCountRepository.save(JobOpeningViewCount.create(jobOpening));
+            });
+        jobOpeningViewCount.increaseViewCount(redisViewCount);
+        redisViewCountManager.resetViewCount(jobOpeningId);
+    }
+
 
     /**
      * 페이지 리다이렉트를 위한 서비스 로직입니다.

@@ -20,9 +20,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class JobOpeningFindByServiceTest {
 
     @Mock
-    private JobOpening jobOpening;
-
-    @Mock
     private JobOpeningRepository jobOpeningRepository;
 
     @InjectMocks

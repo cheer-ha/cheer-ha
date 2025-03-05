@@ -41,8 +41,8 @@ public class JobOpeningViewCount {
         return new JobOpeningViewCount(jobOpening, 0); // 기본 조회수 0
     }
 
-    public void increaseViewCount() {
-        this.viewCount++;
+    public void increaseViewCount(Long count) {
+        this.viewCount += count;
     }
 
 }
