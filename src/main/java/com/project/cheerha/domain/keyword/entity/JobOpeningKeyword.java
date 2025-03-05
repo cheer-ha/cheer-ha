@@ -20,7 +20,7 @@ import java.io.Serializable;
 @Table(name = "job_opening_keyword", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"keyword_id", "job_opening_id"})}
 )
-public class JobOpeningKeyword  implements Serializable {
+public class JobOpeningKeyword implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
