@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class VerificationEmailSender {
 
     private final VerificationFormat verificationFormat;
-    private final EmailSender sendGridEmailSender;
+    private final EmailSender emailSender;
 
     public void sendVerificationEmail(String recipientEmail, String code) {
         try {
@@ -20,7 +20,7 @@ public class VerificationEmailSender {
             String subject = emailData[0];
             String content = emailData[1];
 
-            sendGridEmailSender.sendEmailBySendGrid(recipientEmail, subject, content);
+            emailSender.send(recipientEmail, subject, content);
 
         } catch (IOException e) {
             log.error("인증 코드 이메일 전송 실패: {}", recipientEmail, e);

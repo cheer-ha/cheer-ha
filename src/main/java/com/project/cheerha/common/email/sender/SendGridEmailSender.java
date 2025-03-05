@@ -32,7 +32,7 @@ public class SendGridEmailSender implements EmailSender {
      * @throws IOException 이메일 전송 시 발생할 수 있는 예외
      */
     @Override
-    public void sendEmailBySendGrid(String recipientEmail, String subject, String content) throws IOException {
+    public void send(String recipientEmail, String subject, String content) throws IOException {
         Email from = new Email(senderEmail);
         Email to = new Email(recipientEmail);
         Content emailContent = new Content("text/html", content);

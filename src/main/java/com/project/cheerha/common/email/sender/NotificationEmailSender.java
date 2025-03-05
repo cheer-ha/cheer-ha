@@ -20,7 +20,7 @@ public class NotificationEmailSender {
 
     private final NotificationRepository notificationRepository;
     private final NotificationFormat notificationFormat;
-    private final EmailSender sendGridEmailSender;
+    private final EmailSender emailSender;
 
     // Notification을 이메일로 비동기 전송
     @Async
@@ -48,7 +48,7 @@ public class NotificationEmailSender {
             String content = emailData[1];
 
             // 이메일 전송
-            sendGridEmailSender.sendEmailBySendGrid(recipientEmail, subject, content);
+            emailSender.send(recipientEmail, subject, content);
 
             // 전송된 알림 상태 변경
             notificationSet.forEach(notification -> {
