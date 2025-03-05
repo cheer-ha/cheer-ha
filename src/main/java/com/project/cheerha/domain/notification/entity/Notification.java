@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.notice.entity;
+package com.project.cheerha.domain.notification.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,12 +14,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Table(
-    name = "user_to_job_opening_mapping",
+    name = "notification",
     uniqueConstraints = {@UniqueConstraint(
         columnNames = {"email", "job_opening_url"}
     )}
 )
-public class UserToJobOpeningMapping {
+public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,16 +46,16 @@ public class UserToJobOpeningMapping {
      * <p>
      * 기본값 1: 이메일 미발송 기본값 2: 푸시 미발송
      */
-    public static UserToJobOpeningMapping toEntity(
+    public static Notification toEntity(
         String email,
         String jobOpeningUrl
     ) {
-        UserToJobOpeningMapping userToJobOpeningMapping = new UserToJobOpeningMapping();
-        userToJobOpeningMapping.email = email;
-        userToJobOpeningMapping.jobOpeningUrl = jobOpeningUrl;
-        userToJobOpeningMapping.isEmailSent = false;
-        userToJobOpeningMapping.isPushSent = false;
-        return userToJobOpeningMapping;
+        Notification notification = new Notification();
+        notification.email = email;
+        notification.jobOpeningUrl = jobOpeningUrl;
+        notification.isEmailSent = false;
+        notification.isPushSent = false;
+        return notification;
     }
 
     // 이메일 발송 상태를 '발송됨'으로 변경
