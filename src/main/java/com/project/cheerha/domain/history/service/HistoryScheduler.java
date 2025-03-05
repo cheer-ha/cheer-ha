@@ -31,27 +31,25 @@ public class HistoryScheduler {
     public void saveSearchHistoryToDb() {
         Set<String> keys = redisTemplate.keys("user:*:search_history");
 
-        if (keys != null) {
-            for (String key : keys) {
-                Long userId = Long.parseLong(key.split(":")[1]);
-                User user = userFindByService.findById(userId);
+        for (String key : keys) {
+            Long userId = Long.parseLong(key.split(":")[1]);
+            User user = userFindByService.findById(userId);
 
-                Set<String> searchTermSet = redisTemplate.opsForZSet().range(key, 0, -1);
+            Set<String> searchTermSet = redisTemplate.opsForZSet().range(key, 0, -1);
 
-                if (searchTermSet != null && !searchTermSet.isEmpty()) {
-                    // 해당 유저의 기존 검색어 조회
-                    Set<String> existingSearchTermSet = historyRepository.findNamesByUserId(userId);
+            if (searchTermSet != null && !searchTermSet.isEmpty()) {
+                // 해당 유저의 기존 검색어 조회
+                Set<String> existingSearchTermSet = historyRepository.findNamesByUserId(userId);
 
-                    // 중복되지 않은 검색어 필터링
-                    List<History> historyList = searchTermSet.stream()
-                        .filter(term -> !existingSearchTermSet.contains(term))
-                        .map(term -> History.toEntity(user, term))
-                        .toList();
+                // 중복되지 않은 검색어 필터링
+                List<History> historyList = searchTermSet.stream()
+                    .filter(term -> !existingSearchTermSet.contains(term))
+                    .map(term -> History.toEntity(user, term))
+                    .toList();
 
-                    // 새로운 검색어가 있다면 저장
-                    if (!historyList.isEmpty()) {
-                        historyRepository.saveAll(historyList);
-                    }
+                // 새로운 검색어가 있다면 저장
+                if (!historyList.isEmpty()) {
+                    historyRepository.saveAll(historyList);
                 }
             }
         }
