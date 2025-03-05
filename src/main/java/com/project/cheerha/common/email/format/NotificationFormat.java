@@ -2,14 +2,10 @@ package com.project.cheerha.common.email.format;
 
 import com.project.cheerha.domain.notification.entity.Notification;
 import java.util.Set;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
-@Component
-@RequiredArgsConstructor
 public class NotificationFormat {
 
-    public String[] createEmailNotification(Set<Notification> notificationSet) {
+    public static String[] createEmailNotification(Set<Notification> notificationSet) {
         // 이메일 제목
         String subject = "📢 새로운 맞춤 채용 공고가 도착했어요!";
 
