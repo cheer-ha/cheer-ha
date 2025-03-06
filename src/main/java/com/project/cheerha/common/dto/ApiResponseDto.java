@@ -9,17 +9,16 @@ import java.time.LocalDateTime;
  * API 응답을 위한 DTO 클래스입니다.
  * 이 클래스는 API 응답의 표준 구조를 정의하며, 성공 여부, 데이터, 메시지 및 타임스탬프를 포함합니다.
  */
-public record ApiResponseDto<T>(LocalDateTime timestamp, boolean successOrFail, T data, String message) {
+public record ApiResponseDto<T>(LocalDateTime timestamp, boolean isSuccessful, T data) {
 
     /**
-     * 생성자: successOrFail, data, message를 입력받아 timestamp는 현재 시간으로 자동 설정합니다.
+     * 생성자: isSuccessful, data, message를 입력받아 timestamp는 현재 시간으로 자동 설정합니다.
      *
-     * @param successOrFail 응답의 성공 여부 (true: 성공, false: 실패)
+     * @param isSuccessful 응답의 성공 여부 (true: 성공, false: 실패)
      * @param data 응답 데이터
-     * @param message 응답 메시지
      */
-    public ApiResponseDto(boolean successOrFail, T data, String message) {
-        this(LocalDateTime.now(), successOrFail, data, message);
+    public ApiResponseDto(boolean isSuccessful, T data) {
+        this(LocalDateTime.now(), isSuccessful, data);
     }
 
     /**
@@ -31,7 +30,7 @@ public record ApiResponseDto<T>(LocalDateTime timestamp, boolean successOrFail, 
      * @return HTTP 201 Created 응답과 함께 생성된 데이터가 포함된 ApiResponseDto
      */
     public static <T> ResponseEntity<ApiResponseDto<T>> created(T data) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseDto<>(true, data, ""));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseDto<>(true, data));
     }
 
     /**
@@ -43,7 +42,7 @@ public record ApiResponseDto<T>(LocalDateTime timestamp, boolean successOrFail, 
      * @return HTTP 200 OK 응답과 함께 성공 데이터가 포함된 ApiResponseDto
      */
     public static <T> ResponseEntity<ApiResponseDto<T>> success(T data) {
-        return ResponseEntity.ok(new ApiResponseDto<>(true, data, ""));
+        return ResponseEntity.ok(new ApiResponseDto<>(true, data));
     }
 
     /**
@@ -54,6 +53,6 @@ public record ApiResponseDto<T>(LocalDateTime timestamp, boolean successOrFail, 
      * @return HTTP 204 No Content 응답
      */
     public static <T> ResponseEntity<ApiResponseDto<Void>> noContent() {
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ApiResponseDto<>(true, null, ""));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ApiResponseDto<>(true, null));
     }
 }
