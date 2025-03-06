@@ -6,13 +6,15 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Entity
 @Getter
 @NoArgsConstructor
 @Table(name = "bookmark", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"user_id", "job_opening_id"})}
 )
-public class Bookmark {
+public class Bookmark implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -2,7 +2,7 @@ package com.project.cheerha.auth;
 
 import com.project.cheerha.common.exception.auth.AuthErrorCode;
 import com.project.cheerha.common.exception.auth.UnAuthorizedException;
-import com.project.cheerha.common.redis.RedisRefreshTokenService;
+import com.project.cheerha.common.redis.auth.RedisRefreshTokenService;
 import com.project.cheerha.common.util.JwtUtil;
 import com.project.cheerha.domain.auth.dto.response.RefreshAccessTokenResponseDto;
 import com.project.cheerha.domain.auth.service.AuthService;

@@ -26,13 +26,6 @@ spring:
     redis:
       time-to-live: 3600  # 캐시 항목의 TTL(Time To Live)을 1시간으로 설정
 
-elasticsearch:
-  uris: ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}  # Elasticsearch REST API URL
-  username: ${ELASTICSEARCH_USERNAME}
-  password: ${ELASTICSEARCH_PASSWORD}
-  index:
-    name: job-opening
-
 jwt:
   secret:
     aesKey: ${AES_KEY}
@@ -66,3 +59,10 @@ server:
   ssl:
     enabled: false
   port: 8080
+
+elasticsearch:
+  uris: ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}  # Elasticsearch REST API URL
+  username: ${ELASTICSEARCH_USERNAME}
+  password: ${ELASTICSEARCH_PASSWORD}
+  index:
+    name: job-opening

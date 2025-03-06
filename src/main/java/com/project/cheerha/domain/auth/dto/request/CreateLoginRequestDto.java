@@ -7,5 +7,4 @@ public record CreateLoginRequestDto(
     @Email String email,
     @NotBlank String password
 ) {
-
 }

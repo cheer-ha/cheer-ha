@@ -7,5 +7,4 @@ public class IllegalStatusException extends BaseException {
     public IllegalStatusException(ServerErrorCode errorCode) {
         super(errorCode.getMessage(), errorCode.getStatus());
     }
-
 }

@@ -10,7 +10,6 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +27,6 @@ import static com.project.cheerha.domain.keyword.entity.QKeyword.keyword;
 
 @Repository
 @RequiredArgsConstructor
-@Slf4j
 public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery {
 
     private final JPAQueryFactory queryFactory;
@@ -85,14 +83,10 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
             .offset(pageable.getOffset())
             .fetch();
 
-        log.info("dtoList size: " + dtoList.size());
-
         // 2. 조회된 채용 공고 Id 목록 추출
         List<Long> dataIdList = dtoList.stream()
                 .map(ReadJobOpeningResponseDto::getId)
                 .toList();
-
-        log.info("dataIdList size: " + dataIdList.size());
 
         // 3. 해당 공고의 자격 요건 조회
         List<Tuple> requiredSkillTupleList = queryFactory
@@ -102,16 +96,12 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
                 .where(jobOpeningKeyword.jobOpening.id.in(dataIdList))
                 .fetch();
 
-        log.info("requiredSkillTupleList size: " + requiredSkillTupleList.size());
-
         // 4. 채용 공고 Id별 자격 요건 리스트 매핑
         Map<Long, List<String>> requiredSkillMap = requiredSkillTupleList.stream()
                 .collect(Collectors.groupingBy(
                         tuple -> tuple.get(jobOpeningKeyword.jobOpening.id),
                         Collectors.mapping(tuple -> tuple.get(keyword.name), Collectors.toList())
                 ));
-
-        log.info("requiredSkillMap size: " + requiredSkillMap.size());
 
         // 5. 각 Dto에 자격 요건 추가
         dtoList.forEach(dto -> dto.addRequiredSkills(requiredSkillMap.getOrDefault(dto.getId(), new ArrayList<>())));
@@ -158,8 +148,6 @@ public class JobOpeningRepositoryQueryImpl implements JobOpeningRepositoryQuery 
                 .offset(pageable.getPageNumber() * pageable.getPageSize())
                 .limit(pageable.getPageSize())
                 .fetch();
-
-        log.info("dtoList size: " + dtoList.size());
 
         return new PageImpl<>(dtoList, pageable, dtoList.size());
     }
