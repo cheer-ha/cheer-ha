@@ -29,7 +29,6 @@ public class RedisViewCountManager {
         }
 
         Long value = redisTemplate.opsForValue().increment(key);
-        redisTemplate.opsForValue().set(key,String.valueOf(value));
     }
 
     /**
