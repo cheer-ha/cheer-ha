@@ -37,7 +37,6 @@ public class BookmarkCustomAgeResponseDto {
         int maxExperienceYears,
         Long bookmarkCount
     ) {
-
         this.id = bookmarkId;
         this.title = title;
         this.company = company;

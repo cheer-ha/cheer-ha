@@ -11,13 +11,7 @@ public record NotificationRecipientDto(
     Long keywordId,
     String email
 ) {
-
     @QueryProjection
-    public NotificationRecipientDto(
-        Long keywordId,
-        String email
-    ) {
-        this.keywordId = keywordId;
-        this.email = email;
+    public NotificationRecipientDto {
     }
 }
