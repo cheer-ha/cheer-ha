@@ -1,5 +1,7 @@
 package com.project.cheerha.auth;
 
+import com.project.cheerha.common.exception.client.BadRequestException;
+import com.project.cheerha.common.exception.client.ClientErrorCode;
 import com.project.cheerha.common.redis.email.EmailTokenService;
 import com.project.cheerha.common.util.PasswordEncoder;
 import com.project.cheerha.domain.auth.dto.request.VerifySignupRequestDto;
@@ -17,12 +19,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Map;
 
 import static com.project.cheerha.domain.auth.service.AuthService.SIGNUP_TOKEN_PREFIX;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.willDoNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class VerifySignupTest {
@@ -66,5 +67,23 @@ public class VerifySignupTest {
         verify(passwordEncoder).encode(dto.password());
         verify(userRepository).save(any(User.class));
         assertNotNull(response);
+    }
+
+    @Test
+    void verifySignup_토큰_불일치() {
+        //Given
+        VerifySignupRequestDto dto = new VerifySignupRequestDto(
+                "test@example.com", "password", "testUser", 25, 0, "invalidToken"
+        );
+        doThrow(new BadRequestException(ClientErrorCode.INVALID_EMAIL_VERIFICATION_TOKEN))
+                .when(emailTokenService)
+                .verifyEmailToken(anyString(), anyString(), anyString());
+
+        //When & Then
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            authService.verifySignup(dto);
+        });
+        assertEquals("이메일 인증 토큰이 유효하지 않습니다.", exception.getMessage());
+        verify(userRepository, never()).save(any(User.class));
     }
 }
