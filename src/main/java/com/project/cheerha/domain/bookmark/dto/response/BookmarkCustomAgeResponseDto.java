@@ -1,5 +1,7 @@
 package com.project.cheerha.domain.bookmark.dto.response;
 
+import com.project.cheerha.domain.jobopening.entity.EducationLevel;
+import com.project.cheerha.domain.jobopening.entity.EmploymentType;
 import com.querydsl.core.annotations.QueryProjection;
 import java.time.ZonedDateTime;
 import lombok.Getter;
@@ -10,8 +12,8 @@ public class BookmarkCustomAgeResponseDto {
     private final Long id;
     private final String title;
     private final String company;
-    private final Enum educationLevel;
-    private final Enum employmentType;
+    private final EducationLevel educationLevel;
+    private final EmploymentType employmentType;
     private final ZonedDateTime hiringStartAt;
     private final ZonedDateTime hiringEndAt;
     private final String position;
@@ -25,8 +27,8 @@ public class BookmarkCustomAgeResponseDto {
         Long bookmarkId,
         String title,
         String company,
-        Enum educationLevel,
-        Enum employmentType,
+        EducationLevel educationLevel,
+        EmploymentType employmentType,
         ZonedDateTime hiringStartAt,
         ZonedDateTime hiringEndAt,
         String position,

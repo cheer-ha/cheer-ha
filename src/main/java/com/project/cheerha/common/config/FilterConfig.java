@@ -1,6 +1,8 @@
-package com.project.cheerha.common.filter;
+package com.project.cheerha.common.config;
 
 import com.project.cheerha.common.exception.handler.FilterExceptionHandler;
+import com.project.cheerha.common.filter.IpBlockingFilter;
+import com.project.cheerha.common.filter.JwtFilter;
 import com.project.cheerha.common.properties.JwtSecurityProperties;
 import com.project.cheerha.common.redis.auth.RedisBlackListService;
 import com.project.cheerha.common.util.JwtUtil;
