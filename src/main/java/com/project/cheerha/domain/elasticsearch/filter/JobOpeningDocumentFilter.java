@@ -1,6 +1,7 @@
 package com.project.cheerha.domain.elasticsearch.filter;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
 import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery;
 import com.project.cheerha.common.util.variable.IndexName;
 import com.project.cheerha.domain.elasticsearch.dto.request.ReadJobOpeningElasticRequestDto;
@@ -104,10 +105,18 @@ public class JobOpeningDocumentFilter {
 
         // 검색어 조회
         if (requestDto.getSearchTerm() != null) {
-            boolQueryBuilder.must(m -> m
-                    .match(mq -> mq
+            boolQueryBuilder.should(s -> s
+                    .fuzzy(f -> f
+                            .field(IndexName.TITLE) // fuzzy를 적용할 필드
+                            .value(requestDto.getSearchTerm())
+                            .fuzziness("AUTO")
+                    )
+            );
+            boolQueryBuilder.should(s -> s
+                    .match(m -> m
                             .field(IndexName.TITLE)
                             .query(requestDto.getSearchTerm())
+                            .operator(Operator.And)
                     )
             );
         }
