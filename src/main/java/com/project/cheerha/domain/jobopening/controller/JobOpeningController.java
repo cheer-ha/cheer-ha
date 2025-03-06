@@ -5,16 +5,18 @@ import com.project.cheerha.common.dto.ApiResponseDto;
 import com.project.cheerha.common.dto.AuthUser;
 import com.project.cheerha.domain.jobopening.dto.request.ReadJobOpeningRequestDto;
 import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningResponseDto;
-import com.project.cheerha.domain.jobopening.entity.JobOpening;
-import com.project.cheerha.domain.jobopening.service.JobOpeningFindByService;
 import com.project.cheerha.domain.jobopening.service.JobOpeningService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/job-opening")
 @RestController
@@ -30,10 +32,16 @@ public class JobOpeningController {
      * @return 리다이렉트 된 채용공고 사이트
      */
 
-    @GetMapping("/{id}")
-    public RedirectView getRedirectedView(@PathVariable Long id) {
-        jobOpeningService.increaseViewCount(id);
-        return new RedirectView(jobOpeningService.getJobOpeningUrl(id));
+
+//    @GetMapping("/{id}") //구현해야 하는 코드
+//    public RedirectView getRedirectedView(@PathVariable Long id) {
+//        jobOpeningService.increaseViewCount(id);
+//        return new RedirectView(jobOpeningService.getJobOpeningUrl(id));
+
+    @GetMapping("/{id}") //테스트용 코드 (리다이렉트 뺀 것)
+    public String getRedirectedView(@PathVariable Long id) {
+        String message = jobOpeningService.increaseViewCount(id);
+        return message;
     }
 
     /**

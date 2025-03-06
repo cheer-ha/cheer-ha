@@ -22,7 +22,6 @@ public class RedisViewCountManager {
     public void increaseViewCount(Long jobOpeningId) {
         String key = VIEW_COUNT_KEY_PREFIX + jobOpeningId; // Redis 키 생성
         redisTemplate.opsForValue().increment(key); //
-        log.info("JobOpeningID : {} 현재 조회 수 : {}", jobOpeningId, redisTemplate.opsForValue().get(key)); //증가된 조회수 확인
     }
 
     /**

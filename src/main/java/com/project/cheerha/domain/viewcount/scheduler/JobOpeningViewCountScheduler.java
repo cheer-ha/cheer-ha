@@ -30,7 +30,8 @@ public class JobOpeningViewCountScheduler {
      * fixedRate를 사용하여 3,600,000ms (1시간)마다 실행
      * 트랜잭션 어노테이션을 사용하여 트랜잭션 단위로 실행하여 정합성을 유지
      */
-    @Scheduled(fixedRate = 3600000) // 긴 버전 1시간
+ //   @Scheduled(fixedRate = 3600000) // 긴 버전 1시간
+    @Scheduled(fixedRate = 30000) //테스트용 5분
     @Transactional
     public void syncViewCounts() {
         // jobOpeningViewCount 테이블에서 viewCount값이 1이상인 jobOpening.id 목록 가져오기
