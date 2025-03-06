@@ -1,5 +1,6 @@
 package com.project.cheerha.domain.auth.service;
 
+import com.project.cheerha.common.email.sender.VerificationEmailSender;
 import com.project.cheerha.common.exception.auth.AuthErrorCode;
 import com.project.cheerha.common.exception.auth.UnAuthorizedException;
 import com.project.cheerha.common.exception.client.BadRequestException;
@@ -7,14 +8,13 @@ import com.project.cheerha.common.exception.client.ClientErrorCode;
 import com.project.cheerha.common.properties.JwtSecurityProperties;
 import com.project.cheerha.common.redis.auth.RedisBlackListService;
 import com.project.cheerha.common.redis.auth.RedisRefreshTokenService;
+import com.project.cheerha.common.redis.email.EmailTokenService;
 import com.project.cheerha.common.util.JwtUtil;
 import com.project.cheerha.common.util.PasswordEncoder;
 import com.project.cheerha.domain.auth.dto.request.CreateLoginRequestDto;
 import com.project.cheerha.domain.auth.dto.request.CreateSignupRequestDto;
-import com.project.cheerha.domain.auth.dto.response.CreateLoginResponseDto;
-import com.project.cheerha.domain.auth.dto.response.CreateLogoutResponseDto;
-import com.project.cheerha.domain.auth.dto.response.CreateSignupResponseDto;
-import com.project.cheerha.domain.auth.dto.response.RefreshAccessTokenResponseDto;
+import com.project.cheerha.domain.auth.dto.request.VerifySignupRequestDto;
+import com.project.cheerha.domain.auth.dto.response.*;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.repository.UserRepository;
 import com.project.cheerha.domain.user.service.UserFindByService;
@@ -34,6 +34,10 @@ public class AuthService {
     private final RedisRefreshTokenService redisRefreshTokenService;
     private final RedisBlackListService redisBlackListService;
     private final UserFindByService userFindByService;
+    private final VerificationEmailSender verificationEmailSender;
+    private final EmailTokenService emailTokenService;
+
+    private static final String SIGNUP_TOKEN_PREFIX = "signup_email_verification_token";
 
     /**
      * 회원가입 처리하는 메서드
@@ -43,17 +47,24 @@ public class AuthService {
         if (userRepository.existsByEmail(dto.email())) {
             throw new BadRequestException(ClientErrorCode.ALREADY_EXIST_EMAIL);
         }
+        String token = emailTokenService.saveToken(SIGNUP_TOKEN_PREFIX, dto.email());
+        verificationEmailSender.sendVerificationEmail(dto.email(), token);
+        return CreateSignupResponseDto.toDto();
+    }
+
+    public VerifySignupResponseDto verifySignup(VerifySignupRequestDto dto) {
+        emailTokenService.verifyEmailToken(SIGNUP_TOKEN_PREFIX, dto.email(), dto.token());
         String encodedPassword = passwordEncoder.encode(dto.password());
 
         User user = User.toEntity(
-            dto.email(),
-            dto.name(),
-            dto.age(),
-            dto.career(),
-            encodedPassword
+                dto.email(),
+                dto.name(),
+                dto.age(),
+                dto.career(),
+                encodedPassword
         );
         userRepository.save(user);
-        return CreateSignupResponseDto.toDto();
+        return VerifySignupResponseDto.toDto();
     }
 
     /**

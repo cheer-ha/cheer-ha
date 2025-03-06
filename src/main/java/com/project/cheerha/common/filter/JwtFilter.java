@@ -29,7 +29,7 @@ import org.springframework.util.PatternMatchUtils;
 public class JwtFilter implements Filter {
 
     private static final String[] WHITE_LIST = {
-            "/auth/signup", "/auth/login", "/actuator/health", "/actuator/prometheus",
+            "/auth/signup", "/auth/signup-verify", "/auth/login", "/actuator/health", "/actuator/prometheus",
             "/users/email-verification/send-password-reset-verify", "/users/email-verification/password-reset-verify",
             "/users/password/reset"};
     private final JwtSecurityProperties securityProperties;
