@@ -12,7 +12,9 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
+@Repository
 @RequiredArgsConstructor
 public class BookmarkRepositoryQueryImpl implements BookmarkRepositoryQuery {
 
@@ -79,5 +81,4 @@ public class BookmarkRepositoryQueryImpl implements BookmarkRepositoryQuery {
             .limit(10)
             .fetch();
     }
-
 }

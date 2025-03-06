@@ -2,7 +2,7 @@ package com.project.cheerha.common.filter;
 
 import com.project.cheerha.common.exception.handler.FilterExceptionHandler;
 import com.project.cheerha.common.properties.JwtSecurityProperties;
-import com.project.cheerha.common.redis.RedisBlackListService;
+import com.project.cheerha.common.redis.auth.RedisBlackListService;
 import com.project.cheerha.common.util.JwtUtil;
 
 import com.project.cheerha.domain.user.entity.Role;

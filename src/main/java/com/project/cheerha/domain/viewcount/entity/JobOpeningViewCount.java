@@ -44,5 +44,4 @@ public class JobOpeningViewCount {
     public void increaseViewCount(Long count) {
         this.viewCount += count;
     }
-
 }

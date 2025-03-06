@@ -1,5 +1,6 @@
 package com.project.cheerha.domain.viewcount.scheduler;
 
+import com.project.cheerha.common.util.SchedulerLockUtil;
 import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
 import com.project.cheerha.domain.viewcount.repository.JobOpeningViewCountRepository;
 import java.util.List;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class JobOpeningViewCountScheduler {
 
+    private final SchedulerLockUtil schedulerLockUtil;
     /**
      * 조회수 정보를 관리하는 Repository와 채용공고 정보를 관리하는 Repository
      */
@@ -34,6 +36,7 @@ public class JobOpeningViewCountScheduler {
     @Scheduled(fixedRate = 30000) //테스트용 5분
     @Transactional
     public void syncViewCounts() {
+        schedulerLockUtil.lock("job_opening_view_count_lock");
         // jobOpeningViewCount 테이블에서 viewCount값이 1이상인 jobOpening.id 목록 가져오기
         List<Long> jobOpeningIdList = jobOpeningViewCountRepository.findDistinctViewedJobOpeningIdList();
 
@@ -55,5 +58,4 @@ public class JobOpeningViewCountScheduler {
         }
         log.info("조회수 동기화 완료");
     }
-
 }

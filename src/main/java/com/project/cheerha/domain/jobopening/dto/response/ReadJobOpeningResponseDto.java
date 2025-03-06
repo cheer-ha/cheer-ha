@@ -25,7 +25,6 @@ public class ReadJobOpeningResponseDto {
     private final ZonedDateTime createdAt;
     private final int viewCount;
 
-
     private List<String> requiredSkillList;
 
     @QueryProjection

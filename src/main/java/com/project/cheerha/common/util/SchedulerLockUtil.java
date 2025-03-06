@@ -22,11 +22,11 @@ public class SchedulerLockUtil {
      * 인스턴스 단위로 스케줄링을 관리하는 유틸메서드입니다.
      * key 와 ttl 을 인자로 받아 redis 에서 관리합니다.
      */
-    public void lock(String keyName, long ttl) {
+    public void lock(String keyName) {
         //setIfAbsent 로 원자적으로 락을 잡으려 시도
         Boolean acquired = redisTemplate
                 .opsForValue()
-                .setIfAbsent(keyName, LOCK_VALUE, ttl, TimeUnit.MINUTES);
+                .setIfAbsent(keyName, LOCK_VALUE, 5, TimeUnit.MINUTES);
 
         //락을 못 잡았다면 내 인스턴스의 락인지 확인
         if (Boolean.FALSE.equals(acquired)) {
@@ -37,7 +37,7 @@ public class SchedulerLockUtil {
                 throw new IllegalStatusException(ServerErrorCode.ALREADY_RUNNING_SCHEDULER);
             }
             //만약 내 인스턴스라면 이전 스케줄이 남긴 락이거나 ttl 이 안 끝난 상황일 수 있으므로 ttl 재갱신
-            redisTemplate.expire(keyName, ttl, TimeUnit.MINUTES);
+            redisTemplate.expire(keyName, 5, TimeUnit.MINUTES);
         }
     }
 }

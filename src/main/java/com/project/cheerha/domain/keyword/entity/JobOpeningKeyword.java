@@ -12,13 +12,15 @@ import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Entity
 @Getter
 @NoArgsConstructor
 @Table(name = "job_opening_keyword", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"keyword_id", "job_opening_id"})}
 )
-public class JobOpeningKeyword {
+public class JobOpeningKeyword implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

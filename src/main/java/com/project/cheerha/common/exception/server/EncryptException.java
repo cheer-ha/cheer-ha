@@ -7,5 +7,4 @@ public class EncryptException extends BaseException {
     public EncryptException(ServerErrorCode errorCode) {
         super(errorCode.getMessage(), errorCode.getStatus());
     }
-
 }

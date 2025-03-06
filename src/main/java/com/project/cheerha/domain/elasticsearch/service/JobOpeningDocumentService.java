@@ -3,11 +3,13 @@ package com.project.cheerha.domain.elasticsearch.service;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
-import com.project.cheerha.domain.elasticsearch.IndexName;
+import com.project.cheerha.common.elasticsearch.ElasticsearchClientService;
+import com.project.cheerha.common.util.variable.IndexName;
 import com.project.cheerha.domain.elasticsearch.dto.request.ReadJobOpeningElasticRequestDto;
 import com.project.cheerha.domain.elasticsearch.dto.response.ReadJobOpeningElasticResponseDto;
 import com.project.cheerha.domain.elasticsearch.entity.JobOpeningDocument;
 import com.project.cheerha.domain.elasticsearch.filter.JobOpeningDocumentFilter;
+import com.project.cheerha.domain.searchhistory.service.SearchHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -15,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
@@ -23,6 +24,7 @@ import java.util.List;
 public class JobOpeningDocumentService {
 
     private final ElasticsearchClientService elasticsearchClientService;
+    private final SearchHistoryService searchHistoryService;
 
     /**
      * 전체 채용공고 조회
@@ -31,11 +33,11 @@ public class JobOpeningDocumentService {
     public Page<ReadJobOpeningElasticResponseDto> readAllJobOpeningsUsingElasticsearch(Pageable pageable) {
         int pageSize = pageable.getPageSize();
         int pageNumber = pageable.getPageNumber();
-        int from = calculateFrom(pageNumber, pageSize, IndexName.MAX_JOP_OPENING_SIZE);
+        int from = calculateFrom(pageNumber, pageSize, IndexName.MAX_JOB_OPENING_SIZE);
         SearchRequest searchRequest = buildSearchRequest(from, pageSize, null);
         List<JobOpeningDocument> jobOpeningDocumentList = elasticsearchClientService.fetchJobOpeningDocumentList(searchRequest);
         List<ReadJobOpeningElasticResponseDto> dtoList = ReadJobOpeningElasticResponseDto.toDto(jobOpeningDocumentList);
-        return new PageImpl<>(dtoList, pageable, IndexName.MAX_JOP_OPENING_SIZE);
+        return new PageImpl<>(dtoList, pageable, IndexName.MAX_JOB_OPENING_SIZE);
     }
 
     /**
@@ -61,11 +63,15 @@ public class JobOpeningDocumentService {
             Long userId,
             Pageable pageable
     ) {
+        if (requestDto.getSearchTerm() != null) {
+            searchHistoryService.saveSearchTerm(userId, requestDto.getSearchTerm());
+        }
+
         JobOpeningDocumentFilter filter = new JobOpeningDocumentFilter(requestDto);
         var boolQueryBuilder = filter.build();
         int pageSize = pageable.getPageSize();
         int pageNumber = pageable.getPageNumber();
-        int from = calculateFrom(pageNumber, pageSize, IndexName.MAX_JOP_OPENING_SIZE);
+        int from = calculateFrom(pageNumber, pageSize, IndexName.MAX_JOB_OPENING_SIZE);
         SearchRequest searchRequest = new SearchRequest.Builder()
                 .index(IndexName.JOB_OPENING_DOCUMENT)
                 .query(q -> q.bool(boolQueryBuilder.build()))
@@ -75,7 +81,7 @@ public class JobOpeningDocumentService {
                 .build();
         List<JobOpeningDocument> jobOpeningDocuments = elasticsearchClientService.fetchJobOpeningDocumentList(searchRequest);
         List<ReadJobOpeningElasticResponseDto> dtoList = ReadJobOpeningElasticResponseDto.toDto(jobOpeningDocuments);
-        return new PageImpl<>(dtoList, pageable, IndexName.MAX_JOP_OPENING_SIZE);
+        return new PageImpl<>(dtoList, pageable, IndexName.MAX_JOB_OPENING_SIZE);
     }
 
     /**

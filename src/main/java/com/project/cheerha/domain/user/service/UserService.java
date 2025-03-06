@@ -14,7 +14,6 @@ public class UserService {
 
     public ReadUserResponseDto readUser(AuthUser authUser) {
         User user = userFindByService.findById(authUser.id());
-
         return ReadUserResponseDto.toDto(user.getEmail(), user.getName(), user.getCareer(), user.getAge(), user.isNotificationEnabled());
     }
 }
