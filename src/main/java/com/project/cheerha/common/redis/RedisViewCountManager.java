@@ -28,7 +28,8 @@ public class RedisViewCountManager {
             redisTemplate.opsForValue().set(key, "0", Duration.ofMinutes(30));  // 30분 TTL 설정
         }
 
-        redisTemplate.opsForValue().increment(key);
+        Long value = redisTemplate.opsForValue().increment(key);
+        redisTemplate.opsForValue().set(key,String.valueOf(value));
     }
 
     /**

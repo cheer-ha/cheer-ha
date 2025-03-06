@@ -42,6 +42,6 @@ public class JobOpeningViewCount {
     }
 
     public void increaseViewCount(Long count) {
-        this.viewCount += count;
+        this.viewCount = Integer.parseInt(String.valueOf(count));
     }
 }

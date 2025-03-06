@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class RedisDistributedLockManager {
 
     /**
-     * todo:아직 락 적용 전, 레디스만 적용해 보는 중
+     *
      */
     private final RedissonClient redissonClient;
 
@@ -22,21 +22,23 @@ public class RedisDistributedLockManager {
         boolean isLocked = false;
 
         try {
-            // tryLockAndRun() 결과를 isLocked에 저장
+            //락을 잡음
             isLocked = lock.tryLock(waitTime, leaseTime, unit);
+            log.info("락을 잡았다!");
             if(isLocked) {
                 task.run(); // Runnable은 반환값이 없이 run()만 실행
                 return true;
             }
             return false;
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+//            Thread.currentThread().interrupt();
             return false;
         } finally {
             if (isLocked) {
                 try {
                     lock.unlock(); // 락 해제
                 } catch (IllegalMonitorStateException e) {
+                    e.printStackTrace();
                     log.info("락 해제 중 예외 발생: {}", e.getMessage());
                 }
             }
