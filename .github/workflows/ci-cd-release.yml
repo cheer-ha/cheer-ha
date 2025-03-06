@@ -77,17 +77,33 @@ jobs:
             --strategy Rolling \
             --preferences '{"MinHealthyPercentage":100,"InstanceWarmup":300,"MaxHealthyPercentage":110}'
 
+  monitor:
+    name: Monitor & Health Check
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ap-northeast-2
+
       - name: Monitor ASG Rolling Update
         run: |
           echo "ASG 인스턴스 Refresh 모니터링 시작..."
           while true; do
-            STATUS=$(aws autoscaling describe-instance-refreshes --auto-scaling-group-name cheerha-auto --query "InstanceRefreshes[0].Status" --output text)
+            STATUS=$(aws autoscaling describe-instance-refreshes \
+                      --auto-scaling-group-name cheerha-auto \
+                      --query "InstanceRefreshes[0].Status" \
+                      --output text)
             echo "현재 상태: $STATUS"
             if [[ "$STATUS" == "Successful" || "$STATUS" == "Failed" || "$STATUS" == "Cancelled" ]]; then
               break
             fi
             sleep 10
           done
+
           if [ "$STATUS" != "Successful" ]; then
             echo "Instance Refresh 실패: $STATUS"
             exit 1
@@ -110,7 +126,7 @@ jobs:
               continue
             fi
             for i in {1..3}; do
-              HEALTH=$(curl -s --max-time 10 "http://$IP:8080/health" || echo "DOWN")
+              HEALTH=$(curl -s --max-time 10 "http://$IP:8080/actuator/health" || echo "DOWN")
               if echo "$HEALTH" | grep -q "UP"; then
                 echo "인스턴스 $INSTANCE_ID ($IP) 건강함"
                 break
