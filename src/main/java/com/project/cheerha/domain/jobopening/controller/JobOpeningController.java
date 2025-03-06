@@ -35,12 +35,12 @@ public class JobOpeningController {
 
 //    @GetMapping("/{id}") //구현해야 하는 코드
 //    public RedirectView getRedirectedView(@PathVariable Long id) {
-//        jobOpeningService.increaseViewCount(id);
+//        jobOpeningService.redirectAndJobOpeningViewCount(id);
 //        return new RedirectView(jobOpeningService.getJobOpeningUrl(id));
 
     @GetMapping("/{id}") //테스트용 코드 (리다이렉트 뺀 것)
     public String getRedirectedView(@PathVariable Long id) {
-        String message = jobOpeningService.increaseViewCount(id);
+        String message = jobOpeningService.redirectAndJobOpeningViewCount(id);
         return message;
     }
 

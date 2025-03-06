@@ -1,5 +1,6 @@
 package com.project.cheerha.common.redis;
 
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -21,7 +22,13 @@ public class RedisViewCountManager {
      */
     public void increaseViewCount(Long jobOpeningId) {
         String key = VIEW_COUNT_KEY_PREFIX + jobOpeningId; // Redis 키 생성
-        redisTemplate.opsForValue().increment(key); //
+
+        // 키가 없으면 기본값 0 설정
+        if (redisTemplate.opsForValue().get(key) == null) {
+            redisTemplate.opsForValue().set(key, "0", Duration.ofMinutes(30));  // 30분 TTL 설정
+        }
+
+        redisTemplate.opsForValue().increment(key);
     }
 
     /**
