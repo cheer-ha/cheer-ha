@@ -37,7 +37,7 @@ public class AuthService {
     private final VerificationEmailSender verificationEmailSender;
     private final EmailTokenService emailTokenService;
 
-    private static final String SIGNUP_TOKEN_PREFIX = "signup_email_verification_token";
+    public static final String SIGNUP_TOKEN_PREFIX = "signup_email_verification_token";
 
     /**
      * 회원가입 처리하는 메서드

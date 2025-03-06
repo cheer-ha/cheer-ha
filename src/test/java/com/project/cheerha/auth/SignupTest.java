@@ -4,7 +4,6 @@ import com.project.cheerha.common.email.sender.VerificationEmailSender;
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
 import com.project.cheerha.common.redis.email.EmailTokenService;
-import com.project.cheerha.common.util.PasswordEncoder;
 import com.project.cheerha.domain.auth.dto.request.CreateSignupRequestDto;
 import com.project.cheerha.domain.auth.dto.response.CreateSignupResponseDto;
 import com.project.cheerha.domain.auth.service.AuthService;
