@@ -1,5 +1,6 @@
-package com.project.cheerha.domain.keyword.entity;
+package com.project.cheerha.domain.userkeyword.entity;
 
+import com.project.cheerha.domain.keyword.entity.Keyword;
 import com.project.cheerha.domain.user.entity.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

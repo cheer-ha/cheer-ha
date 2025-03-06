@@ -48,5 +48,4 @@ public class CheckDailyEmailCount {
             redisTemplate.expire(dailyCountKey, secondsToMidnight, TimeUnit.SECONDS);
         }
     }
-
 }

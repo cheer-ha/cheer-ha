@@ -1,12 +1,13 @@
-package com.project.cheerha.domain.keyword.service;
+package com.project.cheerha.domain.userkeyword.service;
 
-import com.project.cheerha.domain.keyword.dto.request.CreateUserKeywordRequestDto;
-import com.project.cheerha.domain.keyword.dto.response.CreateUserKeywordResponseDto;
+import com.project.cheerha.domain.keyword.service.KeywordFindByService;
+import com.project.cheerha.domain.userkeyword.dto.request.CreateUserKeywordRequestDto;
+import com.project.cheerha.domain.userkeyword.dto.response.CreateUserKeywordResponseDto;
 import com.project.cheerha.domain.keyword.dto.response.KeywordDto;
-import com.project.cheerha.domain.keyword.dto.response.ReadUserKeywordResponseDto;
+import com.project.cheerha.domain.userkeyword.dto.response.ReadUserKeywordResponseDto;
 import com.project.cheerha.domain.keyword.entity.Keyword;
-import com.project.cheerha.domain.keyword.entity.UserKeyword;
-import com.project.cheerha.domain.keyword.repository.UserKeywordRepository;
+import com.project.cheerha.domain.userkeyword.entity.UserKeyword;
+import com.project.cheerha.domain.userkeyword.respository.UserKeywordRepository;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.service.UserFindByService;
 import java.util.ArrayList;
@@ -43,7 +44,6 @@ public class UserKeywordService {
         Long userId, List<Long> keywordIdList
     ) {
         List<Keyword> keywordList = new ArrayList<>();
-
         keywordIdList.forEach(keywordId -> {
                 Keyword keyword = keywordFindByService.findById(keywordId);
 
@@ -57,14 +57,12 @@ public class UserKeywordService {
 
                     userKeywordRepository.save(newUserKeyword);
                 }
-
                 keywordList.add(keyword);
             }
         );
 
         return keywordList;
     }
-
     // 키워드가 이미 선택되었는지 확인하는 메서드
     private boolean isKeywordAlreadyChosen(Long userId, Long keywordId) {
         return userKeywordRepository.existsByUserIdAndKeywordId(userId, keywordId);
@@ -76,7 +74,6 @@ public class UserKeywordService {
         List<Long> userKeywordIdList
     ) {
         userKeywordIdList.forEach(userKeywordId -> {
-
                 boolean isUserKeywordExist = userKeywordRepository.existsByUserIdAndId(
                     userId,
                     userKeywordId
@@ -85,7 +82,6 @@ public class UserKeywordService {
                 if (!isUserKeywordExist) {
                     return;
                 }
-
                 userKeywordRepository.deleteById(userKeywordId);
             }
         );
@@ -106,5 +102,4 @@ public class UserKeywordService {
 
         return ReadUserKeywordResponseDto.toDto(keywordDtoList);
     }
-
 }

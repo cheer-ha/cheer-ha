@@ -1,12 +1,12 @@
-package com.project.cheerha.domain.keyword.controller;
+package com.project.cheerha.domain.userkeyword.controller;
 
 import com.project.cheerha.common.annotation.Auth;
 import com.project.cheerha.common.dto.ApiResponseDto;
 import com.project.cheerha.common.dto.AuthUser;
-import com.project.cheerha.domain.keyword.dto.request.CreateUserKeywordRequestDto;
-import com.project.cheerha.domain.keyword.dto.response.CreateUserKeywordResponseDto;
-import com.project.cheerha.domain.keyword.dto.response.ReadUserKeywordResponseDto;
-import com.project.cheerha.domain.keyword.service.UserKeywordService;
+import com.project.cheerha.domain.userkeyword.dto.request.CreateUserKeywordRequestDto;
+import com.project.cheerha.domain.userkeyword.dto.response.CreateUserKeywordResponseDto;
+import com.project.cheerha.domain.userkeyword.dto.response.ReadUserKeywordResponseDto;
+import com.project.cheerha.domain.userkeyword.service.UserKeywordService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

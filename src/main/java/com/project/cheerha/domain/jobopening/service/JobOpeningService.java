@@ -1,7 +1,7 @@
 package com.project.cheerha.domain.jobopening.service;
 
 import com.project.cheerha.common.util.variable.IndexName;
-import com.project.cheerha.domain.history.service.HistoryService;
+import com.project.cheerha.domain.searchhistory.service.SearchHistoryService;
 import com.project.cheerha.domain.jobopening.dto.request.ReadJobOpeningRequestDto;
 import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningResponseDto;
 import com.project.cheerha.domain.jobopening.entity.JobOpening;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class JobOpeningService {
 
     private final JobOpeningRepository jobOpeningRepository;
-    private final HistoryService historyService;
+    private final SearchHistoryService searchHistoryService;
     private final JobOpeningFindByService jobOpeningFindByService;
     private final JobOpeningViewCountRepository jobOpeningViewCountRepository;
 
@@ -75,7 +75,7 @@ public class JobOpeningService {
             Pageable pageable
     ) {
         if (requestDto.getSearchTerm() != null) {
-            historyService.saveSearchTerm(userId, requestDto.getSearchTerm());
+            searchHistoryService.saveSearchTerm(userId, requestDto.getSearchTerm());
         }
         Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningRepository.findAllByCondition(
                 requestDto, pageable);
@@ -147,7 +147,7 @@ public class JobOpeningService {
         int pageNumber = pageable.getPageNumber();
 
         // 총 페이지 수가 초과되지 않도록 처리
-        int totalPages = (int) Math.ceil((double) IndexName.MAX_JOP_OPENING_SIZE / pageSize); // totalElements = 100
+        int totalPages = (int) Math.ceil((double) IndexName.MAX_JOB_OPENING_SIZE / pageSize); // totalElements = 100
         if (pageNumber >= totalPages) {
             pageNumber = totalPages - 1;  // 페이지 번호가 totalPages보다 크면 마지막 페이지로 설정
         }

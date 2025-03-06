@@ -12,5 +12,4 @@ public interface KeywordRepositoryQuery {
     * @return 키워드 10개 리스트
     */
    List<KeywordCustomAgeResponseDto> readTop10KeywordsByAgeGroup(int minAge, int maxAge);
-
 }

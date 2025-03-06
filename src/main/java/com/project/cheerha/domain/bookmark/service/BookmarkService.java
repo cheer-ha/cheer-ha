@@ -12,7 +12,6 @@ import com.project.cheerha.domain.jobopening.service.JobOpeningFindByService;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.service.UserFindByService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -24,7 +23,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookmarkService {
@@ -90,15 +88,13 @@ public class BookmarkService {
             // 2페이지부터는 캐시에서 조회하고, 캐시에 없으면 DB에서 가져옵니다.
             List<Object> cachedBookmarks = redisBookmarkService.getAllBookmarksFromCache(userId);
             if (cachedBookmarks.isEmpty() || pageNumber > 0) {
-                log.info("캐시에서 북마크를 찾을 수 없거나 2페이지 이상 조회됩니다. DB에서 데이터를 조회합니다.");
                 bookmarkPage = fetchAndCacheBookmarks(userId, limitedPageable);
             } else {
                 // 캐시에서 전체 북마크를 불러오고 페이징 처리
                 List<Bookmark> bookmarks = cachedBookmarks.stream()
                         .filter(Objects::nonNull)
                         .map(obj -> (Bookmark) obj)
-                        .collect(Collectors.toList());
-                log.info("캐시에서 불러온 북마크들: {}", bookmarks);
+                        .toList();
                 // 페이징 처리 후, ReadBookmarkResponseDto로 변환
                 int skipCount = limitedPageable.getPageNumber() * limitedPageable.getPageSize();
                 List<ReadBookmarkResponseDto> dtoList = bookmarks.stream()
@@ -148,7 +144,6 @@ public class BookmarkService {
         for (Bookmark bookmark : bookmarks) {
             redisBookmarkService.updateCacheOnBookmarkAdd(userId, bookmark);
         }
-        log.info("DB에서 가져온 데이터를 캐시에 저장하였습니다: {}", bookmarks);
         return bookmarkPage;
     }
 }

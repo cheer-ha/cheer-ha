@@ -93,5 +93,4 @@ public class UserEmailVerificationService {
         String token = emailTokenService.saveSecureToken(email);
         return VerifyPasswordResetTokenResponseDto.toDto(email, token);
     }
-
 }

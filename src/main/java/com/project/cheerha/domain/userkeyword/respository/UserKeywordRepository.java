@@ -1,6 +1,6 @@
-package com.project.cheerha.domain.keyword.repository;
+package com.project.cheerha.domain.userkeyword.respository;
 
-import com.project.cheerha.domain.keyword.entity.UserKeyword;
+import com.project.cheerha.domain.userkeyword.entity.UserKeyword;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

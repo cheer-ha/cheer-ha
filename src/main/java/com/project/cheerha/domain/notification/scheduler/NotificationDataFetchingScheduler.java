@@ -1,5 +1,6 @@
 package com.project.cheerha.domain.notification.scheduler;
 
+import com.project.cheerha.common.util.SchedulerLockUtil;
 import com.project.cheerha.domain.notification.dto.NotificationRecipientDto;
 import com.project.cheerha.domain.notification.repository.NotificationDataProviderQuery;
 import com.project.cheerha.domain.notification.service.NotificationService;
@@ -8,16 +9,15 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class NotificationDataFetchingScheduler {
 
+    private final SchedulerLockUtil schedulerLockUtil;
     private final NotificationService notificationService;
     private final NotificationDataProviderQuery notificationDataProviderQuery;
 
@@ -25,6 +25,7 @@ public class NotificationDataFetchingScheduler {
     @Scheduled(cron = "*/30 * * * * *")
     @Transactional
     public void fetchNotificationData() {
+        schedulerLockUtil.lock("fetch_notification_data_lock");
         // 조회 시간을 30초 전으로 설정
         ZonedDateTime referenceTime = ZonedDateTime.now().minusSeconds(30L).withZoneSameInstant(ZoneId.of("UTC"));
 

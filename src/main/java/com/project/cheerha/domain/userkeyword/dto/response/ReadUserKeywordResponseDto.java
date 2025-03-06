@@ -1,4 +1,6 @@
-package com.project.cheerha.domain.keyword.dto.response;
+package com.project.cheerha.domain.userkeyword.dto.response;
+
+import com.project.cheerha.domain.keyword.dto.response.KeywordDto;
 
 import java.util.List;
 

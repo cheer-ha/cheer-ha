@@ -1,9 +1,9 @@
-package com.project.cheerha.domain.history.controller;
+package com.project.cheerha.domain.searchhistory.controller;
 
 import com.project.cheerha.common.annotation.Auth;
 import com.project.cheerha.common.dto.ApiResponseDto;
 import com.project.cheerha.common.dto.AuthUser;
-import com.project.cheerha.domain.history.service.HistoryService;
+import com.project.cheerha.domain.searchhistory.service.SearchHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RequestMapping("/search/history")
+@RequestMapping("/search-history")
 @RestController
 @RequiredArgsConstructor
-public class HistoryController {
+public class SearchHistoryController {
 
-    private final HistoryService historyService;
+    private final SearchHistoryService searchHistoryService;
 
     /**
      * 사용자의 최근 검색어 목록을 조회하는 API입니다.
@@ -33,13 +33,12 @@ public class HistoryController {
             @Auth AuthUser authUser
     ) {
         Long userId = authUser.id();
-        List<String> SearchTermsList = historyService.getRecentSearchTerms(userId);
+        List<String> SearchTermsList = searchHistoryService.getRecentSearchTerms(userId);
 
         if (SearchTermsList.isEmpty()) {
-            SearchTermsList = historyService.getRecentSearchTerms(userId);
+            SearchTermsList = searchHistoryService.getRecentSearchTerms(userId);
         }
 
         return ApiResponseDto.success(SearchTermsList);
     }
-
 }

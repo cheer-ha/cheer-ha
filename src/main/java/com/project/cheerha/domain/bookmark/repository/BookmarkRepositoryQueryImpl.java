@@ -81,5 +81,4 @@ public class BookmarkRepositoryQueryImpl implements BookmarkRepositoryQuery {
             .limit(10)
             .fetch();
     }
-
 }

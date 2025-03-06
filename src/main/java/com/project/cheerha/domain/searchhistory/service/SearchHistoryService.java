@@ -1,7 +1,7 @@
-package com.project.cheerha.domain.history.service;
+package com.project.cheerha.domain.searchhistory.service;
 
-import com.project.cheerha.domain.history.entity.History;
-import com.project.cheerha.domain.history.repository.HistoryRepository;
+import com.project.cheerha.domain.searchhistory.entity.SearchHistory;
+import com.project.cheerha.domain.searchhistory.repository.SearchHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -12,12 +12,12 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class HistoryService {
+public class SearchHistoryService {
 
-    private final HistoryRepository historyRepository;
+    private final SearchHistoryRepository searchHistoryRepository;
     private final RedisTemplate<String, String> redisTemplate;
 
-    private static final int MAX_HISTORY_SIZE = 10; // 최대 저장 개수
+    private static final int MAX_SEARCH_HISTORY_SIZE = 10; // 최대 저장 개수
     private static final long EXPIRATION_TIME = 3600; // 1시간(초 단위)
 
     /**
@@ -37,8 +37,8 @@ public class HistoryService {
         redisTemplate.opsForZSet().add(key, searchTerm, timestamp);
 
         Long size = redisTemplate.opsForZSet().zCard(key);
-        if (size != null && size > MAX_HISTORY_SIZE) {
-            redisTemplate.opsForZSet().removeRange(key, 0, size - MAX_HISTORY_SIZE - 1);
+        if (size != null && size > MAX_SEARCH_HISTORY_SIZE) {
+            redisTemplate.opsForZSet().removeRange(key, 0, size - MAX_SEARCH_HISTORY_SIZE - 1);
         }
 
         redisTemplate.expire(key, EXPIRATION_TIME, TimeUnit.SECONDS);
@@ -57,12 +57,12 @@ public class HistoryService {
     public List<String> getRecentSearchTerms(Long userId) {
         String key = "user:" + userId + ":search_history";
 
-        Set<String> searchTerms = redisTemplate.opsForZSet().reverseRange(key, 0, 9);
-        if (searchTerms == null || searchTerms.isEmpty()) {
-            return dbSearchTermList(userId);
+        Set<String> searchTermSet = redisTemplate.opsForZSet().reverseRange(key, 0, 9);
+        if (searchTermSet == null || searchTermSet.isEmpty()) {
+            return fetchSearchTermListFromDatabase(userId);
         }
 
-        return new ArrayList<>(searchTerms);
+        return new ArrayList<>(searchTermSet);
     }
 
     /**
@@ -71,17 +71,16 @@ public class HistoryService {
      * Redis에 검색 기록이 없는 경우, 이 메서드를 호출하여 DB에서 데이터를 가져온다.
      * 가져온 데이터를 Redis에 저장하여 이후 빠른 검색을 가능하게 한다.
      */
-    private List<String> dbSearchTermList(Long userId) {
-        List<String> dbSearchTerms = historyRepository.findTop10ByUserIdOrderByCreatedAtDesc(userId)
+    private List<String> fetchSearchTermListFromDatabase(Long userId) {
+        List<String> searchTermListInDatabase = searchHistoryRepository.findTop10ByUserIdOrderByCreatedAtDesc(userId)
             .stream()
-            .sorted(Comparator.comparing(History::getCreatedAt))
-            .map(History::getName)
+            .sorted(Comparator.comparing(SearchHistory::getCreatedAt))
+            .map(SearchHistory::getName)
             .collect(Collectors.toList());
 
-        dbSearchTerms.forEach(term -> saveSearchTerm(userId, term));
-        Collections.reverse(dbSearchTerms);
+        searchTermListInDatabase.forEach(term -> saveSearchTerm(userId, term));
+        Collections.reverse(searchTermListInDatabase);
 
-        return dbSearchTerms;
+        return searchTermListInDatabase;
     }
-
 }

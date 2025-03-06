@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.history.entity;
+package com.project.cheerha.domain.searchhistory.entity;
 
 import com.project.cheerha.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -12,9 +12,9 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "history")
+@Table(name = "search_history")
 @EntityListeners(AuditingEntityListener.class)
-public class History {
+public class SearchHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,12 +32,12 @@ public class History {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
 
-    public static History toEntity(User user, String name) {
-        History history = new History();
+    public static SearchHistory toEntity(User user, String name) {
+        SearchHistory searchHistory = new SearchHistory();
 
-        history.user = user;
-        history.name = name;
+        searchHistory.user = user;
+        searchHistory.name = name;
 
-        return history;
+        return searchHistory;
     }
 }

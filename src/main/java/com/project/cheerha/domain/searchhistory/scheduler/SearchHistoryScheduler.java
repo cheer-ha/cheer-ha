@@ -1,7 +1,8 @@
-package com.project.cheerha.domain.history.scheduler;
+package com.project.cheerha.domain.searchhistory.scheduler;
 
-import com.project.cheerha.domain.history.entity.History;
-import com.project.cheerha.domain.history.repository.HistoryRepository;
+import com.project.cheerha.common.util.SchedulerLockUtil;
+import com.project.cheerha.domain.searchhistory.entity.SearchHistory;
+import com.project.cheerha.domain.searchhistory.repository.SearchHistoryRepository;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.service.UserFindByService;
 import lombok.RequiredArgsConstructor;
@@ -14,10 +15,11 @@ import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
-public class HistoryScheduler {
+public class SearchHistoryScheduler {
 
+    private final SchedulerLockUtil schedulerLockUtil;
     private final UserFindByService userFindByService;
-    private final HistoryRepository historyRepository;
+    private final SearchHistoryRepository searchHistoryRepository;
     private final RedisTemplate<String, String> redisTemplate;
 
     /**
@@ -29,6 +31,7 @@ public class HistoryScheduler {
      */
     @Scheduled(fixedRate = 1800000) // 30분마다 실행
     public void saveSearchHistoryToDb() {
+        schedulerLockUtil.lock("save_search_history_to_redis_lock");
         Set<String> keys = redisTemplate.keys("user:*:search_history");
 
         for (String key : keys) {
@@ -39,17 +42,17 @@ public class HistoryScheduler {
 
             if (searchTermSet != null && !searchTermSet.isEmpty()) {
                 // 해당 유저의 기존 검색어 조회
-                Set<String> existingSearchTermSet = historyRepository.findNamesByUserId(userId);
+                Set<String> existingSearchTermSet = searchHistoryRepository.findNamesByUserId(userId);
 
                 // 중복되지 않은 검색어 필터링
-                List<History> historyList = searchTermSet.stream()
+                List<SearchHistory> searchHistoryList = searchTermSet.stream()
                     .filter(term -> !existingSearchTermSet.contains(term))
-                    .map(term -> History.toEntity(user, term))
+                    .map(term -> SearchHistory.toEntity(user, term))
                     .toList();
 
                 // 새로운 검색어가 있다면 저장
-                if (!historyList.isEmpty()) {
-                    historyRepository.saveAll(historyList);
+                if (!searchHistoryList.isEmpty()) {
+                    searchHistoryRepository.saveAll(searchHistoryList);
                 }
             }
         }

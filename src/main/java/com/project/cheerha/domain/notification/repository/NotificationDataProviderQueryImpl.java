@@ -3,8 +3,8 @@ package com.project.cheerha.domain.notification.repository;
 
 import static com.project.cheerha.domain.jobopening.entity.QJobOpening.jobOpening;
 import static com.project.cheerha.domain.keyword.entity.QJobOpeningKeyword.jobOpeningKeyword;
-import static com.project.cheerha.domain.keyword.entity.QUserKeyword.userKeyword;
 import static com.project.cheerha.domain.user.entity.QUser.user;
+import static com.project.cheerha.domain.userkeyword.entity.QUserKeyword.userKeyword;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
 

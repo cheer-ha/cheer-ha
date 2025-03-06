@@ -9,5 +9,4 @@ public record CreateSignupRequestDto(
     @NotNull @Min(20) @Max(80) int age,
     @NotNull @Min(0) @Max(50) int career
 ) {
-
 }

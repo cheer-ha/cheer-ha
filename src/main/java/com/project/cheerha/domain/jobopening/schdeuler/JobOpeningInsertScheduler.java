@@ -26,7 +26,6 @@ public class JobOpeningInsertScheduler {
 
     private static final int JOB_COUNT = 3; //한 번에 생성할 최대 jobOpening 개수
     private static final String LOCK_KEY = "insert_job_opening_lock";
-    private static final long LOCK_TTL = 4; //3분간 유지(minMinutes + 1)
 
     /**
      * minMinutes - maxMinutes 사이의 랜덤한 시간 간격을 두고 랜덤한 채용공고를 삽입합니다.
@@ -35,7 +34,7 @@ public class JobOpeningInsertScheduler {
     @ScheduledDynamic(minMinutes = 3, maxMinutes = 40)
     public void insertRandomJobOpening() {
         try {
-            schedulerLockUtil.lock(LOCK_KEY, LOCK_TTL);
+            schedulerLockUtil.lock(LOCK_KEY);
 
             log.info("랜덤 채용공고 데이터 삽입 시작");
 
