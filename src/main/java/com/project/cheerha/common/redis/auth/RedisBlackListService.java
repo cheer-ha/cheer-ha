@@ -1,4 +1,4 @@
-package com.project.cheerha.common.redis;
+package com.project.cheerha.common.redis.auth;
 
 import com.project.cheerha.common.properties.JwtSecurityProperties;
 import lombok.RequiredArgsConstructor;

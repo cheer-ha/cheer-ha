@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.elasticsearch.service;
+package com.project.cheerha.common.elasticsearch;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.SearchRequest;

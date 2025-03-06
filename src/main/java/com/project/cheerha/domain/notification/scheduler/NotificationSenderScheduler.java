@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class SenderScheduler {
+public class NotificationSenderScheduler {
 
     private final NotificationEmailSender notificationEmailSender;
 

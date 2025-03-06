@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.history.service;
+package com.project.cheerha.domain.history.scheduler;
 
 import com.project.cheerha.domain.history.entity.History;
 import com.project.cheerha.domain.history.repository.HistoryRepository;

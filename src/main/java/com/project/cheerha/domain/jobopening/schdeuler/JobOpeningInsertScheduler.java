@@ -1,10 +1,12 @@
-package com.project.cheerha.domain.jobopening.service;
+package com.project.cheerha.domain.jobopening.schdeuler;
 
 import com.project.cheerha.common.annotation.ScheduledDynamic;
 import com.project.cheerha.common.exception.server.IllegalStatusException;
 import com.project.cheerha.common.util.SchedulerLockUtil;
 import com.project.cheerha.domain.jobopening.entity.JobOpening;
 import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
+import com.project.cheerha.domain.jobopening.schdeuler.factory.JobOpeningFactory;
+import com.project.cheerha.domain.jobopening.schdeuler.factory.JobOpeningKeywordFactory;
 import com.project.cheerha.domain.keyword.entity.JobOpeningKeyword;
 import com.project.cheerha.domain.keyword.repository.JobOpeningKeywordRepository;
 import lombok.RequiredArgsConstructor;

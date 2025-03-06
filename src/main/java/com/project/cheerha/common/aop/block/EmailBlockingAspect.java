@@ -1,4 +1,4 @@
-package com.project.cheerha.common.block;
+package com.project.cheerha.common.aop.block;
 
 import com.project.cheerha.common.exception.auth.AuthErrorCode;
 import com.project.cheerha.common.exception.auth.UnAuthorizedException;

@@ -3,7 +3,7 @@ package com.project.cheerha.jwt;
 import com.project.cheerha.common.filter.JwtFilter;
 import com.project.cheerha.common.exception.handler.FilterExceptionHandler;
 import com.project.cheerha.common.properties.JwtSecurityProperties;
-import com.project.cheerha.common.redis.RedisBlackListService;
+import com.project.cheerha.common.redis.auth.RedisBlackListService;
 import com.project.cheerha.common.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;

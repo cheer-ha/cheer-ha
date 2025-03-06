@@ -2,7 +2,7 @@ package com.project.cheerha.domain.bookmark.service;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
-import com.project.cheerha.common.redis.RedisBookmarkService;
+import com.project.cheerha.common.redis.cache.RedisBookmarkService;
 import com.project.cheerha.domain.bookmark.dto.response.BookmarkCustomAgeResponseDto;
 import com.project.cheerha.domain.bookmark.dto.response.ReadBookmarkResponseDto;
 import com.project.cheerha.domain.bookmark.entity.Bookmark;

@@ -1,15 +1,11 @@
 package com.project.cheerha.domain.jobopening.service;
 
-import com.project.cheerha.common.exception.client.BadRequestException;
-import com.project.cheerha.common.exception.client.ClientErrorCode;
+import com.project.cheerha.common.util.variable.IndexName;
 import com.project.cheerha.domain.history.service.HistoryService;
 import com.project.cheerha.domain.jobopening.dto.request.ReadJobOpeningRequestDto;
 import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningResponseDto;
-import com.project.cheerha.domain.elasticsearch.IndexName;
 import com.project.cheerha.domain.jobopening.entity.JobOpening;
 import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
-import com.project.cheerha.domain.user.entity.User;
-import com.project.cheerha.domain.user.service.UserFindByService;
 import com.project.cheerha.domain.viewcount.entity.JobOpeningViewCount;
 import com.project.cheerha.domain.viewcount.repository.JobOpeningViewCountRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,14 +20,12 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @Service
 @RequiredArgsConstructor
 public class JobOpeningService {
 
     private final JobOpeningRepository jobOpeningRepository;
     private final HistoryService historyService;
-    private final UserFindByService userFindByIdService;
     private final JobOpeningFindByService jobOpeningFindByService;
     private final JobOpeningViewCountRepository jobOpeningViewCountRepository;
 
@@ -53,7 +47,6 @@ public class JobOpeningService {
 
     /**
      * 페이지 리다이렉트를 위한 서비스 로직입니다.
-     * @param jobOpening
      * @return 리다이렉트 될 페이지 URL
      */
     public String getJobOpeningUrl(JobOpening jobOpening) {
@@ -81,8 +74,6 @@ public class JobOpeningService {
             Long userId,
             Pageable pageable
     ) {
-        User user = userFindByIdService.findById(userId);
-
         if (requestDto.getSearchTerm() != null) {
             historyService.saveSearchTerm(userId, requestDto.getSearchTerm());
         }
@@ -91,7 +82,6 @@ public class JobOpeningService {
 
         // 마감된 채용공고를 제외하도록 필터링
         dtoPage = filterExpiredJobOpenings(dtoPage);
-
 
         return dtoPage;
     }
@@ -111,7 +101,7 @@ public class JobOpeningService {
     public Page<ReadJobOpeningResponseDto> readTop100PopularJobOpenings(Pageable pageable) {
         Pageable adjustedPageable = adjustPageable(pageable);
         // 인기 채용공고 조회
-        Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningRepository.findTop100PopularJobOpenings(pageable);
+        Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningRepository.findTop100PopularJobOpenings(adjustedPageable);
 
         // 마감된 채용공고를 제외하도록 필터링
         dtoPage = filterExpiredJobOpenings(dtoPage);
@@ -155,13 +145,11 @@ public class JobOpeningService {
     private Pageable adjustPageable(Pageable pageable) {
         int pageSize = Math.min(pageable.getPageSize(), IndexName.MAX_POPULAR_SIZE);
         int pageNumber = pageable.getPageNumber();
-        int from = pageNumber * pageSize;
 
         // 총 페이지 수가 초과되지 않도록 처리
         int totalPages = (int) Math.ceil((double) IndexName.MAX_JOP_OPENING_SIZE / pageSize); // totalElements = 100
         if (pageNumber >= totalPages) {
             pageNumber = totalPages - 1;  // 페이지 번호가 totalPages보다 크면 마지막 페이지로 설정
-            from = pageNumber * pageSize;  // 새로운 offset 계산
         }
 
         // PageRequest를 사용하여 페이지 번호와 페이지 크기 설정

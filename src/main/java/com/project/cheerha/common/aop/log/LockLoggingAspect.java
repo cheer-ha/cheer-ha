@@ -1,4 +1,4 @@
-package com.project.cheerha.common.logging;
+package com.project.cheerha.common.aop.log;
 
 import com.project.cheerha.domain.jobopening.entity.JobOpening;
 import lombok.extern.slf4j.Slf4j;

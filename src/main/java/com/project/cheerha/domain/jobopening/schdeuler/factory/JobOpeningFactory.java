@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.jobopening.service;
+package com.project.cheerha.domain.jobopening.schdeuler.factory;
 
 import com.project.cheerha.domain.jobopening.entity.EducationLevel;
 import com.project.cheerha.domain.jobopening.entity.EmploymentType;
@@ -9,9 +9,9 @@ import java.time.ZonedDateTime;
 import java.util.Random;
 import java.util.UUID;
 
-import static com.project.cheerha.common.util.CompanyList.companies;
-import static com.project.cheerha.common.util.LocationList.locations;
-import static com.project.cheerha.common.util.PositionList.positions;
+import static com.project.cheerha.common.util.factory.CompanyList.companies;
+import static com.project.cheerha.common.util.factory.LocationList.locations;
+import static com.project.cheerha.common.util.factory.PositionList.positions;
 
 public class JobOpeningFactory {
 

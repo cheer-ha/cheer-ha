@@ -1,4 +1,4 @@
-package com.project.cheerha.common.redis;
+package com.project.cheerha.common.redis.email;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;

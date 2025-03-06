@@ -1,4 +1,4 @@
-package com.project.cheerha.domain.jobopening.service;
+package com.project.cheerha.domain.jobopening.schdeuler.factory;
 
 import com.project.cheerha.domain.jobopening.entity.JobOpening;
 import com.project.cheerha.domain.keyword.entity.JobOpeningKeyword;

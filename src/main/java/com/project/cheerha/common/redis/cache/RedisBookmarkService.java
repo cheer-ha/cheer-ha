@@ -1,4 +1,4 @@
-package com.project.cheerha.common.redis;
+package com.project.cheerha.common.redis.cache;
 
 import com.project.cheerha.domain.bookmark.entity.Bookmark;
 import org.springframework.data.redis.core.RedisTemplate;

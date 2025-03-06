@@ -9,8 +9,6 @@ import com.project.cheerha.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Component
 @RequiredArgsConstructor
 public class UserFindByService {
@@ -24,8 +22,4 @@ public class UserFindByService {
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
             .orElseThrow(() -> new UnAuthorizedException(AuthErrorCode.INVALID_EMAIL));}
-
-    public List<User> findAllUsers() {
-        return userRepository.findAll();
-    }
 }

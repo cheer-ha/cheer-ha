@@ -1,4 +1,4 @@
-package com.project.cheerha.common.util;
+package com.project.cheerha.common.util.factory;
 
 public class CompanyList {
 
