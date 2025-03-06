@@ -21,8 +21,6 @@ public class BannedEmail {
 
     private ZonedDateTime createdAt = ZonedDateTime.now();
 
-    private boolean isDeleted = false;
-
     public static BannedEmail toEntity(String email, String message) {
         BannedEmail bannedIp = new BannedEmail();
         bannedIp.email = email;

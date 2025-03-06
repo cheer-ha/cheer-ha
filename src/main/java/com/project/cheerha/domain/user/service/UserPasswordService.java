@@ -5,6 +5,7 @@ import com.project.cheerha.common.exception.client.ClientErrorCode;
 import com.project.cheerha.common.exception.data.DataErrorCode;
 import com.project.cheerha.common.exception.data.NotFoundException;
 import com.project.cheerha.common.util.PasswordEncoder;
+import com.project.cheerha.domain.auth.repository.BannedEmailRepository;
 import com.project.cheerha.domain.user.dto.request.ResetPasswordRequestDto;
 import com.project.cheerha.domain.user.dto.request.UpdatePasswordRequestDto;
 import com.project.cheerha.domain.user.dto.response.UpdatePasswordResponseDto;
@@ -23,6 +24,7 @@ public class UserPasswordService {
     private final PasswordEncoder passwordEncoder;
     private final RedisTemplate<String, String> redisTemplate;
     private final UserRepository userRepository;
+    private final BannedEmailRepository bannedEmailRepository;
 
     private static final String PASSWORD_TOKEN_PREFIX = "password_verification";
 
@@ -40,7 +42,7 @@ public class UserPasswordService {
     }
 
     /**
-     * 비로그인 사용자의 패스워드 리셋
+     * 비로그인 사용자의 패스워드 리셋 또는 이메일 밴 삭제
      * @param requestDto 이메일, 토큰, 새 비밀번호
      */
     @Transactional
@@ -59,6 +61,9 @@ public class UserPasswordService {
         user.updatePassword(passwordEncoder.encode(requestDto.newPassword()));
 
         redisTemplate.delete(redisKey);
+        if (bannedEmailRepository.existsByEmail(requestDto.email())) {
+            bannedEmailRepository.deleteByEmail(requestDto.email());
+        }
         return UpdatePasswordResponseDto.toDto();
     }
 }
