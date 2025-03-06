@@ -7,12 +7,12 @@ import java.time.LocalDateTime;
 
 /**
  * API 응답을 위한 DTO 클래스입니다.
- * 이 클래스는 API 응답의 표준 구조를 정의하며, 성공 여부, 데이터, 메시지 및 타임스탬프를 포함합니다.
+ * 이 클래스는 API 응답의 표준 구조를 정의하며, 성공 여부, 데이터 및 타임스탬프를 포함합니다.
  */
 public record ApiResponseDto<T>(LocalDateTime timestamp, boolean isSuccessful, T data) {
 
     /**
-     * 생성자: isSuccessful, data, message를 입력받아 timestamp는 현재 시간으로 자동 설정합니다.
+     * 생성자: isSuccessful, data를 입력받아 timestamp는 현재 시간으로 자동 설정합니다.
      *
      * @param isSuccessful 응답의 성공 여부 (true: 성공, false: 실패)
      * @param data 응답 데이터
