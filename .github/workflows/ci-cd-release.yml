@@ -52,12 +52,10 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/cheer-ha:latest \
-                       -t ${{ secrets.DOCKER_USERNAME }}/cheer-ha:${{ github.sha }} .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/cheer-ha:latest
       - name: Push Docker Image to Docker Hub
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/cheer-ha:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/cheer-ha:${{ github.sha }}
 
       - name: Upload .env as artifact
         uses: actions/upload-artifact@v3
