@@ -90,6 +90,14 @@ public class JwtFilter implements Filter {
                 httpRequest.setAttribute("userRole", role);
             }
 
+            if ("/syncData".equals(url)) {
+                Role role = (Role) httpRequest.getAttribute("userRole");
+                if (role == null || !role.equals(Role.ADMIN)) {
+                    filterExceptionHandler.sendErrorResponse(httpResponse, HttpStatus.FORBIDDEN, "관리자만 접근 가능합니다.");
+                    return;
+                }
+            }
+
             chain.doFilter(request, response);
         } catch (ExpiredJwtException e) {
             log.error("Expired JWT token, 만료된 JWT token 입니다.", e);
