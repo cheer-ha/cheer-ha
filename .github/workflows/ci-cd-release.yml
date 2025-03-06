@@ -2,9 +2,9 @@ name: CI/CD for Cheer-Ha
 
 on:
   push:
-    branches: [cd/setup] #테스트용으로 비워 둠
+    branches: [cd/setup]
   pull_request:
-    branches: [release/1.0.2]
+    branches: [release/*]
 
 jobs:
   build:
@@ -45,18 +45,25 @@ jobs:
           TOKEN=$(curl -s -H "Content-Type: application/json" -X POST -d \
           '{"username": "${{ secrets.DOCKER_USERNAME }}", "password": "${{ secrets.DOCKER_PASSWORD }}"}' \
           https://hub.docker.com/v2/users/login/ | jq -r .token)
-        
+          
           curl -X DELETE \
           -H "Authorization: Bearer $TOKEN" \
           "https://hub.docker.com/v2/repositories/${{ secrets.DOCKER_USERNAME }}/cheer-ha/tags/latest/"
 
       - name: Build Docker Image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/cheer-ha:latest .
-
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/cheer-ha:latest \
+                       -t ${{ secrets.DOCKER_USERNAME }}/cheer-ha:${{ github.sha }} .
       - name: Push Docker Image to Docker Hub
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/cheer-ha:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/cheer-ha:${{ github.sha }}
+
+      - name: Upload .env as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: env-file
+          path: .env
 
   deploy:
     name: Deploy to AWS Auto Scaling Group
@@ -64,6 +71,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Download .env artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: env-file
+          path: .
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -73,4 +86,52 @@ jobs:
 
       - name: Trigger ASG Rolling Update
         run: |
-          aws autoscaling start-instance-refresh --auto-scaling-group-name cheerha-auto
+          aws autoscaling start-instance-refresh \
+            --auto-scaling-group-name cheerha-auto \
+            --strategy Rolling \
+            --preferences '{"MinHealthyPercentage":100,"InstanceWarmup":300,"MaxHealthyPercentage":110}'
+
+      - name: Monitor ASG Rolling Update
+        run: |
+          echo "ASG 인스턴스 Refresh 모니터링 시작..."
+          while true; do
+            STATUS=$(aws autoscaling describe-instance-refreshes --auto-scaling-group-name cheerha-auto --query "InstanceRefreshes[0].Status" --output text)
+            echo "현재 상태: $STATUS"
+            if [[ "$STATUS" == "Successful" || "$STATUS" == "Failed" || "$STATUS" == "Cancelled" ]]; then
+              break
+            fi
+            sleep 10
+          done
+          if [ "$STATUS" != "Successful" ]; then
+            echo "Instance Refresh 실패: $STATUS"
+            exit 1
+          fi
+          echo "Instance Refresh 성공적으로 완료됨!"
+
+      - name: Health Check on Instances
+        run: |
+          INSTANCES=$(aws autoscaling describe-auto-scaling-groups \
+            --auto-scaling-group-name cheerha-auto \
+            --query "AutoScalingGroups[0].Instances[?LifecycleState=='InService'].InstanceId" \
+            --output json)
+          for INSTANCE_ID in $(echo "$INSTANCES" | jq -r '.[]'); do
+            IP=$(aws ec2 describe-instances \
+              --instance-ids $INSTANCE_ID \
+              --query "Reservations[0].Instances[0].PublicIpAddress" \
+              --output text)
+            if [ -z "$IP" ]; then
+              echo "인스턴스 $INSTANCE_ID에 퍼블릭 IP가 없어 스킵"
+              continue
+            fi
+            for i in {1..3}; do
+              HEALTH=$(curl -s --max-time 10 "http://$IP:8080/health" || echo "DOWN")
+              if echo "$HEALTH" | grep -q "UP"; then
+                echo "인스턴스 $INSTANCE_ID ($IP) 건강함"
+                break
+              elif [ $i -eq 3 ]; then
+                echo "인스턴스 $INSTANCE_ID ($IP) 헬스체크 실패함"
+                exit 1
+              fi
+              sleep 5
+            done
+          done
