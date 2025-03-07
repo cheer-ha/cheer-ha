@@ -19,60 +19,54 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
 
-    /**
-     * 알림(Notification) 생성
-     *
-     * @param notificationRecipientDtoList : 알림 받을 사용자 및 해당 사용자의 키워드 ID를 포함한 DTO 목록
-     * @param keywordIdToUrlList           : key가 키워드 ID, value가 URL 목록인 map
-     */
     @Transactional
     public void createNotification(
         List<NotificationRecipientDto> notificationRecipientDtoList,
         Map<Long, List<String>> keywordIdToUrlList
     ) {
-        // key: 이메일 주소, value: 채용 공고 URL Set
         Map<String, Set<String>> emailToUrlSet = new HashMap<>();
 
-        // 겹치는 키워드 ID로 이메일 주소와 URL Set 매칭
-        matchEmailToUrlSetByKeywordId(notificationRecipientDtoList, keywordIdToUrlList,
-            emailToUrlSet);
+        matchEmailToUrlSetByKeywordId(
+            notificationRecipientDtoList,
+            keywordIdToUrlList,
+            emailToUrlSet
+        );
 
-        // 이메일 주소별로 알림 생성 및 저장
+        Map<String, Map<String, Long>> emailToUrlToOverlapCount = compareKeywordOverlap(
+            invertEmailToKeywordIdList(notificationRecipientDtoList),
+            invertKeywordIdToUrlList(keywordIdToUrlList)
+        );
+
         emailToUrlSet.forEach((email, urlSet) -> {
 
-            // 이미 존재하는 알림 객체 조회
             List<Notification> foundNotificationList = notificationRepository.findAllByEmailAndJobOpeningUrlIn(
-                email, urlSet.stream().toList());
+                email,
+                urlSet.stream().toList()
+            );
 
-            // 이미 존재하는 URL Set 조회
             Set<String> existingUrlSet = findExistingUrlSet(foundNotificationList);
 
-            // 이미 존재하는지 검증 후 알림 객체 생성
-            List<Notification> notificationList = createNotificationList(email, urlSet,
-                existingUrlSet);
+            List<Notification> notificationList = createNotificationList(
+                email,
+                urlSet,
+                existingUrlSet,
+                emailToUrlToOverlapCount
+            );
 
-            // 알림 목록을 한꺼번에 저장
             notificationRepository.saveAll(notificationList);
         });
     }
 
-    /**
-     * 겹치는 키워드 ID로 이메일 주소와 채용 공고 URL 매칭
-     *
-     * @param notificationRecipientDtoList : 알림을 받을 사용자 목록
-     * @param keywordIdToUrlList           : key: 키워드 ID, value: URL 목록
-     * @param emailToUrlSet                : 이메일 주소 key로 사용해 URL Set을 추가하는 Map
-     */
     private void matchEmailToUrlSetByKeywordId(
         List<NotificationRecipientDto> notificationRecipientDtoList,
         Map<Long, List<String>> keywordIdToUrlList,
         Map<String, Set<String>> emailToUrlSet
     ) {
-        // 각 사용자가 고른 키워드 ID와 일치하는 URL 목록 조회
         for (NotificationRecipientDto dto : notificationRecipientDtoList) {
-            List<String> matchingUrlList = keywordIdToUrlList.getOrDefault(dto.keywordId(), List.of());
+            List<String> matchingUrlList = keywordIdToUrlList.getOrDefault(
+                dto.keywordId(),
+                List.of());
 
-            // 키워드 ID에 해당하는 URL 목록이 있으면 추가
             if (!matchingUrlList.isEmpty()) {
                 emailToUrlSet.computeIfAbsent(
                     dto.email(),
@@ -82,28 +76,81 @@ public class NotificationService {
         }
     }
 
-    /**
-     *  이미 존재하는 URL을 Set으로 변환
-     * @param notificationList : 기존에 존재하는 알림 목록
-     * @return 알림에서 추출한 채용 공고 URL Set
-     */
     private Set<String> findExistingUrlSet(List<Notification> notificationList) {
         return notificationList.stream()
             .map(Notification::getJobOpeningUrl)
             .collect(Collectors.toSet());
     }
 
-    /**
-     * 이미 존재하는 URL을 제외하고 새로운 알림 객체 목록 생성
-     * @param email : 알림을 받을 사용자 이메일
-     * @param urlSet : 알림에 들어갈 채용 공고 URL Set
-     * @param existingUrlSet : 이미 존재하는 URL Set
-     * @return 새로 생성할 알림 객체 목록
-     */
-    private List<Notification> createNotificationList(String email, Set<String> urlSet, Set<String> existingUrlSet) {
+    private List<Notification> createNotificationList(String email, Set<String> urlSet,
+        Set<String> existingUrlSet, Map<String, Map<String, Long>> emailToUrlToOverlapCount) {
         return urlSet.stream()
             .filter(jobOpeningUrl -> !existingUrlSet.contains(jobOpeningUrl))
-            .map(jobOpeningUrl -> Notification.toEntity(email, jobOpeningUrl))
-            .toList();
+            .map(jobOpeningUrl -> {
+                long overlapCount = emailToUrlToOverlapCount.getOrDefault(email, new HashMap<>())
+                    .getOrDefault(jobOpeningUrl, 0L);
+                return Notification.toEntity(email, jobOpeningUrl, (int) overlapCount);
+            }).collect(Collectors.toList());
+    }
+
+    // keywordIdToUrlList를 URL -> keywordId 목록으로 바꾸는 메서드
+    private Map<String, Set<Long>> invertKeywordIdToUrlList(
+        Map<Long, List<String>> keywordIdToUrlList) {
+        Map<String, Set<Long>> urlToKeywordIdSet = new HashMap<>();
+
+        keywordIdToUrlList.forEach((keywordId, urlList) -> {
+            for (String url : urlList) {
+                urlToKeywordIdSet
+                    .computeIfAbsent(url, urlAsKey -> new HashSet<>())
+                    .add(keywordId);
+            }
+        });
+
+        return urlToKeywordIdSet;
+    }
+
+    // 이메일을 키로, 키워드 ID를 값으로 바꾸는 메서드
+    private Map<String, Set<Long>> invertEmailToKeywordIdList(
+        List<NotificationRecipientDto> notificationRecipientDtoList) {
+        Map<String, Set<Long>> emailToKeywordIdSet = new HashMap<>();
+
+        notificationRecipientDtoList.forEach(dto -> {
+            emailToKeywordIdSet
+                .computeIfAbsent(dto.email(), emailAsKey -> new HashSet<>())
+                .add(dto.keywordId());
+        });
+
+        return emailToKeywordIdSet;
+    }
+
+    // 겹치는 키워드 숫자를 세는 로직
+    private Map<String, Map<String, Long>> compareKeywordOverlap(
+        Map<String, Set<Long>> emailToKeywordIdSet,
+        Map<String, Set<Long>> urlToKeywordIdSet
+    ) {
+        Map<String, Map<String, Long>> emailToUrlToOverlapCount = new HashMap<>();
+
+        Set<String> emailSet = emailToKeywordIdSet.keySet();
+        Set<String> urlSet = urlToKeywordIdSet.keySet();
+
+        for (String email : emailSet) {
+            Set<Long> userKeywords = emailToKeywordIdSet.get(email);
+
+            for (String url : urlSet) {
+                Set<Long> jobOpeningKeywords = urlToKeywordIdSet.get(url);
+
+                long overlapCount = userKeywords.stream()
+                    .filter(jobOpeningKeywords::contains)
+                    .count();
+
+                if (overlapCount > 0) {
+                    emailToUrlToOverlapCount
+                        .computeIfAbsent(email, emailAsKey -> new HashMap<>())
+                        .put(url, overlapCount);
+                }
+            }
+        }
+
+        return emailToUrlToOverlapCount;
     }
 }

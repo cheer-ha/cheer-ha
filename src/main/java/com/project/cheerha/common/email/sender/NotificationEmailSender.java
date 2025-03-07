@@ -6,6 +6,7 @@ import com.project.cheerha.domain.notification.repository.NotificationRepository
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -41,8 +42,13 @@ public class NotificationEmailSender {
 
     private void sendNotificationEmail(String recipientEmail, Set<Notification> notificationSet) {
         try {
+            // 내림차순 정렬 (겹치는 키워드 개수가 많은 순)
+            List<Notification> sortedNotificationList = notificationSet.stream()
+                .sorted((n1, n2) -> Integer.compare(n2.getOverlapCount(), n1.getOverlapCount()))
+                .toList();
+
             // 이메일 내용 생성
-            String[] emailData = NotificationFormat.createEmailNotification(notificationSet);
+            String[] emailData = NotificationFormat.createEmailNotification(sortedNotificationList);
             String subject = emailData[0];
             String content = emailData[1];
 
@@ -50,7 +56,7 @@ public class NotificationEmailSender {
             emailSender.send(recipientEmail, subject, content);
 
             // 전송된 알림 상태 변경
-            notificationSet.forEach(notification -> {
+            sortedNotificationList.forEach(notification -> {
                 notification.markEmailAsSent();
                 notificationRepository.save(notification);
             });
