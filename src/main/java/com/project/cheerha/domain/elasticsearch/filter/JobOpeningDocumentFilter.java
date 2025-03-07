@@ -95,26 +95,65 @@ public class JobOpeningDocumentFilter {
 
         // 자격 요건 필터링
         if (requestDto.getRequiredSkill() != null) {
-            boolQueryBuilder.filter(f -> f
-                    .term(t -> t
-                            .field(IndexName.REQUIRED_SKILLS + IndexName.KEYWORD_SUFFIX)
+            boolQueryBuilder.should(s -> s
+                    .fuzzy(f -> f
+                            .field(IndexName.REQUIRED_SKILLS) // fuzzy를 적용할 필드
                             .value(requestDto.getRequiredSkill())
+                            .fuzziness("AUTO")
                     )
             );
         }
 
         // 검색어 조회
         if (requestDto.getSearchTerm() != null) {
+            // 1순위: title 필드
             boolQueryBuilder.should(s -> s
                     .fuzzy(f -> f
                             .field(IndexName.TITLE) // fuzzy를 적용할 필드
                             .value(requestDto.getSearchTerm())
                             .fuzziness("AUTO")
+                            .boost(2.0f) // title 우선순위 2배 증가
                     )
             );
             boolQueryBuilder.should(s -> s
                     .match(m -> m
                             .field(IndexName.TITLE)
+                            .query(requestDto.getSearchTerm())
+                            .operator(Operator.And)
+                            .boost(2.0f) // title 우선순위 2배 증가
+                    )
+            );
+
+            // 2순위: company 필드
+            boolQueryBuilder.should(s -> s
+                    .fuzzy(f -> f
+                            .field(IndexName.COMPANY) // fuzzy를 적용할 필드
+                            .value(requestDto.getSearchTerm())
+                            .fuzziness("AUTO")
+                            .boost(1.5f) // company 우선순위 1.5배 증가
+                    )
+            );
+            boolQueryBuilder.should(s -> s
+                    .match(m -> m
+                            .field(IndexName.COMPANY)
+                            .query(requestDto.getSearchTerm())
+                            .operator(Operator.And)
+                            .boost(1.5f) // company 우선순위 1.5배 증가
+                    )
+            );
+
+            // 3순위: REQUIRED_SKILLS 필드 (fuzzy 적용)
+            boolQueryBuilder.should(s -> s
+                    .fuzzy(f -> f
+                            .field(IndexName.REQUIRED_SKILLS) // fuzzy를 적용할 필드
+                            .value(requestDto.getSearchTerm())
+                            .fuzziness("AUTO")
+                            .boost(1.0f)
+                    )
+            );
+            boolQueryBuilder.should(s -> s
+                    .match(m -> m
+                            .field(IndexName.REQUIRED_SKILLS)
                             .query(requestDto.getSearchTerm())
                             .operator(Operator.And)
                     )

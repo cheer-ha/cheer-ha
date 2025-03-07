@@ -7,6 +7,7 @@ public class IndexName {
     public static final String CURRENT_DATE_TIME = "now";
     public static final String JOB_OPENING_DOCUMENT = "job-opening";
     public static final String TITLE = "title";
+    public static final String COMPANY = "company";
     public static final String LOCATION = "location";
     public static final String EMPLOYMENT_TYPE = "employmentType";
     public static final String EDUCATION_LEVEL = "educationLevel";
@@ -17,5 +18,4 @@ public class IndexName {
     public static final String CREATED_AT = "createdAt";
     public static final String VIEW_COUNT = "viewCount";
     public static final String REQUIRED_SKILLS = "requiredSkills";
-    public static final String KEYWORD_SUFFIX = ".keyword";
 }
