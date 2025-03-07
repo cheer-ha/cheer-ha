@@ -32,7 +32,7 @@ public class User implements Serializable {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 5, nullable = false )
+    @Column(length = 20, nullable = false )
     private Role role;
 
     private boolean isNotificationEnabled = false;

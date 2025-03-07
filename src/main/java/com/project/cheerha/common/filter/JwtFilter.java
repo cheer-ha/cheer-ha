@@ -29,7 +29,7 @@ import org.springframework.util.PatternMatchUtils;
 public class JwtFilter implements Filter {
 
     private static final String[] WHITE_LIST = {
-            "/auth/signup", "/auth/login", "/actuator/health", "/actuator/prometheus",
+            "/auth/signup", "/auth/signup-verify", "/auth/login", "/actuator/health", "/actuator/prometheus",
             "/users/email-verification/send-password-reset-verify", "/users/email-verification/password-reset-verify",
             "/users/password/reset"};
     private final JwtSecurityProperties securityProperties;
@@ -88,6 +88,14 @@ public class JwtFilter implements Filter {
             if (bearerJwt.startsWith(securityProperties.token().prefix()) && decryptedData.length > 1) {
                 Role role = Role.valueOf(decryptedData[1]);
                 httpRequest.setAttribute("userRole", role);
+            }
+
+            if ("/syncData".equals(url)) {
+                Role role = (Role) httpRequest.getAttribute("userRole");
+                if (role == null || !role.equals(Role.ADMIN)) {
+                    filterExceptionHandler.sendErrorResponse(httpResponse, HttpStatus.FORBIDDEN, "관리자만 접근 가능합니다.");
+                    return;
+                }
             }
 
             chain.doFilter(request, response);
