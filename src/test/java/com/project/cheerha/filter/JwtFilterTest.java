@@ -1,4 +1,4 @@
-package com.project.cheerha.jwt;
+package com.project.cheerha.filter;
 
 import com.project.cheerha.common.filter.JwtFilter;
 import com.project.cheerha.common.exception.handler.FilterExceptionHandler;
@@ -25,7 +25,7 @@ import java.io.IOException;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class DoFilterTest {
+public class JwtFilterTest {
 
     @Mock
     private RedisBlackListService redisBlackListService;
