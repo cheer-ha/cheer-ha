@@ -46,7 +46,7 @@ class IpBlockingAspectTest {
     @Mock
     private HttpServletRequest request;
 
-    private static final String TEST_IP = "192.168.1.1";
+    private static final String TEST_IP = "127.0.0.1";
     private static final String BLOCK_KEY = "block:ip:" + TEST_IP;
     private static final String ATTEMPT_KEY = "attempt:ip:" + TEST_IP;
     private static final String EMAIL_1 = "email1@example.com";
