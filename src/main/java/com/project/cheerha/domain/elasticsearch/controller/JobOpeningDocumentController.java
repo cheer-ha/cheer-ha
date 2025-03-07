@@ -85,6 +85,15 @@ public class JobOpeningDocumentController {
         return ApiResponseDto.success(jobOpeningElasticResponseDtoPage);
     }
 
+    /**
+     * Elasticsearch의 자동 완성 검색 기능을 활용하여 데이터를 조회하는 API입니다.
+     *
+     * @param requestDto 사용자가 입력한 검색어를 포함한 DTO
+     * @param authUser 현재 로그인한 사용자의 정보
+     * @param page 조회할 페이지 번호
+     * @param size 페이지 당 조회할 데이터 수
+     * @return 자동 완성으로 검색된 채용 공고 목록을 페이지네이션 형태로 반환
+     */
     @GetMapping("/search/elastic/auto")
     public ResponseEntity<ApiResponseDto<Page<ReadJobOpeningElasticResponseDto>>> readJobOpeningElasticAuto(
         @ModelAttribute ReadJobOpeningElasticAutoRequestDto requestDto,

@@ -86,6 +86,9 @@ public class JobOpeningDocumentService {
         return new PageImpl<>(dtoList, pageable, IndexName.MAX_JOB_OPENING_SIZE);
     }
 
+    /**
+     * 자동 완성 기능을 통한 채용 공고 조회
+     */
     @Transactional
     public Page<ReadJobOpeningElasticResponseDto> readJobOpeningElasticAuto(
         ReadJobOpeningElasticAutoRequestDto requestDto,
