@@ -51,7 +51,7 @@ public class TaskConsumer {
                 TaskHandler handler = handlers.get(taskType);
                 if (handler != null) {
                     handler.handle(payload);
-                    log.info("TaskConsumer: 작업 시작: {} at {}", taskType, Instant.now());
+                    log.info("TaskConsumer: 작업 완료: {} at {}", taskType, Instant.now());
                 } else {
                     log.info("TaskConsumer: 작업 없음: {}", taskType);
                 }
