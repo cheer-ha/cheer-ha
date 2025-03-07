@@ -123,6 +123,14 @@ public class JobOpeningDocumentFilter {
                             .boost(2.0f) // title 우선순위 2배 증가
                     )
             );
+            // 한글 형태소 검색
+            boolQueryBuilder.should(s -> s
+                .match(m -> m
+                    .field(IndexName.TITLE + IndexName.MORPH_SUFFIX)
+                    .query(requestDto.getSearchTerm())
+                    .boost(2.0f) // title 우선순위 2배 증가
+                )
+            );
 
             // 2순위: company 필드
             boolQueryBuilder.should(s -> s
@@ -141,6 +149,14 @@ public class JobOpeningDocumentFilter {
                             .boost(1.5f) // company 우선순위 1.5배 증가
                     )
             );
+            // 한글 형태소 검색
+            boolQueryBuilder.should(s -> s
+                .match(m -> m
+                    .field(IndexName.COMPANY + IndexName.MORPH_SUFFIX)
+                    .query(requestDto.getSearchTerm())
+                    .boost(1.5f) // company 우선순위 1.5배 증가
+                )
+            );
 
             // 3순위: REQUIRED_SKILLS 필드 (fuzzy 적용)
             boolQueryBuilder.should(s -> s
@@ -156,6 +172,7 @@ public class JobOpeningDocumentFilter {
                             .field(IndexName.REQUIRED_SKILLS)
                             .query(requestDto.getSearchTerm())
                             .operator(Operator.And)
+                            .boost(1.0f)
                     )
             );
         }
