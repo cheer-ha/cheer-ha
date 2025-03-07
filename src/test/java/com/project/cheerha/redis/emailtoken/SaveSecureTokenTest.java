@@ -1,4 +1,4 @@
-package com.project.cheerha.redis.emailtokenservice;
+package com.project.cheerha.redis.emailtoken;
 
 import com.project.cheerha.common.redis.email.EmailTokenService;
 import com.project.cheerha.common.util.SecureRandomUtil;

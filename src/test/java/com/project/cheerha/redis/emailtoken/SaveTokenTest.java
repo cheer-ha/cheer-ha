@@ -1,4 +1,4 @@
-package com.project.cheerha.redis.emailtokenservice;
+package com.project.cheerha.redis.emailtoken;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;

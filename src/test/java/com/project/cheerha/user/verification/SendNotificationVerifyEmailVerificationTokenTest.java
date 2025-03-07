@@ -1,4 +1,4 @@
-package com.project.cheerha.user;
+package com.project.cheerha.user.verification;
 
 import com.project.cheerha.common.email.sender.VerificationEmailSender;
 import com.project.cheerha.common.exception.client.BadRequestException;
@@ -39,7 +39,7 @@ public class SendNotificationVerifyEmailVerificationTokenTest {
     @Test
     void TestSendNotificationVerifyEmail_토큰_이메일_전송_성공() {
         Long userId = 1L;
-        User mockUser = TestUtils.spy(User.class, Map.of(
+        User mockUser = TestUtils.createEntity(User.class, Map.of(
                 "email", "test@example.com",
                 "isNotificationEnabled", false
         ));
@@ -57,7 +57,7 @@ public class SendNotificationVerifyEmailVerificationTokenTest {
     @Test
     void TestSendNotificationVerifyEmail_이미_알림_구독중인_유저() {
         Long userId = 2L;
-        User mockUser = TestUtils.spy(User.class, Map.of(
+        User mockUser = TestUtils.createEntity(User.class, Map.of(
                 "email", "test@example.com",
                 "isNotificationEnabled", true
         ));

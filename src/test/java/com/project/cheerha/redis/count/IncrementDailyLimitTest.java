@@ -1,4 +1,4 @@
-package com.project.cheerha.redis.checkdailyemailcount;
+package com.project.cheerha.redis.count;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.redis.email.CheckDailyEmailCount;
