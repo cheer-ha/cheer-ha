@@ -26,10 +26,10 @@ public class IncrementDailyLimitTest {
     CheckDailyEmailCount checkDailyEmailCount;
 
     @Mock
-    private RedisTemplate<String, String> redisTemplate;
+    RedisTemplate<String, String> redisTemplate;
 
     @Mock
-    private ValueOperations<String, String> valueOperations;
+    ValueOperations<String, String> valueOperations;
 
     private static final String TEST_EMAIL = "test@example.com";
     private static final String OPERATION_KEY = "password_reset";
