@@ -1,4 +1,4 @@
-package com.project.cheerha.user;
+package com.project.cheerha.user.verification;
 
 import com.project.cheerha.common.email.sender.VerificationEmailSender;
 import com.project.cheerha.common.exception.client.BadRequestException;

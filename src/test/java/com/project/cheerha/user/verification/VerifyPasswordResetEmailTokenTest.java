@@ -1,8 +1,7 @@
-package com.project.cheerha.user;
+package com.project.cheerha.user.verification;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
-import com.project.cheerha.common.exception.data.DataErrorCode;
 import com.project.cheerha.common.exception.data.NotFoundException;
 import com.project.cheerha.common.redis.email.EmailTokenService;
 import com.project.cheerha.domain.user.repository.UserRepository;
