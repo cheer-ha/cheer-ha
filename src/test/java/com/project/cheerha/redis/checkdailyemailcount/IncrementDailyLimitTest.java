@@ -53,7 +53,7 @@ public class IncrementDailyLimitTest {
 
     @Test
     void incrementDailyLimit_네번째요청_예외발생() {
-        when(valueOperations.get(REDIS_KEY)).thenReturn("3"); // 이미 3번 요청됨
+        when(valueOperations.get(REDIS_KEY)).thenReturn("3");
 
         BadRequestException exception = assertThrows(BadRequestException.class,
                 () -> checkDailyEmailCount.incrementDailyLimit(TEST_EMAIL, OPERATION_KEY));
@@ -66,7 +66,7 @@ public class IncrementDailyLimitTest {
 
     @Test
     void incrementDailyLimit_잘못된값_예외발생() {
-        when(valueOperations.get(REDIS_KEY)).thenReturn("INVALID"); // 잘못된 형식의 데이터
+        when(valueOperations.get(REDIS_KEY)).thenReturn("INVALID");
 
         assertThrows(NumberFormatException.class,
                 () -> checkDailyEmailCount.incrementDailyLimit(TEST_EMAIL, OPERATION_KEY));

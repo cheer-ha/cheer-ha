@@ -75,8 +75,6 @@ public class DoFilterTest {
                 .sendErrorResponse(any(HttpServletResponse.class), eq(HttpStatus.BAD_REQUEST), anyString());
     }
 
-
-
     @Test
     void testFilter_토큰값이_정상일때() throws ServletException, IOException {
         when(request.getRequestURI()).thenReturn("/api/protected");
