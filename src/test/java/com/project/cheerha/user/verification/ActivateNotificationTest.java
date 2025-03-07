@@ -30,7 +30,7 @@ public class ActivateNotificationTest {
 
     @Test
     void activateNotification_성공() {
-        User mockUser = TestUtils.spy(User.class, Map.of(
+        User mockUser = TestUtils.createEntity(User.class, Map.of(
                 "email", "test@example.com",
                 "isNotificationEnabled", false
         ));

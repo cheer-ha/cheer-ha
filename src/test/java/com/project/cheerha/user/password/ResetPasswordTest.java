@@ -55,7 +55,7 @@ public class ResetPasswordTest {
         // Given
         ResetPasswordRequestDto requestDto = new ResetPasswordRequestDto(email, newPassword, validToken);
 
-        User mockUser = TestUtils.spy(User.class, Map.of(
+        User mockUser = TestUtils.createEntity(User.class, Map.of(
                 "email", email,
                 "password", encodedPassword
         ));
@@ -105,8 +105,8 @@ public class ResetPasswordTest {
     }
 
     @Test
-    void resetPassword_밴된_이메일_없으면_삭제안함() {
-        User mockUser = TestUtils.spy(User.class, Map.of(
+    void resetPassword_밴된_이메일_아니면_삭제안함() {
+        User mockUser = TestUtils.createEntity(User.class, Map.of(
                 "email", email,
                 "password", encodedPassword
         ));

@@ -40,7 +40,7 @@ public class UpdatePasswordTest {
     @Test
     void updatePassword_성공() {
         UpdatePasswordRequestDto requestDto = new UpdatePasswordRequestDto(oldPassword, newPassword);
-        User mockUser = TestUtils.spy(User.class, Map.of(
+        User mockUser = TestUtils.createEntity(User.class, Map.of(
                 "email", email,
                 "password", encodedPassword
         ));
@@ -60,7 +60,7 @@ public class UpdatePasswordTest {
     @Test
     void updatePassword_현재비밀번호_불일치() {
         UpdatePasswordRequestDto requestDto = new UpdatePasswordRequestDto("wrongPassword", newPassword);
-        User mockUser = TestUtils.spy(User.class, Map.of(
+        User mockUser = TestUtils.createEntity(User.class, Map.of(
                 "email", email,
                 "password", encodedPassword
         ));

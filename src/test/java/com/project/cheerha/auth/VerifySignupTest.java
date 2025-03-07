@@ -48,7 +48,7 @@ public class VerifySignupTest {
         );
 
         String encodedPassword = "encodedPassword123";
-        User mockUser = TestUtils.spy(User.class, Map.of(
+        User mockUser = TestUtils.createEntity(User.class, Map.of(
                 "email", "test@example.com",
                 "password", encodedPassword,
                 "name", "testUser",
