@@ -3,6 +3,7 @@ package com.project.cheerha.domain.elasticsearch.controller;
 import com.project.cheerha.common.annotation.Auth;
 import com.project.cheerha.common.dto.ApiResponseDto;
 import com.project.cheerha.common.dto.AuthUser;
+import com.project.cheerha.domain.elasticsearch.dto.request.ReadJobOpeningElasticAutoRequestDto;
 import com.project.cheerha.domain.elasticsearch.dto.request.ReadJobOpeningElasticRequestDto;
 import com.project.cheerha.domain.elasticsearch.dto.response.ReadJobOpeningElasticResponseDto;
 import com.project.cheerha.domain.elasticsearch.service.JobOpeningDocumentService;
@@ -80,6 +81,21 @@ public class JobOpeningDocumentController {
         Long userId = authUser.id();
 
         Page<ReadJobOpeningElasticResponseDto> jobOpeningElasticResponseDtoPage = jobOpeningDocumentService.readJobOpeningUsingElasticSearchFilter(requestDto, userId, pageable);
+
+        return ApiResponseDto.success(jobOpeningElasticResponseDtoPage);
+    }
+
+    @GetMapping("/search/elastic/auto")
+    public ResponseEntity<ApiResponseDto<Page<ReadJobOpeningElasticResponseDto>>> readJobOpeningElasticAuto(
+        @ModelAttribute ReadJobOpeningElasticAutoRequestDto requestDto,
+        @Auth AuthUser authUser,
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = validatePageSize(page, size);
+        Long userId = authUser.id();
+
+        Page<ReadJobOpeningElasticResponseDto> jobOpeningElasticResponseDtoPage = jobOpeningDocumentService.readJobOpeningElasticAuto(requestDto, userId, pageable);
 
         return ApiResponseDto.success(jobOpeningElasticResponseDtoPage);
     }
