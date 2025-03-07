@@ -54,7 +54,6 @@ public class SendNotificationVerifyEmailVerificationTokenTest {
         verify(verificationEmailSender, times(1)).sendVerificationEmail(eq(mockUser.getEmail()), eq("testToken"));
     }
 
-
     @Test
     void TestSendNotificationVerifyEmail_이미_알림_구독중인_유저() {
         Long userId = 2L;
