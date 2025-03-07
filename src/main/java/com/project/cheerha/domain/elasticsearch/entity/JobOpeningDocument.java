@@ -68,7 +68,7 @@ public class JobOpeningDocument {
     @Field(type = FieldType.Integer)  // Integer 타입으로 저장
     private int viewCount; // 조회수
 
-    @Field(type = FieldType.Keyword)  // List<String>의 경우 Keyword 타입 사용
+    @Field(type = FieldType.Text)  // List<String>의 경우 Keyword 타입 사용
     private List<String> requiredSkills = new ArrayList<>(); // 자격 요건 키워드 리스트
 
     /**
