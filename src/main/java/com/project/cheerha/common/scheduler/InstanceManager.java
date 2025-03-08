@@ -18,6 +18,9 @@ public class InstanceManager {
     private final ObjectMapper objectMapper;
     private static final String LATEST_INSTANCE_KEY = "scheduler:latest-instance";
 
+    /**
+     * 현재 인스턴스가 최신 인스턴스인지 확인
+     */
     public boolean isLatestInstance() {
         try {
             String latestInstanceJson = (String) redissonClient.getBucket(LATEST_INSTANCE_KEY).get();
@@ -30,14 +33,16 @@ public class InstanceManager {
 
             long currentStartTime = InstanceUtil.getInstanceStartTime().toEpochMilli();
 
-            return InstanceUtil.getInstanceId().equals(latestInstanceId)
-                    || currentStartTime > latestStartTime;
+            return InstanceUtil.getInstanceId().equals(latestInstanceId) || currentStartTime > latestStartTime;
         } catch (Exception e) {
             log.error("인스턴스 확인 중 오류 발생", e);
             return false;
         }
     }
 
+    /**
+     * Redis 에 담긴 최신 인스턴스 정보와 현재 인스턴스를 비교 후 업데이트
+     */
     public void updateLatestInstance() {
         try {
             //Redis 에서 최신 인스턴스 정보 가져오기

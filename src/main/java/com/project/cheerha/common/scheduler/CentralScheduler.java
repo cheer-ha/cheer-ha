@@ -22,6 +22,9 @@ public class CentralScheduler {
     private final TaskProducer taskProducer;
     private final List<TaskHandler> schedulerTaskHandlers;
 
+    /**
+     * 5초에 한번 작업 스케줄을 확인하고, 새 작업을 스케줄링(등록)합니다.
+     */
     @Scheduled(fixedDelay = 5000)
     public void scheduleTasks() {
         instanceManager.updateLatestInstance();

@@ -26,12 +26,18 @@ public class TaskConsumer {
     private static final String SORTED_SET_KEY = "scheduled-tasks";
     private volatile boolean isRunning = true;
 
+    /**
+     * 생성자를 초기화 할 떄 TaskHandler 의 구현체들을 가져옴
+     */
     public TaskConsumer(InstanceManager instanceManager, RedissonClient redissonClient, List<TaskHandler> handlerList) {
         this.instanceManager = instanceManager;
         this.redissonClient = redissonClient;
         handlerList.forEach(handler -> handlers.put(handler.getTaskType(), handler));
     }
 
+    /**
+     * Redis 에서 실행 시점이 된 작업들을 가져와서 실행함
+     */
     @Scheduled(fixedDelay = 5000)
     public void processDueTasks() {
         instanceManager.updateLatestInstance();
@@ -67,6 +73,10 @@ public class TaskConsumer {
         isRunning = false;
     }
 
+    /**
+     * 현재 시간보다 작거나 같은 score 를 가진 작업들을 확인
+     * @return 해당 조건을 충족하는 작업(실행 시켜야 할 작업)
+     */
     private String getDueTask() {
         RScoredSortedSet<String> sortedSet = redissonClient.getScoredSortedSet(SORTED_SET_KEY);
         long currentTime = Instant.now().toEpochMilli();
