@@ -30,9 +30,4 @@ public class NotificationSenderTaskHandler implements TaskHandler {
     public long getScheduleIntervalMillis() {
         return 60000L; //60초
     }
-
-    @Override
-    public Map<String, Object> getDefaultPayload() {
-        return null;
-    }
 }

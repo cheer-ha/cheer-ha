@@ -37,9 +37,4 @@ public class NotificationDataFetchingTaskHandler implements TaskHandler {
     public long getScheduleIntervalMillis() {
         return 30000L; //30초
     }
-
-    @Override
-    public Map<String, Object> getDefaultPayload() {
-        return null;
-    }
 }

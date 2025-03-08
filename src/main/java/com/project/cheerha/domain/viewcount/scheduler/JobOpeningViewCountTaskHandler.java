@@ -45,9 +45,4 @@ public class JobOpeningViewCountTaskHandler implements TaskHandler {
     public long getScheduleIntervalMillis() {
         return 3600000L; // 1시간
     }
-
-    @Override
-    public Map<String, Object> getDefaultPayload() {
-        return null;
-    }
 }

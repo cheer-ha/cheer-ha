@@ -53,9 +53,4 @@ public class SearchHistoryTaskHandler implements TaskHandler {
     public long getScheduleIntervalMillis() {
         return 1800000L; //30분
     }
-
-    @Override
-    public Map<String, Object> getDefaultPayload() {
-        return null;
-    }
 }
