@@ -50,9 +50,8 @@ public class TaskProducer {
         try {
             String taskDataStr = objectMapper.writeValueAsString(taskData);
             sortedSet.add(scheduledTime.toEpochMilli(), taskDataStr);
-            log.info("✅ 태스크 등록 완료: {} (실행 시간: {})", taskType, scheduledTime);
         } catch (Exception e) {
-            log.info("태스크 등록 실패: {}", taskType, e);
+            log.error("태스크 등록 실패: {}", taskType, e);
         }
     }
 }

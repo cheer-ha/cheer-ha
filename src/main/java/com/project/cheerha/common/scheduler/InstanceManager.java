@@ -51,8 +51,6 @@ public class InstanceManager {
 
                 //Redis 에 인스턴스가 더 최신이면 갱신하지 않음
                 if (latestStartTime >= currentStartTime) {
-                    log.info("현재 인스턴스는 최신이 아님 (등록 안함) - 기존: {}, 현재: {}",
-                            latestStartTime, currentStartTime);
                     return;
                 }
             }

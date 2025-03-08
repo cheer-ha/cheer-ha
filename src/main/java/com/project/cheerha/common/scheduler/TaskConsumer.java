@@ -37,7 +37,6 @@ public class TaskConsumer {
         instanceManager.updateLatestInstance();
         //최신 인스턴스가 아니면 작업 실행을 건너뛰기
         if (!instanceManager.isLatestInstance()) {
-            log.info("현재 인스턴스는 최신 인스턴스가 아니므로 작업 실행을 건너뜁니다.");
             return;
         }
 

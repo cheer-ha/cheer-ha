@@ -32,7 +32,6 @@ public class JobOpeningInsertTaskHandler implements TaskHandler {
     @Override
     public void handle(Map<String, Object> payload) {
         try {
-            //payload 가 null 이 아니라고 가정하고 처리
             int jobCount = ((Number) payload.get("jobCount")).intValue();
             log.info("{}개의 채용 공고 삽입 시작", jobCount);
 

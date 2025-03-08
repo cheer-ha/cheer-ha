@@ -60,7 +60,6 @@ public class CentralScheduler {
                             long nextScheduledTime = lastScheduledTime + scheduleIntervalMillis;
                             taskProducer.scheduleTask(taskType, handler.getDefaultPayload(), Instant.ofEpochMilli(nextScheduledTime));
                             bucket.set(String.valueOf(nextScheduledTime));
-                            log.info("CentralScheduler: 스케줄링 예약 완료 - {} | 시간 - {}", taskType, Instant.ofEpochMilli(nextScheduledTime));
                         }
                     } finally {
                         lock.unlock();
