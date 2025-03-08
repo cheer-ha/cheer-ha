@@ -7,7 +7,6 @@ import org.redisson.api.RedissonClient;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.cheerha.common.util.InstanceUtil;
 
 import java.time.Instant;
 import java.util.Collection;
@@ -19,24 +18,25 @@ import java.util.Map;
 @Component
 public class TaskConsumer {
 
+    private final InstanceManager instanceManager;
     private final RedissonClient redissonClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Map<String, TaskHandler> handlers = new HashMap<>();
 
     private static final String SORTED_SET_KEY = "scheduled-tasks";
-    private static final String LATEST_INSTANCE_KEY = "scheduler:latest-instance";
     private volatile boolean isRunning = true;
 
-    public TaskConsumer(RedissonClient redissonClient, List<TaskHandler> handlerList) {
+    public TaskConsumer(InstanceManager instanceManager, RedissonClient redissonClient, List<TaskHandler> handlerList) {
+        this.instanceManager = instanceManager;
         this.redissonClient = redissonClient;
         handlerList.forEach(handler -> handlers.put(handler.getTaskType(), handler));
     }
 
     @Scheduled(fixedDelay = 5000)
     public void processDueTasks() {
-        updateLatestInstance();
+        instanceManager.updateLatestInstance();
         //최신 인스턴스가 아니면 작업 실행을 건너뛰기
-        if (!isLatestInstance()) {
+        if (!instanceManager.isLatestInstance()) {
             log.info("현재 인스턴스는 최신 인스턴스가 아니므로 작업 실행을 건너뜁니다.");
             return;
         }
@@ -81,57 +81,5 @@ public class TaskConsumer {
             return task;
         }
         return null;
-    }
-
-    private boolean isLatestInstance() {
-        try {
-            String latestInstanceJson = (String) redissonClient.getBucket(LATEST_INSTANCE_KEY).get();
-            if (latestInstanceJson == null) {
-                return true;
-            }
-            Map<String, String> latestInstance = objectMapper.readValue(latestInstanceJson, Map.class);
-            String latestInstanceId = latestInstance.get("instanceId");
-            long latestStartTime = Long.parseLong(latestInstance.get("startTime"));
-
-            long currentStartTime = InstanceUtil.getInstanceStartTime().toEpochMilli();
-
-            return InstanceUtil.getInstanceId().equals(latestInstanceId)
-                    || currentStartTime > latestStartTime;
-        } catch (Exception e) {
-            log.error("인스턴스 확인 중 오류 발생", e);
-            return false;
-        }
-    }
-
-    private void updateLatestInstance() {
-        try {
-            //Redis 에서 최신 인스턴스 정보 가져오기
-            String latestInstanceJson = (String) redissonClient.getBucket(LATEST_INSTANCE_KEY).get();
-            long currentStartTime = InstanceUtil.getInstanceStartTime().toEpochMilli();
-            String currentInstanceId = InstanceUtil.getInstanceId();
-
-            if (latestInstanceJson != null) {
-                Map<String, String> latestInstance = objectMapper.readValue(latestInstanceJson, Map.class);
-                long latestStartTime = Long.parseLong(latestInstance.get("startTime"));
-
-                //Redis 에 인스턴스가 더 최신이면 갱신하지 않음
-                if (latestStartTime >= currentStartTime) {
-                    log.info("현재 인스턴스는 최신이 아님 (등록 안함) - 기존: {}, 현재: {}",
-                            latestStartTime, currentStartTime);
-                    return;
-                }
-            }
-
-            //최신 인스턴스로 등록
-            Map<String, String> newLatestInstance = Map.of(
-                    "instanceId", currentInstanceId,
-                    "startTime", String.valueOf(currentStartTime)
-            );
-
-            redissonClient.getBucket(LATEST_INSTANCE_KEY).set(objectMapper.writeValueAsString(newLatestInstance));
-            log.info("최신 인스턴스로 등록됨: {}", newLatestInstance);
-        } catch (Exception e) {
-            log.error("최신 인스턴스 등록 중 오류 발생", e);
-        }
     }
 }
