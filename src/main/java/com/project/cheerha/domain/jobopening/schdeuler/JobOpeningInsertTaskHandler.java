@@ -59,7 +59,7 @@ public class JobOpeningInsertTaskHandler implements TaskHandler {
 
     @Override
     public long getScheduleIntervalMillis() {
-        return 60000L;
+        return 2400000L;    //40분
     }
 
     @Override
