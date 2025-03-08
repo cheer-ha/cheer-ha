@@ -22,6 +22,7 @@ public class TaskConsumer {
     private final RedissonClient redissonClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Map<String, TaskHandler> handlers = new HashMap<>();
+
     private static final String SORTED_SET_KEY = "scheduled-tasks";
     private static final String LATEST_INSTANCE_KEY = "scheduler:latest-instance";
     private volatile boolean isRunning = true;
@@ -33,9 +34,10 @@ public class TaskConsumer {
 
     @Scheduled(fixedDelay = 5000)
     public void processDueTasks() {
-        // 최신 인스턴스가 아니면 작업 실행을 건너뛰기
+        updateLatestInstance();
+        //최신 인스턴스가 아니면 작업 실행을 건너뛰기
         if (!isLatestInstance()) {
-            log.debug("현재 인스턴스는 최신 인스턴스가 아니므로 작업 실행을 건너뜁니다.");
+            log.info("현재 인스턴스는 최신 인스턴스가 아니므로 작업 실행을 건너뜁니다.");
             return;
         }
 
@@ -69,11 +71,11 @@ public class TaskConsumer {
     private String getDueTask() {
         RScoredSortedSet<String> sortedSet = redissonClient.getScoredSortedSet(SORTED_SET_KEY);
         long currentTime = Instant.now().toEpochMilli();
-        // 현재 시간까지의 작업들을 조회
+        //현재 시간까지의 작업들을 조회
         Collection<String> dueTasks = sortedSet.valueRange(0, true, currentTime, true);
 
         if (dueTasks != null && !dueTasks.isEmpty()) {
-            // 첫 번째 작업을 꺼내고 제거
+            //첫 번째 작업을 꺼내고 제거
             String task = dueTasks.iterator().next();
             sortedSet.remove(task);
             return task;
@@ -81,7 +83,6 @@ public class TaskConsumer {
         return null;
     }
 
-    // CentralScheduler와 유사하게 현재 인스턴스가 최신인지 확인하는 메서드
     private boolean isLatestInstance() {
         try {
             String latestInstanceJson = (String) redissonClient.getBucket(LATEST_INSTANCE_KEY).get();
@@ -99,6 +100,38 @@ public class TaskConsumer {
         } catch (Exception e) {
             log.error("인스턴스 확인 중 오류 발생", e);
             return false;
+        }
+    }
+
+    private void updateLatestInstance() {
+        try {
+            //Redis 에서 최신 인스턴스 정보 가져오기
+            String latestInstanceJson = (String) redissonClient.getBucket(LATEST_INSTANCE_KEY).get();
+            long currentStartTime = InstanceUtil.getInstanceStartTime().toEpochMilli();
+            String currentInstanceId = InstanceUtil.getInstanceId();
+
+            if (latestInstanceJson != null) {
+                Map<String, String> latestInstance = objectMapper.readValue(latestInstanceJson, Map.class);
+                long latestStartTime = Long.parseLong(latestInstance.get("startTime"));
+
+                //Redis 에 인스턴스가 더 최신이면 갱신하지 않음
+                if (latestStartTime >= currentStartTime) {
+                    log.info("현재 인스턴스는 최신이 아님 (등록 안함) - 기존: {}, 현재: {}",
+                            latestStartTime, currentStartTime);
+                    return;
+                }
+            }
+
+            //최신 인스턴스로 등록
+            Map<String, String> newLatestInstance = Map.of(
+                    "instanceId", currentInstanceId,
+                    "startTime", String.valueOf(currentStartTime)
+            );
+
+            redissonClient.getBucket(LATEST_INSTANCE_KEY).set(objectMapper.writeValueAsString(newLatestInstance));
+            log.info("최신 인스턴스로 등록됨: {}", newLatestInstance);
+        } catch (Exception e) {
+            log.error("최신 인스턴스 등록 중 오류 발생", e);
         }
     }
 }

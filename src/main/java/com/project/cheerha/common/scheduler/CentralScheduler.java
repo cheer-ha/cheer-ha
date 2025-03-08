@@ -30,12 +30,12 @@ public class CentralScheduler {
 
     @Scheduled(fixedDelay = 5000)
     public void scheduleTasks() {
-        // 최신 인스턴스만 스케줄링 수행
+        updateLatestInstance();
+        //최신 인스턴스만 스케줄링 수행
         if (!isLatestInstance()) {
             log.debug("현재 인스턴스는 최신 인스턴스가 아니므로 스케줄링하지 않습니다");
             return;
         }
-        log.info("최신 인스턴스 확인 완료!");
 
         for (TaskHandler handler : schedulerTaskHandlers) {
             long scheduleIntervalMillis = handler.getScheduleIntervalMillis();
@@ -49,7 +49,7 @@ public class CentralScheduler {
 
             RLock lock = redissonClient.getLock(lockKey);
             try {
-                // 락 획득 시간을 스케줄링 간격의 절반으로 설정 (데드락 방지)
+                //락 획득 시간을 스케줄링 간격의 절반으로 설정 (데드락 방지)
                 if (lock.tryLock(Math.min(2000, scheduleIntervalMillis/2), scheduleIntervalMillis/2, TimeUnit.MILLISECONDS)) {
                     try {
                         RBucket<String> bucket = redissonClient.getBucket(lastTimeKey);
@@ -89,12 +89,10 @@ public class CentralScheduler {
             if (latestInstanceJson == null) {
                 return true;
             }
-
             Map<String, String> latestInstance = objectMapper.readValue(latestInstanceJson, Map.class);
             String latestInstanceId = latestInstance.get("instanceId");
             long latestStartTime = Long.parseLong(latestInstance.get("startTime"));
 
-            //현재 인스턴스의 시작 시간
             long currentStartTime = InstanceUtil.getInstanceStartTime().toEpochMilli();
 
             return InstanceUtil.getInstanceId().equals(latestInstanceId)
@@ -102,6 +100,38 @@ public class CentralScheduler {
         } catch (Exception e) {
             log.error("인스턴스 확인 중 오류 발생", e);
             return false;
+        }
+    }
+
+    private void updateLatestInstance() {
+        try {
+            //Redis 에서 최신 인스턴스 정보 가져오기
+            String latestInstanceJson = (String) redissonClient.getBucket(LATEST_INSTANCE_KEY).get();
+            long currentStartTime = InstanceUtil.getInstanceStartTime().toEpochMilli();
+            String currentInstanceId = InstanceUtil.getInstanceId();
+
+            if (latestInstanceJson != null) {
+                Map<String, String> latestInstance = objectMapper.readValue(latestInstanceJson, Map.class);
+                long latestStartTime = Long.parseLong(latestInstance.get("startTime"));
+
+                //Redis 에 인스턴스가 더 최신이면 갱신하지 않음
+                if (latestStartTime >= currentStartTime) {
+                    log.info("현재 인스턴스는 최신이 아님 (등록 안함) - 기존: {}, 현재: {}",
+                            latestStartTime, currentStartTime);
+                    return;
+                }
+            }
+
+            //최신 인스턴스로 등록
+            Map<String, String> newLatestInstance = Map.of(
+                    "instanceId", currentInstanceId,
+                    "startTime", String.valueOf(currentStartTime)
+            );
+
+            redissonClient.getBucket(LATEST_INSTANCE_KEY).set(objectMapper.writeValueAsString(newLatestInstance));
+            log.info("최신 인스턴스로 등록됨: {}", newLatestInstance);
+        } catch (Exception e) {
+            log.error("최신 인스턴스 등록 중 오류 발생", e);
         }
     }
 }
