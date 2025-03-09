@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.cheerha.common.util.InstanceUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -14,7 +13,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class InstanceManager {
 
-    private final RedissonClient redissonClient;
+    private final TaskRepository taskRepository;
     private final ObjectMapper objectMapper;
     private static final String LATEST_INSTANCE_KEY = "scheduler:latest-instance";
 
@@ -23,7 +22,7 @@ public class InstanceManager {
      */
     public boolean isLatestInstance() {
         try {
-            String latestInstanceJson = (String) redissonClient.getBucket(LATEST_INSTANCE_KEY).get();
+            String latestInstanceJson = taskRepository.getValue(LATEST_INSTANCE_KEY);
             if (latestInstanceJson == null) {
                 return true;
             }
@@ -46,7 +45,7 @@ public class InstanceManager {
     public void updateLatestInstance() {
         try {
             //Redis 에서 최신 인스턴스 정보 가져오기
-            String latestInstanceJson = (String) redissonClient.getBucket(LATEST_INSTANCE_KEY).get();
+            String latestInstanceJson = taskRepository.getValue(LATEST_INSTANCE_KEY);
             long currentStartTime = InstanceUtil.getInstanceStartTime().toEpochMilli();
             String currentInstanceId = InstanceUtil.getInstanceId();
 
@@ -66,7 +65,7 @@ public class InstanceManager {
                     "startTime", String.valueOf(currentStartTime)
             );
 
-            redissonClient.getBucket(LATEST_INSTANCE_KEY).set(objectMapper.writeValueAsString(newLatestInstance));
+            taskRepository.setValue(LATEST_INSTANCE_KEY, objectMapper.writeValueAsString(newLatestInstance));
             log.info("최신 인스턴스로 등록됨: {}", newLatestInstance);
         } catch (Exception e) {
             log.error("최신 인스턴스 등록 중 오류 발생", e);
