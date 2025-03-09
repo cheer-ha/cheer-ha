@@ -12,9 +12,22 @@ services:
       - "8080:8080"
     env_file: .env
 
+  app2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cheer-ha-app2
+    restart: always
+    depends_on:
+      - mysql
+      - redis
+    ports:
+      - "8081:8080"
+    env_file: .env
+
   mysql:
     image: mysql:8.0
-    container_name: ${DB_URL}
+    container_name: mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${ROOT_PASS}
@@ -22,19 +35,16 @@ services:
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "${DB_PORT}:3306"
+      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
 
   redis:
     image: redis:latest
-    container_name: ${REDIS_HOST}
+    container_name: redis
     restart: always
     ports:
-      - "${REDIS_PORT}:6379"
-    volumes:
-      - redis_data:/data
+      - "6379:6379"
 
 volumes:
   mysql_data:
-  redis_data:

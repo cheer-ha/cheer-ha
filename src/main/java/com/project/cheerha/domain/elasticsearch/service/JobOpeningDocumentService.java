@@ -5,9 +5,11 @@ import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import com.project.cheerha.common.elasticsearch.ElasticsearchClientService;
 import com.project.cheerha.common.util.variable.IndexName;
+import com.project.cheerha.domain.elasticsearch.dto.request.ReadJobOpeningElasticAutoRequestDto;
 import com.project.cheerha.domain.elasticsearch.dto.request.ReadJobOpeningElasticRequestDto;
 import com.project.cheerha.domain.elasticsearch.dto.response.ReadJobOpeningElasticResponseDto;
 import com.project.cheerha.domain.elasticsearch.entity.JobOpeningDocument;
+import com.project.cheerha.domain.elasticsearch.filter.JobOpeningDocumentAutoFilter;
 import com.project.cheerha.domain.elasticsearch.filter.JobOpeningDocumentFilter;
 import com.project.cheerha.domain.searchhistory.service.SearchHistoryService;
 import lombok.RequiredArgsConstructor;
@@ -79,8 +81,37 @@ public class JobOpeningDocumentService {
                 .from(from)
                 .size(pageSize)
                 .build();
-        List<JobOpeningDocument> jobOpeningDocuments = elasticsearchClientService.fetchJobOpeningDocumentList(searchRequest);
-        List<ReadJobOpeningElasticResponseDto> dtoList = ReadJobOpeningElasticResponseDto.toDto(jobOpeningDocuments);
+        List<JobOpeningDocument> jobOpeningDocumentList = elasticsearchClientService.fetchJobOpeningDocumentList(searchRequest);
+        List<ReadJobOpeningElasticResponseDto> dtoList = ReadJobOpeningElasticResponseDto.toDto(jobOpeningDocumentList);
+        return new PageImpl<>(dtoList, pageable, IndexName.MAX_JOB_OPENING_SIZE);
+    }
+
+    /**
+     * 자동 완성 기능을 통한 채용 공고 조회
+     */
+    @Transactional
+    public Page<ReadJobOpeningElasticResponseDto> readJobOpeningElasticAuto(
+        ReadJobOpeningElasticAutoRequestDto requestDto,
+        Long userId,
+        Pageable pageable
+    ) {
+        searchHistoryService.saveSearchTerm(userId, requestDto.getSearchTerm());
+
+        JobOpeningDocumentAutoFilter filter = new JobOpeningDocumentAutoFilter(requestDto);
+        var boolQueryBuilder = filter.build();
+        int pageSize = pageable.getPageSize();
+        int pageNumber = pageable.getPageNumber();
+        int from = calculateFrom(pageNumber, pageSize, IndexName.MAX_JOB_OPENING_SIZE);
+        SearchRequest searchRequest = new SearchRequest.Builder()
+            .index(IndexName.JOB_OPENING_DOCUMENT)
+            .query(q -> q.bool(boolQueryBuilder.build()))
+            .sort(s -> s.field(f -> f.field(IndexName.CREATED_AT).order(SortOrder.Desc)))
+            .from(from)
+            .size(pageSize)
+            .build();
+
+        List<JobOpeningDocument> jobOpeningDocumentList = elasticsearchClientService.fetchJobOpeningDocumentList(searchRequest);
+        List<ReadJobOpeningElasticResponseDto> dtoList = ReadJobOpeningElasticResponseDto.toDto(jobOpeningDocumentList);
         return new PageImpl<>(dtoList, pageable, IndexName.MAX_JOB_OPENING_SIZE);
     }
 

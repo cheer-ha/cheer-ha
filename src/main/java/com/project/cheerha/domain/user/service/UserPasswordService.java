@@ -4,6 +4,7 @@ import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
 import com.project.cheerha.common.exception.data.DataErrorCode;
 import com.project.cheerha.common.exception.data.NotFoundException;
+import com.project.cheerha.common.redis.email.EmailTokenService;
 import com.project.cheerha.common.util.PasswordEncoder;
 import com.project.cheerha.domain.auth.repository.BannedEmailRepository;
 import com.project.cheerha.domain.user.dto.request.ResetPasswordRequestDto;
@@ -12,7 +13,6 @@ import com.project.cheerha.domain.user.dto.response.UpdatePasswordResponseDto;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,11 +22,9 @@ public class UserPasswordService {
 
     private final UserFindByService userFindByService;
     private final PasswordEncoder passwordEncoder;
-    private final RedisTemplate<String, String> redisTemplate;
     private final UserRepository userRepository;
     private final BannedEmailRepository bannedEmailRepository;
-
-    private static final String PASSWORD_TOKEN_PREFIX = "password_verification";
+    private final EmailTokenService emailTokenService;
 
     /**
      * 로그인 사용자의 패스워드 업데이트
@@ -50,17 +48,11 @@ public class UserPasswordService {
         if(!userRepository.existsByEmail(requestDto.email())) {
             throw new NotFoundException(DataErrorCode.USER_NOT_FOUND);
         }
-        String redisKey = PASSWORD_TOKEN_PREFIX + ":" + requestDto.email();
-        String storedToken = redisTemplate.opsForValue().get(redisKey);
-        if (storedToken == null || !storedToken.equals(requestDto.token())) {
-            redisTemplate.delete(redisKey);
-            throw new BadRequestException(ClientErrorCode.INVALID_PASSWORD_RESET_TOKEN);
-        }
+        emailTokenService.verifyPasswordResetToken(requestDto.email(), requestDto.token());
 
         User user = userFindByService.findByEmail(requestDto.email());
         user.updatePassword(passwordEncoder.encode(requestDto.newPassword()));
 
-        redisTemplate.delete(redisKey);
         if (bannedEmailRepository.existsByEmail(requestDto.email())) {
             bannedEmailRepository.deleteByEmail(requestDto.email());
         }

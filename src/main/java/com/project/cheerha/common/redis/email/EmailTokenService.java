@@ -60,6 +60,18 @@ public class EmailTokenService {
     }
 
     /**
+     * 패스워드 리셋용 토큰 검증, get 즉시 무효화(일회용)
+     */
+    public void verifyPasswordResetToken(String email, String token) {
+        String redisKey = PASSWORD_TOKEN_PREFIX + ":" + email;
+        String storedToken = redisTemplate.opsForValue().get(redisKey);
+        redisTemplate.delete(redisKey);
+        if (storedToken == null || !storedToken.equals(token)) {
+            throw new BadRequestException(ClientErrorCode.INVALID_PASSWORD_RESET_TOKEN);
+        }
+    }
+
+    /**
      * 이메일 인증코드 생성
      */
     private String generateRandomToken() {
