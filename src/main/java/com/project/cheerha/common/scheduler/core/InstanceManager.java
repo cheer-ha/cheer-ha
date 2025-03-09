@@ -2,13 +2,11 @@ package com.project.cheerha.common.scheduler.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.cheerha.common.scheduler.repository.TaskRepository;
+import com.project.cheerha.common.util.HealthCheckUtil;
 import com.project.cheerha.common.util.InstanceUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
@@ -25,7 +23,7 @@ public class InstanceManager {
      * 현재 인스턴스가 최신 인스턴스인지 확인
      */
     public boolean isLatestInstance() {
-        if (!isInstanceHealthy()) {
+        if (!HealthCheckUtil.isInstanceHealthy()) {
             log.warn("현재 인스턴스 헬스 체크 실패");
             return false;
         }
@@ -78,25 +76,5 @@ public class InstanceManager {
         } catch (Exception e) {
             log.error("최신 인스턴스 등록 중 오류 발생", e);
         }
-    }
-
-    /**
-     * 현재 인스턴스의 헬스 체크를 수행해서 actuator/health 가 UP 상태인지 확인
-     */
-    private boolean isInstanceHealthy() {
-        try {
-            RestTemplate restTemplate = new RestTemplate();
-            String healthUrl = "http://localhost:8080/actuator/health"; // 필요에 따라 변경
-            ResponseEntity<Map> response = restTemplate.getForEntity(healthUrl, Map.class);
-            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                Object statusObj = response.getBody().get("status");
-                if (statusObj != null && "UP".equalsIgnoreCase(statusObj.toString())) {
-                    return true;
-                }
-            }
-        } catch (Exception e) {
-            log.error("헬스 체크 실패", e);
-        }
-        return false;
     }
 }
