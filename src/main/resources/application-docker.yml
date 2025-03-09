@@ -1,0 +1,72 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]  # .env 파일 로드
+  datasource:
+    url: jdbc:mysql://mysql:3306/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  sendgrid:
+    api-key: ${SENDGRID_API_KEY}
+    from-email: ${SENDGRID_FROM_EMAIL}
+
+  data:
+    redis:
+      port: 6379
+      host: redis
+      database: ${REDIS_DATABASE}
+
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600  # 캐시 항목의 TTL(Time To Live)을 1시간으로 설정
+
+elasticsearch:
+  uris: http://host.docker.internal:9200  # Elasticsearch 는 도커 없이 실행
+  username: ${ELASTICSEARCH_USERNAME}
+  password: ${ELASTICSEARCH_PASSWORD}
+  index:
+    name: job-opening
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  health:
+    elasticsearch:
+      enabled: false
+
+jwt:
+  secret:
+    aesKey: ${AES_KEY}
+    key: ${JWT_KEY}
+
+  token:
+    prefix: ${JWT_PREFIX}
+    refreshPrefix: ${REFRESH_PREFIX}
+    blackListPrefix: ${BLACK_PREFIX}
+    expiration: ${JWT_EXPIRATION}
+    refreshExpiration: ${REFRESH_EXPIRATION}
+    blackListExpiration: ${BLACK_EXPIRATION}
+
+security:
+  bcrypt:
+    cost: ${SECURITY_COST}
+
+logging:
+  level:
+    tracer: TRACE
+    org:
+      hibernate:
+        SQL: debug
+        orm:
+          jdbc:
+            bind: trace
