@@ -16,7 +16,7 @@ public class HealthCheckUtil {
     public static boolean isInstanceHealthy() {
         try {
             RestTemplate restTemplate = new RestTemplate();
-            String healthUrl = "http://localhost:8080/actuator/health"; // 필요에 따라 변경
+            String healthUrl = "http://localhost:8080/actuator/health";
             ResponseEntity<Map> response = restTemplate.getForEntity(healthUrl, Map.class);
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 Object statusObj = response.getBody().get("status");

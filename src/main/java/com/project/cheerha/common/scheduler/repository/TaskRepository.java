@@ -13,6 +13,7 @@ public interface TaskRepository {
     boolean tryLock(String lockKey, long waitTime, long leaseTime, TimeUnit unit) throws InterruptedException;
     void unlock(String lockKey);
 
+    //Scheduler
     void saveLastScheduledTime(String key, long time);
     long getLastScheduledTime(String key, long defaultValue);
     void addScheduledTask(String key, String taskData, Instant scheduledTime);

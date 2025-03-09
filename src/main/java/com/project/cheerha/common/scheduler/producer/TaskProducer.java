@@ -25,7 +25,7 @@ public class TaskProducer {
     private static final String SORTED_SET_KEY = "scheduled-tasks";
 
     /**
-     * Handler 에서 작업을 가져와 등록하는 메서드
+     * TaskHandler 에서 작업을 가져와 등록하는 메서드
      */
     public void scheduleTask(String taskType, Map<String, Object> payload, Instant scheduledTime) {
         String taskId = UUID.randomUUID().toString();
