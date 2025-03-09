@@ -145,8 +145,10 @@ public class NotificationService {
 
                 if (overlapCount > 0) {
                     emailToUrlToOverlapCount
-                        .computeIfAbsent(email, emailAsKey -> new HashMap<>())
-                        .put(url, overlapCount);
+                        .computeIfAbsent(
+                            email,
+                            emailAsKey -> new HashMap<>()
+                        ).put(url, overlapCount);
                 }
             }
         }

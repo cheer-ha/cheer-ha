@@ -126,15 +126,15 @@ public class NotificationServiceThirdVersion {
         Map<String, Set<Long>> emailToKeywordIdSet,
         Map<String, Set<Long>> urlToKeywordIdSet
     ) {
-        return emailToKeywordIdSet.entrySet().stream()  // 이메일과 해당 이메일에 대응하는 키워드 목록을 처리하고자 entrySet을 스트림으로 변환
-            .collect(Collectors.toMap(  // 스트림의 결과를 Map으로 수집
-                Map.Entry::getKey,  // Map의 key는 이메일 주소, 즉 entry.getKey()는 이메일
-                entry -> urlToKeywordIdSet.keySet().stream()  // URL들을 순회하고자 urlToKeywordIdSet에서 키(즉, URL)를 스트림으로 변환
-                    .collect(Collectors.toMap(  // 각 URL에 계산된 겹치는 키워드 개수를 Map으로 수집
-                        url -> url,  // URL이 Map의 키
-                        url -> entry.getValue().stream()  // 이메일에 대응하는 키워드 목록을 스트림으로 변환
-                            .filter(urlToKeywordIdSet.get(url)::contains)  // 해당 URL과 겹치는 키워드를 찾고자 URL에 대응하는 키워드 목록과 비교
-                            .count()  // 겹치는 키워드 개수를 셈
+        return emailToKeywordIdSet.entrySet().stream()
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                entry -> urlToKeywordIdSet.keySet().stream()
+                    .collect(Collectors.toMap(
+                        url -> url,
+                        url -> entry.getValue().stream()
+                            .filter(urlToKeywordIdSet.get(url)::contains)
+                            .count()
                     ))
             ));
     }

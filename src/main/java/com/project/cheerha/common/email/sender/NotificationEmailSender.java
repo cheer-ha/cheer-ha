@@ -40,12 +40,19 @@ public class NotificationEmailSender {
         emailToNotificationSet.forEach(this::sendNotificationEmail);
     }
 
-    private void sendNotificationEmail(String recipientEmail, Set<Notification> notificationSet) {
+    private void sendNotificationEmail(
+        String recipientEmail,
+        Set<Notification> notificationSet
+    ) {
         try {
-            // 내림차순 정렬 (겹치는 키워드 개수가 많은 순)
+            // 내림차순 정렬
+            // 겹치는 키워드 개수가 많은 순으로
             List<Notification> sortedNotificationList = notificationSet.stream()
-                .sorted((n1, n2) -> Integer.compare(n2.getOverlapCount(), n1.getOverlapCount()))
-                .toList();
+                .sorted((n1, n2)
+                    -> Integer.compare(
+                    n2.getOverlapCount(),
+                    n1.getOverlapCount()
+                )).toList();
 
             // 이메일 내용 생성
             String[] emailData = NotificationFormat.createEmailNotification(sortedNotificationList);
