@@ -24,12 +24,16 @@ public class NotificationDataFetchingTaskHandler implements TaskHandler {
         return "fetchNotificationData";
     }
 
+    // 주기적으로 알림 생성용 데이터 조회
     @Override
     public void handle(Map<String, Object> payload) {
         //30초 전 기준으로 데이터 조회 (UTC 기준)
         ZonedDateTime referenceTime = ZonedDateTime.now().minusSeconds(30L).withZoneSameInstant(ZoneId.of("UTC"));
+        // key: 키워드 ID, value: 채용 공고 URL 목록
         Map<Long, List<String>> keywordIdToUrlList = notificationDataProviderQuery.findKeywordIdToUrlList(referenceTime);
+        // 알림 받을 사용자의 이메일과 키워드 ID를 포함한 NotificationRecipientDto 목록
         List<NotificationRecipientDto> notificationRecipientDtoList = notificationDataProviderQuery.findNotificationRecipientDtoList();
+        // 조회한 알림 생성용 데이터를 전달
         notificationService.createNotification(notificationRecipientDtoList, keywordIdToUrlList);
     }
 
