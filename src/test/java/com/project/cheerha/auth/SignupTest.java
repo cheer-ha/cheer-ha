@@ -1,12 +1,12 @@
 package com.project.cheerha.auth;
 
+import com.project.cheerha.common.email.sender.VerificationEmailSender;
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
-import com.project.cheerha.common.util.PasswordEncoder;
+import com.project.cheerha.common.redis.email.EmailTokenService;
 import com.project.cheerha.domain.auth.dto.request.CreateSignupRequestDto;
 import com.project.cheerha.domain.auth.dto.response.CreateSignupResponseDto;
 import com.project.cheerha.domain.auth.service.AuthService;
-import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,41 +24,34 @@ public class SignupTest {
     private UserRepository userRepository;
 
     @Mock
-    private PasswordEncoder passwordEncoder;
+    private EmailTokenService emailTokenService;
+
+    @Mock
+    private VerificationEmailSender verificationEmailSender;
 
     @InjectMocks
     private AuthService authService;
 
     @Test
-    void testSignup_가입에_성공했을때() {
+    void testSignup_이메일전송에_성공했을때() {
         //given
         CreateSignupRequestDto dto = new CreateSignupRequestDto(
-                "test@example.com",
-                "password",
-                "tester",
-                20,
-                0
+                "test@example.com"
                 );
         when(userRepository.existsByEmail(dto.email())).thenReturn(false);
-        when(passwordEncoder.encode(dto.password())).thenReturn("encodedPassword");
 
         //when
         CreateSignupResponseDto response = authService.signup(dto);
 
         //then
         assertNotNull(response);
-        verify(userRepository, times(1)).save(any(User.class));
     }
 
     @Test
     void testSignup_이미_존재하는_이메일일때() {
         //given
         CreateSignupRequestDto dto = new CreateSignupRequestDto(
-                "test@example.com",
-                "password123",
-                "tester",
-                20,
-                0
+                "test@example.com"
         );
         when(userRepository.existsByEmail(dto.email())).thenReturn(true);
 

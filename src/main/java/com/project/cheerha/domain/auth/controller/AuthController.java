@@ -3,10 +3,8 @@ package com.project.cheerha.domain.auth.controller;
 import com.project.cheerha.common.dto.ApiResponseDto;
 import com.project.cheerha.domain.auth.dto.request.CreateLoginRequestDto;
 import com.project.cheerha.domain.auth.dto.request.CreateSignupRequestDto;
-import com.project.cheerha.domain.auth.dto.response.CreateLoginResponseDto;
-import com.project.cheerha.domain.auth.dto.response.CreateLogoutResponseDto;
-import com.project.cheerha.domain.auth.dto.response.CreateSignupResponseDto;
-import com.project.cheerha.domain.auth.dto.response.RefreshAccessTokenResponseDto;
+import com.project.cheerha.domain.auth.dto.request.VerifySignupRequestDto;
+import com.project.cheerha.domain.auth.dto.response.*;
 import com.project.cheerha.domain.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +22,12 @@ public class AuthController {
     public ResponseEntity<ApiResponseDto<CreateSignupResponseDto>> signup(
             @Valid @RequestBody CreateSignupRequestDto dto) {
         return ApiResponseDto.created(authService.signup(dto));
+    }
+
+    @PostMapping("/signup-verify")
+    public ResponseEntity<ApiResponseDto<VerifySignupResponseDto>> verifySignup(
+            @Valid @RequestBody VerifySignupRequestDto dto){
+        return ApiResponseDto.created(authService.verifySignup(dto));
     }
 
     @PostMapping("/login")

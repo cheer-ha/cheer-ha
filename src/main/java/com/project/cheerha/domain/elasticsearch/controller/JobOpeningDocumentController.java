@@ -3,6 +3,7 @@ package com.project.cheerha.domain.elasticsearch.controller;
 import com.project.cheerha.common.annotation.Auth;
 import com.project.cheerha.common.dto.ApiResponseDto;
 import com.project.cheerha.common.dto.AuthUser;
+import com.project.cheerha.domain.elasticsearch.dto.request.ReadJobOpeningElasticAutoRequestDto;
 import com.project.cheerha.domain.elasticsearch.dto.request.ReadJobOpeningElasticRequestDto;
 import com.project.cheerha.domain.elasticsearch.dto.response.ReadJobOpeningElasticResponseDto;
 import com.project.cheerha.domain.elasticsearch.service.JobOpeningDocumentService;
@@ -80,6 +81,30 @@ public class JobOpeningDocumentController {
         Long userId = authUser.id();
 
         Page<ReadJobOpeningElasticResponseDto> jobOpeningElasticResponseDtoPage = jobOpeningDocumentService.readJobOpeningUsingElasticSearchFilter(requestDto, userId, pageable);
+
+        return ApiResponseDto.success(jobOpeningElasticResponseDtoPage);
+    }
+
+    /**
+     * Elasticsearch의 자동 완성 검색 기능을 활용하여 데이터를 조회하는 API입니다.
+     *
+     * @param requestDto 사용자가 입력한 검색어를 포함한 DTO
+     * @param authUser 현재 로그인한 사용자의 정보
+     * @param page 조회할 페이지 번호
+     * @param size 페이지 당 조회할 데이터 수
+     * @return 자동 완성으로 검색된 채용 공고 목록을 페이지네이션 형태로 반환
+     */
+    @GetMapping("/search/elastic/auto")
+    public ResponseEntity<ApiResponseDto<Page<ReadJobOpeningElasticResponseDto>>> readJobOpeningElasticAuto(
+        @ModelAttribute ReadJobOpeningElasticAutoRequestDto requestDto,
+        @Auth AuthUser authUser,
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = validatePageSize(page, size);
+        Long userId = authUser.id();
+
+        Page<ReadJobOpeningElasticResponseDto> jobOpeningElasticResponseDtoPage = jobOpeningDocumentService.readJobOpeningElasticAuto(requestDto, userId, pageable);
 
         return ApiResponseDto.success(jobOpeningElasticResponseDtoPage);
     }

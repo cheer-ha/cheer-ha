@@ -32,7 +32,6 @@ public class EmailBlockingAspect {
 
     /**
      * 같은 이메일로 5회 이상 로그인 실패한 경우 밴하는 메서드입니다.
-     * TODO: 이후 이메일 인증을 통해 푸는 방법도 고려해볼만합니다
      */
     @Around("execution(* com.project.cheerha.domain.auth.controller.AuthController.login(..))")
     public Object blockAbnormalEmail(ProceedingJoinPoint joinPoint) throws Throwable {

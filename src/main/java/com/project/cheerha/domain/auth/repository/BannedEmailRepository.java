@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BannedEmailRepository extends JpaRepository<BannedEmail, Long> {
     boolean existsByEmail(String email);
+
+    void deleteByEmail(String email);
 }
