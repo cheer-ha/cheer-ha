@@ -4,6 +4,8 @@ import com.project.cheerha.common.email.format.NotificationFormat;
 import com.project.cheerha.domain.notification.entity.Notification;
 import com.project.cheerha.domain.notification.repository.NotificationRepository;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,8 +34,10 @@ public class NotificationEmailSender {
         // (2) 이메일 주소별로 해당 Notification Set 그룹화하여 저장
         notificationRepository.findByIsEmailSentFalse().forEach(
             notification -> emailToNotificationSet
-                .computeIfAbsent(notification.getEmail(), emailAsKey -> new HashSet<>())
-                .add(notification)
+                .computeIfAbsent(
+                    notification.getEmail(),
+                    emailAsKey -> new HashSet<>()
+                ).add(notification)
         );
 
         // 묶은 알림을 각 이메일로 전송
@@ -45,17 +49,17 @@ public class NotificationEmailSender {
         Set<Notification> notificationSet
     ) {
         try {
-            // 내림차순 정렬
-            // 겹치는 키워드 개수가 많은 순으로
-            List<Notification> sortedNotificationList = notificationSet.stream()
-                .sorted((n1, n2)
-                    -> Integer.compare(
-                    n2.getOverlapCount(),
-                    n1.getOverlapCount()
-                )).toList();
+            List<Notification> notificationList = new ArrayList<>(notificationSet);
+            // 채용 공고 목록을 무작위로 섞기
+            Collections.shuffle(notificationList);
+
+            // 채용 공고 목록을 20개로 제한
+            notificationList = notificationList.stream()
+                .limit(20)
+                .toList();
 
             // 이메일 내용 생성
-            String[] emailData = NotificationFormat.createEmailNotification(sortedNotificationList);
+            String[] emailData = NotificationFormat.createEmailNotification(notificationList);
             String subject = emailData[0];
             String content = emailData[1];
 
@@ -63,7 +67,7 @@ public class NotificationEmailSender {
             emailSender.send(recipientEmail, subject, content);
 
             // 전송된 알림 상태 변경
-            sortedNotificationList.forEach(notification -> {
+            notificationList.forEach(notification -> {
                 notification.markEmailAsSent();
                 notificationRepository.save(notification);
             });

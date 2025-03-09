@@ -37,9 +37,6 @@ public class Notification {
     @Column
     private boolean isPushSent;
 
-    @Column
-    private int overlapCount;
-
     /**
      * 알림 객체를 생성하는 정적 팩토리 메서드
      *
@@ -51,15 +48,13 @@ public class Notification {
      */
     public static Notification toEntity(
         String email,
-        String jobOpeningUrl,
-        int overlapCount
+        String jobOpeningUrl
     ) {
         Notification notification = new Notification();
         notification.email = email;
         notification.jobOpeningUrl = jobOpeningUrl;
         notification.isEmailSent = false;
         notification.isPushSent = false;
-        notification.overlapCount = overlapCount;
         return notification;
     }
 
