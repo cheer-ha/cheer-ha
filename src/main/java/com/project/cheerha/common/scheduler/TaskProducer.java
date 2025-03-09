@@ -2,8 +2,6 @@ package com.project.cheerha.common.scheduler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.api.RScoredSortedSet;
-import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -18,7 +16,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TaskProducer {
 
-    private final RedissonClient redissonClient;
+    private final TaskRepository taskRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final List<TaskHandler> handlers;
 
@@ -30,9 +28,7 @@ public class TaskProducer {
     public void scheduleTask(String taskType, Map<String, Object> payload, Instant scheduledTime) {
         String taskId = UUID.randomUUID().toString();
 
-        RScoredSortedSet<String> sortedSet = redissonClient.getScoredSortedSet(SORTED_SET_KEY);
-
-        //TaskHandler 에서 기본 payload 가져오기 (널 방지)
+        // TaskHandler 에서 기본 payload 가져오기 (널 방지)
         if (payload == null) {
             for (TaskHandler handler : handlers) {
                 if (handler.getTaskType().equals(taskType)) {
@@ -49,7 +45,7 @@ public class TaskProducer {
 
         try {
             String taskDataStr = objectMapper.writeValueAsString(taskData);
-            sortedSet.add(scheduledTime.toEpochMilli(), taskDataStr);
+            taskRepository.addScheduledTask(SORTED_SET_KEY, taskDataStr, scheduledTime);
         } catch (Exception e) {
             log.error("태스크 등록 실패: {}", taskType, e);
         }

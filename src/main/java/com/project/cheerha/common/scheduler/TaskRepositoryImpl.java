@@ -9,8 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
 import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 @Repository
@@ -18,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 public class TaskRepositoryImpl implements TaskRepository {
 
     private final RedissonClient redissonClient;
-    private final Map<String, RLock> lockMap = new ConcurrentHashMap<>();
 
     @Override
     public String getValue(String key) {
