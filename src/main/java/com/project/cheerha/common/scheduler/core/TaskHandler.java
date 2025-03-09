@@ -1,4 +1,4 @@
-package com.project.cheerha.common.scheduler;
+package com.project.cheerha.common.scheduler.core;
 
 import java.util.Map;
 

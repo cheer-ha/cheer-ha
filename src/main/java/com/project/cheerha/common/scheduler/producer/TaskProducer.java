@@ -1,5 +1,7 @@
-package com.project.cheerha.common.scheduler;
+package com.project.cheerha.common.scheduler.producer;
 
+import com.project.cheerha.common.scheduler.core.TaskHandler;
+import com.project.cheerha.common.scheduler.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -23,7 +25,7 @@ public class TaskProducer {
     private static final String SORTED_SET_KEY = "scheduled-tasks";
 
     /**
-     * 실제 작업을 등록하는 메서드
+     * Handler 에서 작업을 가져와 등록하는 메서드
      */
     public void scheduleTask(String taskType, Map<String, Object> payload, Instant scheduledTime) {
         String taskId = UUID.randomUUID().toString();

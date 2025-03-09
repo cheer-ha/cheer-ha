@@ -1,6 +1,7 @@
-package com.project.cheerha.common.scheduler;
+package com.project.cheerha.common.scheduler.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.cheerha.common.scheduler.repository.TaskRepository;
 import com.project.cheerha.common.util.InstanceUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

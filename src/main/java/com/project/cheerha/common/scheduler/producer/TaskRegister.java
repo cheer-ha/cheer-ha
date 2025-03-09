@@ -1,5 +1,7 @@
-package com.project.cheerha.common.scheduler;
+package com.project.cheerha.common.scheduler.producer;
 
+import com.project.cheerha.common.scheduler.core.TaskHandler;
+import com.project.cheerha.common.scheduler.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +16,7 @@ public class TaskRegister {
     private final TaskProducer taskProducer;
 
     /**
-     * Redis 에서 작업을 확인하고 등록
+     * Redis 에서 작업 시간을 확인하고 등록
      */
     public void register(TaskHandler handler) {
         long scheduleIntervalMillis = handler.getScheduleIntervalMillis();
