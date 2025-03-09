@@ -1,6 +1,6 @@
 package com.project.cheerha.domain.notification.scheduler;
 
-import com.project.cheerha.common.scheduler.TaskHandler;
+import com.project.cheerha.common.scheduler.core.TaskHandler;
 import com.project.cheerha.domain.notification.dto.NotificationRecipientDto;
 import com.project.cheerha.domain.notification.repository.NotificationDataProviderQuery;
 import com.project.cheerha.domain.notification.service.NotificationService;

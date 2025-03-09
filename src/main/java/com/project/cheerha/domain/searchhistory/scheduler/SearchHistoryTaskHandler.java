@@ -1,6 +1,6 @@
 package com.project.cheerha.domain.searchhistory.scheduler;
 
-import com.project.cheerha.common.scheduler.TaskHandler;
+import com.project.cheerha.common.scheduler.core.TaskHandler;
 import com.project.cheerha.domain.searchhistory.entity.SearchHistory;
 import com.project.cheerha.domain.searchhistory.repository.SearchHistoryRepository;
 import com.project.cheerha.domain.user.entity.User;

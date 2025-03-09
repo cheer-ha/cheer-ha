@@ -1,6 +1,6 @@
 package com.project.cheerha.domain.viewcount.scheduler;
 
-import com.project.cheerha.common.scheduler.TaskHandler;
+import com.project.cheerha.common.scheduler.core.TaskHandler;
 import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
 import com.project.cheerha.domain.viewcount.repository.JobOpeningViewCountRepository;
 import lombok.RequiredArgsConstructor;
