@@ -1,20 +1,20 @@
 package com.project.cheerha.common.scheduler;
 
-import java.util.Collection;
+import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
 public interface TaskRepository {
 
-    // Lock
-    boolean tryLock(String lockKey, long waitTime, long leaseTime, TimeUnit timeUnit) throws InterruptedException;
-    void unlock(String lockKey);
-
-    // Key-Value
+    //Key-Value
     String getValue(String key);
     void setValue(String key, String value);
 
-    // Sorted Set
-    void addToSortedSet(String key, long score, String value);
-    Collection<String> getRangeFromSortedSet(String key, long minScore, long maxScore);
-    void removeFromSortedSet(String key, String value);
+    //Lock
+    boolean tryLock(String lockKey, long waitTime, long leaseTime, TimeUnit unit) throws InterruptedException;
+    void unlock(String lockKey);
+
+    void saveLastScheduledTime(String key, long time);
+    long getLastScheduledTime(String key, long defaultValue);
+    void addScheduledTask(String key, String taskData, Instant scheduledTime);
+    String getDueTask(String key);
 }

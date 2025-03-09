@@ -7,6 +7,7 @@ import org.redisson.api.RScoredSortedSet;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,24 +19,6 @@ public class TaskRepositoryImpl implements TaskRepository {
 
     private final RedissonClient redissonClient;
     private final Map<String, RLock> lockMap = new ConcurrentHashMap<>();
-
-    @Override
-    public boolean tryLock(String lockKey, long waitTime, long leaseTime, TimeUnit timeUnit) throws InterruptedException {
-        RLock lock = redissonClient.getLock(lockKey);
-        boolean acquired = lock.tryLock(waitTime, leaseTime, timeUnit);
-        if (acquired) {
-            lockMap.put(lockKey, lock);
-        }
-        return acquired;
-    }
-
-    @Override
-    public void unlock(String lockKey) {
-        RLock lock = lockMap.remove(lockKey);
-        if (lock != null && lock.isHeldByCurrentThread()) {
-            lock.unlock();
-        }
-    }
 
     @Override
     public String getValue(String key) {
@@ -50,20 +33,49 @@ public class TaskRepositoryImpl implements TaskRepository {
     }
 
     @Override
-    public void addToSortedSet(String key, long score, String value) {
-        RScoredSortedSet<String> sortedSet = redissonClient.getScoredSortedSet(key);
-        sortedSet.add(score, value);
+    public boolean tryLock(String lockKey, long waitTime, long leaseTime, TimeUnit unit) throws InterruptedException {
+        RLock lock = redissonClient.getLock(lockKey);
+        return lock.tryLock(waitTime, leaseTime, unit);
     }
 
     @Override
-    public Collection<String> getRangeFromSortedSet(String key, long minScore, long maxScore) {
-        RScoredSortedSet<String> sortedSet = redissonClient.getScoredSortedSet(key);
-        return sortedSet.valueRange(minScore, true, maxScore, true);
+    public void unlock(String lockKey) {
+        RLock lock = redissonClient.getLock(lockKey);
+        if (lock.isHeldByCurrentThread()) {
+            lock.unlock();
+        }
     }
 
     @Override
-    public void removeFromSortedSet(String key, String value) {
+    public void saveLastScheduledTime(String key, long time) {
+        RBucket<String> bucket = redissonClient.getBucket(key);
+        bucket.set(String.valueOf(time));
+    }
+
+    @Override
+    public long getLastScheduledTime(String key, long defaultValue) {
+        RBucket<String> bucket = redissonClient.getBucket(key);
+        String lastTimeStr = bucket.get();
+        return (lastTimeStr != null) ? Long.parseLong(lastTimeStr) : defaultValue;
+    }
+
+    @Override
+    public void addScheduledTask(String key, String taskData, Instant scheduledTime) {
         RScoredSortedSet<String> sortedSet = redissonClient.getScoredSortedSet(key);
-        sortedSet.remove(value);
+        sortedSet.add(scheduledTime.toEpochMilli(), taskData);
+    }
+
+    @Override
+    public String getDueTask(String key) {
+        RScoredSortedSet<String> sortedSet = redissonClient.getScoredSortedSet(key);
+        long currentTime = Instant.now().toEpochMilli();
+        Collection<String> dueTasks = sortedSet.valueRange(0, true, currentTime, true);
+
+        if (dueTasks != null && !dueTasks.isEmpty()) {
+            String task = dueTasks.iterator().next();
+            sortedSet.remove(task);
+            return task;
+        }
+        return null;
     }
 }
