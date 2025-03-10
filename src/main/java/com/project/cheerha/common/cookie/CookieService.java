@@ -21,7 +21,8 @@ public class CookieService {
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setSecure(true);
         refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60);
+        refreshTokenCookie.setMaxAge(14 * 24 * 60 * 60);
+        refreshTokenCookie.setAttribute("SameSite", "Strict");
 
         response.addCookie(refreshTokenCookie);
     }
