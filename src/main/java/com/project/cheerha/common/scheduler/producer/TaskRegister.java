@@ -1,7 +1,7 @@
 package com.project.cheerha.common.scheduler.producer;
 
 import com.project.cheerha.common.scheduler.core.TaskHandler;
-import com.project.cheerha.common.scheduler.repository.RedissonRepository;
+import com.project.cheerha.common.redis.redisson.RedissonRepository;
 import com.project.cheerha.common.scheduler.repository.TaskRepository;
 import com.project.cheerha.common.scheduler.strategy.FixedIntervalStrategy;
 import com.project.cheerha.common.scheduler.strategy.ScheduleStrategy;

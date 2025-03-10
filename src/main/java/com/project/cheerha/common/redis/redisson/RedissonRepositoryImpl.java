@@ -1,4 +1,4 @@
-package com.project.cheerha.common.scheduler.repository;
+package com.project.cheerha.common.redis.redisson;
 
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RBucket;

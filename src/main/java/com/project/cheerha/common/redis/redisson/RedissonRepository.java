@@ -1,4 +1,4 @@
-package com.project.cheerha.common.scheduler.repository;
+package com.project.cheerha.common.redis.redisson;
 
 import java.util.concurrent.TimeUnit;
 
