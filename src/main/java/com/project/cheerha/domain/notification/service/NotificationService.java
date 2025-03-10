@@ -20,59 +20,65 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     /**
-     * 알림(Notification) 생성
-     *
-     * @param notificationRecipientDtoList : 알림 받을 사용자 및 해당 사용자의 키워드 ID를 포함한 DTO 목록
-     * @param keywordIdToUrlList           : key가 키워드 ID, value가 URL 목록인 map
+     * 알림(Notification) 객체를 생성하여 저장하는 메서드
+     * @param notificationRecipientDtoList 수신자의 이메일 및 키워드 ID 목록
+     * @param keywordIdToUrlList key: 키워드 ID, value: 채용 공고 URL 목록
      */
     @Transactional
     public void createNotification(
         List<NotificationRecipientDto> notificationRecipientDtoList,
         Map<Long, List<String>> keywordIdToUrlList
     ) {
-        // key: 이메일 주소, value: 채용 공고 URL Set
         Map<String, Set<String>> emailToUrlSet = new HashMap<>();
 
-        // 겹치는 키워드 ID로 이메일 주소와 URL Set 매칭
-        matchEmailToUrlSetByKeywordId(notificationRecipientDtoList, keywordIdToUrlList,
-            emailToUrlSet);
+        // 사용자의 키워드 ID를 기반으로 이메일별 채용 공고 URL 매칭
+        matchEmailToUrlSetByKeywordId(
+            notificationRecipientDtoList,
+            keywordIdToUrlList,
+            emailToUrlSet
+        );
 
-        // 이메일 주소별로 알림 생성 및 저장
+        // 이메일별로 알림 객체 생성 및 저장
         emailToUrlSet.forEach((email, urlSet) -> {
 
-            // 이미 존재하는 알림 객체 조회
+            // 기존에 저장된 알림 조회
             List<Notification> foundNotificationList = notificationRepository.findAllByEmailAndJobOpeningUrlIn(
-                email, urlSet.stream().toList());
+                email,
+                urlSet.stream().toList()
+            );
 
-            // 이미 존재하는 URL Set 조회
+            // 이미 존재하는 채용 공고 URL 추출
             Set<String> existingUrlSet = findExistingUrlSet(foundNotificationList);
 
-            // 이미 존재하는지 검증 후 알림 객체 생성
-            List<Notification> notificationList = createNotificationList(email, urlSet,
-                existingUrlSet);
+            // 새로운 알림 객체 생성
+            List<Notification> notificationList = createNotificationList(
+                email,
+                urlSet,
+                existingUrlSet
+            );
 
-            // 알림 목록을 한꺼번에 저장
+            // 알림 저장
             notificationRepository.saveAll(notificationList);
         });
     }
 
     /**
-     * 겹치는 키워드 ID로 이메일 주소와 채용 공고 URL 매칭
-     *
-     * @param notificationRecipientDtoList : 알림을 받을 사용자 목록
-     * @param keywordIdToUrlList           : key: 키워드 ID, value: URL 목록
-     * @param emailToUrlSet                : 이메일 주소 key로 사용해 URL Set을 추가하는 Map
+     * 키워드 ID가 동일한 사용자 이메일과 채용 공고 URL을 매칭하는 메서드
+     * @param notificationRecipientDtoList 수신자의 이메일 및 키워드 ID 목록
+     * @param keywordIdToUrlList key: 키워드 ID, value: 채용 공고 URL 목록
+     * @param emailToUrlSet key: 이메일, valye: 해당 이메일 주소로 받을 채용 공고 URL 집합
      */
     private void matchEmailToUrlSetByKeywordId(
         List<NotificationRecipientDto> notificationRecipientDtoList,
         Map<Long, List<String>> keywordIdToUrlList,
         Map<String, Set<String>> emailToUrlSet
     ) {
-        // 각 사용자가 고른 키워드 ID와 일치하는 URL 목록 조회
         for (NotificationRecipientDto dto : notificationRecipientDtoList) {
-            List<String> matchingUrlList = keywordIdToUrlList.getOrDefault(dto.keywordId(), List.of());
+            List<String> matchingUrlList = keywordIdToUrlList.getOrDefault(
+                dto.keywordId(),
+                List.of()
+            );
 
-            // 키워드 ID에 해당하는 URL 목록이 있으면 추가
             if (!matchingUrlList.isEmpty()) {
                 emailToUrlSet.computeIfAbsent(
                     dto.email(),
@@ -83,9 +89,9 @@ public class NotificationService {
     }
 
     /**
-     *  이미 존재하는 URL을 Set으로 변환
-     * @param notificationList : 기존에 존재하는 알림 목록
-     * @return 알림에서 추출한 채용 공고 URL Set
+     * 기존에 저장된 알림에서 채용 공고 URL 목록을 조회하는 메서드
+     * @param notificationList 기존에 저장된 알림 목록
+     * @return 기존에 저장된 채용 공고 URL 집합
      */
     private Set<String> findExistingUrlSet(List<Notification> notificationList) {
         return notificationList.stream()
@@ -94,16 +100,20 @@ public class NotificationService {
     }
 
     /**
-     * 이미 존재하는 URL을 제외하고 새로운 알림 객체 목록 생성
-     * @param email : 알림을 받을 사용자 이메일
-     * @param urlSet : 알림에 들어갈 채용 공고 URL Set
-     * @param existingUrlSet : 이미 존재하는 URL Set
-     * @return 새로 생성할 알림 객체 목록
+     * 새로운 알림 목록을 생성하는 메서드
+     * @param email 알림을 받을 사용자의 이메일
+     * @param urlSet 사용자가 고른 키워드로 매칭된 채용 공고 URL 집합
+     * @param existingUrlSet 이미 저장된 채용 공고 URL 집합
+     * @return 새로운 알림(Notification) 목록
      */
-    private List<Notification> createNotificationList(String email, Set<String> urlSet, Set<String> existingUrlSet) {
+    private List<Notification> createNotificationList(
+        String email,
+        Set<String> urlSet,
+        Set<String> existingUrlSet
+    ) {
         return urlSet.stream()
-            .filter(jobOpeningUrl -> !existingUrlSet.contains(jobOpeningUrl))
-            .map(jobOpeningUrl -> Notification.toEntity(email, jobOpeningUrl))
+            .filter(jobOpeningUrl -> !existingUrlSet.contains(jobOpeningUrl)) // 기존 알림에 없는 URL 필터링
+            .map(jobOpeningUrl -> Notification.toEntity(email, jobOpeningUrl)) // 알림 객체 생성
             .toList();
     }
 }
