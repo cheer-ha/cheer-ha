@@ -13,6 +13,9 @@ import org.springframework.util.StringUtils;
 @RequiredArgsConstructor
 public class CookieService {
 
+    /**
+     * refreshToken 을 쿠키에 저장합니다
+     */
     public void createRefreshTokenCookie(String refreshToken, HttpServletResponse response) {
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
         refreshTokenCookie.setHttpOnly(true);
@@ -23,6 +26,9 @@ public class CookieService {
         response.addCookie(refreshTokenCookie);
     }
 
+    /**
+     * 쿠키에 저장된 refreshToken 을 가져옵니다
+     */
     public String getRefreshTokenCookie(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
@@ -36,6 +42,9 @@ public class CookieService {
         throw new UnAuthorizedException(AuthErrorCode.TOKEN_UNAUTHORIZED);
     }
 
+    /**
+     * 쿠키에 저장된 refreshToken 을 삭제합니다
+     */
     public void removeRefreshTokenCookie(HttpServletResponse response) {
         Cookie refreshTokenCookie = new Cookie("refreshToken", null);
         refreshTokenCookie.setHttpOnly(true);
