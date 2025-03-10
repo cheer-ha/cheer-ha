@@ -117,9 +117,6 @@ public class AuthService {
      * @throws UnAuthorizedException 토큰이 유효하지 않거나 - 저장된 값과 다를 경우
      */
     public RefreshAccessTokenResponseDto refreshAccessToken(String refreshToken) {
-        if (!StringUtils.hasText(refreshToken)) {
-            throw new UnAuthorizedException(AuthErrorCode.TOKEN_UNAUTHORIZED);
-        }
         refreshToken = jwtUtil.substringToken(refreshToken);
 
         Claims claims;
@@ -132,10 +129,6 @@ public class AuthService {
         Long userId = Long.parseLong(claims.getSubject());
 
         String storedRefreshToken = redisRefreshTokenService.getRefreshToken(userId);
-
-        if (storedRefreshToken == null || storedRefreshToken.isBlank()) {
-            throw new UnAuthorizedException(AuthErrorCode.TOKEN_UNAUTHORIZED);
-        }
 
         if (!refreshToken.equals(jwtUtil.substringToken(storedRefreshToken))) {
             throw new UnAuthorizedException(AuthErrorCode.TOKEN_UNAUTHORIZED);
