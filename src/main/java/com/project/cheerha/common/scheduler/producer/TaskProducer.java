@@ -11,7 +11,6 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Slf4j
 @Component
@@ -28,9 +27,7 @@ public class TaskProducer {
      * TaskHandler 에서 작업을 가져와 등록하는 메서드
      */
     public void scheduleTask(String taskType, Map<String, Object> payload, Instant scheduledTime) {
-        String taskId = UUID.randomUUID().toString();
-
-        // TaskHandler 에서 기본 payload 가져오기 (널 방지)
+        //TaskHandler 에서 기본 payload 가져오기 (널 방지)
         if (payload == null) {
             for (TaskHandler handler : handlers) {
                 if (handler.getTaskType().equals(taskType)) {
@@ -41,7 +38,6 @@ public class TaskProducer {
         }
 
         Map<String, Object> taskData = new HashMap<>();
-        taskData.put("taskId", taskId);
         taskData.put("taskType", taskType);
         taskData.put("payload", payload);
 
