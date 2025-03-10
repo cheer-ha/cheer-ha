@@ -2,13 +2,11 @@ package com.project.cheerha.common.scheduler.core;
 
 import com.project.cheerha.common.scheduler.producer.TaskRegister;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class CentralScheduler {
@@ -31,5 +29,4 @@ public class CentralScheduler {
             taskRegister.register(handler);
         }
     }
-
 }
