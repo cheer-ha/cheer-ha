@@ -1,15 +1,15 @@
-package com.project.cheerha.common.scheduler;
+package com.project.cheerha.common.scheduler.consumer;
 
+import com.project.cheerha.common.scheduler.core.InstanceManager;
+import com.project.cheerha.common.scheduler.core.TaskHandler;
+import com.project.cheerha.common.scheduler.repository.TaskRepository;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.api.RScoredSortedSet;
-import org.redisson.api.RedissonClient;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +19,7 @@ import java.util.Map;
 public class TaskConsumer {
 
     private final InstanceManager instanceManager;
-    private final RedissonClient redissonClient;
+    private final TaskRepository taskRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Map<String, TaskHandler> handlers = new HashMap<>();
 
@@ -29,9 +29,9 @@ public class TaskConsumer {
     /**
      * 생성자를 초기화 할 떄 TaskHandler 의 구현체들을 가져옴
      */
-    public TaskConsumer(InstanceManager instanceManager, RedissonClient redissonClient, List<TaskHandler> handlerList) {
+    public TaskConsumer(InstanceManager instanceManager, TaskRepository taskRepository, List<TaskHandler> handlerList) {
         this.instanceManager = instanceManager;
-        this.redissonClient = redissonClient;
+        this.taskRepository = taskRepository;
         handlerList.forEach(handler -> handlers.put(handler.getTaskType(), handler));
     }
 
@@ -48,10 +48,10 @@ public class TaskConsumer {
 
         if (!isRunning) return;
 
-        String taskDataStr = getDueTask();
-        if (taskDataStr != null) {
+        String taskDataString = taskRepository.getDueTask(SORTED_SET_KEY);
+        if (taskDataString != null) {
             try {
-                Map<String, Object> taskData = objectMapper.readValue(taskDataStr, Map.class);
+                Map<String, Object> taskData = objectMapper.readValue(taskDataString, Map.class);
                 String taskType = (String) taskData.get("taskType");
                 Map<String, Object> payload = (Map<String, Object>) taskData.get("payload");
 
@@ -71,24 +71,5 @@ public class TaskConsumer {
     @PreDestroy
     public void shutdown() {
         isRunning = false;
-    }
-
-    /**
-     * 현재 시간보다 작거나 같은 score 를 가진 작업들을 확인
-     * @return 해당 조건을 충족하는 작업(실행 시켜야 할 작업)
-     */
-    private String getDueTask() {
-        RScoredSortedSet<String> sortedSet = redissonClient.getScoredSortedSet(SORTED_SET_KEY);
-        long currentTime = Instant.now().toEpochMilli();
-        //현재 시간까지의 작업들을 조회
-        Collection<String> dueTasks = sortedSet.valueRange(0, true, currentTime, true);
-
-        if (dueTasks != null && !dueTasks.isEmpty()) {
-            //첫 번째 작업을 꺼내고 제거
-            String task = dueTasks.iterator().next();
-            sortedSet.remove(task);
-            return task;
-        }
-        return null;
     }
 }
