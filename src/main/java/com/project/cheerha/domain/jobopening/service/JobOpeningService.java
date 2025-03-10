@@ -30,10 +30,8 @@ public class JobOpeningService {
     private final RedisViewCountManager redisViewCountManager;
 
 
-    public String redirectAndJobOpeningViewCount(Long jobOpeningId) {
+    public void redirectAndJobOpeningViewCount(Long jobOpeningId) {
         redisViewCountManager.increaseViewCount(jobOpeningId); //레디스에서 조회 수 증가
-        return "success";
-        // return getJobOpeningUrl(jobOpeningId); // URL 반환
     }
 
     /**

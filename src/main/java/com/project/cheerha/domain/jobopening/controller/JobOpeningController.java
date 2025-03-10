@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
 
 @RequestMapping("/job-opening")
 @RestController
@@ -27,21 +28,15 @@ public class JobOpeningController {
 
     /**
      * 원하는 채용공고에 리다이렉팅 되게 하는 API입니다.
-     * 결합도가 지나치게 높았던 관계로 채용공고 조회, 조회수 증가, 리다이렉트 세 가지 로직을 분리했습니다.
+
      * @param id 조회할 채용공고 페이지의 식별 id값
      * @return 리다이렉트 된 채용공고 사이트
      */
 
-
-//    @GetMapping("/{id}") //구현해야 하는 코드
-//    public RedirectView getRedirectedView(@PathVariable Long id) {
-//        jobOpeningService.redirectAndJobOpeningViewCount(id);
-//        return new RedirectView(jobOpeningService.getJobOpeningUrl(id));
-
-    @GetMapping("/{id}") //테스트용 코드 (리다이렉트 뺀 것)
-    public String getRedirectedView(@PathVariable Long id) {
-        String message = jobOpeningService.redirectAndJobOpeningViewCount(id);
-        return message;
+    @GetMapping("/{id}")
+    public RedirectView getRedirectedView(@PathVariable Long id) {
+        jobOpeningService.redirectAndJobOpeningViewCount(id);
+        return new RedirectView(jobOpeningService.getJobOpeningUrl(id));
     }
 
     /**
