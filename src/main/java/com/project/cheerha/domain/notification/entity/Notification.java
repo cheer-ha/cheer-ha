@@ -38,11 +38,11 @@ public class Notification {
     private boolean isPushSent;
 
     /**
-     * Mapping 객체를 생성하는 정적 팩토리 메서드
+     * 알림 객체를 생성하는 정적 팩토리 메서드
      *
      * @param email         : 사용자 이메일
      * @param jobOpeningUrl : 채용 공고 URL
-     * @return 생성된 Mapping 객체
+     * @return 생성된 알림 객체
      * <p>
      * 기본값 1: 이메일 미발송 기본값 2: 푸시 미발송
      */
