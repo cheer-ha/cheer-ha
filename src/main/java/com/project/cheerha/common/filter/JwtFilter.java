@@ -85,7 +85,7 @@ public class JwtFilter implements Filter {
                 httpRequest.setAttribute("userRole", role);
             }
 
-            if ("/syncData".equals(url)) {
+            if (isRequiredAdmin(url)) {
                 Role role = (Role) httpRequest.getAttribute("userRole");
                 if (role == null || !role.equals(Role.ADMIN)) {
                     filterExceptionHandler.sendErrorResponse(httpResponse, HttpStatus.FORBIDDEN, "관리자만 접근 가능합니다.");
@@ -114,5 +114,9 @@ public class JwtFilter implements Filter {
 
     private boolean isWhiteList(String requestURI) {
         return securityProperties.secret().whiteList().contains(requestURI);
+    }
+
+    private boolean isRequiredAdmin(String requestURI) {
+        return securityProperties.secret().adminList().contains(requestURI);
     }
 }

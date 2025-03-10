@@ -12,7 +12,8 @@ public record JwtSecurityProperties(
     public record Secret(
             String aesKey,
             String key,
-            List<String> whiteList
+            List<String> whiteList,
+            List<String> adminList
     ) {}
 
     public record Token(

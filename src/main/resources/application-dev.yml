@@ -46,6 +46,8 @@ jwt:
       - /users/email-verification/password-reset-verify
       - /users/password/reset
       - /auth/refresh
+    adminlist:
+      - /syncData
   token:
     prefix: ${JWT_PREFIX}
     refreshPrefix: ${REFRESH_PREFIX}
