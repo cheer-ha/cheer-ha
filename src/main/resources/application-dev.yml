@@ -51,6 +51,19 @@ jwt:
     refreshExpiration: ${REFRESH_EXPIRATION}
     blackListExpiration: ${BLACK_EXPIRATION}
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  health:
+    elasticsearch:
+      enabled: false
+
 security:
   bcrypt:
     cost: ${SECURITY_COST}
