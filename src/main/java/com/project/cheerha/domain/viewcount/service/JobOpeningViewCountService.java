@@ -26,7 +26,7 @@ public class JobOpeningViewCountService {
      * 채용공고 리다이렉트 동시성 제어를 위한 레디스 조회수 카운팅 메서드 입니다. viewCount 정보를 관리하는 레디스에서 조회수가 카운팅됩니다.
      * 레디스와 분산 락이 적용됩니다.
      */
-
+    @Transactional
     public String increaseViewCount(Long jobOpeningId) {
         redisViewCountManager.increaseViewCount(jobOpeningId);
         String result = updateViewCount(jobOpeningId);
@@ -37,7 +37,6 @@ public class JobOpeningViewCountService {
      * 레디스에 있는 채용공고 조회수를 집계테이블로 업데이트 하는데 사용하는 메서드
      * @param jobOpeningId
      */
-    @Transactional
     public String updateViewCount(Long jobOpeningId) {
         String lockKey = "JOB_OPENING_VIEW_COUNT_" + jobOpeningId;
         int retryCount = 3; // 최대 3번 재시도
@@ -54,6 +53,7 @@ public class JobOpeningViewCountService {
                     Long redisviewCount = redisViewCountManager.getViewCount(jobOpeningId);
                     JobOpeningViewCount jobOpeningViewCount = findByJobOpeningViewCountInJobOpeningId(jobOpeningId);
                     jobOpeningViewCount.increaseViewCount(redisviewCount);
+                    jobOpeningViewCountRepository.save(jobOpeningViewCount);
                 });
 
             if (success) {
