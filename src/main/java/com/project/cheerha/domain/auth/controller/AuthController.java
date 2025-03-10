@@ -24,26 +24,27 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponseDto<CreateSignupResponseDto>> signup(
-            @Valid @RequestBody CreateSignupRequestDto dto
+            @Valid @RequestBody CreateSignupRequestDto requestDto
     ) {
-        return ApiResponseDto.created(authService.signup(dto));
+        return ApiResponseDto.created(authService.signup(requestDto));
     }
 
     @PostMapping("/signup-verify")
     public ResponseEntity<ApiResponseDto<VerifySignupResponseDto>> verifySignup(
-            @Valid @RequestBody VerifySignupRequestDto dto
+            @Valid @RequestBody VerifySignupRequestDto requestDto
     ){
-        return ApiResponseDto.created(authService.verifySignup(dto));
+        return ApiResponseDto.created(authService.verifySignup(requestDto));
     }
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponseDto<CreateLoginResponseDto>> login(
-            @Valid @RequestBody CreateLoginRequestDto dto,
+            @Valid @RequestBody CreateLoginRequestDto requestDto,
             HttpServletResponse response
     ) {
-        CreateLoginResponseDto responseDto = authService.login(dto);
+        CreateLoginResponseDto responseDto = authService.login(requestDto);
         cookieService.createRefreshTokenCookie(responseDto.refreshToken(), response);
-        return ApiResponseDto.success(responseDto);
+        CreateLoginResponseDto newResponseDto = new CreateLoginResponseDto("로그인 성공", responseDto.token(), null);
+        return ApiResponseDto.success(newResponseDto);
     }
 
     @PostMapping("/logout")
