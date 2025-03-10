@@ -24,7 +24,6 @@ public class UserKeywordService {
     private final UserFindByService userFindByIdService;
     private final KeywordFindByService keywordFindByService;
 
-    // todo 테스트 코드 작성 필요
     @Transactional
     public CreateUserKeywordResponseDto createUserKeyword(
         Long userId,
