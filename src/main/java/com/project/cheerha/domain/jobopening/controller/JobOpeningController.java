@@ -5,15 +5,18 @@ import com.project.cheerha.common.dto.ApiResponseDto;
 import com.project.cheerha.common.dto.AuthUser;
 import com.project.cheerha.domain.jobopening.dto.request.ReadJobOpeningRequestDto;
 import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningResponseDto;
-import com.project.cheerha.domain.jobopening.entity.JobOpening;
-import com.project.cheerha.domain.jobopening.service.JobOpeningFindByService;
 import com.project.cheerha.domain.jobopening.service.JobOpeningService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
 @RequestMapping("/job-opening")
@@ -22,21 +25,17 @@ import org.springframework.web.servlet.view.RedirectView;
 public class JobOpeningController {
 
     private final JobOpeningService jobOpeningService;
-    private final JobOpeningFindByService jobOpeningFindByService;
 
     /**
      * 원하는 채용공고에 리다이렉팅 되게 하는 API입니다.
-     * 결합도가 지나치게 높았던 관계로 채용공고 조회, 조회수 증가, 리다이렉트 세 가지 로직을 분리했습니다.
      * @param id 조회할 채용공고 페이지의 식별 id값
      * @return 리다이렉트 된 채용공고 사이트
      */
 
     @GetMapping("/{id}")
     public RedirectView getRedirectedView(@PathVariable Long id) {
-        JobOpening jobOpening = jobOpeningFindByService.findById(id);
-        jobOpeningService.increaseViewCount(id);
-        String url = jobOpeningService.getJobOpeningUrl(jobOpening);
-        return new RedirectView(url);
+        jobOpeningService.redirectAndJobOpeningViewCount(id);
+        return new RedirectView(jobOpeningService.getJobOpeningUrl(id));
     }
 
     /**

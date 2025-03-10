@@ -21,9 +21,6 @@ import static org.mockito.Mockito.*;
 class JobOpeningFindByServiceTest {
 
     @Mock
-    private JobOpening jobOpening;
-
-    @Mock
     private JobOpeningRepository jobOpeningRepository;
 
     @InjectMocks
