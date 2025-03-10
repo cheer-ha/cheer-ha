@@ -48,10 +48,10 @@ public class TaskConsumer {
 
         if (!isRunning) return;
 
-        String taskDataStr = taskRepository.getDueTask(SORTED_SET_KEY);
-        if (taskDataStr != null) {
+        String taskDataString = taskRepository.getDueTask(SORTED_SET_KEY);
+        if (taskDataString != null) {
             try {
-                Map<String, Object> taskData = objectMapper.readValue(taskDataStr, Map.class);
+                Map<String, Object> taskData = objectMapper.readValue(taskDataString, Map.class);
                 String taskType = (String) taskData.get("taskType");
                 Map<String, Object> payload = (Map<String, Object>) taskData.get("payload");
 
