@@ -1,6 +1,7 @@
 package com.project.cheerha.common.scheduler.producer;
 
 import com.project.cheerha.common.scheduler.core.TaskHandler;
+import com.project.cheerha.common.scheduler.repository.RedissonRepository;
 import com.project.cheerha.common.scheduler.repository.TaskRepository;
 import com.project.cheerha.common.scheduler.strategy.FixedIntervalStrategy;
 import com.project.cheerha.common.scheduler.strategy.ScheduleStrategy;
@@ -15,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class TaskRegister {
 
+    private final RedissonRepository redissonRepository;
     private final TaskRepository taskRepository;
     private final TaskProducer taskProducer;
 
@@ -30,7 +32,7 @@ public class TaskRegister {
         String lastTimeKey = "scheduler:lastScheduledTime:" + taskType;
 
         try {
-            if (taskRepository.tryLock(lockKey, Math.min(2000, scheduleIntervalMillis / 2), scheduleIntervalMillis / 2, TimeUnit.MILLISECONDS)) {
+            if (redissonRepository.tryLock(lockKey, Math.min(2000, scheduleIntervalMillis / 2), scheduleIntervalMillis / 2, TimeUnit.MILLISECONDS)) {
                 try {
                     ScheduleStrategy strategy = handler.getScheduleStrategy();
                     Instant now = Instant.now();
@@ -52,7 +54,7 @@ public class TaskRegister {
                         }
                     }
                 } finally {
-                    taskRepository.unlock(lockKey);
+                    redissonRepository.unlock(lockKey);
                 }
             }
         } catch (InterruptedException e) {
