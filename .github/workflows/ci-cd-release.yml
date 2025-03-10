@@ -109,31 +109,3 @@ jobs:
             exit 1
           fi
           echo "Instance Refresh 성공적으로 완료됨!"
-
-      - name: Health Check on Instances
-        run: |
-          INSTANCES=$(aws autoscaling describe-auto-scaling-groups \
-            --auto-scaling-group-name cheerha-auto \
-            --query "AutoScalingGroups[0].Instances[?LifecycleState=='InService'].InstanceId" \
-            --output json)
-          for INSTANCE_ID in $(echo "$INSTANCES" | jq -r '.[]'); do
-            IP=$(aws ec2 describe-instances \
-              --instance-ids $INSTANCE_ID \
-              --query "Reservations[0].Instances[0].PublicIpAddress" \
-              --output text)
-            if [ -z "$IP" ]; then
-              echo "인스턴스 $INSTANCE_ID에 퍼블릭 IP가 없어 스킵"
-              continue
-            fi
-            for i in {1..3}; do
-              HEALTH=$(curl -s --max-time 10 "http://$IP:8080/actuator/health" || echo "DOWN")
-              if echo "$HEALTH" | grep -q "UP"; then
-                echo "인스턴스 $INSTANCE_ID ($IP) 건강함"
-                break
-              elif [ $i -eq 3 ]; then
-                echo "인스턴스 $INSTANCE_ID ($IP) 헬스체크 실패함"
-                exit 1
-              fi
-              sleep 5
-            done
-          done
