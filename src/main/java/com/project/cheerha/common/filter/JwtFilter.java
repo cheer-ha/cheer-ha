@@ -31,7 +31,7 @@ public class JwtFilter implements Filter {
     private static final String[] WHITE_LIST = {
             "/auth/signup", "/auth/signup-verify", "/auth/login", "/actuator/health", "/actuator/prometheus",
             "/users/email-verification/send-password-reset-verify", "/users/email-verification/password-reset-verify",
-            "/users/password/reset"};
+            "/users/password/reset", "/auth/refresh"};
     private final JwtSecurityProperties securityProperties;
     private final RedisBlackListService redisBlackListService;
     private final JwtUtil jwtUtil;
