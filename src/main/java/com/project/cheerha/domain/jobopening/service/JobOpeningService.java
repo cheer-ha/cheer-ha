@@ -1,14 +1,17 @@
 package com.project.cheerha.domain.jobopening.service;
 
+import com.project.cheerha.common.redis.viewcount.RedisViewCountManager;
 import com.project.cheerha.common.util.variable.IndexName;
-import com.project.cheerha.domain.searchhistory.service.SearchHistoryService;
 import com.project.cheerha.domain.jobopening.dto.request.ReadJobOpeningRequestDto;
 import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningResponseDto;
 import com.project.cheerha.domain.jobopening.entity.JobOpening;
 import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
-import com.project.cheerha.domain.viewcount.entity.JobOpeningViewCount;
-import com.project.cheerha.domain.viewcount.repository.JobOpeningViewCountRepository;
+import com.project.cheerha.domain.searchhistory.service.SearchHistoryService;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -16,10 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class JobOpeningService {
@@ -27,29 +27,20 @@ public class JobOpeningService {
     private final JobOpeningRepository jobOpeningRepository;
     private final SearchHistoryService searchHistoryService;
     private final JobOpeningFindByService jobOpeningFindByService;
-    private final JobOpeningViewCountRepository jobOpeningViewCountRepository;
+    private final RedisViewCountManager redisViewCountManager;
 
-    /**
-     * 채용공고 리다이렉트 동시성 제어를 위한 집계 테이블 조회수 카운팅 메서드 입니다.
-     * viewCount 정보를 관리하는 집계 테이블에서 조회수가 카운팅됩니다.
-     * viewcount 테이블에서 비관 락이 작동하여 count 값의 정합성을 유지합니다.
-     * @param id 채용공고 식별 id
-     */
-    @Transactional
-    public void increaseViewCount(Long id) {
-        JobOpeningViewCount viewCount = jobOpeningViewCountRepository.findWithLockByJobOpeningId(id)
-            .orElseGet(() -> {
-                JobOpening jobOpening = jobOpeningFindByService.findById(id);
-                return jobOpeningViewCountRepository.save(JobOpeningViewCount.create(jobOpening));
-            });
-        viewCount.increaseViewCount();
+
+    public void redirectAndJobOpeningViewCount(Long jobOpeningId) {
+        redisViewCountManager.increaseViewCount(jobOpeningId); //레디스에서 조회 수 증가
     }
 
     /**
      * 페이지 리다이렉트를 위한 서비스 로직입니다.
+     * @param id jobOpening의 id
      * @return 리다이렉트 될 페이지 URL
      */
-    public String getJobOpeningUrl(JobOpening jobOpening) {
+    public String getJobOpeningUrl(Long id) {
+        JobOpening jobOpening = jobOpeningFindByService.findById(id);
         String url = jobOpening.getJobOpeningUrl();
         if (!url.startsWith("http")) {
             url = "https://" + url;

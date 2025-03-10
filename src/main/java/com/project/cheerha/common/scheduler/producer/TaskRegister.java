@@ -1,7 +1,11 @@
 package com.project.cheerha.common.scheduler.producer;
 
 import com.project.cheerha.common.scheduler.core.TaskHandler;
+import com.project.cheerha.common.redis.redisson.RedissonRepository;
 import com.project.cheerha.common.scheduler.repository.TaskRepository;
+import com.project.cheerha.common.scheduler.strategy.FixedIntervalStrategy;
+import com.project.cheerha.common.scheduler.strategy.ScheduleStrategy;
+import com.project.cheerha.common.scheduler.strategy.SpecificTimeStrategy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class TaskRegister {
 
+    private final RedissonRepository redissonRepository;
     private final TaskRepository taskRepository;
     private final TaskProducer taskProducer;
 
@@ -27,17 +32,29 @@ public class TaskRegister {
         String lastTimeKey = "scheduler:lastScheduledTime:" + taskType;
 
         try {
-            if (taskRepository.tryLock(lockKey, Math.min(2000, scheduleIntervalMillis / 2), scheduleIntervalMillis / 2, TimeUnit.MILLISECONDS)) {
+            if (redissonRepository.tryLock(lockKey, Math.min(2000, scheduleIntervalMillis / 2), scheduleIntervalMillis / 2, TimeUnit.MILLISECONDS)) {
                 try {
-                    long lastScheduledTime = taskRepository.getLastScheduledTime(lastTimeKey, Instant.now().toEpochMilli() - scheduleIntervalMillis);
-                    long now = Instant.now().toEpochMilli();
-                    if (now >= lastScheduledTime + scheduleIntervalMillis) {
-                        long nextScheduledTime = lastScheduledTime + scheduleIntervalMillis;
-                        taskProducer.scheduleTask(taskType, handler.getDefaultPayload(), Instant.ofEpochMilli(nextScheduledTime));
-                        taskRepository.saveLastScheduledTime(lastTimeKey, nextScheduledTime);
+                    ScheduleStrategy strategy = handler.getScheduleStrategy();
+                    Instant now = Instant.now();
+
+                    if (strategy instanceof SpecificTimeStrategy) {
+                        //특정 시간 전략
+                        Instant nextExecutionTime = strategy.getNextExecutionTime(now, scheduleIntervalMillis);
+                        taskProducer.scheduleTask(taskType, handler.getDefaultPayload(), nextExecutionTime);
+                        taskRepository.saveLastScheduledTime(lastTimeKey, nextExecutionTime.toEpochMilli());
+                    } else if(strategy instanceof FixedIntervalStrategy){
+                        //고정 주기 전략
+                        long defaultLastTime = now.minusMillis(scheduleIntervalMillis).toEpochMilli();
+                        long lastScheduledTimeMillis = taskRepository.getLastScheduledTime(lastTimeKey, defaultLastTime);
+                        Instant lastScheduledTime = Instant.ofEpochMilli(lastScheduledTimeMillis);
+                        Instant nextExecutionTime = strategy.getNextExecutionTime(lastScheduledTime, scheduleIntervalMillis);
+                        if (!now.isBefore(nextExecutionTime)) {
+                            taskProducer.scheduleTask(taskType, handler.getDefaultPayload(), nextExecutionTime);
+                            taskRepository.saveLastScheduledTime(lastTimeKey, nextExecutionTime.toEpochMilli());
+                        }
                     }
                 } finally {
-                    taskRepository.unlock(lockKey);
+                    redissonRepository.unlock(lockKey);
                 }
             }
         } catch (InterruptedException e) {

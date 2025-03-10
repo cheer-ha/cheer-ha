@@ -22,11 +22,6 @@ spring:
       host: localhost
       database: ${REDIS_DATABASE}
 
-  cache:
-    type: redis
-    redis:
-      time-to-live: 3600  # 캐시 항목의 TTL(Time To Live)을 1시간으로 설정
-
 elasticsearch:
   uris: http://localhost:${ELASTICSEARCH_PORT}  # Elasticsearch REST API URL
   username: ${ELASTICSEARCH_USERNAME}
@@ -34,9 +29,8 @@ elasticsearch:
   index:
     name: job-opening
 
-#csv:
-#  file:
-#    path: src/main/resources/Job_Openings.csv
+redis:
+  uris: ${REDIS_DEV_URI}
 
 jwt:
   secret:
@@ -54,6 +48,19 @@ jwt:
 security:
   bcrypt:
     cost: ${SECURITY_COST}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  health:
+    elasticsearch:
+      enabled: false
 
 logging:
   level:

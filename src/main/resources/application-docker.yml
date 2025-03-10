@@ -19,11 +19,6 @@ spring:
       host: redis
       database: ${REDIS_DATABASE}
 
-  cache:
-    type: redis
-    redis:
-      time-to-live: 3600  # 캐시 항목의 TTL(Time To Live)을 1시간으로 설정
-
 elasticsearch:
   uris: http://host.docker.internal:9200  # Elasticsearch 는 도커 없이 실행
   username: ${ELASTICSEARCH_USERNAME}
@@ -31,18 +26,8 @@ elasticsearch:
   index:
     name: job-opening
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health, prometheus
-  prometheus:
-    metrics:
-      export:
-        enabled: true
-  health:
-    elasticsearch:
-      enabled: false
+redis:
+  uris: ${REDIS_DOCKER_URI}
 
 jwt:
   secret:
@@ -60,6 +45,19 @@ jwt:
 security:
   bcrypt:
     cost: ${SECURITY_COST}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  health:
+    elasticsearch:
+      enabled: false
 
 logging:
   level:

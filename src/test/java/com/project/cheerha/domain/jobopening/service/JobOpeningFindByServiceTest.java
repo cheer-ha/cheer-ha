@@ -1,26 +1,24 @@
 package com.project.cheerha.domain.jobopening.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import com.project.cheerha.common.exception.data.DataErrorCode;
+import com.project.cheerha.common.exception.data.NotFoundException;
 import com.project.cheerha.domain.jobopening.entity.JobOpening;
 import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
-import java.util.Optional;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 @ExtendWith(MockitoExtension.class)
 class JobOpeningFindByServiceTest {
-
-    @Mock
-    private JobOpening jobOpening;
 
     @Mock
     private JobOpeningRepository jobOpeningRepository;
@@ -46,5 +44,24 @@ class JobOpeningFindByServiceTest {
         assertNotNull(result);
         assertEquals("S전자 신입공채 모집", result.getTitle());
         verify(jobOpeningRepository, times(1)).findById(jobId);
+    }
+
+    @Test
+    @DisplayName("예외 발생: 존재하지 않는 jobOpeningId를 조회할 경우 NotFoundException 발생")
+    void 채용공고_단건_조회_실패() {
+        // given
+        Long jobOpeningId = 999L;
+
+        when(jobOpeningRepository.findById(jobOpeningId)).thenReturn(Optional.empty());
+
+        // when & then
+        NotFoundException exception = assertThrows(
+            NotFoundException.class,
+            () -> jobOpeningFindByService.findById(jobOpeningId)
+        );
+
+        assertThat(exception.getMessage()).contains(DataErrorCode.JOB_OPENING_NOT_FOUND.getMessage());
+
+        verify(jobOpeningRepository, times(1)).findById(jobOpeningId);
     }
 }
