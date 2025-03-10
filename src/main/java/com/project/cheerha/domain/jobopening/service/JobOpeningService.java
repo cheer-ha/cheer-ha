@@ -1,12 +1,12 @@
 package com.project.cheerha.domain.jobopening.service;
 
+import com.project.cheerha.common.redis.viewcount.RedisViewCountManager;
 import com.project.cheerha.common.util.variable.IndexName;
 import com.project.cheerha.domain.jobopening.dto.request.ReadJobOpeningRequestDto;
 import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningResponseDto;
 import com.project.cheerha.domain.jobopening.entity.JobOpening;
 import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
 import com.project.cheerha.domain.searchhistory.service.SearchHistoryService;
-import com.project.cheerha.domain.viewcount.service.JobOpeningViewCountService;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,12 +27,12 @@ public class JobOpeningService {
     private final JobOpeningRepository jobOpeningRepository;
     private final SearchHistoryService searchHistoryService;
     private final JobOpeningFindByService jobOpeningFindByService;
-    private final JobOpeningViewCountService jobOpeningViewCountService;
+    private final RedisViewCountManager redisViewCountManager;
 
 
     public String redirectAndJobOpeningViewCount(Long jobOpeningId) {
-            String result = jobOpeningViewCountService.increaseViewCount(jobOpeningId); // 조회수 증가
-        return result;
+        redisViewCountManager.increaseViewCount(jobOpeningId); //레디스에서 조회 수 증가
+        return "success";
         // return getJobOpeningUrl(jobOpeningId); // URL 반환
     }
 

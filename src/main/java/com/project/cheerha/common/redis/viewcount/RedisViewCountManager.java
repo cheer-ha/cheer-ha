@@ -1,6 +1,11 @@
-package com.project.cheerha.common.redis;
+package com.project.cheerha.common.redis.viewcount;
 
+import com.project.cheerha.common.dto.ViewCountResponseDto;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -28,13 +33,13 @@ public class RedisViewCountManager {
             redisTemplate.opsForValue().set(key, "0", Duration.ofMinutes(30));  // 30분 TTL 설정
         }
 
-        Long value = redisTemplate.opsForValue().increment(key);
+        redisTemplate.opsForValue().increment(key);
     }
 
     /**
-     * 직접 동기화
+     * viewCount 단일 값
      * @param jobOpeningId
-     * @return 동기화 할 viewCount값
+     * @return 채용공고 id에 해당하는 viewCount 값
      */
     public long getViewCount(Long jobOpeningId) {
         String key = VIEW_COUNT_KEY_PREFIX + jobOpeningId;
@@ -47,21 +52,22 @@ public class RedisViewCountManager {
         redisTemplate.delete(key);
     }
 
-//    /**
-//     * 채용공고의 조회수를 전체 가져오는 메서드입니다. (배치할 용도)
-//     * @return 현재 Redis에 저장된 조회수 중 0보다 큰 값 전부
-//     */
-//    public Map<Long, Integer> findAllViewCount() {
-//        Set<String> keys = redisTemplate.keys(VIEW_COUNT_KEY_PREFIX + "*"); // 모든 조회수 키 찾기
-//        Map<Long, Integer> viewCounts = new HashMap<>();
-//
-//        for (String key : keys) {
-//            String count = redisTemplate.opsForValue().get(key);
-//            Long jobOpeningId = Long.parseLong(key.replace(VIEW_COUNT_KEY_PREFIX, ""));
-//            viewCounts.put(jobOpeningId, count == null ? 0 : Integer.parseInt(count));
-//        }
-//
-//        return viewCounts;
-//    }
+    /**
+     * 채용공고의 조회수를 전체 가져오는 메서드입니다.
+     * 동기화를 위한 메서드
+     * @return 현재 Redis에 저장된 조회수 전부
+     */
+    public List<ViewCountResponseDto> findAllViewCount() {
+        Set<String> keys = redisTemplate.keys(VIEW_COUNT_KEY_PREFIX + "*"); // 모든 조회수 키 찾기
+        List<ViewCountResponseDto> result = new ArrayList<>();
+
+        for(String key : keys) {
+            Long jobOpeningId = Long.parseLong(key.replace(VIEW_COUNT_KEY_PREFIX, ""));
+            Long count = Long.valueOf(Objects.requireNonNull(redisTemplate.opsForValue().get(key)));
+            result.add(new ViewCountResponseDto(jobOpeningId, count));
+        }
+
+        return result;
+    }
 }
 
