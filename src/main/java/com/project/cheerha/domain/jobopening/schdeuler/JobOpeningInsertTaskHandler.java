@@ -1,6 +1,6 @@
 package com.project.cheerha.domain.jobopening.schdeuler;
 
-import com.project.cheerha.common.scheduler.TaskHandler;
+import com.project.cheerha.common.scheduler.core.TaskHandler;
 import com.project.cheerha.domain.jobopening.entity.JobOpening;
 import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
 import com.project.cheerha.domain.jobopening.schdeuler.factory.JobOpeningFactory;
