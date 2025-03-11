@@ -34,7 +34,7 @@ public class JobOpeningController {
 
     @GetMapping("/{id}")
     public RedirectView getRedirectedView(@PathVariable Long id) {
-        jobOpeningService.redirectAndJobOpeningViewCount(id);
+//        jobOpeningService.redirectAndJobOpeningViewCount(id);
         return new RedirectView(jobOpeningService.getJobOpeningUrl(id));
     }
 
