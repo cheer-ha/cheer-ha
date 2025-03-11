@@ -35,7 +35,7 @@
                 <pattern>${LOG_PATTERN}</pattern>
             </encoder>
         </appender>
-        <root level="trace">
+        <root level="info">
             <appender-ref ref="CONSOLE" />
         </root>
     </springProfile>
