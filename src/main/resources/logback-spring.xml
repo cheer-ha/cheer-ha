@@ -1,0 +1,42 @@
+<configuration>
+    <!-- 로그 출력 패턴 변수 -->
+    <property name="LOG_PATTERN"
+              value="[%d{yyyy-MM-dd HH:mm:ss}:%-4relative] %green([%thread]) %highlight(%-5level) %boldWhite([%C.%M:%yellow([%L])) - %msg%n"/>
+    <springProperty name="FLUENTD_HOST" source="FLUENTD_HOST" />
+
+    <springProfile name="release">
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>${LOG_PATTERN}</pattern>
+            </encoder>
+        </appender>
+
+        <appender name="FLUENT" class="ch.qos.logback.more.appenders.FluencyLogbackAppender">
+            <tag>springboot.${HOSTNAME}</tag>
+            <remoteHost>${FLUENTD_HOST}</remoteHost>
+            <port>24224</port>
+            <maxWaitSeconds>3</maxWaitSeconds>
+
+            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                <pattern>${LOG_PATTERN}</pattern>
+            </encoder>
+        </appender>
+
+        <root level="warn">
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="FLUENT" />
+        </root>
+    </springProfile>
+
+    <!-- release 프로파일이 아닌 경우 -->
+    <springProfile name="dev,docker">
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>${LOG_PATTERN}</pattern>
+            </encoder>
+        </appender>
+        <root level="info">
+            <appender-ref ref="CONSOLE" />
+        </root>
+    </springProfile>
+</configuration>
