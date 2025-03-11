@@ -38,8 +38,9 @@ public class JobOpeningDocumentService {
         int from = calculateFrom(pageNumber, pageSize, IndexName.MAX_JOB_OPENING_SIZE);
         SearchRequest searchRequest = buildSearchRequest(from, pageSize, null);
         List<JobOpeningDocument> jobOpeningDocumentList = elasticsearchClientService.fetchJobOpeningDocumentList(searchRequest);
+        long totalJobOpenings = elasticsearchClientService.getTotalCount(searchRequest);
         List<ReadJobOpeningElasticResponseDto> dtoList = ReadJobOpeningElasticResponseDto.toDto(jobOpeningDocumentList);
-        return new PageImpl<>(dtoList, pageable, IndexName.MAX_JOB_OPENING_SIZE);
+        return new PageImpl<>(dtoList, pageable, totalJobOpenings);
     }
 
     /**
@@ -68,7 +69,6 @@ public class JobOpeningDocumentService {
         if (requestDto.getSearchTerm() != null) {
             searchHistoryService.saveSearchTerm(userId, requestDto.getSearchTerm());
         }
-
         JobOpeningDocumentFilter filter = new JobOpeningDocumentFilter(requestDto);
         var boolQueryBuilder = filter.build();
         int pageSize = pageable.getPageSize();
@@ -82,8 +82,9 @@ public class JobOpeningDocumentService {
                 .size(pageSize)
                 .build();
         List<JobOpeningDocument> jobOpeningDocumentList = elasticsearchClientService.fetchJobOpeningDocumentList(searchRequest);
+        long totalCount = elasticsearchClientService.getTotalCount(searchRequest);
         List<ReadJobOpeningElasticResponseDto> dtoList = ReadJobOpeningElasticResponseDto.toDto(jobOpeningDocumentList);
-        return new PageImpl<>(dtoList, pageable, IndexName.MAX_JOB_OPENING_SIZE);
+        return new PageImpl<>(dtoList, pageable, totalCount);
     }
 
     /**
@@ -91,28 +92,27 @@ public class JobOpeningDocumentService {
      */
     @Transactional
     public Page<ReadJobOpeningElasticResponseDto> readJobOpeningElasticAuto(
-        ReadJobOpeningElasticAutoRequestDto requestDto,
-        Long userId,
-        Pageable pageable
+            ReadJobOpeningElasticAutoRequestDto requestDto,
+            Long userId,
+            Pageable pageable
     ) {
         searchHistoryService.saveSearchTerm(userId, requestDto.getSearchTerm());
-
         JobOpeningDocumentAutoFilter filter = new JobOpeningDocumentAutoFilter(requestDto);
         var boolQueryBuilder = filter.build();
         int pageSize = pageable.getPageSize();
         int pageNumber = pageable.getPageNumber();
         int from = calculateFrom(pageNumber, pageSize, IndexName.MAX_JOB_OPENING_SIZE);
         SearchRequest searchRequest = new SearchRequest.Builder()
-            .index(IndexName.JOB_OPENING_DOCUMENT)
-            .query(q -> q.bool(boolQueryBuilder.build()))
-            .sort(s -> s.field(f -> f.field(IndexName.CREATED_AT).order(SortOrder.Desc)))
-            .from(from)
-            .size(pageSize)
-            .build();
-
+                .index(IndexName.JOB_OPENING_DOCUMENT)
+                .query(q -> q.bool(boolQueryBuilder.build()))
+                .sort(s -> s.field(f -> f.field(IndexName.CREATED_AT).order(SortOrder.Desc)))
+                .from(from)
+                .size(pageSize)
+                .build();
         List<JobOpeningDocument> jobOpeningDocumentList = elasticsearchClientService.fetchJobOpeningDocumentList(searchRequest);
+        long totalCount = elasticsearchClientService.getTotalCount(searchRequest);
         List<ReadJobOpeningElasticResponseDto> dtoList = ReadJobOpeningElasticResponseDto.toDto(jobOpeningDocumentList);
-        return new PageImpl<>(dtoList, pageable, IndexName.MAX_JOB_OPENING_SIZE);
+        return new PageImpl<>(dtoList, pageable, totalCount);
     }
 
     /**

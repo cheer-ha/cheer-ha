@@ -37,4 +37,21 @@ public class ElasticsearchClientService {
             throw new ElasticsearchQueryException(DataErrorCode.JOB_OPENING_NOT_FOUND);
         }
     }
+
+    /**
+     * Elasticsearch에서 검색된 총 문서 수를 반환하는 메서드
+     *
+     * @param searchRequest Elasticsearch 쿼리 요청 객체
+     * @return 검색된 총 문서 수
+     * @throws ElasticsearchQueryException Elasticsearch 쿼리 실행 실패 시 발생
+     */
+    public long getTotalCount(SearchRequest searchRequest) {
+        try {
+            SearchResponse<JobOpeningDocument> searchResponse = elasticsearchClient.search(searchRequest, JobOpeningDocument.class);
+            // 검색된 총 문서 수 반환
+            return searchResponse.hits().total().value();
+        } catch (IOException e) {
+            throw new ElasticsearchQueryException(DataErrorCode.JOB_OPENING_NOT_FOUND);
+        }
+    }
 }
