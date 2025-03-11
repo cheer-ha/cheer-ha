@@ -1,5 +1,7 @@
 package com.project.cheerha.common.redis.auth;
 
+import com.project.cheerha.common.exception.auth.AuthErrorCode;
+import com.project.cheerha.common.exception.auth.UnAuthorizedException;
 import com.project.cheerha.common.properties.JwtSecurityProperties;
 
 import java.util.concurrent.TimeUnit;
@@ -34,7 +36,10 @@ public class RedisRefreshTokenService {
     public String getRefreshToken(Long userId) {
         String key = getKey(userId);
         String token = redisTemplate.opsForValue().get(key);
-        return token != null ? token : "";
+        if (token == null || token.isBlank()) {
+            throw new UnAuthorizedException(AuthErrorCode.TOKEN_UNAUTHORIZED);
+        }
+        return token;
     }
 
     /**

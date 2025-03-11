@@ -1,9 +1,9 @@
 package com.project.cheerha.domain.auth.dto.response;
 
 public record RefreshAccessTokenResponseDto(
-        String accessToken, String message, String refreshToken
+        String accessToken, String message
 ) {
-    public static RefreshAccessTokenResponseDto toDto(String accessToken, String refreshToken) {
-        return new RefreshAccessTokenResponseDto(accessToken, "AccessToken 재발급 성공", refreshToken);
+    public static RefreshAccessTokenResponseDto toDto(String accessToken) {
+        return new RefreshAccessTokenResponseDto(accessToken, "AccessToken 재발급 성공");
     }
 }
