@@ -22,16 +22,11 @@ import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.PatternMatchUtils;
 
 @Slf4j
 @RequiredArgsConstructor
 public class JwtFilter implements Filter {
 
-    private static final String[] WHITE_LIST = {
-            "/auth/signup", "/auth/signup-verify", "/auth/login", "/actuator/health", "/actuator/prometheus",
-            "/users/email-verification/send-password-reset-verify", "/users/email-verification/password-reset-verify",
-            "/users/password/reset"};
     private final JwtSecurityProperties securityProperties;
     private final RedisBlackListService redisBlackListService;
     private final JwtUtil jwtUtil;
@@ -90,7 +85,7 @@ public class JwtFilter implements Filter {
                 httpRequest.setAttribute("userRole", role);
             }
 
-            if ("/syncData".equals(url)) {
+            if (isRequiredAdmin(url)) {
                 Role role = (Role) httpRequest.getAttribute("userRole");
                 if (role == null || !role.equals(Role.ADMIN)) {
                     filterExceptionHandler.sendErrorResponse(httpResponse, HttpStatus.FORBIDDEN, "관리자만 접근 가능합니다.");
@@ -118,6 +113,10 @@ public class JwtFilter implements Filter {
     }
 
     private boolean isWhiteList(String requestURI) {
-        return PatternMatchUtils.simpleMatch(WHITE_LIST, requestURI);
+        return securityProperties.secret().whiteList().contains(requestURI);
+    }
+
+    private boolean isRequiredAdmin(String requestURI) {
+        return securityProperties.secret().adminList().contains(requestURI);
     }
 }

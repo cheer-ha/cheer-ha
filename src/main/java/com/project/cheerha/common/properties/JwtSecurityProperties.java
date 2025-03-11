@@ -2,6 +2,8 @@ package com.project.cheerha.common.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.List;
+
 @ConfigurationProperties(prefix = "jwt")
 public record JwtSecurityProperties(
         Secret secret,
@@ -9,7 +11,9 @@ public record JwtSecurityProperties(
 ) {
     public record Secret(
             String aesKey,
-            String key
+            String key,
+            List<String> whiteList,
+            List<String> adminList
     ) {}
 
     public record Token(

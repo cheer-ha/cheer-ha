@@ -21,6 +21,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 
@@ -54,7 +55,9 @@ public class JwtFilterTest {
     @Test
     void testFilter_화이트리스트일때() throws ServletException, IOException {
         when(request.getRequestURI()).thenReturn("/auth/signup");
+        JwtSecurityProperties.Secret mockSecret = mock(JwtSecurityProperties.Secret.class);
 
+        setUpJwtProperties(mockSecret);
         jwtFilter.doFilter(request, response, filterChain);
 
         verify(filterChain, times(1)).doFilter(request, response);
@@ -68,7 +71,9 @@ public class JwtFilterTest {
 
         request.setRequestURI("/api/protected");
         request.addHeader("Authorization", "");
+        JwtSecurityProperties.Secret mockSecret = mock(JwtSecurityProperties.Secret.class);
 
+        setUpJwtProperties(mockSecret);
         jwtFilter.doFilter(request, response, filterChain);
 
         verify(filterExceptionHandler, times(1))
@@ -93,6 +98,9 @@ public class JwtFilterTest {
         when(token.prefix()).thenReturn("Bearer ");
 
         jwtFilter = new JwtFilter(securityProperties, redisBlackListService, jwtUtil, filterExceptionHandler);
+        JwtSecurityProperties.Secret mockSecret = mock(JwtSecurityProperties.Secret.class);
+        when(securityProperties.secret()).thenReturn(mockSecret);
+        when(mockSecret.whiteList()).thenReturn(List.of("/auth/signup", "/auth/login"));
         jwtFilter.doFilter(request, response, filterChain);
 
         verify(filterChain, times(1)).doFilter(request, response);
@@ -105,9 +113,9 @@ public class JwtFilterTest {
         when(jwtUtil.substringToken("Bearer expiredToken")).thenReturn("expiredToken");
         when(jwtUtil.extractClaims("expiredToken")).thenThrow(ExpiredJwtException.class);
 
-        JwtSecurityProperties securityProperties = mock(JwtSecurityProperties.class);
+        JwtSecurityProperties.Secret mockSecret = mock(JwtSecurityProperties.Secret.class);
 
-        jwtFilter = new JwtFilter(securityProperties, redisBlackListService, jwtUtil, filterExceptionHandler);
+        setUpJwtProperties(mockSecret);
         jwtFilter.doFilter(request, response, filterChain);
 
         verify(filterExceptionHandler, times(1))
@@ -122,6 +130,9 @@ public class JwtFilterTest {
 
         when(redisBlackListService.isBlackList("blackListToken")).thenReturn(true);
 
+        JwtSecurityProperties.Secret mockSecret = mock(JwtSecurityProperties.Secret.class);
+
+        setUpJwtProperties(mockSecret);
         jwtFilter.doFilter(request, response, filterChain);
 
         verify(filterExceptionHandler, times(1))
@@ -136,6 +147,9 @@ public class JwtFilterTest {
 
         request.setRequestURI("/api/protected");
 
+        JwtSecurityProperties.Secret mockSecret = mock(JwtSecurityProperties.Secret.class);
+
+        setUpJwtProperties(mockSecret);
         jwtFilter.doFilter(request, response, filterChain);
 
         verify(filterExceptionHandler, times(1))
@@ -154,6 +168,9 @@ public class JwtFilterTest {
 
         when(claims.getSubject()).thenReturn(null);
 
+        JwtSecurityProperties.Secret mockSecret = mock(JwtSecurityProperties.Secret.class);
+
+        setUpJwtProperties(mockSecret);
         jwtFilter.doFilter(request, response, filterChain);
 
         verify(filterExceptionHandler, times(1))
@@ -170,12 +187,24 @@ public class JwtFilterTest {
         when(jwtUtil.extractClaims("validToken"))
                 .thenThrow(new IllegalArgumentException("Invalid or expired JWT token"));
 
-        jwtFilter = new JwtFilter(jwtSecurityProperties, redisBlackListService, jwtUtil, filterExceptionHandler);
+        JwtSecurityProperties.Secret mockSecret = mock(JwtSecurityProperties.Secret.class);
+
+        setUpJwtProperties(mockSecret);
         jwtFilter.doFilter(request, response, filterChain);
 
         verify(filterExceptionHandler, times(1))
                 .sendErrorResponse(any(HttpServletResponse.class), eq(HttpStatus.BAD_REQUEST), anyString());
     }
 
-
+    private void setUpJwtProperties(JwtSecurityProperties.Secret mockSecret) {
+        when(jwtSecurityProperties.secret()).thenReturn(mockSecret);
+        when(mockSecret.whiteList()).thenReturn(List.of(
+                "/auth/signup",
+                "/auth/signup-verify",
+                "/auth/login",
+                "/actuator/health",
+                "/auth/refresh"
+        ));
+        jwtFilter = new JwtFilter(jwtSecurityProperties, redisBlackListService, jwtUtil, filterExceptionHandler);
+    }
 }

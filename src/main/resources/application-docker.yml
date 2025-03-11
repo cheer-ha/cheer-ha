@@ -33,7 +33,18 @@ jwt:
   secret:
     aesKey: ${AES_KEY}
     key: ${JWT_KEY}
-
+    whitelist:
+      - /auth/signup
+      - /auth/signup-verify
+      - /auth/login
+      - /actuator/health
+      - /actuator/prometheus
+      - /users/email-verification/send-password-reset-verify
+      - /users/email-verification/password-reset-verify
+      - /users/password/reset
+      - /auth/refresh
+    adminlist:
+      - /sync-data
   token:
     prefix: ${JWT_PREFIX}
     refreshPrefix: ${REFRESH_PREFIX}

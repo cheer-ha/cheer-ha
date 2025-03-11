@@ -34,13 +34,11 @@ public class JobOpeningController {
 
     @GetMapping("/{id}")
     public RedirectView getRedirectedView(@PathVariable Long id) {
-        jobOpeningService.redirectAndJobOpeningViewCount(id);
         return new RedirectView(jobOpeningService.getJobOpeningUrl(id));
     }
 
     /**
      * 채용 공고 목록을 필터링 및 검색하여 조회하는 API입니다.
-     *
      * 사용자는 특정 검색어 및 필터 조건을 설정하여 원하는 채용 공고만 조회할 수 있습니다.
      *
      * @param requestDto 필터링 및 검색어를 포함

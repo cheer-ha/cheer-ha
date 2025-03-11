@@ -89,18 +89,20 @@ dependencies {
 	//prometheus
 	implementation 'io.micrometer:micrometer-registry-prometheus'
 
-// elasticsearch
+	//elasticsearch
 	implementation 'co.elastic.clients:elasticsearch-java:8.17.2'  // Elasticsearch Java 클라이언트 (8.x 이상 버전 사용 시)
 	implementation 'org.elasticsearch.client:elasticsearch-rest-client:8.15.5' // Elasticsearch REST 클라이언트 (8.x 버전과 호환)
 	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch' // Spring Data Elasticsearch 스타터 (Elasticsearch와 Spring Data 통합)
 	implementation 'org.apache.httpcomponents:httpclient:4.5.13' // Apache HttpClient (HTTP 요청을 보내기 위한 클라이언트 라이브러리)
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.0' // Jackson Databind (JSON 데이터 바인딩을 위한 라이브러리)
-	//implementation 'org.apache.commons:commons-csv:1.8' // Apache Commons CSV (CSV 파일을 읽고 쓰기 위한 라이브러리)
-	//implementation 'com.opencsv:opencsv:5.6' // OpenCSV (CSV 파일을 처리하기 위한 라이브러리)
 
+	//sendgrid
 	implementation 'com.sendgrid:sendgrid-java:4.10.2'
 
-	implementation 'com.google.firebase:firebase-admin:9.4.3'
+	//log
+	implementation 'com.sndyuk:logback-more-appenders:1.8.8'
+	implementation 'org.komamitsu:fluency-core:2.6.0'
+	implementation 'org.komamitsu:fluency-fluentd:2.6.0'
 }
 
 tasks.named('test') {
