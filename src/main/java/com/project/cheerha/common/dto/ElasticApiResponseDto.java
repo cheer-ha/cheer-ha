@@ -3,6 +3,7 @@ package com.project.cheerha.common.dto;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 public record ElasticApiResponseDto<T>(LocalDateTime responseAt, boolean isSuccessful, T data, String message) {
     /**
@@ -11,7 +12,7 @@ public record ElasticApiResponseDto<T>(LocalDateTime responseAt, boolean isSucce
      * @param message 응답 메시지
      */
     public ElasticApiResponseDto(boolean isSuccessful, T data, String message) {
-        this(LocalDateTime.now(), isSuccessful, data, message);
+        this(LocalDateTime.now(ZoneId.of("Asia/Seoul")), isSuccessful, data, message);
     }
 
     public static <T> ResponseEntity<ElasticApiResponseDto<T>> success(T data, String message) {
