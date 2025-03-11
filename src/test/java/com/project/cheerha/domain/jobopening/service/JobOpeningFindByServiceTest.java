@@ -26,9 +26,6 @@ class JobOpeningFindByServiceTest {
     @InjectMocks
     private JobOpeningFindByService jobOpeningFindByService;
 
-    /**
-     * 조회 성공 테스트만 있고 실패테스트 없어서 추가해야함, null 여부 등도 추가 가능하면 할 예정
-     */
     @Test
     void 채용공고_단건_조회성공() {
         // given
