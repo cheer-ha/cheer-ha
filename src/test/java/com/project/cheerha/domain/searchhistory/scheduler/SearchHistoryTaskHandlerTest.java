@@ -46,7 +46,7 @@ public class SearchHistoryTaskHandlerTest {
     private ArgumentCaptor<List<SearchHistory>> searchHistoryCaptor;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         when(redisTemplate.opsForZSet()).thenReturn(zSetOperations);
     }
 
