@@ -1,5 +1,7 @@
 package com.project.cheerha.domain.jobopening.service;
 
+import com.project.cheerha.common.exception.data.DataErrorCode;
+import com.project.cheerha.common.exception.data.NotFoundException;
 import com.project.cheerha.common.redis.viewcount.RedisViewCountManager;
 import com.project.cheerha.common.util.variable.IndexName;
 import com.project.cheerha.domain.jobopening.dto.request.ReadJobOpeningRequestDto;
@@ -7,6 +9,9 @@ import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningResponse
 import com.project.cheerha.domain.jobopening.entity.JobOpening;
 import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
 import com.project.cheerha.domain.searchhistory.service.SearchHistoryService;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,12 +32,6 @@ public class JobOpeningService {
     private final JobOpeningRepository jobOpeningRepository;
     private final SearchHistoryService searchHistoryService;
     private final JobOpeningFindByService jobOpeningFindByService;
-    private final RedisViewCountManager redisViewCountManager;
-
-
-    public void redirectAndJobOpeningViewCount(Long jobOpeningId) {
-        redisViewCountManager.increaseViewCount(jobOpeningId); //레디스에서 조회 수 증가
-    }
 
     /**
      * 페이지 리다이렉트를 위한 서비스 로직입니다.
@@ -45,31 +44,31 @@ public class JobOpeningService {
         if (!url.startsWith("http")) {
             url = "https://" + url;
         }
+        if (!isValidUrl(url)) {
+            throw new NotFoundException(DataErrorCode.PAGE_NOT_FOUND);
+        }
         return url;
     }
 
     /**
      * 채용 공고 목록을 조회하는 메서드입니다.
-     *
-     * requestDto에 값이 포함되면 해당 조건을 기준으로 필터링이 적용됩니다.
-     * searchTerm이 존재하면 해당 검색어를 Redis에 저장합니다.
-     *
+     * requestDto에 값이 포함되면 해당 조건을 기준으로 필터링이 적용됩니다. searchTerm이 존재하면 해당 검색어를 Redis에 저장합니다.
      * @param requestDto 조회 조건을 포함한 요청 Dto
-     * @param userId 검색어 저장을 위한 유저의 Id
-     * @param pageable 페이지 요청 정보 (페이지 번호, 페이지 크기)
+     * @param userId     검색어 저장을 위한 유저의 Id
+     * @param pageable   페이지 요청 정보 (페이지 번호, 페이지 크기)
      * @return 필터링된 채용 공고 목록
      */
     @Transactional
     public Page<ReadJobOpeningResponseDto> readJobOpenings(
-            ReadJobOpeningRequestDto requestDto,
-            Long userId,
-            Pageable pageable
+        ReadJobOpeningRequestDto requestDto,
+        Long userId,
+        Pageable pageable
     ) {
         if (requestDto.getSearchTerm() != null) {
             searchHistoryService.saveSearchTerm(userId, requestDto.getSearchTerm());
         }
         Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningRepository.findAllByCondition(
-                requestDto, pageable);
+            requestDto, pageable);
 
         // 마감된 채용공고를 제외하도록 필터링
         dtoPage = filterExpiredJobOpenings(dtoPage);
@@ -79,12 +78,8 @@ public class JobOpeningService {
 
     /**
      * 조회수 기준으로 상위 100개의 인기 채용공고를 조회하는 메서드입니다.
-     *
-     * 이 메서드는 `jobOpeningRepositoryQuery`를 사용하여 조회수를 내림차순으로 정렬한 후,
-     * 인기 채용공고 100개를 반환합니다.
-     *
+     * 이 메서드는 `jobOpeningRepositoryQuery`를 사용하여 조회수를 내림차순으로 정렬한 후, 인기 채용공고 100개를 반환합니다.
      * 페이지네이션을 지원하지만, 실제로는 상위 100개만 조회하므로 페이지 크기(size)는 100으로 고정됩니다.
-     *
      * @param pageable 페이지 요청 정보 (페이지 번호, 페이지 크기 등)
      * @return 조회수가 많은 상위 100개의 인기 채용공고 목록을 포함하는 페이지 객체
      */
@@ -92,7 +87,8 @@ public class JobOpeningService {
     public Page<ReadJobOpeningResponseDto> readTop100PopularJobOpenings(Pageable pageable) {
         Pageable adjustedPageable = adjustPageable(pageable);
         // 인기 채용공고 조회
-        Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningRepository.findTop100PopularJobOpenings(adjustedPageable);
+        Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningRepository.findTop100PopularJobOpenings(
+            adjustedPageable);
 
         // 마감된 채용공고를 제외하도록 필터링
         dtoPage = filterExpiredJobOpenings(dtoPage);
@@ -113,23 +109,22 @@ public class JobOpeningService {
     /**
      * 마감된 채용공고를 제외하는 메서드
      */
-    private Page<ReadJobOpeningResponseDto> filterExpiredJobOpenings(Page<ReadJobOpeningResponseDto> dtoPage) {
+    private Page<ReadJobOpeningResponseDto> filterExpiredJobOpenings(
+        Page<ReadJobOpeningResponseDto> dtoPage) {
         // 마감된 채용공고를 제외하는 로직
         ZonedDateTime now = ZonedDateTime.now();
         List<ReadJobOpeningResponseDto> filteredDtoList = dtoPage.getContent().stream()
-                .filter(dto -> dto.getHiringEndAt().isAfter(now))
-                .collect(Collectors.toList());
+            .filter(dto -> dto.getHiringEndAt().isAfter(now))
+            .collect(Collectors.toList());
 
         return new PageImpl<>(filteredDtoList, dtoPage.getPageable(), dtoPage.getTotalElements());
     }
 
     /**
      * 페이지 번호와 페이지 크기를 조정하여 유효한 값으로 반환하는 메서드입니다.
-     *
-     * 이 메서드는 주어진 페이지 번호(pageable.getPageNumber())와 페이지 크기(pageable.getPageSize())를 기준으로,
-     * 총 페이지 수를 넘지 않도록 페이지 번호를 조정합니다. 또한, 페이지 크기는 최대값인 `MAX_POPULAR_SIZE`를 기준으로 설정됩니다.
-     * 만약 사용자가 요청한 페이지 번호가 전체 페이지 수를 초과하는 경우, 마지막 페이지로 자동 조정됩니다.
-     *
+     * 이 메서드는 주어진 페이지 번호(pageable.getPageNumber())와 페이지 크기(pageable.getPageSize())를 기준으로, 총 페이지 수를
+     * 넘지 않도록 페이지 번호를 조정합니다. 또한, 페이지 크기는 최대값인 `MAX_POPULAR_SIZE`를 기준으로 설정됩니다. 만약 사용자가 요청한 페이지 번호가 전체
+     * 페이지 수를 초과하는 경우, 마지막 페이지로 자동 조정됩니다.
      * @param pageable 페이징 처리 정보 (페이지 번호와 페이지 크기)
      * @return 유효한 페이지 번호와 페이지 크기를 기준으로 설정된 PageRequest 객체
      */
@@ -138,12 +133,35 @@ public class JobOpeningService {
         int pageNumber = pageable.getPageNumber();
 
         // 총 페이지 수가 초과되지 않도록 처리
-        int totalPages = (int) Math.ceil((double) IndexName.MAX_JOB_OPENING_SIZE / pageSize); // totalElements = 100
+        int totalPages = (int) Math.ceil(
+            (double) IndexName.MAX_JOB_OPENING_SIZE / pageSize); // totalElements = 100
         if (pageNumber >= totalPages) {
             pageNumber = totalPages - 1;  // 페이지 번호가 totalPages보다 크면 마지막 페이지로 설정
         }
 
         // PageRequest를 사용하여 페이지 번호와 페이지 크기 설정
         return PageRequest.of(pageNumber, pageSize);
+    }
+
+
+    /**
+     * 해당 url이 실제로 존재하는지 체크하는 메서드
+     * url에 접속이 불가하거나 문제가 생길 시 false 반환
+     * @param url 채용공고 정보에서 가져온 url
+     * @return url이 실제로 존재하면 true, 존재하지 않거나 예외 발생 시 false
+     */
+    private boolean isValidUrl(String url) {
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(3000);
+            connection.setReadTimeout(3000);
+
+            int statusCode = connection.getResponseCode();
+            return statusCode >= 200 && statusCode < 400; // 200~300대에서는 true 반환
+        } catch (IOException e) {
+            return false; // 페이지가 존재하지 않으면 false 반환
+        }
+
     }
 }
