@@ -18,7 +18,6 @@ public class IndexName {
     public static final String CREATED_AT = "createdAt";
     public static final String VIEW_COUNT = "viewCount";
     public static final String REQUIRED_SKILLS = "requiredSkills";
-    public static final String NGRAM_SUFFIX = ".ngram";
     public static final String AUTOCOMPLETE_SUFFIX = ".autocomplete";
     public static final String MORPH_SUFFIX = ".morph";
 }
