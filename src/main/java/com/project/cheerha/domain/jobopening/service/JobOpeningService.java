@@ -60,15 +60,15 @@ public class JobOpeningService {
      */
     @Transactional
     public Page<ReadJobOpeningResponseDto> readJobOpenings(
-        ReadJobOpeningRequestDto requestDto,
-        Long userId,
-        Pageable pageable
+            ReadJobOpeningRequestDto requestDto,
+            Long userId,
+            Pageable pageable
     ) {
         if (requestDto.getSearchTerm() != null) {
             searchHistoryService.saveSearchTerm(userId, requestDto.getSearchTerm());
         }
         Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningRepository.findAllByCondition(
-            requestDto, pageable);
+                requestDto, pageable);
 
         // 마감된 채용공고를 제외하도록 필터링
         dtoPage = filterExpiredJobOpenings(dtoPage);
@@ -87,8 +87,7 @@ public class JobOpeningService {
     public Page<ReadJobOpeningResponseDto> readTop100PopularJobOpenings(Pageable pageable) {
         Pageable adjustedPageable = adjustPageable(pageable);
         // 인기 채용공고 조회
-        Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningRepository.findTop100PopularJobOpenings(
-            adjustedPageable);
+        Page<ReadJobOpeningResponseDto> dtoPage = jobOpeningRepository.findTop100PopularJobOpenings(adjustedPageable);
 
         // 마감된 채용공고를 제외하도록 필터링
         dtoPage = filterExpiredJobOpenings(dtoPage);
@@ -109,13 +108,12 @@ public class JobOpeningService {
     /**
      * 마감된 채용공고를 제외하는 메서드
      */
-    private Page<ReadJobOpeningResponseDto> filterExpiredJobOpenings(
-        Page<ReadJobOpeningResponseDto> dtoPage) {
+    private Page<ReadJobOpeningResponseDto> filterExpiredJobOpenings(Page<ReadJobOpeningResponseDto> dtoPage) {
         // 마감된 채용공고를 제외하는 로직
         ZonedDateTime now = ZonedDateTime.now();
         List<ReadJobOpeningResponseDto> filteredDtoList = dtoPage.getContent().stream()
-            .filter(dto -> dto.getHiringEndAt().isAfter(now))
-            .collect(Collectors.toList());
+                .filter(dto -> dto.getHiringEndAt().isAfter(now))
+                .collect(Collectors.toList());
 
         return new PageImpl<>(filteredDtoList, dtoPage.getPageable(), dtoPage.getTotalElements());
     }
@@ -133,8 +131,7 @@ public class JobOpeningService {
         int pageNumber = pageable.getPageNumber();
 
         // 총 페이지 수가 초과되지 않도록 처리
-        int totalPages = (int) Math.ceil(
-            (double) IndexName.MAX_JOB_OPENING_SIZE / pageSize); // totalElements = 100
+        int totalPages = (int) Math.ceil((double) IndexName.MAX_JOB_OPENING_SIZE / pageSize); // totalElements = 100
         if (pageNumber >= totalPages) {
             pageNumber = totalPages - 1;  // 페이지 번호가 totalPages보다 크면 마지막 페이지로 설정
         }
@@ -162,6 +159,5 @@ public class JobOpeningService {
         } catch (IOException e) {
             return false; // 페이지가 존재하지 않으면 false 반환
         }
-
     }
 }
