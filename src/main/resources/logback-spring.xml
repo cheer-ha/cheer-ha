@@ -22,7 +22,7 @@
             </encoder>
         </appender>
 
-        <root level="warn">
+        <root level="info">
             <appender-ref ref="CONSOLE" />
             <appender-ref ref="FLUENT" />
         </root>
@@ -35,7 +35,7 @@
                 <pattern>${LOG_PATTERN}</pattern>
             </encoder>
         </appender>
-        <root level="info">
+        <root level="trace">
             <appender-ref ref="CONSOLE" />
         </root>
     </springProfile>
