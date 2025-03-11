@@ -1,5 +1,6 @@
 package com.project.cheerha.domain.jobopening.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,5 +26,6 @@ public class ReadJobOpeningRequestDto {
     private String employmentType;
     private String requiredSkill;
 
+    @NotBlank
     private String searchTerm;
 }
