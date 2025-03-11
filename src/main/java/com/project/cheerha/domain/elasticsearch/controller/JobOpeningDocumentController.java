@@ -2,6 +2,7 @@ package com.project.cheerha.domain.elasticsearch.controller;
 
 import com.project.cheerha.common.annotation.Auth;
 import com.project.cheerha.common.dto.ApiResponseDto;
+import com.project.cheerha.common.dto.ElasticApiResponseDto;
 import com.project.cheerha.common.dto.AuthUser;
 import com.project.cheerha.domain.elasticsearch.dto.request.ReadJobOpeningElasticAutoRequestDto;
 import com.project.cheerha.domain.elasticsearch.dto.request.ReadJobOpeningElasticRequestDto;
@@ -32,13 +33,15 @@ public class JobOpeningDocumentController {
      * @return Elasticsearch에서 조회된 채용 공고 목록을 포함한 API 응답 객체
      */
     @GetMapping("/search/elastic")
-    public ResponseEntity<ApiResponseDto<Page<ReadJobOpeningElasticResponseDto>>> readJobOpeningsUsingElasticsearch(
+    public ResponseEntity<ElasticApiResponseDto<Page<ReadJobOpeningElasticResponseDto>>> readJobOpeningsUsingElasticsearch(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = validatePageSize(page, size);
         Page<ReadJobOpeningElasticResponseDto> dtoList = jobOpeningDocumentService.readAllJobOpeningsUsingElasticsearch(pageable);
-        return ApiResponseDto.success(dtoList);
+        int totalItems = (int) dtoList.getTotalElements();
+        String message = "채용공고 " + totalItems + "개가 조회되었습니다.";
+        return ElasticApiResponseDto.success(dtoList, message);
     }
 
     /**
@@ -52,13 +55,15 @@ public class JobOpeningDocumentController {
      * @return Elasticsearch에서 조회된 인기 채용 공고 목록을 포함한 API 응답 객체
      */
     @GetMapping("/popular/elastic")
-    public ResponseEntity<ApiResponseDto<Page<ReadJobOpeningElasticResponseDto>>> readTop100PopularJobOpeningsUsingElasticsearch(
+    public ResponseEntity<ElasticApiResponseDto<Page<ReadJobOpeningElasticResponseDto>>> readTop100PopularJobOpeningsUsingElasticsearch(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = validatePageSize(page, size);
         Page<ReadJobOpeningElasticResponseDto> dtoPage = jobOpeningDocumentService.readTop100PopularJobOpeningsUsingElasticsearch(pageable);
-        return ApiResponseDto.success(dtoPage);
+        int totalItems = (int) dtoPage.getTotalElements();
+        String message = "채용공고 " + totalItems + "개가 조회되었습니다.";
+        return ElasticApiResponseDto.success(dtoPage, message);
     }
 
     /**
@@ -71,7 +76,7 @@ public class JobOpeningDocumentController {
      * @return 필터링된 채용 공고 목록을 페이지네이션 형태로 반환
      */
     @GetMapping("/search/elastic/filters")
-    public ResponseEntity<ApiResponseDto<Page<ReadJobOpeningElasticResponseDto>>> readJobOpeningElasticsearch(
+    public ResponseEntity<ElasticApiResponseDto<Page<ReadJobOpeningElasticResponseDto>>> readJobOpeningElasticsearch(
         @ModelAttribute ReadJobOpeningElasticRequestDto requestDto,
         @Auth AuthUser authUser,
         @RequestParam(defaultValue = "1") int page,
@@ -79,10 +84,10 @@ public class JobOpeningDocumentController {
     ) {
         Pageable pageable = validatePageSize(page, size);
         Long userId = authUser.id();
-
         Page<ReadJobOpeningElasticResponseDto> jobOpeningElasticResponseDtoPage = jobOpeningDocumentService.readJobOpeningUsingElasticSearchFilter(requestDto, userId, pageable);
-
-        return ApiResponseDto.success(jobOpeningElasticResponseDtoPage);
+        int totalItems = (int) jobOpeningElasticResponseDtoPage.getTotalElements();
+        String message = "채용공고 " + totalItems + "개가 조회되었습니다.";
+        return ElasticApiResponseDto.success(jobOpeningElasticResponseDtoPage, message);
     }
 
     /**
@@ -95,7 +100,7 @@ public class JobOpeningDocumentController {
      * @return 자동 완성으로 검색된 채용 공고 목록을 페이지네이션 형태로 반환
      */
     @GetMapping("/search/elastic/auto")
-    public ResponseEntity<ApiResponseDto<Page<ReadJobOpeningElasticResponseDto>>> readJobOpeningElasticAuto(
+    public ResponseEntity<ElasticApiResponseDto<Page<ReadJobOpeningElasticResponseDto>>> readJobOpeningElasticAuto(
         @ModelAttribute ReadJobOpeningElasticAutoRequestDto requestDto,
         @Auth AuthUser authUser,
         @RequestParam(defaultValue = "1") int page,
@@ -103,10 +108,10 @@ public class JobOpeningDocumentController {
     ) {
         Pageable pageable = validatePageSize(page, size);
         Long userId = authUser.id();
-
         Page<ReadJobOpeningElasticResponseDto> jobOpeningElasticResponseDtoPage = jobOpeningDocumentService.readJobOpeningElasticAuto(requestDto, userId, pageable);
-
-        return ApiResponseDto.success(jobOpeningElasticResponseDtoPage);
+        int totalItems = (int) jobOpeningElasticResponseDtoPage.getTotalElements();
+        String message = "채용공고 " + totalItems + "개가 조회되었습니다.";
+        return ElasticApiResponseDto.success(jobOpeningElasticResponseDtoPage, message);
     }
 
     /**
