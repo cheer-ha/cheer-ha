@@ -17,7 +17,8 @@ public enum DataErrorCode {
     //NotFoundException
     JOB_OPENING_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 채용공고입니다."),
     KEYWORD_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 키워드입니다."),
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다.");
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
+    PAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 페이지입니다.");
 
     private final HttpStatus status;
     private final String message;
