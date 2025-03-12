@@ -1,4 +1,4 @@
-package com.project.cheerha.common.redis.redisson;
+package com.project.cheerha.common.redis;
 
 import com.project.cheerha.common.repository.LockRepository;
 import lombok.RequiredArgsConstructor;

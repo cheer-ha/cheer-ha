@@ -1,4 +1,4 @@
-package com.project.cheerha.common.redis.redisson;
+package com.project.cheerha.common.redis;
 
 import com.project.cheerha.common.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.Collection;
 
 @Repository
 @RequiredArgsConstructor
-public class RedissonTaskRepositoryImpl implements TaskRepository {
+public class RedissonTaskRepository implements TaskRepository {
 
     private final RedissonClient redissonClient;
 

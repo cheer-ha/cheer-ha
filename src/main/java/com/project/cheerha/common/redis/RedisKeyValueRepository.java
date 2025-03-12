@@ -1,4 +1,4 @@
-package com.project.cheerha.common.redis.redisson;
+package com.project.cheerha.common.redis;
 
 import com.project.cheerha.common.repository.KeyValueRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 @Repository
 @RequiredArgsConstructor
-public class RedisTemplateKeyValueRepositoryImpl implements KeyValueRepository {
+public class RedisKeyValueRepository implements KeyValueRepository {
 
     private final RedisTemplate<String, String> redisTemplate;
 
