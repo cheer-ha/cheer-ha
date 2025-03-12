@@ -1,5 +1,6 @@
 package com.project.cheerha.domain.searchhistory.scheduler;
 
+import com.project.cheerha.common.repository.KeyValueRepository;
 import com.project.cheerha.domain.searchhistory.entity.SearchHistory;
 import com.project.cheerha.domain.searchhistory.repository.SearchHistoryRepository;
 import com.project.cheerha.domain.user.entity.User;
@@ -37,18 +38,10 @@ public class SearchHistoryTaskHandlerTest {
     private SearchHistoryRepository searchHistoryRepository;
 
     @Mock
-    private RedisTemplate<String, String> redisTemplate;
-
-    @Mock
-    private ZSetOperations<String, String> zSetOperations;
+    private KeyValueRepository keyValueRepository;
 
     @Captor
     private ArgumentCaptor<List<SearchHistory>> searchHistoryCaptor;
-
-    @BeforeEach
-    void setUp() {
-        when(redisTemplate.opsForZSet()).thenReturn(zSetOperations);
-    }
 
     @Test
     @DisplayName("Redis에 검색 기록이 존재하고 중복되지 않은 검색어가 있으면 DB에 저장")
@@ -61,9 +54,9 @@ public class SearchHistoryTaskHandlerTest {
         Set<String> redisSearchTermSet = new HashSet<>(Set.of("Elasticsearch", "Docker"));
         Set<String> existinfSearchTermSet = new HashSet<>(Set.of("Elasticsearch"));
 
-        when(redisTemplate.keys("user:*:search_history")).thenReturn(Set.of(key));
+        when(keyValueRepository.getKeys("user:*:search_history")).thenReturn(Set.of(key));
         when(userFindByService.findById(userId)).thenReturn(mockUser);
-        when(zSetOperations.range(key, 0, -1)).thenReturn(redisSearchTermSet);
+        when(keyValueRepository.opsForZSet(key, 0, -1)).thenReturn(redisSearchTermSet);
         when(searchHistoryRepository.findNamesByUserId(userId)).thenReturn(existinfSearchTermSet);
 
         // when
@@ -89,10 +82,8 @@ public class SearchHistoryTaskHandlerTest {
         Set<String> redisSearchTermSet = new HashSet<>(Set.of("Elasticsearch", "Spring"));
         Set<String> existingSearchTermSet = new HashSet<>(Set.of("Elasticsearch", "Spring"));
 
-        when(redisTemplate.keys("user:*:search_history")).thenReturn(Set.of(key));
+        when(keyValueRepository.getKeys("user:*:search_history")).thenReturn(Set.of(key));
         when(userFindByService.findById(userId)).thenReturn(mockUser);
-        when(zSetOperations.range(key, 0, -1)).thenReturn(redisSearchTermSet);
-        when(searchHistoryRepository.findNamesByUserId(userId)).thenReturn(existingSearchTermSet);
 
         // when
         searchHistoryTaskHandler.handle(Collections.emptyMap());

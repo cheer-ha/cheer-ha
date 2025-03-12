@@ -1,6 +1,7 @@
 package com.project.cheerha.common.repository;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -16,9 +17,19 @@ public interface KeyValueRepository {
 
     void removeValue(String key);
 
-    void incrementValue(String key);
+    long incrementValue(String key);
 
     void expireValue(String key, long ttl, TimeUnit timeUnit);
 
     Boolean hasKey(String key);
+
+    List<String> opsForListRange(String key, long start, long end);
+    void opsForListLeftPush(String key, String value);
+
+    Set<String> opsForZSet(String key, long start, long end);
+    void opsForZSetAdd(String key, String value, long score);
+    Long opsForZSetCard(String key);
+    Set<String> opsForZSetReverseRange(String key, long start, long end);
+    void opsForZSetRemoveRange(String key, long start, long end);
+
 }

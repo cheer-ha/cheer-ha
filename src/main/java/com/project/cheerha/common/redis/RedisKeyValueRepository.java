@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -41,13 +42,39 @@ public class RedisKeyValueRepository implements KeyValueRepository {
     }
 
     @Override
+    public Set<String> opsForZSet(String key, long start, long end){
+        return redisTemplate.opsForZSet().range(key, start, end);
+    }
+
+    @Override
+    public void opsForZSetAdd(String key, String value, long score){
+        redisTemplate.opsForZSet().add(key, value, score);
+    }
+
+    @Override
+    public Long opsForZSetCard(String key){
+        return redisTemplate.opsForZSet().zCard(key);
+    }
+
+    @Override
+    public Set<String> opsForZSetReverseRange(String key, long start, long end){
+        return redisTemplate.opsForZSet().reverseRange(key, start, end);
+    }
+
+    @Override
+    public void opsForZSetRemoveRange(String key, long start, long end){
+        redisTemplate.opsForZSet().reverseRange(key, start, end);
+    }
+
+    @Override
     public void removeValue(String key){
         redisTemplate.delete(key);
     }
 
     @Override
-    public void incrementValue(String key){
+    public long incrementValue(String key){
         redisTemplate.opsForValue().increment(key, 1);
+        return 0;
     }
 
     @Override
@@ -58,5 +85,13 @@ public class RedisKeyValueRepository implements KeyValueRepository {
     @Override
     public Boolean hasKey(String key){
         return redisTemplate.hasKey(key);
+    }
+
+    public List<String> opsForListRange(String key, long start, long end){
+        return redisTemplate.opsForList().range(key, start, end);
+    }
+
+    public void opsForListLeftPush(String key, String value){
+        redisTemplate.opsForList().leftPush(key, value);
     }
 }

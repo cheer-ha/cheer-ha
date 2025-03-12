@@ -1,5 +1,6 @@
 package com.project.cheerha.domain.searchhistory.service;
 
+import com.project.cheerha.common.repository.KeyValueRepository;
 import com.project.cheerha.domain.searchhistory.entity.SearchHistory;
 import com.project.cheerha.domain.searchhistory.repository.SearchHistoryRepository;
 import com.project.cheerha.domain.user.entity.User;
@@ -31,20 +32,12 @@ public class SearchHistoryServiceTest {
     private SearchHistoryService searchHistoryService;
 
     @Mock
-    private RedisTemplate<String, String> redisTemplate;
-
-    @Mock
-    private ZSetOperations<String, String> zSetOperations;
+    private KeyValueRepository keyValueRepository;
 
     @Mock
     private SearchHistoryRepository searchHistoryRepository;
 
     private static final long EXPIRATION_TIME = 3600;
-
-    @BeforeEach
-    void setUp() {
-        when(redisTemplate.opsForZSet()).thenReturn(zSetOperations);
-    }
 
     @Test
     @DisplayName("검색어가 Redis에 정상적으로 저장")
@@ -58,8 +51,8 @@ public class SearchHistoryServiceTest {
         searchHistoryService.saveSearchTerm(userId, searchTerm);
 
         // then
-        verify(zSetOperations, times(1)).add(eq(key), eq(searchTerm), anyDouble());
-        verify(redisTemplate, times(1)).expire(eq(key), eq(EXPIRATION_TIME), eq(TimeUnit.SECONDS));
+        verify(keyValueRepository, times(1)).opsForZSetAdd(eq(key), eq(searchTerm), anyLong());
+        verify(keyValueRepository, times(1)).expireValue(eq(key), eq(EXPIRATION_TIME), eq(TimeUnit.SECONDS));
     }
 
     @Test
@@ -70,15 +63,15 @@ public class SearchHistoryServiceTest {
         String searchTerm = "Redis";
         String key = "user:" + userId + ":search_history";
 
-        when(zSetOperations.zCard(key)).thenReturn(11L);
+        when(keyValueRepository.opsForZSetCard(key)).thenReturn(11L);
 
         // when
         searchHistoryService.saveSearchTerm(userId, searchTerm);
 
         // then
-        verify(zSetOperations, times(1)).add(eq(key), eq(searchTerm), anyDouble());
-        verify(zSetOperations, times(1)).removeRange(eq(key),eq(0L), eq(0L));
-        verify(redisTemplate, times(1)).expire(eq(key), eq(EXPIRATION_TIME), eq(TimeUnit.SECONDS));
+        verify(keyValueRepository, times(1)).opsForZSetAdd(eq(key), eq(searchTerm), anyLong());
+        verify(keyValueRepository, times(1)).opsForZSetRemoveRange(eq(key),eq(0L), eq(0L));
+        verify(keyValueRepository, times(1)).expireValue(eq(key), eq(EXPIRATION_TIME), eq(TimeUnit.SECONDS));
     }
 
     @Test
@@ -89,7 +82,7 @@ public class SearchHistoryServiceTest {
         String key = "user:" + userId + ":search_history";
         Set<String> searchTermSet = new LinkedHashSet<>(List.of("Java", "Spring"));
 
-        when(zSetOperations.reverseRange(key, 0, 9)).thenReturn(searchTermSet);
+        when(keyValueRepository.opsForZSetReverseRange(key, 0, 9)).thenReturn(searchTermSet);
 
         // when
         List<String> searchTermList = searchHistoryService.getRecentSearchTerms(userId);
@@ -108,7 +101,7 @@ public class SearchHistoryServiceTest {
         String key = "user:" + userId + ":search_history";
         User mockUser = User.toEntity("test@gmail.com", "사용자1", 27, 1, "password123");
 
-        when(zSetOperations.reverseRange(key, 0, 9)).thenReturn(Collections.emptySet());
+        when(keyValueRepository.opsForZSetReverseRange(key, 0, 9)).thenReturn(Collections.emptySet());
 
         SearchHistory history1 = SearchHistory.toEntity(mockUser, "Elasticsearch");
         SearchHistory history2 = SearchHistory.toEntity(mockUser, "Kafka");
@@ -128,7 +121,7 @@ public class SearchHistoryServiceTest {
 
         verify(searchHistoryRepository, times(1)).findTop10ByUserIdOrderByCreatedAtDesc(userId);
 
-        verify(zSetOperations, times(1)).add(eq(key), eq("Elasticsearch"), anyDouble());
-        verify(zSetOperations, times(1)).add(eq(key), eq("Kafka"), anyDouble());
+        verify(keyValueRepository, times(1)).opsForZSetAdd(eq(key), eq("Elasticsearch"), anyLong());
+        verify(keyValueRepository, times(1)).opsForZSetAdd(eq(key), eq("Kafka"), anyLong());
     }
 }
