@@ -2,6 +2,7 @@ package com.project.cheerha.redis.emailtoken;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
+import com.project.cheerha.common.repository.KeyValueRepository;
 import com.project.cheerha.domain.user.service.CheckDailyEmailCount;
 import com.project.cheerha.domain.user.service.EmailTokenService;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,10 +26,7 @@ public class SaveTokenTest {
     EmailTokenService emailTokenService;
 
     @Mock
-    private RedisTemplate<String, String> redisTemplate;
-
-    @Mock
-    private ValueOperations<String, String> valueOperations;
+    private KeyValueRepository keyValueRepository;
 
     @Mock
     CheckDailyEmailCount checkDailyEmailCount;
@@ -36,19 +34,14 @@ public class SaveTokenTest {
     private static final String TEST_EMAIL = "test@example.com";
     private static final String TOKEN_PREFIX = "notification_email_verification_token";
 
-    @BeforeEach
-    void setUp() {
-        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-    }
-
     @Test
     void saveToken_성공() {
-        doNothing().when(valueOperations).set(anyString(), anyString(), anyLong(), any());
+        doNothing().when(keyValueRepository).setValue(anyString(), anyString(), anyLong(), any());
 
         String token = emailTokenService.saveToken(TOKEN_PREFIX, TEST_EMAIL);
 
         assertNotNull(token);
-        verify(valueOperations, times(1)).set(eq(TOKEN_PREFIX + ":" + TEST_EMAIL), anyString(), anyLong(), any());
+        verify(keyValueRepository, times(1)).setValue(eq(TOKEN_PREFIX + ":" + TEST_EMAIL), anyString(), anyLong(), any());
         verify(checkDailyEmailCount, times(1)).incrementDailyLimit(TEST_EMAIL, TOKEN_PREFIX);
     }
 

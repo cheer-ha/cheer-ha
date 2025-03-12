@@ -1,5 +1,6 @@
 package com.project.cheerha.redis.emailtoken;
 
+import com.project.cheerha.common.repository.KeyValueRepository;
 import com.project.cheerha.domain.user.service.EmailTokenService;
 import com.project.cheerha.common.util.SecureRandomUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,22 +24,14 @@ public class SaveSecureTokenTest {
     EmailTokenService emailTokenService;
 
     @Mock
-    private RedisTemplate<String, String> redisTemplate;
-
-    @Mock
-    private ValueOperations<String, String> valueOperations;
+    private KeyValueRepository keyValueRepository;
 
     private static final String TEST_EMAIL = "test@example.com";
     private static final String VALID_TOKEN = "123456";
 
-    @BeforeEach
-    void setUp() {
-        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-    }
-
     @Test
     void saveSecureToken_성공() {
-        doNothing().when(valueOperations).set(anyString(), anyString(), anyLong(), any());
+        doNothing().when(keyValueRepository).setValue(anyString(), anyString(), anyLong(), any());
 
         try (MockedStatic<SecureRandomUtil> mockedStatic = mockStatic(SecureRandomUtil.class)) {
             mockedStatic.when(SecureRandomUtil::generateSecureToken).thenReturn(VALID_TOKEN);
@@ -47,15 +40,15 @@ public class SaveSecureTokenTest {
 
             assertNotNull(token);
             assertEquals(VALID_TOKEN, token);
-            verify(valueOperations, times(1))
-                    .set(eq("password_verification:" + TEST_EMAIL), eq(VALID_TOKEN), anyLong(), any());
+            verify(keyValueRepository, times(1))
+                    .setValue(eq("password_verification:" + TEST_EMAIL), eq(VALID_TOKEN), anyLong(), any());
         }
     }
 
     @Test
     void saveSecureToken_Redis_저장_실패() {
         doThrow(new RuntimeException("Redis 저장 실패"))
-                .when(valueOperations).set(anyString(), anyString(), anyLong(), any());
+                .when(keyValueRepository).setValue(anyString(), anyString(), anyLong(), any());
 
         assertThrows(RuntimeException.class, () -> emailTokenService.saveSecureToken(TEST_EMAIL));
     }
