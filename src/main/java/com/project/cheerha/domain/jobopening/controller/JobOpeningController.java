@@ -6,6 +6,7 @@ import com.project.cheerha.common.dto.AuthUser;
 import com.project.cheerha.domain.jobopening.dto.request.ReadJobOpeningRequestDto;
 import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningResponseDto;
 import com.project.cheerha.domain.jobopening.service.JobOpeningService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -49,7 +50,7 @@ public class JobOpeningController {
      */
     @GetMapping("/search")
     public ResponseEntity<ApiResponseDto<Page<ReadJobOpeningResponseDto>>> readJobOpenings(
-            @ModelAttribute ReadJobOpeningRequestDto requestDto,
+            @Valid @ModelAttribute ReadJobOpeningRequestDto requestDto,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @Auth AuthUser authUser

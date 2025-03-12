@@ -1,13 +1,13 @@
 package com.project.cheerha.domain.elasticsearch.controller;
 
 import com.project.cheerha.common.annotation.Auth;
-import com.project.cheerha.common.dto.ApiResponseDto;
 import com.project.cheerha.common.dto.ElasticApiResponseDto;
 import com.project.cheerha.common.dto.AuthUser;
 import com.project.cheerha.domain.elasticsearch.dto.request.ReadJobOpeningElasticAutoRequestDto;
 import com.project.cheerha.domain.elasticsearch.dto.request.ReadJobOpeningElasticRequestDto;
 import com.project.cheerha.domain.elasticsearch.dto.response.ReadJobOpeningElasticResponseDto;
 import com.project.cheerha.domain.elasticsearch.service.JobOpeningDocumentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -77,7 +77,7 @@ public class JobOpeningDocumentController {
      */
     @GetMapping("/search/elastic/filters")
     public ResponseEntity<ElasticApiResponseDto<Page<ReadJobOpeningElasticResponseDto>>> readJobOpeningElasticsearch(
-        @ModelAttribute ReadJobOpeningElasticRequestDto requestDto,
+        @Valid @ModelAttribute ReadJobOpeningElasticRequestDto requestDto,
         @Auth AuthUser authUser,
         @RequestParam(defaultValue = "1") int page,
         @RequestParam(defaultValue = "10") int size

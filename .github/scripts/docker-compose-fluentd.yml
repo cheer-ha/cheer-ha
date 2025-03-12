@@ -1,0 +1,14 @@
+services:
+  fluentd:
+    build:
+      context: .
+      dockerfile: Dockerfile.fluentd
+    container_name: fluentd
+    restart: always
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    volumes:
+      - ./fluentd.conf:/fluentd/etc/fluentd.conf
+    environment:
+      - FLUENTD_CONF=fluentd.conf

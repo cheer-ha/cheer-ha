@@ -63,9 +63,14 @@ public class AuthController {
      */
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponseDto<RefreshAccessTokenResponseDto>> refreshAccessToken(
-        HttpServletRequest request
+        HttpServletRequest request,
+        HttpServletResponse response
     ) {
         String refreshToken = cookieService.getRefreshTokenCookie(request);
-        return ApiResponseDto.success(authService.refreshAccessToken(refreshToken));
+        RefreshAccessTokenResponseDto responseDto = authService.refreshAccessToken(refreshToken);
+        cookieService.removeRefreshTokenCookie(response);
+        cookieService.createRefreshTokenCookie(responseDto.refreshToken(), response);
+        RefreshAccessTokenResponseDto newResponseDto = new RefreshAccessTokenResponseDto(responseDto.accessToken(), responseDto.message(), null);
+        return ApiResponseDto.success(newResponseDto);
     }
 }
