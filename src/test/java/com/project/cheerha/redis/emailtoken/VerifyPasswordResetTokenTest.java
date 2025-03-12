@@ -3,14 +3,11 @@ package com.project.cheerha.redis.emailtoken;
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.repository.KeyValueRepository;
 import com.project.cheerha.domain.user.service.EmailTokenService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
