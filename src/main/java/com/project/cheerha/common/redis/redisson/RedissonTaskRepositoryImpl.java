@@ -1,6 +1,6 @@
 package com.project.cheerha.common.redis.redisson;
 
-import com.project.cheerha.common.scheduler.repository.TaskRepository;
+import com.project.cheerha.common.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RBucket;
 import org.redisson.api.RScoredSortedSet;

@@ -2,7 +2,7 @@ package com.project.cheerha.common.filter;
 
 import com.project.cheerha.common.exception.handler.FilterExceptionHandler;
 import com.project.cheerha.common.properties.JwtSecurityProperties;
-import com.project.cheerha.common.redis.auth.RedisBlackListService;
+import com.project.cheerha.domain.auth.service.BlackListService;
 import com.project.cheerha.common.util.JwtUtil;
 
 import com.project.cheerha.domain.user.entity.Role;
@@ -28,7 +28,7 @@ import org.springframework.http.HttpStatus;
 public class JwtFilter implements Filter {
 
     private final JwtSecurityProperties securityProperties;
-    private final RedisBlackListService redisBlackListService;
+    private final BlackListService blackListService;
     private final JwtUtil jwtUtil;
     private final FilterExceptionHandler filterExceptionHandler;
 
@@ -64,7 +64,7 @@ public class JwtFilter implements Filter {
 
         String token = jwtUtil.substringToken(bearerJwt);
 
-        if (redisBlackListService.isBlackList(token)) {
+        if (blackListService.isBlackList(token)) {
             filterExceptionHandler.sendErrorResponse(httpResponse, HttpStatus.UNAUTHORIZED, "블랙리스트된 토큰입니다.");
             return;
         }

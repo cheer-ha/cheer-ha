@@ -1,10 +1,10 @@
-package com.project.cheerha.common.redis.email;
+package com.project.cheerha.domain.user.service;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
+import com.project.cheerha.common.repository.KeyValueRepository;
 import com.project.cheerha.common.util.SecureRandomUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class EmailTokenService {
 
-    private final RedisTemplate<String, String> redisTemplate;
+    private final KeyValueRepository keyValueRepository;
     private final VerificationFailCount verificationFailCount;
     private final CheckDailyEmailCount checkDailyEmailCount;
 
@@ -28,7 +28,7 @@ public class EmailTokenService {
     public String saveToken(String prefix, String email) {
         String token = generateRandomToken();
         String redisKey = prefix + ":" + email;
-        redisTemplate.opsForValue().set(redisKey, token, TOKEN_EXPIRATION_MINUTES, TimeUnit.MINUTES);
+        keyValueRepository.setValue(redisKey, token, TOKEN_EXPIRATION_MINUTES, TimeUnit.MINUTES);
         checkDailyEmailCount.incrementDailyLimit(email, prefix);
         return token;
     }
@@ -38,7 +38,7 @@ public class EmailTokenService {
      */
     public void verifyEmailToken(String prefix, String email, String token) {
         String redisKey = prefix + ":" + email;
-        String storedToken = redisTemplate.opsForValue().get(redisKey);
+        String storedToken = keyValueRepository.getValue(redisKey);
         if(storedToken == null){
             throw new BadRequestException(ClientErrorCode.EMAIL_NOT_SENT_YET);
         }
@@ -46,7 +46,7 @@ public class EmailTokenService {
             verificationFailCount.incrementFailCount(email, prefix);
             throw new BadRequestException(ClientErrorCode.INVALID_EMAIL_VERIFICATION_TOKEN);
         }
-        redisTemplate.delete(redisKey);
+        keyValueRepository.removeValue(redisKey);
     }
 
     /**
@@ -55,7 +55,7 @@ public class EmailTokenService {
     public String saveSecureToken(String email) {
         String redisKey = PASSWORD_TOKEN_PREFIX + ":" + email;
         String token = SecureRandomUtil.generateSecureToken();
-        redisTemplate.opsForValue().set(redisKey, token, PASSWORD_TOKEN_EXPIRATION_MINUTES, TimeUnit.MINUTES);
+        keyValueRepository.setValue(redisKey, token, PASSWORD_TOKEN_EXPIRATION_MINUTES, TimeUnit.MINUTES);
         return token;
     }
 
@@ -64,8 +64,8 @@ public class EmailTokenService {
      */
     public void verifyPasswordResetToken(String email, String token) {
         String redisKey = PASSWORD_TOKEN_PREFIX + ":" + email;
-        String storedToken = redisTemplate.opsForValue().get(redisKey);
-        redisTemplate.delete(redisKey);
+        String storedToken = keyValueRepository.getValue(redisKey);
+        keyValueRepository.removeValue(redisKey);
         if (storedToken == null || !storedToken.equals(token)) {
             throw new BadRequestException(ClientErrorCode.INVALID_PASSWORD_RESET_TOKEN);
         }

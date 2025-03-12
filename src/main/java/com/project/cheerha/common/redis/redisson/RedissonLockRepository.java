@@ -1,6 +1,6 @@
 package com.project.cheerha.common.redis.redisson;
 
-import com.project.cheerha.common.scheduler.repository.LockRepository;
+import com.project.cheerha.common.repository.LockRepository;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;

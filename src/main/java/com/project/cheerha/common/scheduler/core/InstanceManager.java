@@ -1,7 +1,7 @@
 package com.project.cheerha.common.scheduler.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.cheerha.common.scheduler.repository.KeyValueRepository;
+import com.project.cheerha.common.repository.KeyValueRepository;
 import com.project.cheerha.common.util.HealthCheckUtil;
 import com.project.cheerha.common.util.InstanceUtil;
 import lombok.RequiredArgsConstructor;

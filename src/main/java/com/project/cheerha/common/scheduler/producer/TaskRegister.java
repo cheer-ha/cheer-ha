@@ -1,8 +1,8 @@
 package com.project.cheerha.common.scheduler.producer;
 
-import com.project.cheerha.common.scheduler.repository.LockRepository;
+import com.project.cheerha.common.repository.LockRepository;
 import com.project.cheerha.common.scheduler.core.TaskHandler;
-import com.project.cheerha.common.scheduler.repository.TaskRepository;
+import com.project.cheerha.common.repository.TaskRepository;
 import com.project.cheerha.common.scheduler.strategy.FixedIntervalStrategy;
 import com.project.cheerha.common.scheduler.strategy.ScheduleStrategy;
 import com.project.cheerha.common.scheduler.strategy.SpecificTimeStrategy;

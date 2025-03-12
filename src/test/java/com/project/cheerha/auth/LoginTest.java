@@ -2,7 +2,7 @@ package com.project.cheerha.auth;
 
 import com.project.cheerha.common.exception.auth.AuthErrorCode;
 import com.project.cheerha.common.exception.auth.UnAuthorizedException;
-import com.project.cheerha.common.redis.auth.RedisRefreshTokenService;
+import com.project.cheerha.domain.auth.service.RefreshTokenService;
 import com.project.cheerha.common.util.JwtUtil;
 import com.project.cheerha.common.util.PasswordEncoder;
 import com.project.cheerha.domain.auth.dto.request.CreateLoginRequestDto;
@@ -34,7 +34,7 @@ public class LoginTest {
     private JwtUtil jwtUtil;
 
     @Mock
-    private RedisRefreshTokenService redisRefreshTokenService;
+    private RefreshTokenService refreshTokenService;
 
     @InjectMocks
     private AuthService authService;
@@ -48,7 +48,7 @@ public class LoginTest {
         when(passwordEncoder.matches(dto.password(), user.getPassword())).thenReturn(true);
         when(jwtUtil.createToken(anyLong(), any())).thenReturn("accessToken");
         when(jwtUtil.createRefreshToken(anyLong())).thenReturn("refreshToken");
-        doNothing().when(redisRefreshTokenService).createRefreshToken(anyLong(), anyString());
+        doNothing().when(refreshTokenService).createRefreshToken(anyLong(), anyString());
 
         //when
         CreateLoginResponseDto response = authService.login(dto);

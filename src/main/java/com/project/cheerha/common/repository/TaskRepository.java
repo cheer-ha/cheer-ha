@@ -1,4 +1,4 @@
-package com.project.cheerha.common.scheduler.repository;
+package com.project.cheerha.common.repository;
 
 import java.time.Instant;
 

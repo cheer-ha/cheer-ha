@@ -2,7 +2,7 @@ package com.project.cheerha.auth;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
-import com.project.cheerha.common.redis.email.EmailTokenService;
+import com.project.cheerha.domain.user.service.EmailTokenService;
 import com.project.cheerha.common.util.PasswordEncoder;
 import com.project.cheerha.domain.auth.dto.request.VerifySignupRequestDto;
 import com.project.cheerha.domain.auth.dto.response.VerifySignupResponseDto;

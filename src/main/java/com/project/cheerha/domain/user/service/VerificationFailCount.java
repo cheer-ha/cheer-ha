@@ -1,9 +1,9 @@
-package com.project.cheerha.common.redis.email;
+package com.project.cheerha.domain.user.service;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
+import com.project.cheerha.common.repository.KeyValueRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class VerificationFailCount {
 
-    private final RedisTemplate<String, String> redisTemplate;
+    private final KeyValueRepository keyValueRepository;
 
     private static final String VERIFICATION_FAIL_COUNT_PREFIX = "verification_fail_count";
     private static final long FAIL_COUNT_EXPIRE_MINUTES = 5;
@@ -26,7 +26,7 @@ public class VerificationFailCount {
     public void incrementFailCount(String email, String operationKey) {
         String failCountKey = VERIFICATION_FAIL_COUNT_PREFIX + ":" + operationKey + ":" + email;
 
-        int failCount = Optional.ofNullable(redisTemplate.opsForValue().get(failCountKey))
+        int failCount = Optional.ofNullable(keyValueRepository.getValue(failCountKey))
                 .map(Integer::valueOf)
                 .orElse(0);
 
@@ -34,7 +34,7 @@ public class VerificationFailCount {
             throw new BadRequestException(ClientErrorCode.MAX_FAILURE_COUNT_EXCEEDED);
         }
         failCount++;
-        redisTemplate.opsForValue().set(failCountKey,
+        keyValueRepository.setValue(failCountKey,
                 String.valueOf(failCount),
                 FAIL_COUNT_EXPIRE_MINUTES,
                 TimeUnit.MINUTES);
