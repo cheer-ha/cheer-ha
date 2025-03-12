@@ -1,5 +1,6 @@
-package com.project.cheerha.common.scheduler.repository;
+package com.project.cheerha.common.redis.redisson;
 
+import com.project.cheerha.common.scheduler.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RBucket;
 import org.redisson.api.RScoredSortedSet;
@@ -11,7 +12,7 @@ import java.util.Collection;
 
 @Repository
 @RequiredArgsConstructor
-public class TaskRepositoryImpl implements TaskRepository {
+public class RedissonTaskRepositoryImpl implements TaskRepository {
 
     private final RedissonClient redissonClient;
 
