@@ -3,7 +3,7 @@ package com.project.cheerha.aspect;
 import com.project.cheerha.common.aop.block.EmailBlockingAspect;
 import com.project.cheerha.common.exception.auth.AuthErrorCode;
 import com.project.cheerha.common.exception.auth.UnAuthorizedException;
-import com.project.cheerha.common.repository.keyvalue.KeyValueCommandRepository;
+import com.project.cheerha.common.repository.KeyValueCommandRepository;
 import com.project.cheerha.domain.auth.dto.request.CreateLoginRequestDto;
 import com.project.cheerha.domain.auth.entity.BannedEmail;
 import com.project.cheerha.domain.auth.repository.BannedEmailRepository;

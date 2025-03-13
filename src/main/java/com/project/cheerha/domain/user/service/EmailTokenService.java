@@ -2,8 +2,8 @@ package com.project.cheerha.domain.user.service;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
-import com.project.cheerha.common.repository.keyvalue.KeyValueCommandRepository;
-import com.project.cheerha.common.repository.keyvalue.KeyValueQueryRepository;
+import com.project.cheerha.common.repository.KeyValueCommandRepository;
+import com.project.cheerha.common.repository.KeyValueQueryRepository;
 import com.project.cheerha.common.util.SecureRandomUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

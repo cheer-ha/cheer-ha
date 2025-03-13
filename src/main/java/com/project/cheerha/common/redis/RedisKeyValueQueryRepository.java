@@ -1,6 +1,6 @@
 package com.project.cheerha.common.redis;
 
-import com.project.cheerha.common.repository.keyvalue.KeyValueQueryRepository;
+import com.project.cheerha.common.repository.KeyValueQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;

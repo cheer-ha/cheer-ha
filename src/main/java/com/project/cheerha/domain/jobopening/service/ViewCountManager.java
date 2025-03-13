@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import com.project.cheerha.common.repository.keyvalue.KeyValueCommandRepository;
-import com.project.cheerha.common.repository.keyvalue.KeyValueQueryRepository;
+import com.project.cheerha.common.repository.KeyValueCommandRepository;
+import com.project.cheerha.common.repository.KeyValueQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

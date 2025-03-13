@@ -1,7 +1,7 @@
 package com.project.cheerha.domain.searchhistory.service;
 
-import com.project.cheerha.common.repository.keyvalue.KeyValueCommandRepository;
-import com.project.cheerha.common.repository.keyvalue.KeyValueQueryRepository;
+import com.project.cheerha.common.repository.KeyValueCommandRepository;
+import com.project.cheerha.common.repository.KeyValueQueryRepository;
 import com.project.cheerha.domain.searchhistory.entity.SearchHistory;
 import com.project.cheerha.domain.searchhistory.repository.SearchHistoryRepository;
 import com.project.cheerha.domain.user.entity.User;

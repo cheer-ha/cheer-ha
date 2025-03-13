@@ -1,4 +1,4 @@
-package com.project.cheerha.common.repository.keyvalue;
+package com.project.cheerha.common.repository;
 
 import java.util.List;
 import java.util.Set;

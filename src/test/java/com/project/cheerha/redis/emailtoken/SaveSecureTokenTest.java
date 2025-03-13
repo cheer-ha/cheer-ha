@@ -1,6 +1,6 @@
 package com.project.cheerha.redis.emailtoken;
 
-import com.project.cheerha.common.repository.keyvalue.KeyValueCommandRepository;
+import com.project.cheerha.common.repository.KeyValueCommandRepository;
 import com.project.cheerha.domain.user.service.EmailTokenService;
 import com.project.cheerha.common.util.SecureRandomUtil;
 import org.junit.jupiter.api.Test;
