@@ -1,7 +1,8 @@
 package com.project.cheerha.common.scheduler.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.cheerha.common.repository.keyvalue.KeyValueRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueCommandRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueQueryRepository;
 import com.project.cheerha.common.util.HealthCheckUtil;
 import com.project.cheerha.common.util.InstanceUtil;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class InstanceManager {
 
-    private final KeyValueRepository keyValueRepository;
+    private final KeyValueQueryRepository keyValueQueryRepository;
+    private final KeyValueCommandRepository keyValueCommandRepository;
     private final ObjectMapper objectMapper;
     private static final String LATEST_INSTANCE_KEY = "scheduler:latest-instance";
 
@@ -28,7 +30,7 @@ public class InstanceManager {
             return false;
         }
         try {
-            String latestInstanceJson = keyValueRepository.getValue(LATEST_INSTANCE_KEY);
+            String latestInstanceJson = keyValueQueryRepository.getValue(LATEST_INSTANCE_KEY);
             if (latestInstanceJson == null) {
                 return true;
             }
@@ -51,7 +53,7 @@ public class InstanceManager {
     public void updateLatestInstance() {
         try {
             //Redis 에서 최신 인스턴스 정보 가져오기
-            String latestInstanceJson = keyValueRepository.getValue(LATEST_INSTANCE_KEY);
+            String latestInstanceJson = keyValueQueryRepository.getValue(LATEST_INSTANCE_KEY);
             long currentStartTime = InstanceUtil.getInstanceStartTime().toEpochMilli();
             String currentInstanceId = InstanceUtil.getInstanceId();
 
@@ -71,7 +73,7 @@ public class InstanceManager {
                     "startTime", String.valueOf(currentStartTime)
             );
 
-            keyValueRepository.setValue(LATEST_INSTANCE_KEY, objectMapper.writeValueAsString(newLatestInstance));
+            keyValueCommandRepository.setValue(LATEST_INSTANCE_KEY, objectMapper.writeValueAsString(newLatestInstance));
             log.info("최신 인스턴스로 등록됨: {}", newLatestInstance);
         } catch (Exception e) {
             log.error("최신 인스턴스 등록 중 오류 발생", e);

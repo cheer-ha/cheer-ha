@@ -1,7 +1,8 @@
 package com.project.cheerha.redis.emailtoken;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
-import com.project.cheerha.common.repository.keyvalue.KeyValueRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueCommandRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueQueryRepository;
 import com.project.cheerha.domain.user.service.EmailTokenService;
 import com.project.cheerha.domain.user.service.VerificationFailCount;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,10 @@ public class VerifyEmailTokenTest {
     EmailTokenService emailTokenService;
 
     @Mock
-    private KeyValueRepository keyValueRepository;
+    private KeyValueQueryRepository keyValueQueryRepository;
+
+    @Mock
+    private KeyValueCommandRepository keyValueCommandRepository;
 
     @Mock
     VerificationFailCount verificationFailCount;
@@ -34,16 +38,16 @@ public class VerifyEmailTokenTest {
 
     @Test
     void verifyEmailToken_성공() {
-        when(keyValueRepository.getValue(eq(TOKEN_PREFIX + ":" + TEST_EMAIL))).thenReturn(VALID_TOKEN);
+        when(keyValueQueryRepository.getValue(eq(TOKEN_PREFIX + ":" + TEST_EMAIL))).thenReturn(VALID_TOKEN);
 
         assertDoesNotThrow(() -> emailTokenService.verifyEmailToken(TOKEN_PREFIX, TEST_EMAIL, VALID_TOKEN));
 
-        verify(keyValueRepository, times(1)).removeValue(eq(TOKEN_PREFIX + ":" + TEST_EMAIL));
+        verify(keyValueCommandRepository, times(1)).removeValue(eq(TOKEN_PREFIX + ":" + TEST_EMAIL));
     }
 
     @Test
     void verifyEmailToken_토큰없음_예외발생() {
-        when(keyValueRepository.getValue(eq(TOKEN_PREFIX + ":" + TEST_EMAIL))).thenReturn(null);
+        when(keyValueQueryRepository.getValue(eq(TOKEN_PREFIX + ":" + TEST_EMAIL))).thenReturn(null);
 
         assertThrows(BadRequestException.class,
                 () -> emailTokenService.verifyEmailToken(TOKEN_PREFIX, TEST_EMAIL, VALID_TOKEN));
@@ -51,7 +55,7 @@ public class VerifyEmailTokenTest {
 
     @Test
     void verifyEmailToken_잘못된토큰_예외발생() {
-        when(keyValueRepository.getValue(eq(TOKEN_PREFIX + ":" + TEST_EMAIL))).thenReturn(VALID_TOKEN);
+        when(keyValueQueryRepository.getValue(eq(TOKEN_PREFIX + ":" + TEST_EMAIL))).thenReturn(VALID_TOKEN);
 
         assertThrows(BadRequestException.class,
                 () -> emailTokenService.verifyEmailToken(TOKEN_PREFIX, TEST_EMAIL, INVALID_TOKEN));

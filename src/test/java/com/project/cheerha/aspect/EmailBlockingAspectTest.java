@@ -3,7 +3,7 @@ package com.project.cheerha.aspect;
 import com.project.cheerha.common.aop.block.EmailBlockingAspect;
 import com.project.cheerha.common.exception.auth.AuthErrorCode;
 import com.project.cheerha.common.exception.auth.UnAuthorizedException;
-import com.project.cheerha.common.repository.keyvalue.KeyValueRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueCommandRepository;
 import com.project.cheerha.domain.auth.dto.request.CreateLoginRequestDto;
 import com.project.cheerha.domain.auth.entity.BannedEmail;
 import com.project.cheerha.domain.auth.repository.BannedEmailRepository;
@@ -26,7 +26,7 @@ class EmailBlockingAspectTest {
     private EmailBlockingAspect emailBlockingAspect;
 
     @Mock
-    private KeyValueRepository keyValueRepository;
+    private KeyValueCommandRepository kValueCommandRepository;
 
     @Mock
     private BannedEmailRepository bannedEmailRepository;
@@ -48,7 +48,7 @@ class EmailBlockingAspectTest {
         Object result = emailBlockingAspect.blockAbnormalEmail(joinPoint);
 
         assertEquals("로그인 성공", result);
-        verify(keyValueRepository, times(1)).removeValue(FAIL_COUNT_KEY);
+        verify(kValueCommandRepository, times(1)).removeValue(FAIL_COUNT_KEY);
     }
 
 
@@ -60,13 +60,13 @@ class EmailBlockingAspectTest {
         when(joinPoint.getArgs()).thenReturn(args);
         when(joinPoint.proceed(any(Object[].class))).thenThrow(new UnAuthorizedException(AuthErrorCode.INVALID_PASSWORD));
 
-        when(keyValueRepository.incrementValue(FAIL_COUNT_KEY)).thenReturn(1L);
+        when(kValueCommandRepository.incrementValue(FAIL_COUNT_KEY)).thenReturn(1L);
 
         Exception exception = assertThrows(Exception.class, () -> emailBlockingAspect.blockAbnormalEmail(joinPoint));
         assertEquals("패스워드가 잘못되었습니다.", exception.getMessage());
 
-        verify(keyValueRepository, times(1)).incrementValue(FAIL_COUNT_KEY);
-        verify(keyValueRepository, times(1)).expireValue(FAIL_COUNT_KEY, 3, TimeUnit.DAYS);
+        verify(kValueCommandRepository, times(1)).incrementValue(FAIL_COUNT_KEY);
+        verify(kValueCommandRepository, times(1)).expireValue(FAIL_COUNT_KEY, 3, TimeUnit.DAYS);
     }
 
     @Test
@@ -77,13 +77,13 @@ class EmailBlockingAspectTest {
         when(joinPoint.getArgs()).thenReturn(args);
         when(joinPoint.proceed(any(Object[].class))).thenThrow(new UnAuthorizedException(AuthErrorCode.INVALID_PASSWORD));
 
-        when(keyValueRepository.incrementValue(FAIL_COUNT_KEY)).thenReturn(5L);
+        when(kValueCommandRepository.incrementValue(FAIL_COUNT_KEY)).thenReturn(5L);
 
         Exception exception = assertThrows(Exception.class, () -> emailBlockingAspect.blockAbnormalEmail(joinPoint));
         assertEquals("패스워드가 잘못되었습니다.", exception.getMessage());
 
         verify(bannedEmailRepository, times(1)).save(any(BannedEmail.class));
-        verify(keyValueRepository, times(1)).removeValue(FAIL_COUNT_KEY);
+        verify(kValueCommandRepository, times(1)).removeValue(FAIL_COUNT_KEY);
     }
 
     @Test

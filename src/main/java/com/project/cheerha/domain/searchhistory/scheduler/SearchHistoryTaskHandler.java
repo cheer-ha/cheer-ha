@@ -1,6 +1,6 @@
 package com.project.cheerha.domain.searchhistory.scheduler;
 
-import com.project.cheerha.common.repository.keyvalue.KeyValueRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueQueryRepository;
 import com.project.cheerha.common.scheduler.core.TaskHandler;
 import com.project.cheerha.domain.searchhistory.entity.SearchHistory;
 import com.project.cheerha.domain.searchhistory.repository.SearchHistoryRepository;
@@ -19,7 +19,7 @@ public class SearchHistoryTaskHandler implements TaskHandler {
 
     private final UserFindByService userFindByService;
     private final SearchHistoryRepository searchHistoryRepository;
-    private final KeyValueRepository keyValueRepository;
+    private final KeyValueQueryRepository keyValueQueryRepository;
 
     @Override
     public String getTaskType() {
@@ -35,12 +35,12 @@ public class SearchHistoryTaskHandler implements TaskHandler {
      */
     @Override
     public void handle(Map<String, Object> payload) {
-        Set<String> keys = keyValueRepository.getKeys("user:*:search_history");
+        Set<String> keys = keyValueQueryRepository.getKeys("user:*:search_history");
         if (!keys.isEmpty()) {
             for (String key : keys) {
                 Long userId = Long.parseLong(key.split(":")[1]);
                 User user = userFindByService.findById(userId);
-                Set<String> searchTermSet = keyValueRepository.opsForZSet(key, 0, -1);
+                Set<String> searchTermSet = keyValueQueryRepository.getZSetRange(key, 0, -1);
 
                 if (searchTermSet != null && !searchTermSet.isEmpty()) {
                     // 해당 유저의 기존 검색어 조회

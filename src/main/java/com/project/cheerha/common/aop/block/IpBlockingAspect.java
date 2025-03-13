@@ -1,6 +1,7 @@
 package com.project.cheerha.common.aop.block;
 
-import com.project.cheerha.common.repository.keyvalue.KeyValueRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueCommandRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueQueryRepository;
 import com.project.cheerha.common.util.IpUtil;
 import com.project.cheerha.domain.auth.dto.request.CreateLoginRequestDto;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,7 +24,8 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class IpBlockingAspect {
 
-    private final KeyValueRepository keyValueRepository;
+    private final KeyValueCommandRepository keyValueCommandRepository;
+    private final KeyValueQueryRepository keyValueQueryRepository;
 
     private static final String BLOCK_PREFIX = "block:ip:";
     private static final String LOGIN_ATTEMPT_PREFIX = "attempt:ip:";
@@ -54,19 +56,19 @@ public class IpBlockingAspect {
             return joinPoint.proceed();
         } catch (Exception e) {
             //해당 ip 에서 로그인 시도한 이메일 리스트 가져오기
-            List<String> attemptedEmails = keyValueRepository.opsForListRange(redisAttemptKey, 0, -1);
+            List<String> attemptedEmails = keyValueQueryRepository.getListRange(redisAttemptKey, 0, -1);
             if (attemptedEmails == null || !attemptedEmails.contains(email)) {
-                keyValueRepository.opsForListLeftPush(redisAttemptKey, email);
+                keyValueCommandRepository.pushToListLeft(redisAttemptKey, email);
             }
 
             //추가 시 ttl 설정
-            keyValueRepository.expireValue(redisAttemptKey, ATTEMPT_TTL, TimeUnit.MINUTES);
+            keyValueCommandRepository.expireValue(redisAttemptKey, ATTEMPT_TTL, TimeUnit.MINUTES);
 
             //서로 다른 이메일이 3개 이상이면 차단
             if (!Objects.requireNonNull(attemptedEmails).contains(email) && attemptedEmails.size() >= MAX_DIFFERENT_EMAILS) {
-                keyValueRepository.setValue(redisBlockKey, "blocked", IP_BLOCK_DURATION, TimeUnit.SECONDS);
+                keyValueCommandRepository.setValue(redisBlockKey, "blocked", IP_BLOCK_DURATION, TimeUnit.SECONDS);
                 log.warn("IP {} 차단됨 (서로 다른 {}개 이메일 감지됨)", ip, MAX_DIFFERENT_EMAILS + 1);
-                keyValueRepository.removeValue(redisAttemptKey);
+                keyValueCommandRepository.removeValue(redisAttemptKey);
             }
             throw e;
         }

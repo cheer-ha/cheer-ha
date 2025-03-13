@@ -2,7 +2,7 @@ package com.project.cheerha.redis.emailtoken;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
-import com.project.cheerha.common.repository.keyvalue.KeyValueRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueCommandRepository;
 import com.project.cheerha.domain.user.service.CheckDailyEmailCount;
 import com.project.cheerha.domain.user.service.EmailTokenService;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ public class SaveTokenTest {
     EmailTokenService emailTokenService;
 
     @Mock
-    private KeyValueRepository keyValueRepository;
+    private KeyValueCommandRepository keyValueCommandRepository;
 
     @Mock
     CheckDailyEmailCount checkDailyEmailCount;
@@ -33,12 +33,12 @@ public class SaveTokenTest {
 
     @Test
     void saveToken_성공() {
-        doNothing().when(keyValueRepository).setValue(anyString(), anyString(), anyLong(), any());
+        doNothing().when(keyValueCommandRepository).setValue(anyString(), anyString(), anyLong(), any());
 
         String token = emailTokenService.saveToken(TOKEN_PREFIX, TEST_EMAIL);
 
         assertNotNull(token);
-        verify(keyValueRepository, times(1)).setValue(eq(TOKEN_PREFIX + ":" + TEST_EMAIL), anyString(), anyLong(), any());
+        verify(keyValueCommandRepository, times(1)).setValue(eq(TOKEN_PREFIX + ":" + TEST_EMAIL), anyString(), anyLong(), any());
         verify(checkDailyEmailCount, times(1)).incrementDailyLimit(TEST_EMAIL, TOKEN_PREFIX);
     }
 

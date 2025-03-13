@@ -2,7 +2,8 @@ package com.project.cheerha.domain.user.service;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
-import com.project.cheerha.common.repository.keyvalue.KeyValueRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueCommandRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,8 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class VerificationFailCount {
 
-    private final KeyValueRepository keyValueRepository;
+    private final KeyValueQueryRepository keyValueQueryRepository;
+    private final KeyValueCommandRepository keyValueCommandRepository;
 
     private static final String VERIFICATION_FAIL_COUNT_PREFIX = "verification_fail_count";
     private static final long FAIL_COUNT_EXPIRE_MINUTES = 5;
@@ -26,7 +28,7 @@ public class VerificationFailCount {
     public void incrementFailCount(String email, String operationKey) {
         String failCountKey = VERIFICATION_FAIL_COUNT_PREFIX + ":" + operationKey + ":" + email;
 
-        int failCount = Optional.ofNullable(keyValueRepository.getValue(failCountKey))
+        int failCount = Optional.ofNullable(keyValueQueryRepository.getValue(failCountKey))
                 .map(Integer::valueOf)
                 .orElse(0);
 
@@ -34,7 +36,7 @@ public class VerificationFailCount {
             throw new BadRequestException(ClientErrorCode.MAX_FAILURE_COUNT_EXCEEDED);
         }
         failCount++;
-        keyValueRepository.setValue(failCountKey,
+        keyValueCommandRepository.setValue(failCountKey,
                 String.valueOf(failCount),
                 FAIL_COUNT_EXPIRE_MINUTES,
                 TimeUnit.MINUTES);

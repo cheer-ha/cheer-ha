@@ -1,6 +1,7 @@
 package com.project.cheerha.domain.searchhistory.service;
 
-import com.project.cheerha.common.repository.keyvalue.KeyValueRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueCommandRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueQueryRepository;
 import com.project.cheerha.domain.searchhistory.entity.SearchHistory;
 import com.project.cheerha.domain.searchhistory.repository.SearchHistoryRepository;
 import com.project.cheerha.domain.user.entity.User;
@@ -29,7 +30,10 @@ public class SearchHistoryServiceTest {
     private SearchHistoryService searchHistoryService;
 
     @Mock
-    private KeyValueRepository keyValueRepository;
+    private KeyValueCommandRepository keyValueCommandRepository;
+
+    @Mock
+    private KeyValueQueryRepository keyValueQueryRepository;
 
     @Mock
     private SearchHistoryRepository searchHistoryRepository;
@@ -48,8 +52,8 @@ public class SearchHistoryServiceTest {
         searchHistoryService.saveSearchTerm(userId, searchTerm);
 
         // then
-        verify(keyValueRepository, times(1)).opsForZSetAdd(eq(key), eq(searchTerm), anyLong());
-        verify(keyValueRepository, times(1)).expireValue(eq(key), eq(EXPIRATION_TIME), eq(TimeUnit.SECONDS));
+        verify(keyValueCommandRepository, times(1)).addToZSet(eq(key), eq(searchTerm), anyLong());
+        verify(keyValueCommandRepository, times(1)).expireValue(eq(key), eq(EXPIRATION_TIME), eq(TimeUnit.SECONDS));
     }
 
     @Test
@@ -60,15 +64,15 @@ public class SearchHistoryServiceTest {
         String searchTerm = "Redis";
         String key = "user:" + userId + ":search_history";
 
-        when(keyValueRepository.opsForZSetCard(key)).thenReturn(11L);
+        when(keyValueQueryRepository.getZSetCard(key)).thenReturn(11L);
 
         // when
         searchHistoryService.saveSearchTerm(userId, searchTerm);
 
         // then
-        verify(keyValueRepository, times(1)).opsForZSetAdd(eq(key), eq(searchTerm), anyLong());
-        verify(keyValueRepository, times(1)).opsForZSetRemoveRange(eq(key),eq(0L), eq(0L));
-        verify(keyValueRepository, times(1)).expireValue(eq(key), eq(EXPIRATION_TIME), eq(TimeUnit.SECONDS));
+        verify(keyValueCommandRepository, times(1)).addToZSet(eq(key), eq(searchTerm), anyLong());
+        verify(keyValueCommandRepository, times(1)).removeFromZSetRange(eq(key),eq(0L), eq(0L));
+        verify(keyValueCommandRepository, times(1)).expireValue(eq(key), eq(EXPIRATION_TIME), eq(TimeUnit.SECONDS));
     }
 
     @Test
@@ -79,7 +83,7 @@ public class SearchHistoryServiceTest {
         String key = "user:" + userId + ":search_history";
         Set<String> searchTermSet = new LinkedHashSet<>(List.of("Java", "Spring"));
 
-        when(keyValueRepository.opsForZSetReverseRange(key, 0, 9)).thenReturn(searchTermSet);
+        when(keyValueQueryRepository.getZSetReverseRange(key, 0, 9)).thenReturn(searchTermSet);
 
         // when
         List<String> searchTermList = searchHistoryService.getRecentSearchTerms(userId);
@@ -98,7 +102,7 @@ public class SearchHistoryServiceTest {
         String key = "user:" + userId + ":search_history";
         User mockUser = User.toEntity("test@gmail.com", "사용자1", 27, 1, "password123");
 
-        when(keyValueRepository.opsForZSetReverseRange(key, 0, 9)).thenReturn(Collections.emptySet());
+        when(keyValueQueryRepository.getZSetReverseRange(key, 0, 9)).thenReturn(Collections.emptySet());
 
         SearchHistory history1 = SearchHistory.toEntity(mockUser, "Elasticsearch");
         SearchHistory history2 = SearchHistory.toEntity(mockUser, "Kafka");
@@ -118,7 +122,7 @@ public class SearchHistoryServiceTest {
 
         verify(searchHistoryRepository, times(1)).findTop10ByUserIdOrderByCreatedAtDesc(userId);
 
-        verify(keyValueRepository, times(1)).opsForZSetAdd(eq(key), eq("Elasticsearch"), anyLong());
-        verify(keyValueRepository, times(1)).opsForZSetAdd(eq(key), eq("Kafka"), anyLong());
+        verify(keyValueCommandRepository, times(1)).addToZSet(eq(key), eq("Elasticsearch"), anyLong());
+        verify(keyValueCommandRepository, times(1)).addToZSet(eq(key), eq("Kafka"), anyLong());
     }
 }

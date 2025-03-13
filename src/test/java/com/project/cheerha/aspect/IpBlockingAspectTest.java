@@ -3,7 +3,8 @@ package com.project.cheerha.aspect;
 import com.project.cheerha.common.aop.block.IpBlockingAspect;
 import com.project.cheerha.common.exception.auth.AuthErrorCode;
 import com.project.cheerha.common.exception.auth.UnAuthorizedException;
-import com.project.cheerha.common.repository.keyvalue.KeyValueRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueCommandRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueQueryRepository;
 import com.project.cheerha.common.util.IpUtil;
 import com.project.cheerha.domain.auth.dto.request.CreateLoginRequestDto;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,7 +31,10 @@ class IpBlockingAspectTest {
     private IpBlockingAspect ipBlockingAspect;
 
     @Mock
-    private KeyValueRepository keyValueRepository;
+    private KeyValueCommandRepository keyValueCommandRepository;
+
+    @Mock
+    private KeyValueQueryRepository keyValueQueryRepository;
 
     @Mock
     private ProceedingJoinPoint joinPoint;
@@ -71,15 +75,15 @@ class IpBlockingAspectTest {
         when(joinPoint.getArgs()).thenReturn(args);
         when(joinPoint.proceed()).thenThrow(new UnAuthorizedException(AuthErrorCode.INVALID_PASSWORD));
 
-        when(keyValueRepository.opsForListRange(ATTEMPT_KEY, 0, -1)).thenReturn(List.of(EMAIL_1, EMAIL_2));
+        when(keyValueQueryRepository.getListRange(ATTEMPT_KEY, 0, -1)).thenReturn(List.of(EMAIL_1, EMAIL_2));
 
         Exception exception = assertThrows(RuntimeException.class,
                 () -> ipBlockingAspect.blockAbnormalIp(joinPoint));
 
         assertEquals("패스워드가 잘못되었습니다.", exception.getMessage());
 
-        verify(keyValueRepository, times(1)).opsForListLeftPush(ATTEMPT_KEY, EMAIL_3);
-        verify(keyValueRepository, times(1)).expireValue(ATTEMPT_KEY, 15, TimeUnit.MINUTES);
+        verify(keyValueCommandRepository, times(1)).pushToListLeft(ATTEMPT_KEY, EMAIL_3);
+        verify(keyValueCommandRepository, times(1)).expireValue(ATTEMPT_KEY, 15, TimeUnit.MINUTES);
     }
 
     @Test
@@ -88,14 +92,14 @@ class IpBlockingAspectTest {
         when(joinPoint.getArgs()).thenReturn(args);
         when(joinPoint.proceed()).thenThrow(new UnAuthorizedException(AuthErrorCode.INVALID_PASSWORD));
 
-        when(keyValueRepository.opsForListRange(ATTEMPT_KEY, 0, -1)).thenReturn(List.of(EMAIL_1, EMAIL_2, EMAIL_3));
+        when(keyValueQueryRepository.getListRange(ATTEMPT_KEY, 0, -1)).thenReturn(List.of(EMAIL_1, EMAIL_2, EMAIL_3));
 
         Exception exception = assertThrows(RuntimeException.class,
                 () -> ipBlockingAspect.blockAbnormalIp(joinPoint));
 
         assertEquals("패스워드가 잘못되었습니다.", exception.getMessage());
 
-        verify(keyValueRepository, times(1)).setValue(BLOCK_KEY, "blocked", 30, TimeUnit.SECONDS);
-        verify(keyValueRepository, times(1)).removeValue(ATTEMPT_KEY);
+        verify(keyValueCommandRepository, times(1)).setValue(BLOCK_KEY, "blocked", 30, TimeUnit.SECONDS);
+        verify(keyValueCommandRepository, times(1)).removeValue(ATTEMPT_KEY);
     }
 }

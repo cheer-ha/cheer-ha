@@ -1,6 +1,6 @@
 package com.project.cheerha.redis.emailtoken;
 
-import com.project.cheerha.common.repository.keyvalue.KeyValueRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueCommandRepository;
 import com.project.cheerha.domain.user.service.EmailTokenService;
 import com.project.cheerha.common.util.SecureRandomUtil;
 import org.junit.jupiter.api.Test;
@@ -21,14 +21,14 @@ public class SaveSecureTokenTest {
     EmailTokenService emailTokenService;
 
     @Mock
-    private KeyValueRepository keyValueRepository;
+    private KeyValueCommandRepository keyValueCommandRepository;
 
     private static final String TEST_EMAIL = "test@example.com";
     private static final String VALID_TOKEN = "123456";
 
     @Test
     void saveSecureToken_성공() {
-        doNothing().when(keyValueRepository).setValue(anyString(), anyString(), anyLong(), any());
+        doNothing().when(keyValueCommandRepository).setValue(anyString(), anyString(), anyLong(), any());
 
         try (MockedStatic<SecureRandomUtil> mockedStatic = mockStatic(SecureRandomUtil.class)) {
             mockedStatic.when(SecureRandomUtil::generateSecureToken).thenReturn(VALID_TOKEN);
@@ -37,7 +37,7 @@ public class SaveSecureTokenTest {
 
             assertNotNull(token);
             assertEquals(VALID_TOKEN, token);
-            verify(keyValueRepository, times(1))
+            verify(keyValueCommandRepository, times(1))
                     .setValue(eq("password_verification:" + TEST_EMAIL), eq(VALID_TOKEN), anyLong(), any());
         }
     }
@@ -45,7 +45,7 @@ public class SaveSecureTokenTest {
     @Test
     void saveSecureToken_Redis_저장_실패() {
         doThrow(new RuntimeException("Redis 저장 실패"))
-                .when(keyValueRepository).setValue(anyString(), anyString(), anyLong(), any());
+                .when(keyValueCommandRepository).setValue(anyString(), anyString(), anyLong(), any());
 
         assertThrows(RuntimeException.class, () -> emailTokenService.saveSecureToken(TEST_EMAIL));
     }

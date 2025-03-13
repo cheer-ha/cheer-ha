@@ -6,7 +6,8 @@ import com.project.cheerha.common.properties.JwtSecurityProperties;
 
 import java.util.concurrent.TimeUnit;
 
-import com.project.cheerha.common.repository.keyvalue.KeyValueRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueCommandRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +15,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RefreshTokenService {
 
-    private final KeyValueRepository keyValueRepository;
+    private final KeyValueCommandRepository keyValueCommandRepository;
+    private final KeyValueQueryRepository keyValueQueryRepository;
     private final JwtSecurityProperties jwtSecurityProperties;
 
     /**
@@ -25,7 +27,7 @@ public class RefreshTokenService {
     public void createRefreshToken(Long userId, String refreshToken) {
         long expiration = jwtSecurityProperties.token().refreshExpiration();
         String key = getKey(userId);
-        keyValueRepository.setValue(key, refreshToken, expiration, TimeUnit.MILLISECONDS);
+        keyValueCommandRepository.setValue(key, refreshToken, expiration, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -35,7 +37,7 @@ public class RefreshTokenService {
      */
     public String getRefreshToken(Long userId) {
         String key = getKey(userId);
-        String token = keyValueRepository.getValue(key);
+        String token = keyValueQueryRepository.getValue(key);
         if (token == null || token.isBlank()) {
             throw new UnAuthorizedException(AuthErrorCode.TOKEN_UNAUTHORIZED);
         }
@@ -48,7 +50,7 @@ public class RefreshTokenService {
      */
     public void deleteRefreshToken(Long userId) {
         String key = getKey(userId);
-        keyValueRepository.removeValue(key);
+        keyValueCommandRepository.removeValue(key);
     }
 
     private String getKey(Long userId) {

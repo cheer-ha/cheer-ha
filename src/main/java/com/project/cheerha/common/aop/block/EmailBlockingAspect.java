@@ -2,7 +2,7 @@ package com.project.cheerha.common.aop.block;
 
 import com.project.cheerha.common.exception.auth.AuthErrorCode;
 import com.project.cheerha.common.exception.auth.UnAuthorizedException;
-import com.project.cheerha.common.repository.keyvalue.KeyValueRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueCommandRepository;
 import com.project.cheerha.domain.auth.dto.request.CreateLoginRequestDto;
 import com.project.cheerha.domain.auth.entity.BannedEmail;
 import com.project.cheerha.domain.auth.repository.BannedEmailRepository;
@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class EmailBlockingAspect {
 
-    private final KeyValueRepository keyValueRepository;
+    private final KeyValueCommandRepository keyValueCommandRepository;
     private final BannedEmailRepository bannedEmailRepository;
 
     private static final String FAIL_PREFIX = "fail:email:";
@@ -49,14 +49,14 @@ public class EmailBlockingAspect {
         try {
             Object result = joinPoint.proceed(args);
             //로그인 성공 시 failCount 삭제
-            keyValueRepository.removeValue(failCountKey);
+            keyValueCommandRepository.removeValue(failCountKey);
             return result;
         } catch (Exception e) {
             if(Objects.equals(e.getMessage(), "패스워드가 잘못되었습니다.")){
                 //잘못된 비밀번호 입력 시 count 1회 추가, 첫 추가 시 ttl 설정
-                long failedAttempts = keyValueRepository.incrementValue(failCountKey);
+                long failedAttempts = keyValueCommandRepository.incrementValue(failCountKey);
                 if (failedAttempts == 1) {
-                    keyValueRepository.expireValue(failCountKey, EMAIL_FAIL_DURATION, TimeUnit.DAYS);
+                    keyValueCommandRepository.expireValue(failCountKey, EMAIL_FAIL_DURATION, TimeUnit.DAYS);
                 }
 
                 //잘못된 시도 5회 시 이메일 차단
@@ -68,7 +68,7 @@ public class EmailBlockingAspect {
                     );
                     log.warn("email {} 차단 완료 : {}", email, message);
                     bannedEmailRepository.save(bannedEmail);
-                    keyValueRepository.removeValue(failCountKey);
+                    keyValueCommandRepository.removeValue(failCountKey);
                 }
             }
             throw e;

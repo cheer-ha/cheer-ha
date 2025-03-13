@@ -1,7 +1,8 @@
 package com.project.cheerha.domain.auth.service;
 
 import com.project.cheerha.common.properties.JwtSecurityProperties;
-import com.project.cheerha.common.repository.keyvalue.KeyValueRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueCommandRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +12,8 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class BlackListService {
 
-    private final KeyValueRepository keyValueRepository;
+    private final KeyValueCommandRepository keyValueCommandRepository;
+    private final KeyValueQueryRepository keyValueQueryRepository;
     private final JwtSecurityProperties jwtSecurityProperties;
 
     /**
@@ -22,7 +24,7 @@ public class BlackListService {
         String blackPrefix = jwtSecurityProperties.token().blackListPrefix();
         long blackExpiration = jwtSecurityProperties.token().blackListExpiration();
         String key = blackPrefix + token;
-        keyValueRepository.setValue(key, "blackList", blackExpiration, TimeUnit.MILLISECONDS);
+        keyValueCommandRepository.setValue(key, "blackList", blackExpiration, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -33,6 +35,6 @@ public class BlackListService {
     public boolean isBlackList(String token) {
         String blackPrefix = jwtSecurityProperties.token().blackListPrefix();
         String key = blackPrefix + token;
-        return Boolean.TRUE.equals(keyValueRepository.hasKey(key));
+        return Boolean.TRUE.equals(keyValueQueryRepository.hasKey(key));
     }
 }

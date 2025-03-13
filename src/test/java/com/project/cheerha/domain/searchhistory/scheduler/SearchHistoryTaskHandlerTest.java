@@ -1,6 +1,6 @@
 package com.project.cheerha.domain.searchhistory.scheduler;
 
-import com.project.cheerha.common.repository.keyvalue.KeyValueRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueQueryRepository;
 import com.project.cheerha.domain.searchhistory.entity.SearchHistory;
 import com.project.cheerha.domain.searchhistory.repository.SearchHistoryRepository;
 import com.project.cheerha.domain.user.entity.User;
@@ -35,7 +35,7 @@ public class SearchHistoryTaskHandlerTest {
     private SearchHistoryRepository searchHistoryRepository;
 
     @Mock
-    private KeyValueRepository keyValueRepository;
+    private KeyValueQueryRepository keyValueQueryRepository;
 
     @Captor
     private ArgumentCaptor<List<SearchHistory>> searchHistoryCaptor;
@@ -51,9 +51,9 @@ public class SearchHistoryTaskHandlerTest {
         Set<String> redisSearchTermSet = new HashSet<>(Set.of("Elasticsearch", "Docker"));
         Set<String> existinfSearchTermSet = new HashSet<>(Set.of("Elasticsearch"));
 
-        when(keyValueRepository.getKeys("user:*:search_history")).thenReturn(Set.of(key));
+        when(keyValueQueryRepository.getKeys("user:*:search_history")).thenReturn(Set.of(key));
         when(userFindByService.findById(userId)).thenReturn(mockUser);
-        when(keyValueRepository.opsForZSet(key, 0, -1)).thenReturn(redisSearchTermSet);
+        when(keyValueQueryRepository.getZSetRange(key, 0, -1)).thenReturn(redisSearchTermSet);
         when(searchHistoryRepository.findNamesByUserId(userId)).thenReturn(existinfSearchTermSet);
 
         // when
@@ -79,7 +79,7 @@ public class SearchHistoryTaskHandlerTest {
         Set<String> redisSearchTermSet = new HashSet<>(Set.of("Elasticsearch", "Spring"));
         Set<String> existingSearchTermSet = new HashSet<>(Set.of("Elasticsearch", "Spring"));
 
-        when(keyValueRepository.getKeys("user:*:search_history")).thenReturn(Set.of(key));
+        when(keyValueQueryRepository.getKeys("user:*:search_history")).thenReturn(Set.of(key));
         when(userFindByService.findById(userId)).thenReturn(mockUser);
 
         // when

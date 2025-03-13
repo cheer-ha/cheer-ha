@@ -2,7 +2,8 @@ package com.project.cheerha.domain.user.service;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
-import com.project.cheerha.common.repository.keyvalue.KeyValueRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueCommandRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +17,8 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class CheckDailyEmailCount {
 
-    private final KeyValueRepository keyValueRepository;
+    private final KeyValueCommandRepository keyValueCommandRepository;
+    private final KeyValueQueryRepository keyValueQueryRepository;
 
     private static final String DAILY_EMAIL_COUNT_PREFIX = "daily_email_count";
     private static final int MAX_SENT_COUNT = 3;
@@ -30,7 +32,7 @@ public class CheckDailyEmailCount {
         String today = LocalDate.now().toString();
         String dailyCountKey = DAILY_EMAIL_COUNT_PREFIX + ":" + operationKey + ":" + email + ":" + today;
 
-        int requestCount = Optional.ofNullable(keyValueRepository.getValue(dailyCountKey))
+        int requestCount = Optional.ofNullable(keyValueQueryRepository.getValue(dailyCountKey))
                 .map(Integer::valueOf)
                 .orElse(0);
 
@@ -42,10 +44,10 @@ public class CheckDailyEmailCount {
         LocalDateTime midnight = now.toLocalDate().plusDays(1).atStartOfDay();
         long secondsToMidnight = Duration.between(now, midnight).getSeconds();
 
-        keyValueRepository.incrementValue(dailyCountKey);
+        keyValueCommandRepository.incrementValue(dailyCountKey);
 
         if (requestCount == 0) {
-            keyValueRepository.expireValue(dailyCountKey, secondsToMidnight, TimeUnit.SECONDS);
+            keyValueCommandRepository.expireValue(dailyCountKey, secondsToMidnight, TimeUnit.SECONDS);
         }
     }
 }
