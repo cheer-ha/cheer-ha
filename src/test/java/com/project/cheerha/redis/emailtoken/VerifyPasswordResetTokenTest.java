@@ -1,7 +1,7 @@
 package com.project.cheerha.redis.emailtoken;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
-import com.project.cheerha.common.repository.KeyValueRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueRepository;
 import com.project.cheerha.domain.user.service.EmailTokenService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

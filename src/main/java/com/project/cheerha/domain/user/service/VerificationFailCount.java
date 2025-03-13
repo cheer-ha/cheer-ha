@@ -2,7 +2,7 @@ package com.project.cheerha.domain.user.service;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
-import com.project.cheerha.common.repository.KeyValueRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

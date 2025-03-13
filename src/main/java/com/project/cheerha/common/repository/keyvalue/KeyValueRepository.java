@@ -1,4 +1,4 @@
-package com.project.cheerha.common.repository;
+package com.project.cheerha.common.repository.keyvalue;
 
 import java.time.Duration;
 import java.util.List;

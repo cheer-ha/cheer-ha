@@ -1,7 +1,7 @@
 package com.project.cheerha.common.filter;
 
 import com.project.cheerha.common.exception.handler.FilterExceptionHandler;
-import com.project.cheerha.common.repository.KeyValueRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueRepository;
 import com.project.cheerha.common.util.IpUtil;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;

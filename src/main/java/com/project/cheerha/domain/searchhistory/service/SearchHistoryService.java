@@ -1,6 +1,6 @@
 package com.project.cheerha.domain.searchhistory.service;
 
-import com.project.cheerha.common.repository.KeyValueRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueRepository;
 import com.project.cheerha.domain.searchhistory.entity.SearchHistory;
 import com.project.cheerha.domain.searchhistory.repository.SearchHistoryRepository;
 import lombok.RequiredArgsConstructor;

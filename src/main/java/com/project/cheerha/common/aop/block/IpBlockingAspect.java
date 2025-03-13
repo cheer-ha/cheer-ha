@@ -1,6 +1,6 @@
 package com.project.cheerha.common.aop.block;
 
-import com.project.cheerha.common.repository.KeyValueRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueRepository;
 import com.project.cheerha.common.util.IpUtil;
 import com.project.cheerha.domain.auth.dto.request.CreateLoginRequestDto;
 import jakarta.servlet.http.HttpServletRequest;

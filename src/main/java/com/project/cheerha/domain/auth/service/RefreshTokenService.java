@@ -6,7 +6,7 @@ import com.project.cheerha.common.properties.JwtSecurityProperties;
 
 import java.util.concurrent.TimeUnit;
 
-import com.project.cheerha.common.repository.KeyValueRepository;
+import com.project.cheerha.common.repository.keyvalue.KeyValueRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
