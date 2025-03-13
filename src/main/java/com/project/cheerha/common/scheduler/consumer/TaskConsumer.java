@@ -24,7 +24,6 @@ public class TaskConsumer {
     private final Map<String, TaskHandler> handlers = new HashMap<>();
 
     private static final String SORTED_SET_KEY = "scheduled-tasks";
-    private static final String BUCKET_PREFIX = "scheduler:lastScheduledTime:";
     private volatile boolean isRunning = true;
 
     /**
@@ -47,8 +46,6 @@ public class TaskConsumer {
             return;
         }
         if (!isRunning) return;
-        taskRepository.removeExpiredBuckets(BUCKET_PREFIX);
-        taskRepository.removeExpiredTasks(SORTED_SET_KEY);
 
         String taskDataString = taskRepository.getDueTask(SORTED_SET_KEY);
         if (taskDataString != null) {
