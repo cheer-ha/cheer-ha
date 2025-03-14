@@ -76,5 +76,4 @@ public class IpBlockingAspect {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         return attributes != null ? attributes.getRequest() : null;
     }
-
 }

@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 /**
  * API 응답을 위한 DTO 클래스입니다.
@@ -18,7 +19,7 @@ public record ApiResponseDto<T>(LocalDateTime responseAt, boolean isSuccessful, 
      * @param data 응답 데이터
      */
     public ApiResponseDto(boolean isSuccessful, T data) {
-        this(LocalDateTime.now(), isSuccessful, data);
+        this(LocalDateTime.now(ZoneId.of("Asia/Seoul")), isSuccessful, data);
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.project.cheerha.common.aop;
+package com.project.cheerha.common.aop.viewcount;
 
 import com.project.cheerha.common.redis.viewcount.RedisViewCountManager;
 import lombok.RequiredArgsConstructor;
