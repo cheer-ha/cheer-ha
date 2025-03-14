@@ -14,4 +14,6 @@ public interface UserKeywordRepository extends JpaRepository<UserKeyword, Long> 
 
     @Query("SELECT uk.keyword.id FROM UserKeyword uk WHERE uk.user.id = :userId")
     List<Long> findKeywordIdsByUserId(@Param("userId") Long userId);
+
+    List<UserKeyword> findByUserId(Long userId);
 }
