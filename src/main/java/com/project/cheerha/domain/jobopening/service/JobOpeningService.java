@@ -34,7 +34,7 @@ public class JobOpeningService {
     private final JobOpeningFindByService jobOpeningFindByService;
 
     /**
-     * 페이지 리다이렉트를 위한 서비스 로직입니다.
+     * 페이지 리다이렉트를 위한 메서드입니다.
      * @param id jobOpening의 id
      * @return 리다이렉트 될 페이지 URL
      */
