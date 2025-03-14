@@ -4,9 +4,9 @@ import com.project.cheerha.domain.keyword.dto.response.KeywordDto;
 
 import java.util.List;
 
-public record ReadUserKeywordResponseDto(List<KeywordDto> keywordDtoList) {
+public record ReadUserKeywordResponseDto(Long userKeywordId, List<KeywordDto> keywordDtoList) {
 
-    public static ReadUserKeywordResponseDto toDto(List<KeywordDto> keywordDtoList) {
-        return new ReadUserKeywordResponseDto(keywordDtoList);
+    public static ReadUserKeywordResponseDto toDto(Long userKeywordId, List<KeywordDto> keywordDtoList) {
+        return new ReadUserKeywordResponseDto(userKeywordId, keywordDtoList);
     }
 }

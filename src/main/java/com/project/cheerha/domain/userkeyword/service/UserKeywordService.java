@@ -12,6 +12,7 @@ import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.service.UserFindByService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,6 +63,7 @@ public class UserKeywordService {
 
         return keywordList;
     }
+
     // 키워드가 이미 선택되었는지 확인하는 메서드
     private boolean isKeywordAlreadyChosen(Long userId, Long keywordId) {
         return userKeywordRepository.existsByUserIdAndKeywordId(userId, keywordId);
@@ -87,18 +89,20 @@ public class UserKeywordService {
     }
 
     @Transactional(readOnly = true)
-    public ReadUserKeywordResponseDto readAllUserKeywords(Long userId) {
+    public List<ReadUserKeywordResponseDto> readAllUserKeywords(Long userId) {
 
-        List<Long> keywordIdList = userKeywordRepository.findKeywordIdsByUserId(userId);
+        List<UserKeyword> userKeywords = userKeywordRepository.findByUserId(
+            userId); // userKeyword를 다 찾아옵니다.
 
-        List<KeywordDto> keywordDtoList = keywordIdList.stream()
-            .map(keywordId -> {
-                    Keyword keyword = keywordFindByService.findById(keywordId);
+        return userKeywords.stream()
+            .map(userKeyword -> {
+                Long userKeywordId = userKeyword.getId();
 
-                    return KeywordDto.toKeywordDto(keyword.getId(), keyword.getName());
-                }
-            ).toList();
+                KeywordDto keywordDto = new KeywordDto(
+                    userKeyword.getKeyword().getId(),
+                    userKeyword.getKeyword().getName());
 
-        return ReadUserKeywordResponseDto.toDto(keywordDtoList);
+                return ReadUserKeywordResponseDto.toDto(userKeywordId, List.of(keywordDto));
+            }).toList();
     }
 }
