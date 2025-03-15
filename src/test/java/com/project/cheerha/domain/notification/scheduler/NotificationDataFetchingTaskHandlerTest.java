@@ -66,7 +66,7 @@ class NotificationDataFetchingTaskHandlerTest {
     }
 
     @Test
-    @DisplayName("성공 - getScheduleIntervalMillis 메서드가 600000L 반환")
+    @DisplayName("성공 - getScheduleIntervalMillis 메서드가 60000L 반환")
     void succeedsToGetScheduleIntervalMillis() {
         // when
         long actualIntervalMillis = notificationDataFetchingTaskHandler.getScheduleIntervalMillis();

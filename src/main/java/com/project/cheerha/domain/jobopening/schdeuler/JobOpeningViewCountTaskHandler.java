@@ -41,7 +41,7 @@ public class JobOpeningViewCountTaskHandler implements TaskHandler {
 
     @Override
     public long getScheduleIntervalMillis() {
-        return 3600000L; // 1시간
-//        return 60000L; //5분
+//        return 3600000L; // 1시간
+        return 60000L; //5분
     }
 }
