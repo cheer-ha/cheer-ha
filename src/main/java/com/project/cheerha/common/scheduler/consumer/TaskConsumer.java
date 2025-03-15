@@ -45,7 +45,7 @@ public class TaskConsumer {
     @Scheduled(fixedDelay = 5000)
     public void processDueTasks() {
         instanceManager.updateLatestInstance();
-        // 최신 인스턴스가 아니면 작업 실행을 건너뛰기
+        //최신 인스턴스가 아니면 작업 실행을 건너뛰기
         if (!instanceManager.isLatestInstance()) {
             return;
         }

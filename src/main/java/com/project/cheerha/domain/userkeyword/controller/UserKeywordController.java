@@ -39,11 +39,11 @@ public class UserKeywordController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponseDto<ReadUserKeywordResponseDto>> readAllUserKeywords(
-            @Auth AuthUser authUser
+    public ResponseEntity<ApiResponseDto<List<ReadUserKeywordResponseDto>>> readAllUserKeywords(
+        @Auth AuthUser authUser
     ) {
         Long userId = authUser.id();
-        ReadUserKeywordResponseDto responseDto = userKeywordService.readAllUserKeywords(userId);
+        List<ReadUserKeywordResponseDto> responseDto = userKeywordService.readAllUserKeywords(userId);
         return ApiResponseDto.success(responseDto);
     }
 
