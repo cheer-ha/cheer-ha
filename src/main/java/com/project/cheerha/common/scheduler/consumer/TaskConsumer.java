@@ -2,7 +2,7 @@ package com.project.cheerha.common.scheduler.consumer;
 
 import com.project.cheerha.common.scheduler.core.InstanceManager;
 import com.project.cheerha.common.scheduler.core.TaskHandler;
-import com.project.cheerha.common.repository.TaskRepository;
+import com.project.cheerha.common.scheduler.core.TaskRepository;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
