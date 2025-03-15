@@ -1,44 +1,47 @@
 package com.project.cheerha.domain.notification.scheduler;
 
 import com.project.cheerha.common.scheduler.core.TaskHandler;
-import com.project.cheerha.domain.notification.dto.NotificationRecipientDto;
-import com.project.cheerha.domain.notification.repository.NotificationDataProviderQuery;
+import com.project.cheerha.common.scheduler.strategy.ScheduleStrategy;
+import com.project.cheerha.common.scheduler.strategy.SpecificTimeStrategy;
+import com.project.cheerha.domain.notification.dto.NotificationDto;
+import com.project.cheerha.domain.notification.repository.NotificationRepositoryQuery;
 import com.project.cheerha.domain.notification.service.NotificationService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class NotificationDataFetchingTaskHandler implements TaskHandler {
+public class NotificationDataFetchingTaskHandler implements TaskHandler{
 
     private final NotificationService notificationService;
-    private final NotificationDataProviderQuery notificationDataProviderQuery;
+    private final NotificationRepositoryQuery notificationRepositoryQueryImpl;
 
     @Override
     public String getTaskType() {
         return "fetchNotificationData";
     }
 
-    // 주기적으로 알림 생성용 데이터 조회
     @Override
     public void handle(Map<String, Object> payload) {
-        //30초 전 기준으로 데이터 조회 (UTC 기준)
-        ZonedDateTime referenceTime = ZonedDateTime.now().minusHours(1L).withZoneSameInstant(ZoneId.of("UTC"));
-        // key: 키워드 ID, value: 채용 공고 URL 목록
-        Map<Long, List<String>> keywordIdToUrlList = notificationDataProviderQuery.findKeywordIdToUrlList(referenceTime);
-        // 알림 받을 사용자의 이메일과 키워드 ID를 포함한 NotificationRecipientDto 목록
-        List<NotificationRecipientDto> notificationRecipientDtoList = notificationDataProviderQuery.findNotificationRecipientDtoList();
-        // 조회한 알림 생성용 데이터를 전달
-        notificationService.createNotification(notificationRecipientDtoList, keywordIdToUrlList);
+        ZonedDateTime referenceTime = ZonedDateTime.now()
+            .minusDays(1L)
+            .withZoneSameInstant(ZoneId.of("UTC"));
+
+        List<NotificationDto> notificationDtoList = notificationRepositoryQueryImpl
+            .findTopMatchingJobOpeningsWithUsers(referenceTime);
+
+        notificationService.createNotification(notificationDtoList);
     }
 
     @Override
-    public long getScheduleIntervalMillis() {
-        return 3600000L; //1시간
+    public ScheduleStrategy getScheduleStrategy() {
+        return new SpecificTimeStrategy(
+            LocalTime.of(0, 0, 0)
+        );
     }
 }
