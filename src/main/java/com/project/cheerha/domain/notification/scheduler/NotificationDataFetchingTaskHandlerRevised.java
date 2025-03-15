@@ -1,0 +1,37 @@
+package com.project.cheerha.domain.notification.scheduler;
+
+import com.project.cheerha.common.scheduler.core.TaskHandler;
+import com.project.cheerha.domain.notification.dto.NotificationDto;
+import com.project.cheerha.domain.notification.repository.NotificationRepositoryQuery;
+import com.project.cheerha.domain.notification.service.NotificationServiceRevised;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+@Component
+@RequiredArgsConstructor
+public class NotificationDataFetchingTaskHandlerRevised implements TaskHandler{
+
+    private final NotificationServiceRevised notificationService;
+    private final NotificationRepositoryQuery notificationRepositoryQuery;
+
+    @Override
+    public String getTaskType() {
+        return "NotificationDataFetchingTest";
+    }
+
+    @Override
+    public void handle(Map<String, Object> payload) {
+        ZonedDateTime referenceTime = ZonedDateTime.now().minusDays(1L).withZoneSameInstant(ZoneId.of("UTC"));
+        List<NotificationDto> notificationDtoList = notificationRepositoryQuery.findTopMatchingJobOpeningsWithUsers(referenceTime);
+        notificationService.createNotification(notificationDtoList);
+    }
+
+    @Override
+    public long getScheduleIntervalMillis() {
+        return 3600000L; //1시간
+    }
+}
