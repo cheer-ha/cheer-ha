@@ -16,11 +16,11 @@ import org.springframework.stereotype.Component;
 public class NotificationDataFetchingTaskHandler implements TaskHandler{
 
     private final NotificationService notificationService;
-    private final NotificationRepositoryQuery notificationRepositoryQuery;
+    private final NotificationRepositoryQuery notificationRepositoryQueryImpl;
 
     @Override
     public String getTaskType() {
-        return "NotificationDataFetchingTest";
+        return "fetchNotificationData";
     }
 
     @Override
@@ -29,7 +29,7 @@ public class NotificationDataFetchingTaskHandler implements TaskHandler{
             .minusDays(1L)
             .withZoneSameInstant(ZoneId.of("UTC"));
 
-        List<NotificationDto> notificationDtoList = notificationRepositoryQuery
+        List<NotificationDto> notificationDtoList = notificationRepositoryQueryImpl
             .findTopMatchingJobOpeningsWithUsers(referenceTime);
 
         notificationService.createNotification(notificationDtoList);
