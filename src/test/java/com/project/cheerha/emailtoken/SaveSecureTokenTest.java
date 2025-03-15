@@ -1,4 +1,4 @@
-package com.project.cheerha.redis.emailtoken;
+package com.project.cheerha.emailtoken;
 
 import com.project.cheerha.common.repository.KeyValueCommandRepository;
 import com.project.cheerha.domain.user.service.EmailTokenService;

@@ -1,4 +1,4 @@
-package com.project.cheerha.redis.emailtoken;
+package com.project.cheerha.emailtoken;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.repository.KeyValueCommandRepository;

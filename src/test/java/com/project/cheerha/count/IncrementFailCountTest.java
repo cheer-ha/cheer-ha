@@ -1,4 +1,4 @@
-package com.project.cheerha.redis.count;
+package com.project.cheerha.count;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.repository.KeyValueCommandRepository;
