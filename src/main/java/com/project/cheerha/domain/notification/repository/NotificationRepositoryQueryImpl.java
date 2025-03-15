@@ -6,7 +6,7 @@ import static com.project.cheerha.domain.user.entity.QUser.user;
 import static com.project.cheerha.domain.userkeyword.entity.QUserKeyword.userKeyword;
 
 import com.project.cheerha.domain.notification.dto.NotificationDto;
-import com.querydsl.core.types.Projections;
+import com.project.cheerha.domain.notification.dto.QNotificationDto;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ public class NotificationRepositoryQueryImpl implements NotificationRepositoryQu
         // 각 사용자별로 별도 쿼리 실행
         for (Long userId : userIdList) {
             List<NotificationDto> userResultList = queryFactory
-                .select(Projections.constructor(NotificationDto.class,
+                .select(new QNotificationDto(
                     user.email,
                     jobOpening.jobOpeningUrl))
                 .from(jobOpening)
