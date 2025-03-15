@@ -57,8 +57,7 @@ public class TaskRegister {
                     }
                 } catch (Exception e) {
                     log.error("TaskRegister: 작업 등록 중 오류: {}", e.getMessage(), e);
-                }
-                finally {
+                } finally {
                     redissonRepository.unlock(lockKey);
                 }
             } else {

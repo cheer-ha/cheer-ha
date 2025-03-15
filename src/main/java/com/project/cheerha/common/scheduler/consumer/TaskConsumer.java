@@ -73,6 +73,8 @@ public class TaskConsumer {
                             log.info("TaskConsumer: 작업 완료: {} at {}", taskType, Instant.now());
                         } catch (Exception e) {
                             log.error("TaskConsumer: 작업 실행 중 오류: {}", e.getMessage(), e);
+                        } finally {
+                            redissonRepository.unlock(lockKey);
                         }
                     } else {
                         log.warn("TaskConsumer: 락 획득 실패, 작업 스킵: {}", taskType);
