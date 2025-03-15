@@ -16,6 +16,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 @RestControllerAdvice
 @Slf4j
@@ -25,6 +26,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<Map<String, Object>> handleBaseException(BaseException e) {
         return buildErrorResponse(e.getStatus(), e.getMessage());
+    }
+
+    // 잘못된 엔드포인트 요청 처리 (404)
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNoHandlerFoundException(
+            HttpServletRequest request, NoHandlerFoundException e) {
+        String errorMessage = "요청한 리소스를 찾을 수 없습니다: " + request.getRequestURI();
+        extracted(request, errorMessage);
+        return buildErrorResponse(HttpStatus.NOT_FOUND, errorMessage);
     }
 
     // 파라미터 존재하지 않을 때 발생
@@ -70,7 +80,7 @@ public class GlobalExceptionHandler {
         // 글로벌 에러 메시지들
         String globalErrorMessage = e.getGlobalErrors().stream()
             .map(DefaultMessageSourceResolvable::getDefaultMessage)
-            .collect(Collectors.joining(", ", "[Global Error : ", "], \t"));
+            .collect(Collectors.joining(", ", "[Global Error : ", "],"));
 
         // 필드 에러 메시지들
         String fieldErrorMessage = e.getFieldErrors().stream()
