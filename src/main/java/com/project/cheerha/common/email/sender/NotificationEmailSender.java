@@ -5,7 +5,6 @@ import com.project.cheerha.domain.notification.entity.Notification;
 import com.project.cheerha.domain.notification.repository.NotificationRepository;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -50,13 +49,6 @@ public class NotificationEmailSender {
     ) {
         try {
             List<Notification> notificationList = new ArrayList<>(notificationSet);
-            // 채용 공고 목록을 무작위로 섞기
-            Collections.shuffle(notificationList);
-
-            // 채용 공고 목록을 20개로 제한
-            notificationList = notificationList.stream()
-                .limit(20)
-                .toList();
 
             // 이메일 내용 생성
             String[] emailData = NotificationFormat.createEmailNotification(notificationList);

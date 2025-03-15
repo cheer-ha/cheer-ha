@@ -31,7 +31,6 @@ class NotificationSenderTaskHandlerTest {
 
         // then
         String expectedTaskType = "sendNotificationEmail";
-
         assertThat(actualTaskType).isEqualTo(expectedTaskType);
     }
 
@@ -39,8 +38,7 @@ class NotificationSenderTaskHandlerTest {
     @DisplayName("성공 - handle 메서드가 sendNotificationEmails 호출")
     void succeedsToInvokeSendNotificationEmails() {
         // when
-        // payload 값은 필요 없으므로 null 전달
-        notificationSenderTaskHandler.handle(null);
+        notificationSenderTaskHandler.handle(null);  // handle method 실행
 
         // then
         // sendNotificationEmails() 메서드가 1번 호출되었는지 확인
@@ -54,7 +52,6 @@ class NotificationSenderTaskHandlerTest {
         ScheduleStrategy strategy = notificationSenderTaskHandler.getScheduleStrategy();
 
         // then
-        // 반환된 ScheduleStrategy가 SpecificTimeStrategy 클래스의 인스턴스인지 검증
-        assertThat(strategy.getClass()).isEqualTo(SpecificTimeStrategy.class);
+        assertThat(strategy).isInstanceOf(SpecificTimeStrategy.class);
     }
 }
