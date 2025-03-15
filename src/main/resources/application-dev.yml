@@ -15,6 +15,9 @@ spring:
   sendgrid:
     api-key: ${SENDGRID_API_KEY}
     from-email: ${SENDGRID_FROM_EMAIL}
+  web:
+    resources:
+      add-mappings: false
 
   data:
     redis:

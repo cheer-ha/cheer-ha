@@ -1,9 +1,12 @@
 package com.project.cheerha.domain.notification.scheduler;
 
 import com.project.cheerha.common.scheduler.core.TaskHandler;
+import com.project.cheerha.common.scheduler.strategy.ScheduleStrategy;
+import com.project.cheerha.common.scheduler.strategy.SpecificTimeStrategy;
 import com.project.cheerha.domain.notification.dto.NotificationDto;
 import com.project.cheerha.domain.notification.repository.NotificationRepositoryQuery;
 import com.project.cheerha.domain.notification.service.NotificationService;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -36,7 +39,9 @@ public class NotificationDataFetchingTaskHandler implements TaskHandler{
     }
 
     @Override
-    public long getScheduleIntervalMillis() {
-        return 3600000L; //1시간
+    public ScheduleStrategy getScheduleStrategy() {
+        return new SpecificTimeStrategy(
+            LocalTime.of(0, 0, 0)
+        );
     }
 }

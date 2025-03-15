@@ -33,9 +33,9 @@ public class SearchHistoryService {
     public void saveSearchTerm(Long userId, String searchTerm) {
         String key = "user:" + userId + ":search_history";
         long timestamp = System.currentTimeMillis();
-
-        redisTemplate.opsForZSet().add(key, searchTerm, timestamp);
-
+        if(!searchTerm.isBlank()) {
+            redisTemplate.opsForZSet().add(key, searchTerm, timestamp);
+        }
         Long size = redisTemplate.opsForZSet().zCard(key);
         if (size != null && size > MAX_SEARCH_HISTORY_SIZE) {
             redisTemplate.opsForZSet().removeRange(key, 0, size - MAX_SEARCH_HISTORY_SIZE - 1);
