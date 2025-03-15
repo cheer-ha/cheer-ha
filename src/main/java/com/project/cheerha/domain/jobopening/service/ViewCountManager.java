@@ -28,7 +28,6 @@ public class ViewCountManager {
      */
     public void increaseViewCount(Long jobOpeningId) {
         String key = VIEW_COUNT_KEY_PREFIX + jobOpeningId; // 키 생성
-
         // 키가 없으면 기본값 0 설정
         if (keyValueQueryRepository.getValue(key) == null) {
             keyValueCommandRepository.setValue(key, "0", Duration.ofMinutes(30));  // 30분 TTL 설정
@@ -48,6 +47,10 @@ public class ViewCountManager {
         return count == null ? 0 : Long.parseLong(count);
     }
 
+    /**
+     * 조회 수 동기화 후 RDB에 값이 반영된 조회 수는 Redis에서 삭제해주는 메서드
+     * @param jobOpeningId 키를 삭제할 채용공고 Id 값
+     */
     public void resetViewCount(Long jobOpeningId) {
         String key = VIEW_COUNT_KEY_PREFIX + jobOpeningId;
         keyValueCommandRepository.removeValue(key);
@@ -67,7 +70,6 @@ public class ViewCountManager {
             Long count = Long.valueOf(Objects.requireNonNull(keyValueQueryRepository.getValue(key)));
             result.add(new ViewCountResponseDto(jobOpeningId, count));
         }
-
         return result;
     }
 }

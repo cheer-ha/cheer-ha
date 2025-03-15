@@ -3,8 +3,8 @@ package com.project.cheerha.domain.bookmark.repository;
 import com.project.cheerha.domain.bookmark.entity.Bookmark;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long>, BookmarkRepositoryQuery {
 
@@ -24,11 +24,11 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long>, Bookm
      * @param pageable 페이징 처리 정보
      * @return 주어진 사용자에 대한 북마크 목록 (페이징 처리된 결과)
      */
-    @Query("SELECT DISTINCT b FROM Bookmark b " +
-            "JOIN FETCH b.jobOpening jo " +
-            "JOIN FETCH jo.jobOpeningKeywordList jokl " +
-            "JOIN FETCH jokl.keyword k " +
-            "WHERE b.user.id = :userId")
+    @EntityGraph(attributePaths = {
+            "jobOpening",
+            "jobOpening.jobOpeningKeywordList",
+            "jobOpening.jobOpeningKeywordList.keyword"
+    })
     Page<Bookmark> findByUserId(Long userId, Pageable pageable);
 
     /**

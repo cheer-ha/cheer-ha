@@ -1,4 +1,4 @@
-package com.project.cheerha.common.aop;
+package com.project.cheerha.common.aop.viewcount;
 
 import com.project.cheerha.domain.jobopening.service.ViewCountManager;
 import lombok.RequiredArgsConstructor;

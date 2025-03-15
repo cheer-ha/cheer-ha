@@ -7,6 +7,7 @@ import com.project.cheerha.common.elasticsearch.ElasticsearchClientService;
 import com.project.cheerha.common.elasticsearch.IndexName;
 import com.project.cheerha.domain.elasticsearch.dto.request.ReadJobOpeningElasticAutoRequestDto;
 import com.project.cheerha.domain.elasticsearch.dto.request.ReadJobOpeningElasticRequestDto;
+import com.project.cheerha.domain.elasticsearch.dto.response.ReadJobOpeningElasticAutoResponseDto;
 import com.project.cheerha.domain.elasticsearch.dto.response.ReadJobOpeningElasticResponseDto;
 import com.project.cheerha.domain.elasticsearch.entity.JobOpeningDocument;
 import com.project.cheerha.domain.elasticsearch.filter.JobOpeningDocumentAutoFilter;
@@ -69,6 +70,7 @@ public class JobOpeningDocumentService {
         if (requestDto.getSearchTerm() != null) {
             searchHistoryService.saveSearchTerm(userId, requestDto.getSearchTerm());
         }
+
         JobOpeningDocumentFilter filter = new JobOpeningDocumentFilter(requestDto);
         var boolQueryBuilder = filter.build();
         int pageSize = pageable.getPageSize();
@@ -91,12 +93,15 @@ public class JobOpeningDocumentService {
      * 자동 완성 기능을 통한 채용 공고 조회
      */
     @Transactional
-    public Page<ReadJobOpeningElasticResponseDto> readJobOpeningElasticAuto(
+    public Page<ReadJobOpeningElasticAutoResponseDto> readJobOpeningElasticAuto(
             ReadJobOpeningElasticAutoRequestDto requestDto,
             Long userId,
             Pageable pageable
     ) {
-        searchHistoryService.saveSearchTerm(userId, requestDto.getSearchTerm());
+        if (requestDto.getSearchTerm() != null) {
+            searchHistoryService.saveSearchTerm(userId, requestDto.getSearchTerm());
+        }
+
         JobOpeningDocumentAutoFilter filter = new JobOpeningDocumentAutoFilter(requestDto);
         var boolQueryBuilder = filter.build();
         int pageSize = pageable.getPageSize();
@@ -111,7 +116,7 @@ public class JobOpeningDocumentService {
                 .build();
         List<JobOpeningDocument> jobOpeningDocumentList = elasticsearchClientService.fetchJobOpeningDocumentList(searchRequest);
         long totalCount = elasticsearchClientService.getTotalCount(searchRequest);
-        List<ReadJobOpeningElasticResponseDto> dtoList = ReadJobOpeningElasticResponseDto.toDto(jobOpeningDocumentList);
+        List<ReadJobOpeningElasticAutoResponseDto> dtoList = ReadJobOpeningElasticAutoResponseDto.toDto(jobOpeningDocumentList);
         return new PageImpl<>(dtoList, pageable, totalCount);
     }
 

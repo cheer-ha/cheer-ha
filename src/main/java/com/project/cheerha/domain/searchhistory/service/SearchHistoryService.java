@@ -35,9 +35,9 @@ public class SearchHistoryService {
     public void saveSearchTerm(Long userId, String searchTerm) {
         String key = "user:" + userId + ":search_history";
         long timestamp = System.currentTimeMillis();
-
-        keyValueCommandRepository.addToZSet(key, searchTerm, timestamp);
-
+        if(!searchTerm.isBlank()) {
+            keyValueCommandRepository.addToZSet(key, searchTerm, timestamp);
+        }
         Long size = keyValueQueryRepository.getZSetCard(key);
         if (size != null && size > MAX_SEARCH_HISTORY_SIZE) {
             keyValueCommandRepository.removeFromZSetRange(key, 0, size - MAX_SEARCH_HISTORY_SIZE - 1);

@@ -48,27 +48,4 @@ public class RedissonTaskRepository implements TaskRepository {
         }
         return null;
     }
-
-    @Override
-    public void removeExpiredBuckets(String keyPrefix) {
-        long expirationThreshold = Instant.now().minusSeconds(180).toEpochMilli();
-        Iterable<String> keys = redissonClient.getKeys().getKeysByPattern(keyPrefix + "*");
-        for (String key : keys) {
-            RBucket<String> bucket = redissonClient.getBucket(key);
-            String value = bucket.get();
-            if (value != null) {
-                long timestamp = Long.parseLong(value);
-                if (timestamp < expirationThreshold) {
-                    bucket.delete();
-                }
-            }
-        }
-    }
-
-    @Override
-    public void removeExpiredTasks(String key) {
-        RScoredSortedSet<String> sortedSet = redissonClient.getScoredSortedSet(key);
-        long expirationThreshold = Instant.now().minusSeconds(180).toEpochMilli();
-        sortedSet.removeRangeByScore(0, true, expirationThreshold, true);
-    }
 }
