@@ -7,11 +7,13 @@ import com.project.cheerha.common.scheduler.strategy.FixedIntervalStrategy;
 import com.project.cheerha.common.scheduler.strategy.ScheduleStrategy;
 import com.project.cheerha.common.scheduler.strategy.SpecificTimeStrategy;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class TaskRegister {
@@ -28,7 +30,7 @@ public class TaskRegister {
         if (scheduleIntervalMillis <= 0) return;
 
         String taskType = handler.getTaskType();
-        String lockKey = "scheduler:lock:" + taskType;
+        String lockKey = "scheduler:lock:register" + taskType;
         String lastTimeKey = "scheduler:lastScheduledTime:" + taskType;
 
         try {
@@ -53,12 +55,18 @@ public class TaskRegister {
                             taskRepository.saveLastScheduledTime(lastTimeKey, nextExecutionTime.toEpochMilli());
                         }
                     }
-                } finally {
+                } catch (Exception e) {
+                    log.error("TaskRegister: 작업 등록 중 오류: {}", e.getMessage(), e);
+                }
+                finally {
                     redissonRepository.unlock(lockKey);
                 }
+            } else {
+                log.warn("TaskRegister: 락 획득 실패, 작업 스킵: {}", taskType);
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            log.error("TaskRegister: 락 획득 중 인터럽트 발생: {}", e.getMessage());
         }
     }
 }
