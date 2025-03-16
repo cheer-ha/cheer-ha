@@ -50,6 +50,6 @@ public class RedisBookmarkService {
 
     // 캐시에서 북마크 삭제하는 메서드
     public void deleteBookmarkFromCache(Long userId, Long jobOpeningId) {
-        redisTemplate.opsForHash().delete("user:" + userId + ":bookmarks", jobOpeningId.toString());
+        redisTemplate.opsForHash().delete("user:" + userId.toString() + ":bookmarks", jobOpeningId.toString());
     }
 }
