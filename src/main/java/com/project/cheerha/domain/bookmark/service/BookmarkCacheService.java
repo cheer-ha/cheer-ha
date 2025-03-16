@@ -1,11 +1,14 @@
 package com.project.cheerha.domain.bookmark.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.cheerha.common.repository.KeyHashRepository;
+import com.project.cheerha.domain.bookmark.dto.response.ReadBookmarkResponseDto;
 import com.project.cheerha.domain.bookmark.entity.Bookmark;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -14,13 +17,26 @@ import java.util.Set;
 public class BookmarkCacheService {
 
     private final KeyHashRepository keyHashRepository;
+    private final ObjectMapper objectMapper;
 
     // 캐시에서 북마크를 가져오는 메서드
-    public List<Object> getAllBookmarksFromCache(Long userId) {
+    public List<ReadBookmarkResponseDto> getAllBookmarksFromCache(Long userId) {
         Set<Object> cachedBookmarkIdsSet = keyHashRepository.getKeys("user:" + userId + ":bookmarks");
-        List<Object> cachedBookmarkIds = new ArrayList<>(cachedBookmarkIdsSet);
-        if (!cachedBookmarkIds.isEmpty()) {
-            return keyHashRepository.multiGet("user:" + userId + ":bookmarks", cachedBookmarkIds);
+        List<Object> cachedBookmarkObjects = new ArrayList<>(cachedBookmarkIdsSet);
+        if (!cachedBookmarkObjects.isEmpty()) {
+            List<Object> rawCacheData = keyHashRepository.multiGet("user:" + userId + ":bookmarks", cachedBookmarkObjects);
+            List<ReadBookmarkResponseDto> dtoList = new ArrayList<>();
+
+            for (Object rawData : rawCacheData) {
+                if (rawData instanceof LinkedHashMap) {
+                    //json -> dto
+                    ReadBookmarkResponseDto dto = objectMapper.convertValue(rawData, ReadBookmarkResponseDto.class);
+                    dtoList.add(dto);
+                } else if (rawData instanceof ReadBookmarkResponseDto) {
+                    dtoList.add((ReadBookmarkResponseDto) rawData);
+                }
+            }
+            return dtoList;
         }
         return new ArrayList<>();
     }
