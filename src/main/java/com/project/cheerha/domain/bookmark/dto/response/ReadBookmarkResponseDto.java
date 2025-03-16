@@ -2,7 +2,6 @@ package com.project.cheerha.domain.bookmark.dto.response;
 
 import com.project.cheerha.domain.bookmark.entity.Bookmark;
 import com.project.cheerha.domain.jobopening.entity.JobOpening;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 /**
@@ -10,9 +9,10 @@ import java.util.List;
  * 사용자가 저장한 채용 공고에 대한 정보를 전달하는데 사용됩니다.
  */
 public record ReadBookmarkResponseDto(
+        Long id,
         String company,       // 회사명
-        ZonedDateTime hiringStartAt,  // 채용시작일
-        ZonedDateTime hiringEndAt,   // 채용마감일
+        String hiringStartAt,  // 채용시작일
+        String hiringEndAt,   // 채용마감일
         String position,      // 포지션 (직무명)
         List<String> requiredSkillList // 자격 요건 (기술 키워드 리스트)
 ) {
@@ -31,9 +31,10 @@ public record ReadBookmarkResponseDto(
 
         // JobOpening 객체의 정보를 DTO로 변환하여 반환합니다.
         return new ReadBookmarkResponseDto(
+                jobOpening.getId(),
                 jobOpening.getCompany(),           // 회사명
-                jobOpening.getHiringStartAt(),      // 채용시작일
-                jobOpening.getHiringEndAt(),      // 채용마감일
+                jobOpening.getHiringStartAt().toString(),      // 채용시작일
+                jobOpening.getHiringEndAt().toString(),      // 채용마감일
                 jobOpening.getPosition(),          // 포지션 (직무명)
                 jobOpening.getRequiredSkillList()     // 자격 요건 (기술 키워드 리스트)
         );

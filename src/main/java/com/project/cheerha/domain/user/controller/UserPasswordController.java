@@ -7,6 +7,7 @@ import com.project.cheerha.domain.user.dto.request.ResetPasswordRequestDto;
 import com.project.cheerha.domain.user.dto.request.UpdatePasswordRequestDto;
 import com.project.cheerha.domain.user.dto.response.UpdatePasswordResponseDto;
 import com.project.cheerha.domain.user.service.UserPasswordService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -32,7 +33,7 @@ public class UserPasswordController {
 
     @PatchMapping("/reset")
     public ResponseEntity<ApiResponseDto<UpdatePasswordResponseDto>> resetPassword(
-            @RequestBody ResetPasswordRequestDto requestDto
+            @Valid @RequestBody ResetPasswordRequestDto requestDto
     ) {
         UpdatePasswordResponseDto responseDto = userPasswordService.resetPassword(requestDto);
         return ApiResponseDto.success(responseDto);
