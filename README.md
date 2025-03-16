@@ -1,31 +1,16 @@
 # 3조 - 👑 취하여 (Cheer-ha)
 
----
-
 ## 🗂️ CONTENTS
-
-🚀 **서비스 소개**
-
-**⚡ 성능 개선, 어디까지 해봤니?**
-
-**🏗️ System Architecture**
-
-**🛠️ 기술 스택**
-
-**🔧 기술적 의사결정**
-
-🚨 **트러블슈팅**
-
-🏦 **비즈니스적 의사결정**
-
-**🏭 ’취하여’ 팀의 리팩토링**
-
-**🧑🏻‍💻 ’취하여’ 팀 구성원 소개**
-
-![메인이미지](https://private-user-images.githubusercontent.com/184512169/422825886-63c4b044-1b88-4090-90be-520e4dc23306.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDE5NjIxNzgsIm5iZiI6MTc0MTk2MTg3OCwicGF0aCI6Ii8xODQ1MTIxNjkvNDIyODI1ODg2LTYzYzRiMDQ0LTFiODgtNDA5MC05MGJlLTUyMGU0ZGMyMzMwNi5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMzE0JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDMxNFQxNDE3NThaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT03MDU4YWI3Y2QyZjQxOTNlOWE0YmI1OTY2Mjk2OTg5NzgyM2VlY2I1NGNjNGJlYTdkOGM2MmZiZTk3ZmMzNTk0JlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.SzzMJMpL44WE8fSOz78o-HTLj38BMc2LVpeOD3C6LOc)
+[**⚡ 성능 개선, 어디까지 해봤니?**](#성능-개선-어디까지-해봤니)  
+[**🏗️ System Architecture**](#System-architecture)  
+[**🛠️ 기술 스택**](#기술-스택)  
+[**🔧 기술적 의사결정**](#기술적-의사결정)  
+[**🚨 트러블슈팅**](#트러블슈팅)  
+[**🏦 비즈니스적 의사결정**](#비즈니스적-의사결정)  
+[**🏭 ‘취하여’ 팀의 리팩토링**](#취하여-팀의-리팩토링)  
+[**🧑🏻‍💻 ‘취하여’ 팀 구성원 소개**](#취하여-팀-구성원-소개)
 
 ## 🚀 서비스 소개
-
 ### ✨ 서비스 개요
 
 <aside>
@@ -5139,16 +5124,24 @@ Java 로 검색 시
 
 
 <aside>
-
-## 🤝 **팀원**
-
-| 구성원 | 직책    | 장점                                      | GitHub    | Blog                                                                             | 담당                                                                                                 |
-|-----|-------|-------------------------------------------|-----------|----------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------|
-| 이재영 | 👑팀장  | 🎨 아이디어 뱅크<br> ❄️ 냉철한 시선<br> 😄 즐거움의 달인 | [https://github.com/roqkfchqh](https://github.com/roqkfchqh)    | [https://roqkfchqh.tistory.com/](https://roqkfchqh.tistory.com/)                 | ✅ JWT 인증-인가<br>✅ 유저/이메일 인증 관련 CRD<br>✅ 이상 사용자 차단 기능 구현<br>✅ 클라우드 아키텍처 구현, CI/CD, 배포<br>✅ 다중 인스턴스용 스케일링 구현<br>✅ 채용 공고 필터링 클러스터 구현<br>✅ 중간 발표회 및 최종 발표회 검토 |
-| 신지현 | 👑부팀장   | 🔠 오타작 귀신<br> 🎧 인강GPT<br> 💯 MBTI J 100%        | [https://github.com/backswan0](https://github.com/backswan0) | [https://writingforever162.tistory.com/](https://writingforever162.tistory.com/) | ✅ 사용자 키워드 CRD 구현<br>✅ Gmail로 이메일 알림 기능 구현<br>✅ 이메일 알림 기능 SendGrid API 적용<br>✅ 이메일 알림 기능 성능 개선<br>✅ 브로슈어(Brochure) 제작 총괄                          |
-| 김리은 | 🎖️팀원 | 🐞 버그헌터<br> ☯️ 워라밸 마스터<br> 👦 바른어린이         | [https://github.com/llRosell](https://github.com/llRosell) | [https://carrot0911.tistory.com](https://carrot0911.tistory.com)                 | ✅ MySQL-Elasticsearch 동기화 API 구현<br>✅ 채용 공고 조회 사용자 편의 및 성능 개선<br>✅ 채용 공고 필터링 CRD 구현 및 성능 개선<br>✅ 데이터 밸리데이션 기능 강화<br>✅ 중간 발표회 및 최종 발표회 제작   |
-| 이승찬 | 🏅팀원  | 👂 경청의 대가<br> 🏆 노력 끝판왕<br> ✍️ 글의 조각가       | [https://github.com/tmdcksdl](https://github.com/tmdcksdl)  | https://carrot0911.tistory.com](https://carrot0911.tistory.com)                                                                              | ✅ 사용자 최근 검색어 CRD 구현<br>✅ 채용 공고 조회 구현<br>✅ 채용 공고 조회 사용자 편의 및 성능 개선<br>✅ 검색어 조회 성능 개선<br>✅ 검색어 키워드 조정 기능<br>✅ 중간 발표회 및 최종 발표회 발표 |
-| 진주앙 | 🥇팀원  | ❄️ 아이스 브레이커<br> 🔥 레벨업 장인<br> 📅 1일1득       | [https://github.com/juyangjin](https://github.com/juyangjin) | [https://velog.io/@wndid2008/posts](https://velog.io/@wndid2008/posts)                                                                            | ✅ Redis 집계 조회 성능 향상<br>✅ 페이지 리디렉션 API 구현<br>✅ 검색결과 자동 필터링 검색<br>✅ 중간 발표회 및 최종 발표회 PPT 제작                               |
-
 </aside>
+
+## 🤝 **'취하여' 팀 구성원 소개**
+### 👥 팀원 정보
+| **구성원** | **직책**  | **장점**                                       | **GitHub**                                | **Blog**                                      |
+|---------|---------|----------------------------------------------|-------------------------------------------|-----------------------------------------------|
+| **이재영** | `👑팀장`  | `🎨아이디어 뱅크`<br> `❄️냉철한 시선`<br> `😄즐거움의 달인`   | [roqkfchqh](https://github.com/roqkfchqh) | [블로그](https://roqkfchqh.tistory.com/)         |
+| **신지현** | `👑부팀장` | `🔠오탈자 귀신`<br> `🎧인간GPT`<br> `💯MBTI J 100%` | [backswan0](https://github.com/backswan0) | [블로그](https://writingforever162.tistory.com/) |
+| **김리은** | `🎖️팀원` | `🐞버그헌터`<br> `☯️워라밸 마스터`<br> `👦바른어린이`       | [llRosell](https://github.com/llRosell)   | [블로그](https://carrot0911.tistory.com)         |
+| **이승찬** | `🏅팀원`  | `👂경청의 대가`<br> `🏆노력 끝판왕`<br> `✍️글의 조각가`     | [tmdcksdl](https://github.com/tmdcksdl)   | [블로그](https://carrot0911.tistory.com)         |
+| **진주앙** | `🥇팀원`  | `❄️아이스 브레이커`<br> `🔥레벨업 장인`<br> `📅1일1독`     | [juyangjin](https://github.com/juyangjin) | [블로그](https://velog.io/@wndid2008/posts)      |
+
+### 📋 담당 업무
+| **구성원** | **담당 업무**                                                                                                                                                           |
+|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **이재영** | 📌 JWT 인증-인가<br>📌 유저/이메일 인증 관련 CRD<br>📌 이상 사용자 차단 기능 구현<br>📌 클라우드 아키텍처 구성, CI/CD, 배포<br>📌 다중 인스턴스용 스케줄러 구현<br>📌 채용 공고 데이터 크롤러 구현<br>📌 중간 발표회 및 최종 발표회 총괄      |
+| **신지현** | 📌 사용자 키워드 CRD 구현<br>📌 `Gmail`로 이메일 알림 기능 구현<br>📌 이메일 알림 기능에 `SendGrid API` 적용<br>📌 이메일 알림 기능 성능 개선<br>📌 브로슈어(Brochure) 제작 총괄<br>📌 중간 발표회 및 최종 발표회 PPT 제작 및 검수 |
+| **김리은** | 📌 `MySQL-Elasticsearch` 동기화 API 구현<br>📌 채용 공고 조회 사용자 편의 및 성능 개선<br>📌 채용 공고 즐겨찾기 CRD 구현 및 성능 개선<br>📌 연령대별 인기 즐겨찾기 조회 성능 개선<br>📌 중간 발표회 및 최종 발표회 제작              |
+| **이승찬** | 📌 사용자 최근 검색어 CRD 구현<br>📌 채용 공고 조회 구현<br>📌 채용 공고 조회 사용자 편의 및 성능 개선<br>📌 최근 검색어 조회 성능 개선<br>📌 연령대별 인기 키워드 조회 성능 개선<br>📌 중간 발표회 및 최종 발표회 발표                      |
+| **진주앙** | 📌 Redis 활용한 조회수 집계로 동시성 제어<br>📌 페이지 리다이렉트 API 구현<br>📌 즐겨찾기 및 키워드 검색 구현<br>📌 중간 발표회 및 최종 발표회 PPT 자료 수집                                                           |
 ---
