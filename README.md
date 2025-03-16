@@ -5134,3 +5134,5 @@ Java 로 검색 시
 | **김리은** | `🎖️팀원` | `🐞버그헌터`<br> `☯️워라밸 마스터`<br> `👦바른어린이`       | [llRosell](https://github.com/llRosell)   | [블로그](https://carrot0911.tistory.com)         | 📌 `MySQL-Elasticsearch` 동기화 API 구현<br>📌 채용 공고 조회 사용자 편의 및 성능 개선<br>📌 채용 공고 즐겨찾기 CRD 구현<br>📌 채용 공고 즐겨찾기 CRD 성능 개선<br>📌 연령대별 인기 즐겨찾기 조회 성능 개선<br>📌 발표회 PPT 제작 |
 | **이승찬** | `🏅팀원`  | `👂경청의 대가`<br> `🏆노력 끝판왕`<br> `✍️글의 조각가`     | [tmdcksdl](https://github.com/tmdcksdl)   | [블로그](https://carrot0911.tistory.com)         | 📌 사용자 최근 검색어 CRD 구현<br>📌 채용 공고 조회 구현<br>📌 채용 공고 조회 사용자 편의 및 성능 개선<br>📌 최근 검색어 조회 성능 개선<br>📌 연령대별 인기 키워드 조회 성능 개선<br>📌 중간 발표회 및 최종 발표회 발표                   |
 | **진주앙** | `🥇팀원`  | `❄️아이스 브레이커`<br> `🔥레벨업 장인`<br> `📅1일1독`     | [juyangjin](https://github.com/juyangjin) | [블로그](https://velog.io/@wndid2008/posts)      | 📌 Redis를 활용한 조회수 집계 동시성 제어<br>📌 페이지 리다이렉트 API 구현<br>📌 즐겨찾기 및 키워드 검색 구현<br>📌 발표회 PPT 자료 수집                                                                    |
+
+
