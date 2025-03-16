@@ -22,7 +22,7 @@ public class CookieService {
         refreshTokenCookie.setSecure(true);
         refreshTokenCookie.setPath("/");
         refreshTokenCookie.setMaxAge(14 * 24 * 60 * 60);
-        refreshTokenCookie.setAttribute("SameSite", "Strict");
+        refreshTokenCookie.setAttribute("SameSite", "Lax");
 
         response.addCookie(refreshTokenCookie);
     }
