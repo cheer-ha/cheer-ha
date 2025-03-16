@@ -9,6 +9,7 @@ import java.util.List;
  * 사용자가 저장한 채용 공고에 대한 정보를 전달하는데 사용됩니다.
  */
 public record ReadBookmarkResponseDto(
+        Long id,
         String company,       // 회사명
         String hiringStartAt,  // 채용시작일
         String hiringEndAt,   // 채용마감일
@@ -30,6 +31,7 @@ public record ReadBookmarkResponseDto(
 
         // JobOpening 객체의 정보를 DTO로 변환하여 반환합니다.
         return new ReadBookmarkResponseDto(
+                jobOpening.getId(),
                 jobOpening.getCompany(),           // 회사명
                 jobOpening.getHiringStartAt().toString(),      // 채용시작일
                 jobOpening.getHiringEndAt().toString(),      // 채용마감일
