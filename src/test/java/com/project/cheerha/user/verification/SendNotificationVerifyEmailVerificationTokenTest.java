@@ -2,7 +2,7 @@ package com.project.cheerha.user.verification;
 
 import com.project.cheerha.common.email.sender.VerificationEmailSender;
 import com.project.cheerha.common.exception.client.BadRequestException;
-import com.project.cheerha.common.redis.email.EmailTokenService;
+import com.project.cheerha.domain.user.service.EmailTokenService;
 import com.project.cheerha.domain.user.dto.response.SendEmailVerificationResponseDto;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.service.UserEmailVerificationService;

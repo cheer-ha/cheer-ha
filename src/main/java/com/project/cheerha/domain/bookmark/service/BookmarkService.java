@@ -2,7 +2,6 @@ package com.project.cheerha.domain.bookmark.service;
 
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
-import com.project.cheerha.common.redis.cache.RedisBookmarkService;
 import com.project.cheerha.domain.bookmark.dto.response.BookmarkCustomAgeResponseDto;
 import com.project.cheerha.domain.bookmark.dto.response.ReadBookmarkResponseDto;
 import com.project.cheerha.domain.bookmark.entity.Bookmark;
@@ -29,7 +28,7 @@ public class BookmarkService {
     private final BookmarkRepository bookmarkRepository;
     private final UserFindByService userFindByIdService;
     private final JobOpeningFindByService jobOpeningFindByService;
-    private final RedisBookmarkService redisBookmarkService;
+    private final BookmarkCacheService bookmarkCacheService;
 
     private static final int MAX_BOOKMARK_COUNT = 200;
     private static final int MAX_PAGES = 20;
@@ -59,7 +58,7 @@ public class BookmarkService {
         Bookmark bookmark = Bookmark.toEntity(user, jobOpening);
         bookmarkRepository.save(bookmark);
         // RedisBookmarkService로 캐시 업데이트
-        redisBookmarkService.updateCacheOnBookmarkAdd(userId, bookmark);
+        bookmarkCacheService.updateCacheOnBookmarkAdd(userId, bookmark);
     }
 
     /**
@@ -85,7 +84,7 @@ public class BookmarkService {
             firstFetchFromDB = false; // 첫 번째 페이지 조회 후 DB에서만 데이터를 가져오는 플래그 설정
         } else {
             // 2페이지부터는 캐시에서 조회하고, 캐시에 없으면 DB에서 가져옵니다.
-            List<ReadBookmarkResponseDto> cachedDtos = redisBookmarkService.getAllBookmarksFromCache(userId);
+            List<ReadBookmarkResponseDto> cachedDtos = bookmarkCacheService.getAllBookmarksFromCache(userId);
             if (!cachedDtos.isEmpty() && pageNumber == 0) {
                 int skipCount = limitedPageable.getPageNumber() * limitedPageable.getPageSize();
                 List<ReadBookmarkResponseDto> pagedDtos = cachedDtos.stream()
@@ -112,7 +111,7 @@ public class BookmarkService {
     public void deleteBookmark(Long userId, Long jobOpeningId) {
         bookmarkRepository.deleteByUserIdAndJobOpeningId(userId, jobOpeningId);
         // 캐시에서 해당 북마크 삭제
-        redisBookmarkService.deleteBookmarkFromCache(userId, jobOpeningId);
+        bookmarkCacheService.deleteBookmarkFromCache(userId, jobOpeningId);
     }
 
     /**
@@ -134,7 +133,7 @@ public class BookmarkService {
         // DB에서 가져온 데이터를 캐시에 저장
         List<Bookmark> bookmarks = bookmarkPage.getContent();
         for (Bookmark bookmark : bookmarks) {
-            redisBookmarkService.updateCacheOnBookmarkAdd(userId, bookmark);
+            bookmarkCacheService.updateCacheOnBookmarkAdd(userId, bookmark);
         }
         return bookmarkPage;
     }

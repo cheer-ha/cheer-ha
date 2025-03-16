@@ -1,8 +1,8 @@
 package com.project.cheerha.common.scheduler.producer;
 
+import com.project.cheerha.common.repository.LockRepository;
 import com.project.cheerha.common.scheduler.core.TaskHandler;
-import com.project.cheerha.common.redis.redisson.RedissonRepository;
-import com.project.cheerha.common.scheduler.repository.TaskRepository;
+import com.project.cheerha.common.scheduler.core.TaskRepository;
 import com.project.cheerha.common.scheduler.strategy.FixedIntervalStrategy;
 import com.project.cheerha.common.scheduler.strategy.ScheduleStrategy;
 import com.project.cheerha.common.scheduler.strategy.SpecificTimeStrategy;
@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class TaskRegister {
 
-    private final RedissonRepository redissonRepository;
+    private final LockRepository lockRepository;
     private final TaskRepository taskRepository;
     private final TaskProducer taskProducer;
 
@@ -34,7 +34,7 @@ public class TaskRegister {
         String lastTimeKey = "scheduler:lastScheduledTime:" + taskType;
 
         try {
-            if (redissonRepository.tryLock(lockKey, Math.min(2000, scheduleIntervalMillis / 2), scheduleIntervalMillis / 2, TimeUnit.MILLISECONDS)) {
+            if (lockRepository.tryLock(lockKey, Math.min(2000, scheduleIntervalMillis / 2), scheduleIntervalMillis / 2, TimeUnit.MILLISECONDS)) {
                 try {
                     ScheduleStrategy strategy = handler.getScheduleStrategy();
                     Instant now = Instant.now();
@@ -42,7 +42,7 @@ public class TaskRegister {
                 } catch (Exception e) {
                     log.error("TaskRegister: 작업 등록 중 오류: {}", e.getMessage(), e);
                 } finally {
-                    redissonRepository.unlock(lockKey);
+                    lockRepository.unlock(lockKey);
                 }
             } else {
                 log.warn("TaskRegister: 락 획득 실패, 작업 스킵: {}", taskType);

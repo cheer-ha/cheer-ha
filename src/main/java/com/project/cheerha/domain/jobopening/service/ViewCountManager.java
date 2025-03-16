@@ -1,4 +1,4 @@
-package com.project.cheerha.common.redis.viewcount;
+package com.project.cheerha.domain.jobopening.service;
 
 import com.project.cheerha.common.dto.ViewCountResponseDto;
 import java.time.Duration;
@@ -6,15 +6,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+
+import com.project.cheerha.common.repository.KeyValueCommandRepository;
+import com.project.cheerha.common.repository.KeyValueQueryRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class RedisViewCountManager {
+public class ViewCountManager {
 
-    private final RedisTemplate<String, String> redisTemplate;
+    private final KeyValueQueryRepository keyValueQueryRepository;
+    private final KeyValueCommandRepository keyValueCommandRepository;
 
     // 조회수 키의 기본 Prefix
     private static final String VIEW_COUNT_KEY_PREFIX = "viewCount:";
@@ -24,13 +27,13 @@ public class RedisViewCountManager {
      * @param jobOpeningId 조회수를 증가시킬 채용공고 ID
      */
     public void increaseViewCount(Long jobOpeningId) {
-        String key = VIEW_COUNT_KEY_PREFIX + jobOpeningId; // Redis 키 생성
-
-        if (redisTemplate.opsForValue().get(key) == null) {
-            redisTemplate.opsForValue().set(key, "0", Duration.ofMinutes(30));  // 30분 TTL 설정
+        String key = VIEW_COUNT_KEY_PREFIX + jobOpeningId; // 키 생성
+        // 키가 없으면 기본값 0 설정
+        if (keyValueQueryRepository.getValue(key) == null) {
+            keyValueCommandRepository.setValue(key, "0", Duration.ofMinutes(30));  // 30분 TTL 설정
         }
 
-        redisTemplate.opsForValue().increment(key);
+        keyValueCommandRepository.incrementValue(key);
     }
 
     /**
@@ -40,7 +43,7 @@ public class RedisViewCountManager {
      */
     public long getViewCount(Long jobOpeningId) {
         String key = VIEW_COUNT_KEY_PREFIX + jobOpeningId;
-        String count = redisTemplate.opsForValue().get(key);
+        String count = keyValueQueryRepository.getValue(key);
         return count == null ? 0 : Long.parseLong(count);
     }
 
@@ -50,21 +53,21 @@ public class RedisViewCountManager {
      */
     public void resetViewCount(Long jobOpeningId) {
         String key = VIEW_COUNT_KEY_PREFIX + jobOpeningId;
-        redisTemplate.delete(key);
+        keyValueCommandRepository.removeValue(key);
     }
 
     /**
      * 채용공고의 조회수를 전체 가져오는 메서드입니다.
      * 동기화를 위한 메서드
-     * @return 현재 Redis에 저장된 조회수 전부
+     * @return 현재 저장된 조회수 전부
      */
     public List<ViewCountResponseDto> findAllViewCount() {
-        Set<String> keys = redisTemplate.keys(VIEW_COUNT_KEY_PREFIX + "*"); // 모든 조회수 키 찾기
+        Set<String> keys = keyValueQueryRepository.getKeys(VIEW_COUNT_KEY_PREFIX + "*"); // 모든 조회수 키 찾기
         List<ViewCountResponseDto> result = new ArrayList<>();
 
         for(String key : keys) {
             Long jobOpeningId = Long.parseLong(key.replace(VIEW_COUNT_KEY_PREFIX, ""));
-            Long count = Long.valueOf(Objects.requireNonNull(redisTemplate.opsForValue().get(key)));
+            Long count = Long.valueOf(Objects.requireNonNull(keyValueQueryRepository.getValue(key)));
             result.add(new ViewCountResponseDto(jobOpeningId, count));
         }
         return result;

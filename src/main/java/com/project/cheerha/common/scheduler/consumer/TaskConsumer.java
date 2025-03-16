@@ -1,9 +1,9 @@
 package com.project.cheerha.common.scheduler.consumer;
 
-import com.project.cheerha.common.redis.redisson.RedissonRepository;
+import com.project.cheerha.common.repository.LockRepository;
 import com.project.cheerha.common.scheduler.core.InstanceManager;
 import com.project.cheerha.common.scheduler.core.TaskHandler;
-import com.project.cheerha.common.scheduler.repository.TaskRepository;
+import com.project.cheerha.common.scheduler.core.TaskRepository;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,7 +22,7 @@ public class TaskConsumer {
 
     private final InstanceManager instanceManager;
     private final TaskRepository taskRepository;
-    private final RedissonRepository redissonRepository;
+    private final LockRepository lockRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Map<String, TaskHandler> handlers = new HashMap<>();
 
@@ -32,10 +32,10 @@ public class TaskConsumer {
     /**
      * 생성자를 초기화 할 때 TaskHandler 의 구현체들을 가져옴
      */
-    public TaskConsumer(InstanceManager instanceManager, TaskRepository taskRepository, RedissonRepository redissonRepository, List<TaskHandler> handlerList) {
+    public TaskConsumer(InstanceManager instanceManager, TaskRepository taskRepository, LockRepository lockRepository, List<TaskHandler> handlerList) {
         this.instanceManager = instanceManager;
         this.taskRepository = taskRepository;
-        this.redissonRepository = redissonRepository;
+        this.lockRepository = lockRepository;
         handlerList.forEach(handler -> handlers.put(handler.getTaskType(), handler));
     }
 
@@ -67,14 +67,14 @@ public class TaskConsumer {
                 if (scheduleIntervalMillis <= 0) return;
                 String lockKey = "scheduler:lock:consumer" + handler.getTaskType();
                 try {
-                    if (redissonRepository.tryLock(lockKey, Math.min(2000, scheduleIntervalMillis / 2), scheduleIntervalMillis / 2, TimeUnit.MILLISECONDS)) {
+                    if (lockRepository.tryLock(lockKey, Math.min(2000, scheduleIntervalMillis / 2), scheduleIntervalMillis / 2, TimeUnit.MILLISECONDS)) {
                         try {
                             handler.handle(payload);
                             log.info("TaskConsumer: 작업 완료: {} at {}", taskType, Instant.now());
                         } catch (Exception e) {
                             log.error("TaskConsumer: 작업 실행 중 오류: {}", e.getMessage(), e);
                         } finally {
-                            redissonRepository.unlock(lockKey);
+                            lockRepository.unlock(lockKey);
                         }
                     } else {
                         log.warn("TaskConsumer: 락 획득 실패, 작업 스킵: {}", taskType);

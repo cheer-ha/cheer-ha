@@ -3,7 +3,7 @@ package com.project.cheerha.user.password;
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
 import com.project.cheerha.common.exception.data.NotFoundException;
-import com.project.cheerha.common.redis.email.EmailTokenService;
+import com.project.cheerha.domain.user.service.EmailTokenService;
 import com.project.cheerha.common.util.PasswordEncoder;
 import com.project.cheerha.domain.auth.repository.BannedEmailRepository;
 import com.project.cheerha.domain.user.dto.request.ResetPasswordRequestDto;

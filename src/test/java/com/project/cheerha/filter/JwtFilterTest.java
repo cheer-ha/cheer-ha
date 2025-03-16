@@ -3,7 +3,7 @@ package com.project.cheerha.filter;
 import com.project.cheerha.common.filter.JwtFilter;
 import com.project.cheerha.common.exception.handler.FilterExceptionHandler;
 import com.project.cheerha.common.properties.JwtSecurityProperties;
-import com.project.cheerha.common.redis.auth.RedisBlackListService;
+import com.project.cheerha.domain.auth.service.BlackListService;
 import com.project.cheerha.common.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.*;
 public class JwtFilterTest {
 
     @Mock
-    private RedisBlackListService redisBlackListService;
+    private BlackListService blackListService;
 
     @Mock
     private JwtUtil jwtUtil;
@@ -85,7 +85,7 @@ public class JwtFilterTest {
         when(request.getRequestURI()).thenReturn("/api/protected");
         when(request.getHeader("Authorization")).thenReturn("Bearer validToken");
         when(jwtUtil.substringToken("Bearer validToken")).thenReturn("validToken");
-        when(redisBlackListService.isBlackList("validToken")).thenReturn(false);
+        when(blackListService.isBlackList("validToken")).thenReturn(false);
 
         Claims claims = mock(Claims.class);
         when(jwtUtil.extractClaims("validToken")).thenReturn(claims);
@@ -97,7 +97,7 @@ public class JwtFilterTest {
         when(securityProperties.token()).thenReturn(token);
         when(token.prefix()).thenReturn("Bearer ");
 
-        jwtFilter = new JwtFilter(securityProperties, redisBlackListService, jwtUtil, filterExceptionHandler);
+        jwtFilter = new JwtFilter(securityProperties, blackListService, jwtUtil, filterExceptionHandler);
         JwtSecurityProperties.Secret mockSecret = mock(JwtSecurityProperties.Secret.class);
         when(securityProperties.secret()).thenReturn(mockSecret);
         when(mockSecret.whiteList()).thenReturn(List.of("/auth/signup", "/auth/login"));
@@ -128,7 +128,7 @@ public class JwtFilterTest {
         when(request.getHeader("Authorization")).thenReturn("Bearer blackListToken");
         when(jwtUtil.substringToken("Bearer blackListToken")).thenReturn("blackListToken");
 
-        when(redisBlackListService.isBlackList("blackListToken")).thenReturn(true);
+        when(blackListService.isBlackList("blackListToken")).thenReturn(true);
 
         JwtSecurityProperties.Secret mockSecret = mock(JwtSecurityProperties.Secret.class);
 
@@ -161,7 +161,7 @@ public class JwtFilterTest {
         when(request.getRequestURI()).thenReturn("/api/protected");
         when(request.getHeader("Authorization")).thenReturn("Bearer validToken");
         when(jwtUtil.substringToken("Bearer validToken")).thenReturn("validToken");
-        when(redisBlackListService.isBlackList("validToken")).thenReturn(false);
+        when(blackListService.isBlackList("validToken")).thenReturn(false);
 
         Claims claims = mock(Claims.class);
         when(jwtUtil.extractClaims("validToken")).thenReturn(claims);
@@ -182,7 +182,7 @@ public class JwtFilterTest {
         when(request.getRequestURI()).thenReturn("/api/protected");
         when(request.getHeader("Authorization")).thenReturn("Bearer validToken");
         when(jwtUtil.substringToken("Bearer validToken")).thenReturn("validToken");
-        when(redisBlackListService.isBlackList("validToken")).thenReturn(false);
+        when(blackListService.isBlackList("validToken")).thenReturn(false);
 
         when(jwtUtil.extractClaims("validToken"))
                 .thenThrow(new IllegalArgumentException("Invalid or expired JWT token"));
@@ -205,6 +205,6 @@ public class JwtFilterTest {
                 "/actuator/health",
                 "/auth/refresh"
         ));
-        jwtFilter = new JwtFilter(jwtSecurityProperties, redisBlackListService, jwtUtil, filterExceptionHandler);
+        jwtFilter = new JwtFilter(jwtSecurityProperties, blackListService, jwtUtil, filterExceptionHandler);
     }
 }

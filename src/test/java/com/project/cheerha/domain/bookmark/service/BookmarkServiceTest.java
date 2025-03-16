@@ -3,7 +3,6 @@ package com.project.cheerha.domain.bookmark.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-import com.project.cheerha.common.redis.cache.RedisBookmarkService;
 import com.project.cheerha.domain.bookmark.dto.response.ReadBookmarkResponseDto;
 import com.project.cheerha.domain.bookmark.entity.Bookmark;
 import com.project.cheerha.domain.bookmark.repository.BookmarkRepository;
@@ -39,7 +38,7 @@ class BookmarkServiceTest {
     private JobOpeningFindByService jobOpeningFindByService;
 
     @Mock
-    private RedisBookmarkService redisBookmarkService;
+    private BookmarkCacheService bookmarkCacheService;
 
     @InjectMocks
     private BookmarkService bookmarkService;
@@ -87,7 +86,7 @@ class BookmarkServiceTest {
 
         // Then: save 메서드가 1번 호출되었는지, 캐시 업데이트가 1번 호출되었는지 확인
         verify(bookmarkRepository, times(1)).save(any(Bookmark.class));
-        verify(redisBookmarkService, times(1)).updateCacheOnBookmarkAdd(eq(user.getId()), any(Bookmark.class));
+        verify(bookmarkCacheService, times(1)).updateCacheOnBookmarkAdd(eq(user.getId()), any(Bookmark.class));
     }
 
     @Test
@@ -99,13 +98,13 @@ class BookmarkServiceTest {
 
         // When: 첫 번째 페이지 조회 시 캐시가 비어있고 DB에서 조회되는 경우
         when(bookmarkRepository.findByUserId(user.getId(), PageRequest.of(0, 10))).thenReturn(bookmarkPage);
-        when(redisBookmarkService.getAllBookmarksFromCache(user.getId())).thenReturn(new ArrayList<>()); // 캐시 비어 있음
+        when(bookmarkCacheService.getAllBookmarksFromCache(user.getId())).thenReturn(new ArrayList<>()); // 캐시 비어 있음
 
         // 첫 번째 페이지 조회 시 DB에서 데이터를 가져오고 캐시 업데이트
         Page<ReadBookmarkResponseDto> result = bookmarkService.readAllBookmarks(user.getId(), PageRequest.of(0, 10));
 
         // 첫 번째 페이지 재 조회 시 캐시에서 데이터를 가져옴
-        List<ReadBookmarkResponseDto> cachedBookmarks = redisBookmarkService.getAllBookmarksFromCache(user.getId());
+        List<ReadBookmarkResponseDto> cachedBookmarks = bookmarkCacheService.getAllBookmarksFromCache(user.getId());
         Page<ReadBookmarkResponseDto> cachedResult = new PageImpl<>(cachedBookmarks);
 
         // Then: 캐시에서 조회된 북마크 목록의 size가 1이어야 하며, 회사명이 '네이버'이어야 함
@@ -113,10 +112,10 @@ class BookmarkServiceTest {
         assertEquals("네이버", result.getContent().get(0).company());
 
         // 캐시 조회가 1번 호출되었는지 확인
-        verify(redisBookmarkService, times(1)).getAllBookmarksFromCache(user.getId());
+        verify(bookmarkCacheService, times(1)).getAllBookmarksFromCache(user.getId());
 
         // 두 번째 페이지 조회 시, 캐시에서 조회가 아닌 DB에서 가져와야 함
-        when(redisBookmarkService.getAllBookmarksFromCache(user.getId())).thenReturn(cachedBookmarks); // 첫 페이지 캐시에서 가져오기
+        when(bookmarkCacheService.getAllBookmarksFromCache(user.getId())).thenReturn(cachedBookmarks); // 첫 페이지 캐시에서 가져오기
         // 두 번째 페이지를 올바르게 모킹하고, 총 요소 수를 정확하게 설정
         // DB에서 10개 항목과 캐시에서 1개 항목을 합쳐서 총 11개의 요소가 있어야 함
         when(bookmarkRepository.findByUserId(user.getId(), PageRequest.of(1, 10)))
@@ -141,7 +140,7 @@ class BookmarkServiceTest {
 
         // Then: deleteByUserIdAndJobOpeningId 메서드가 1번 호출되었고, 캐시 삭제도 이루어졌는지 확인
         verify(bookmarkRepository, times(1)).deleteByUserIdAndJobOpeningId(user.getId(), jobOpening.getId());
-        verify(redisBookmarkService, times(1)).deleteBookmarkFromCache(user.getId(), jobOpening.getId());
+        verify(bookmarkCacheService, times(1)).deleteBookmarkFromCache(user.getId(), jobOpening.getId());
     }
 
     @Test
@@ -159,6 +158,6 @@ class BookmarkServiceTest {
         // Then: 가장 오래된 북마크가 삭제되고 새 북마크가 저장되어야 함
         verify(bookmarkRepository, times(1)).delete(oldestBookmark);
         verify(bookmarkRepository, times(1)).save(any(Bookmark.class));
-        verify(redisBookmarkService, times(1)).updateCacheOnBookmarkAdd(eq(user.getId()), any(Bookmark.class));
+        verify(bookmarkCacheService, times(1)).updateCacheOnBookmarkAdd(eq(user.getId()), any(Bookmark.class));
     }
 }

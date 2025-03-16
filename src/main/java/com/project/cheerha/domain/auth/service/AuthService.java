@@ -6,9 +6,7 @@ import com.project.cheerha.common.exception.auth.UnAuthorizedException;
 import com.project.cheerha.common.exception.client.BadRequestException;
 import com.project.cheerha.common.exception.client.ClientErrorCode;
 import com.project.cheerha.common.properties.JwtSecurityProperties;
-import com.project.cheerha.common.redis.auth.RedisBlackListService;
-import com.project.cheerha.common.redis.auth.RedisRefreshTokenService;
-import com.project.cheerha.common.redis.email.EmailTokenService;
+import com.project.cheerha.domain.user.service.EmailTokenService;
 import com.project.cheerha.common.util.JwtUtil;
 import com.project.cheerha.common.util.PasswordEncoder;
 import com.project.cheerha.domain.auth.dto.request.CreateLoginRequestDto;
@@ -31,8 +29,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final JwtSecurityProperties jwtSecurityProperties;
-    private final RedisRefreshTokenService redisRefreshTokenService;
-    private final RedisBlackListService redisBlackListService;
+    private final RefreshTokenService refreshTokenService;
+    private final BlackListService blackListService;
     private final UserFindByService userFindByService;
     private final VerificationEmailSender verificationEmailSender;
     private final EmailTokenService emailTokenService;
@@ -80,7 +78,7 @@ public class AuthService {
         String accessToken = jwtUtil.createToken(user.getId(), user.getRole());
         String refreshToken = jwtUtil.createRefreshToken(user.getId());
 
-        redisRefreshTokenService.createRefreshToken(user.getId(), refreshToken);
+        refreshTokenService.createRefreshToken(user.getId(), refreshToken);
 
         return CreateLoginResponseDto.toDto(accessToken, refreshToken);
     }
@@ -100,12 +98,12 @@ public class AuthService {
         long expirationMillis = claims.getExpiration().getTime() - System.currentTimeMillis();
 
         if (expirationMillis > 0) {
-            redisBlackListService.addToBlackList(token);
+            blackListService.addToBlackList(token);
         }
         String[] accessTokenData = claims.getSubject().split(":");
         Long userId = Long.valueOf(accessTokenData[0]);
 
-        redisRefreshTokenService.deleteRefreshToken(userId);
+        refreshTokenService.deleteRefreshToken(userId);
 
         return CreateLogoutResponseDto.toDto();
     }
@@ -128,14 +126,14 @@ public class AuthService {
         }
         Long userId = Long.parseLong(claims.getSubject());
 
-        String storedRefreshToken = redisRefreshTokenService.getRefreshToken(userId);
+        String storedRefreshToken = refreshTokenService.getRefreshToken(userId);
 
         if (!refreshToken.equals(jwtUtil.substringToken(storedRefreshToken))) {
             throw new UnAuthorizedException(AuthErrorCode.TOKEN_UNAUTHORIZED);
         }
 
         String newRefreshToken = jwtUtil.createRefreshToken(userId);
-        redisRefreshTokenService.createRefreshToken(userId, newRefreshToken);
+        refreshTokenService.createRefreshToken(userId, newRefreshToken);
 
         User user = userFindByService.findById(userId);
 

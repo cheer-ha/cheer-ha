@@ -1,7 +1,7 @@
 package com.project.cheerha.common.scheduler.producer;
 
 import com.project.cheerha.common.scheduler.core.TaskHandler;
-import com.project.cheerha.common.scheduler.repository.TaskRepository;
+import com.project.cheerha.common.scheduler.core.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

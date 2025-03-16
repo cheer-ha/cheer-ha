@@ -1,7 +1,7 @@
 package com.project.cheerha.domain.jobopening.schdeuler;
 
 import com.project.cheerha.common.dto.ViewCountResponseDto;
-import com.project.cheerha.common.redis.viewcount.RedisViewCountManager;
+import com.project.cheerha.domain.jobopening.service.ViewCountManager;
 import com.project.cheerha.common.scheduler.core.TaskHandler;
 import com.project.cheerha.domain.jobopening.repository.JobOpeningRepository;
 import java.util.List;
@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class JobOpeningViewCountTaskHandler implements TaskHandler {
 
     private final JobOpeningRepository jobOpeningRepository;
-    private final RedisViewCountManager redisViewCountManager;
+    private final ViewCountManager viewCountManager;
 
     @Override
     public String getTaskType() {
@@ -27,13 +27,13 @@ public class JobOpeningViewCountTaskHandler implements TaskHandler {
     @Override
     @Transactional
     public void handle(Map<String, Object> payload) {
-        List<ViewCountResponseDto> redisJobOpeningViewCountList = redisViewCountManager.findAllViewCount();
+        List<ViewCountResponseDto> redisJobOpeningViewCountList = viewCountManager.findAllViewCount();
         for (ViewCountResponseDto jobOpening : redisJobOpeningViewCountList) {
             Long jobOpeningId = jobOpening.key();
             Long viewCount = jobOpening.Value();
             if (viewCount != null && viewCount > 0) {
                 jobOpeningRepository.updateViewCount(jobOpeningId, viewCount);
-                redisViewCountManager.resetViewCount(jobOpeningId);
+                viewCountManager.resetViewCount(jobOpeningId);
             }
         }
         log.info("조회수 동기화 완료");

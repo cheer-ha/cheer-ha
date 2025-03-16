@@ -2,8 +2,7 @@ package com.project.cheerha.domain.jobopening.service;
 
 import com.project.cheerha.common.exception.data.DataErrorCode;
 import com.project.cheerha.common.exception.data.NotFoundException;
-import com.project.cheerha.common.redis.viewcount.RedisViewCountManager;
-import com.project.cheerha.common.util.variable.IndexName;
+import com.project.cheerha.common.elasticsearch.IndexName;
 import com.project.cheerha.domain.jobopening.dto.request.ReadJobOpeningRequestDto;
 import com.project.cheerha.domain.jobopening.dto.response.ReadJobOpeningResponseDto;
 import com.project.cheerha.domain.jobopening.entity.JobOpening;
