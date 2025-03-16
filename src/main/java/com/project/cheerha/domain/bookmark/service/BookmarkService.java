@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -85,23 +84,16 @@ public class BookmarkService {
             firstFetchFromDB = false; // 첫 번째 페이지 조회 후 DB에서만 데이터를 가져오는 플래그 설정
         } else {
             // 2페이지부터는 캐시에서 조회하고, 캐시에 없으면 DB에서 가져옵니다.
-            List<Object> cachedBookmarks = bookmarkCacheService.getAllBookmarksFromCache(userId);
-            if (cachedBookmarks.isEmpty() || pageNumber > 0) {
-                bookmarkPage = fetchAndCacheBookmarks(userId, limitedPageable);
-            } else {
-                // 캐시에서 전체 북마크를 불러오고 페이징 처리
-                List<Bookmark> bookmarks = cachedBookmarks.stream()
-                        .filter(Objects::nonNull)
-                        .map(obj -> (Bookmark) obj)
-                        .toList();
-                // 페이징 처리 후, ReadBookmarkResponseDto로 변환
+            List<ReadBookmarkResponseDto> cachedDtos = bookmarkCacheService.getAllBookmarksFromCache(userId);
+            if (!cachedDtos.isEmpty() && pageNumber == 0) {
                 int skipCount = limitedPageable.getPageNumber() * limitedPageable.getPageSize();
-                List<ReadBookmarkResponseDto> dtoList = bookmarks.stream()
+                List<ReadBookmarkResponseDto> pagedDtos = cachedDtos.stream()
                         .skip(skipCount)
                         .limit(limitedPageable.getPageSize())
-                        .map(ReadBookmarkResponseDto::toDto)
-                        .collect(Collectors.toList());
-                return new PageImpl<>(dtoList, pageable, bookmarks.size());
+                        .toList();
+                return new PageImpl<>(pagedDtos, pageable, cachedDtos.size());
+            } else {
+                bookmarkPage = fetchAndCacheBookmarks(userId, limitedPageable);
             }
         }
         // 페이지에 맞는 DTO 리스트로 변환
