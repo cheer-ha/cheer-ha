@@ -801,17 +801,20 @@
 - 이를 통해 사용자에게 영향을 주지 않고, 새로운 버전의 애플리케이션을 안전하게 배포할 수 있습니다.
 - 새로운 버전에 이상이 있을 때에도 버전 롤백을 통해 기존 버전을 그대로 사용할 수 있습니다.
 </details>
+</details>
 
 
-## 📝 **Wireframe**
+### 📝 **Wireframe**
 ![스크린샷 2025-03-04 오후 12 49 30](https://github.com/user-attachments/assets/a414c1f1-2d7b-4124-9b70-6b1b7442e48d)
 
-## 💬 **ERD**(수정필요)
+### 💬 **ERD**
+
 ```mermaid
 erDiagram
-    job_opening_search_history {
+    search_history {
         BIGINT id PK
-        varchar(100) search_input
+        BIGINT user_id FK
+        varchar(100) name
         datetime(6) created_at
     }
     user {
@@ -824,7 +827,7 @@ erDiagram
         int age
         boolean is_notification_enabled
     }
-    job_opening_notification_status {
+    notification {
         BIGINT id PK
         varchar(255) email
         varchar(255) job_opening_url
@@ -835,33 +838,27 @@ erDiagram
         varchar(100) email PK
         varchar(100) message
         datetime(6) created_at
-        boolean is_deleted
     }
-    dev_keyword {
+       keyword {
         BIGINT id PK
         varchar(50) name
     }
-    user_subscribed_dev_keyword {
+    user_keyword {
         BIGINT id PK
         BIGINT user_id FK
         BIGINT keyword_id FK
     }
-    job_opening_bookmark {
+    bookmark {
         BIGINT id PK
         BIGINT user_id FK
         BIGINT job_opening_id FK
     }
-    job_opening_dev_keyword {
+    job_opening_keyword {
         BIGINT id PK
         BIGINT keyword_id FK
         BIGINT job_opening_id FK
     }
-    job_opening_view_count {
-        BIGINT id PK
-        BIGINT job_opening_id FK
-        int view_count
-    }
-job_opening {
+    job_opening {
         BIGINT id PK
         varchar(255) title
         varchar(255) company
@@ -879,22 +876,20 @@ job_opening {
         datetime(6) created_at
     }
 
-    user ||--o{ job_opening_search_history : searched_by
+    user ||--o{ search_history : searched_by
     user ||--o{ job_opening_bookmark : bookmarked
-    user ||--o{ user_subscribed_dev_keyword : subscribes_to
-    job_opening ||--o{ job_opening_bookmark : has_bookmarks
-    job_opening ||--o{ job_opening_view_count : has_views
-    job_opening ||--o{ job_opening_dev_keyword : has_keywords
-    dev_keyword ||--o{ job_opening_dev_keyword : relates_to
-    dev_keyword ||--o{ user_subscribed_dev_keyword : subscribes_to
-
+    user ||--o{ user_keyword : subscribes_to
+    job_opening ||--o{ bookmark : has_bookmarks
+    job_opening ||--o{ job_opening_keyword : has_keywords
+    keyword ||--o{ job_opening_keyword : relates_to
+    keyword ||--o{ user_keyword : subscribes_to
 ```
 
 ## 📑 **API 명세서**
 - [API 명세서](https://docs.google.com/spreadsheets/d/1CQm7sV-ETn0w-FFe7nOCRKrPIp3i5TQWhKw9B1IDT9s/edit?gid=0#gid=0)
 
 ## 🎬 **보러 가기**
-- [최종 발표 PPT]()
+- [최종 발표 PPT](https://www.canva.com/design/DAGhg82nibo/w6wIMRrulPlgRl9aj5KqSA/view?utm_content=DAGhg82nibo&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=haeeb4a3bb7)
 - [최종 발표 시연 영상]()
 
 ---
