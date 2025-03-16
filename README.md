@@ -1,7 +1,8 @@
 # 3조 - 👑 취하여 (Cheer-ha)
 
 ## 🗂️ CONTENTS
-[**⚡ 성능 개선, 어디까지 해봤니?**](#성능-개선-어디까지-해봤니)  
+[**🚀 서비스 소개**](#서비스-소개)  
+[**⚡ 성능 개선, 어디까지 해봤니?**](#성능-개선,-어디까지-해봤니?)  
 [**🏗️ System Architecture**](#System-architecture)  
 [**🛠️ 기술 스택**](#기술-스택)  
 [**🔧 기술적 의사결정**](#기술적-의사결정)  
@@ -67,79 +68,99 @@
 ### 🔑 핵심 기능
 #### 🔍 **클린 코드처럼 깔끔한 검색 기능!**
 
+<details>
+  <summary> 반복과 수동은 이제 그만! 자동 완성 & 부분 검색! </summary>
+  <ul>
+    <li>한 글자만 입력해도 추천 검색어를 확인할 수 있는 자동 완성 및 부분 검색 지원</li>
+    <li>오탈자가 포함된 검색어도 정확한 채용 공고 조회 가능</li>
+    <li>검색어 입력 시 중요도에 따라 제목 → 회사명 → 키워드 순으로 검색 우선순위 적용</li>
+    <li>검색된 채용 공고 개수 함께 표시</li>
+    <li>검색어와 기간을 설정하여 원하는 채용 공고만 조회 가능</li>
+  </ul>
    <details>
-     <summary> 반복과 수동은 이제 그만! 자동 완성 & 부분 검색! </summary>
-     - 한 글자만 입력해도 추천 검색어를 확인할 수 있는 자동 완성 및 부분 검색 지원<br>  
-     - 오탈자가 포함된 검색어도 정확한 채용 공고 조회 가능<br>  
-     - 검색어 입력 시 중요도에 따라 `제목 → 회사명 → 키워드` 순으로 검색 우선순위 적용<br>  
-     - 검색된 채용 공고 개수 함께 표시<br>  
-     - 검색어와 기간을 설정하여 원하는 채용 공고만 조회 가능<br>  
-         <details>
-          <summary> 검색 필터 항목 </summary>
-           - 지역
-           - 채용 형태: `정규직`, `계약직`, `아르바이트`, `인턴`, `프리랜서`
-           - 학력: `무관`, `고졸`, `전문학사`, `학사`, `석사`, `박사`
-           - 채용 시작일 & 채용 마감일
-           - 최소 경력 & 최고 경력
-           - 채용 공고 제목
-           - 회사명
-           - 기타 자격 요건
-          </details>
+     <summary> 검색 필터 항목 </summary>
+     <ul>
+       <li>지역</li>
+       <li>채용 형태: 정규직, 계약직, 아르바이트, 인턴, 프리랜서</li>
+       <li>학력: 무관, 고졸, 전문학사, 학사, 석사, 박사</li>
+       <li>채용 시작일 & 채용 마감일</li>
+       <li>최소 경력 & 최고 경력</li>
+       <li>채용 공고 제목</li>
+       <li>회사명</li>
+       <li>기타 자격 요건</li>
+     </ul>
    </details>
+</details>
 
-   <details>
-     <summary> 요즘 채용 시장이 어떤지 보고 싶다면? 전체 채용 공고! </summary>
-     - 모든 채용 공고를 한곳에서 확인 가능<br>
-     - 마감된 채용 공고는 조회 목록에서 제외<br>
-   </details>
+<details>
+  <summary> 요즘 채용 시장이 어떤지 보고 싶다면? 전체 채용 공고! </summary>
+  <ul>
+    <li>모든 채용 공고를 한곳에서 확인 가능</li>
+    <li>마감된 채용 공고는 조회 목록에서 제외</li>
+  </ul>
+</details>
 
-   <details>
-     <summary> 내가 어떤 채용 공고를 검색했더라? 검색 기록 조회! </summary>
-     - 이전에 검색한 채용 공고 목록을 쉽게 확인<br>
-   </details>
+<details>
+  <summary> 내가 어떤 채용 공고를 검색했더라? 검색 기록 조회! </summary>
+  <ul>
+    <li>이전에 검색한 채용 공고 목록을 쉽게 확인</li>
+  </ul>
+</details>
 
 #### 🔥 **HOT한 채용 공고만 모아 모아!**
 
-   <details>
-     <summary> 채용 공고 검색이 어려운 주니어 개발자를 위한, 조회수 Top 100 인기 채용 공고! </summary>
-     - 조회수가 높은 순으로 인기 채용 공고 100건 제공<br>
-     - 각 공고의 조회수 함께 표시<br>
-   </details>
+<details>
+  <summary> 채용 공고 검색이 어려운 주니어 개발자를 위한, 조회수 Top 100 인기 채용 공고! </summary>
+  <ul>
+    <li>조회수가 높은 순으로 인기 채용 공고 100건 제공</li>
+    <li>각 공고의 조회수 함께 표시</li>
+  </ul>
+</details>
 
-   <details>
-     <summary> 내 연령대 개발자들은 어떤 공고를 즐겨 찾을까? 연령대별 인기 즐겨찾기 Top 10! </summary>
-     - 연령대마다 가장 많이 즐겨찾기로 등록한 채용 공고 10건 제공<br>
-     - 즐겨찾기로 등록한 사용자 수 함께 표시<br>
-   </details>
+<details>
+  <summary> 내 연령대 개발자들은 어떤 공고를 즐겨 찾을까? 연령대별 인기 즐겨찾기 Top 10! </summary>
+  <ul>
+    <li>연령대마다 가장 많이 즐겨찾기로 등록한 채용 공고 10건 제공</li>
+    <li>즐겨찾기로 등록한 사용자 수 함께 표시</li>
+  </ul>
+</details>
 
-   <details>
-     <summary> 내 연령대 개발자들이 지닌 기술 역량이 궁금하다면? 연령대별 인기 키워드 Top 10! </summary>
-     - 연령대별로 많이 등록된 키워드 10개 제공<br>
-     - 키워드로 등록한 사용자 수 함께 표시<br>
-   </details>
+<details>
+  <summary> 내 연령대 개발자들이 지닌 기술 역량이 궁금하다면? 연령대별 인기 키워드 Top 10! </summary>
+  <ul>
+    <li>연령대별로 많이 등록된 키워드 10개 제공</li>
+    <li>키워드로 등록한 사용자 수 함께 표시</li>
+  </ul>
+</details>
 
 #### **🔖 즐겨찾기와 이메일 알림으로 취업을 위하여!**
 
-   <details>
-     <summary> 나만의 기술 역량을 쉽게 관리하고 싶다면, 키워드 등록! </summary>
-     - 관심 있거나 사용자 자신의 기술 역량을 키워드로 등록, 조회, 삭제하는 기능 제공<br>
-     - 등록한 키워드는 이메일 알림 발송 시 사용됨<br>
-   </details>
+<details>
+  <summary> 나만의 기술 역량을 쉽게 관리하고 싶다면, 키워드 등록! </summary>
+  <ul>
+    <li>관심 있거나 사용자 자신의 기술 역량을 키워드로 등록, 조회, 삭제하는 기능 제공</li>
+    <li>등록한 키워드는 이메일 알림 발송 시 사용됨</li>
+  </ul>
+</details>
 
-   <details>
-     <summary> 내 기술 역량만 등록하면 끝! 맞춤형 채용 공고 이메일 알림! </summary>
-     - 사용자가 등록한 키워드를 기반으로 `하루 1회` 맞춤형 채용 공고 20건을 이메일 알림으로 발송<br>
-     - 이메일 인증을 완료한 사용자에게만 제공<br>
-   </details>
+<details>
+  <summary> 내 기술 역량만 등록하면 끝! 맞춤형 채용 공고 이메일 알림! </summary>
+  <ul>
+    <li>사용자가 등록한 키워드를 기반으로 `하루 1회` 맞춤형 채용 공고 20건을 이메일 알림으로 발송</li>
+    <li>이메일 인증을 완료한 사용자에게만 제공</li>
+  </ul>
+</details>
 
-   <details>
-     <summary> 놓칠 수 없는 채용 공고는 콕콕 찜할 수 있도록, 즐겨찾기! </summary>
-     - 관심 있는 채용 공고를 즐겨찾기에 등록, 조회, 삭제하는 기능 제공<br>
-     - 최대 200개까지 즐겨찾기 등록 가능<br>
-       - 200개 초과 시, 가장 오래된 즐겨찾기부터 자동 삭제<br>
-       - 예시) 201번째 즐겨찾기 추가 시, ID 1번 즐겨찾기가 삭제됨<br>
-     - 마감 공고도 즐겨찾기에서 다시 볼 수 있도록 지원<br>
-   </details>
+<details>
+  <summary> 놓칠 수 없는 채용 공고는 콕콕 찜할 수 있도록, 즐겨찾기! </summary>
+  <ul>
+    <li>관심 있는 채용 공고를 즐겨찾기에 등록, 조회, 삭제하는 기능 제공</li>
+    <li>최대 200개까지 즐겨찾기 등록 가능</li>
+    <li>200개 초과 시, 가장 오래된 즐겨찾기부터 자동 삭제</li>
+    <li>예시) 201번째 즐겨찾기 추가 시, ID 1번 즐겨찾기가 삭제됨</li>
+    <li>마감 공고도 즐겨찾기에서 다시 볼 수 있도록 지원</li>
+  </ul>
+</details>
 
 ## ⚡ 성능 개선, 어디까지 해봤니?
 
@@ -4905,7 +4926,7 @@ Java 로 검색 시
 <details>
 <summary> JobKoreaContentData </summary>
                 
-```java
+```kotlin
                 data class JobKoreaContentData(
                     val company: String,
                     val location: String,
@@ -4946,7 +4967,7 @@ Java 로 검색 시
 <details>
 <summary> JobKoreaCrawler </summary>
                 
-```java
+```kotlin
                 @Service
                 class JobKoreaCrawler(
                     private val jobOpeningRepository: JobOpeningRepository,
@@ -5042,7 +5063,7 @@ Java 로 검색 시
 <details>
 <summary> JobKoreaContentData </summary>
                 
-```java
+```kotlin
                 data class JobKoreaContentData(
                     val company: String,
                     val location: String,
