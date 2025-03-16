@@ -25,8 +25,6 @@ import org.springframework.data.domain.PageRequest;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @ExtendWith(MockitoExtension.class)
 class BookmarkServiceTest {
@@ -107,13 +105,8 @@ class BookmarkServiceTest {
         Page<ReadBookmarkResponseDto> result = bookmarkService.readAllBookmarks(user.getId(), PageRequest.of(0, 10));
 
         // 첫 번째 페이지 재 조회 시 캐시에서 데이터를 가져옴
-        List<Object> cachedBookmarks = redisBookmarkService.getAllBookmarksFromCache(user.getId());
-        List<ReadBookmarkResponseDto> cachedDtos = cachedBookmarks.stream()
-                .filter(Objects::nonNull)
-                .map(obj -> (Bookmark) obj)
-                .map(ReadBookmarkResponseDto::toDto)
-                .collect(Collectors.toList());
-        Page<ReadBookmarkResponseDto> cachedResult = new PageImpl<>(cachedDtos);
+        List<ReadBookmarkResponseDto> cachedBookmarks = redisBookmarkService.getAllBookmarksFromCache(user.getId());
+        Page<ReadBookmarkResponseDto> cachedResult = new PageImpl<>(cachedBookmarks);
 
         // Then: 캐시에서 조회된 북마크 목록의 size가 1이어야 하며, 회사명이 '네이버'이어야 함
         assertEquals(1, result.getTotalElements());
@@ -123,7 +116,7 @@ class BookmarkServiceTest {
         verify(redisBookmarkService, times(1)).getAllBookmarksFromCache(user.getId());
 
         // 두 번째 페이지 조회 시, 캐시에서 조회가 아닌 DB에서 가져와야 함
-        when(redisBookmarkService.getAllBookmarksFromCache(user.getId())).thenReturn(List.of(bookmark)); // 첫 페이지 캐시에서 가져오기
+        when(redisBookmarkService.getAllBookmarksFromCache(user.getId())).thenReturn(cachedBookmarks); // 첫 페이지 캐시에서 가져오기
         // 두 번째 페이지를 올바르게 모킹하고, 총 요소 수를 정확하게 설정
         // DB에서 10개 항목과 캐시에서 1개 항목을 합쳐서 총 11개의 요소가 있어야 함
         when(bookmarkRepository.findByUserId(user.getId(), PageRequest.of(1, 10)))
