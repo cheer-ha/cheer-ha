@@ -978,9 +978,9 @@ erDiagram
   - 실패 정보는 Redis, 밴 정보는 DB에 저장
 
 ### 결과
-- 이메일 인증으로 회원가입, 이메일 알림 구독, 비밀번호 리셋 가능  
+- 이메일 인증으로 회원가입, 이메일 알림 구독, 비밀번호 리셋 가능 ⬇️   
 ![스크린샷 2025-03-12 오후 11.16.03.png](https://github.com/llRosell/sparta/blob/main/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202025-03-12%20%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE%2011.16.03.png?raw=true) 
-- Kibana의 로그 대시보드로 이상 사용자의 IP를 확인하고, 지속적으로 올바르지 않은 요청을 보낸 IP는 WAF에서 차단 가능  
+- Kibana의 로그 대시보드로 이상 사용자의 IP를 확인하고, 지속적으로 올바르지 않은 요청을 보낸 IP는 WAF에서 차단 가능 ⬇️   
 ![스크린샷 2025-03-12 오후 10.35.06.png](https://github.com/llRosell/sparta/blob/main/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202025-03-12%20%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE%2010.35.06.png?raw=trueE)
  
 </details>
@@ -1052,7 +1052,7 @@ erDiagram
 </details>
 
 <details>
-<summary><strong>💰 자동 완성 기능을 분리하면 원하는 채용 공고만 조회할 수 있을까요? </strong>></summary> 
+<summary><strong>💰 자동 완성 기능을 분리하면 원하는 채용 공고만 조회할 수 있을까요? </strong></summary> 
 
 ### 배경
 - 부분 검색과 자동 완성 검색이 동일한 로직에서 수행되면서 불필요한 검색 결과가 반환됨
@@ -1086,167 +1086,29 @@ erDiagram
 <summary><strong>💰 스팸처럼 보이지 않도록 채용 공고는 딱 20개만! 선정 기준은 무엇이 좋을까요?</strong> </summary>
 
 ###  배경
-- 기존 로직은 기술 요건이 하나라도 일치하는 채용 공고를 전부 이메일 안에 포함하여 사용자 맞춤화가 약함
+- 기존 로직은 기술 요건이 하나만 일치해도 모든 채용 공고를 포함하여 사용자 맞춤성이 낮음
 
+### 2. 요구사항
+- **복잡하지 않은 로직**: 채용 공고를 20개 추출하는 로직이 간단해야 함
+- **수치화 가능 여부**: 내림차순으로 정렬해야 하므로 숫자로 변환할 수 있어야 함
+- **사용자 맞춤화**: 사용자의 수요를 잘 반영할 수 있어야 함
 
-  ### 2. 요구사항
+### 고려한 대안
 
-  - **작은 시간 복잡도**: 채용 공고를 20개 추출하는 데 시간 복잡도가 작아야 함
-  - **수치화 가능 여부**: 내림차순으로 정렬해야 하므로 숫자로 변환할 수 있어야 함
-  - **사용자 맞춤화**: 사용자의 수요를 잘 반영할 수 있어야 함
+| **비교 항목**       | **기술 요건이 겹치는 순**         | **연봉이 높은 순**                     | **무작위 순**         |
+|-----------------|--------------------------|----------------------------------|-------------------|
+| **복잡하지 않은 로직**  | ✅ 쿼리로 해결 가능              | ✅ 이미 저장된 값을 조회해 오기 때문에 간단함       | ✅ 가장 간단함          |
+| **수치화 가능 여부**   | ✅ 내림차순 정렬 가능             | ❌ ‘면접 후 결정’이 대부분이라 수치화 어려움       | ✅ 수치화할 필요 없음      |
+| **사용자 맞춤화**     | ✅ 사용자가 선택한 기술 요건 반영 가능   | ✅ 인기 있는 채용 공고 전달 가능              | ❌ 사용자의 선호 반영 불가능  |
+| **단점**          | ⚠️ 쿼리문을 실행하면서 성능 저하 가능성  | ⚠️ 희망 연봉과 맞지 않는 채용 공고가 포함될 수 있음  | ⚠️ 사용자 관심 충족이 어려움 |
 
-    ---
+### 결정 및 근거
+**✅ 기술 요건이 겹치는 순 선택**
+  - 쿼리 문으로 복잡하지 않은 로직을 구현하여 내림차순 정렬이 가능함
+  - 사용자가 선택한 기술 요건을 반영할 수 있어, 보다 맞춤화된 이메일 알림 제공 가능
 
-  ### 3. 고려한 대안
-
-  | **비교 항목** | **기술 요건이 겹치는 순** | **연봉이 높은 순** | **무작위 순** |
-  | --- | --- | --- | --- |
-  | **시간 복잡도** | ❌ 세제곱까지 커질 수 있음 | ✅ 이미 저장된 값을 조회해오기 때문에 상대적으로 작음 | ✅ 가장 작음 |
-  | **수치화 가능 여부** | ✅ 가능 | ❌ ‘면접 후 결정’이 대부분이라 수치화 | ✅ 수치화할 필요 없음 |
-  | **사용자 맞춤화** | ✅ 사용자가 선택한 기술 요건 반영 가능 | ✅ 인기 있는 채용 공고 전달 가능 | ❌ 사용자의 선호 반영 불가능 |
-  | **단점** | ⚠️ 겹치는 횟수를 계산하는 로직이 복잡할 수 있음 | ⚠️ 희망 연봉과 맞지 않는 채용 공고가 포함될 수 있음 | ⚠️ 사용자 관심 충족이 어려움 |
-    
-  ---
-
-  ### 4. 결정 및 근거
-
-  **✅ 무작위 순 선택**
-
-  - 수치화할 필요가 없고 이메일 알림 기능에 빠르게 적용 가능
-  - 시간 복잡도가 가장 작아서 서버에 부담을 주지 않음
-  - 사용자 맞춤화는 부족하지만, 대기업부터 중견 기업까지 모든 채용 공고에 알림으로 전달될 기회를 공평하게 제공할 수 있음
-
----
-
-  ### 5. 코드
-
-<details>
-<summary> 1. 데이터베이스에 저장된 알림을 무작위로 섞음 </summary>
-
-```java
-      private void sendNotificationEmail(
-          String recipientEmail,
-          Set<Notification> notificationSet
-      ) {
-          try {
-              List<Notification> notificationList = new ArrayList<>(notificationSet);
-                  
-              Collections.shuffle(notificationList);
-```
-</details>
-
-<details>
-<summary> 2. 무작위로 섞인 알림 목록을 20개로 제한 </summary>
-
-```java
-              notificationList = notificationList.stream()
-                  .limit(20)
-                  .toList();
-```
-
-</details>
-
-<details>
-<summary> 3. 알림 20개로 이메일 내용 구성 후 발송 </summary>
-
-```java
-              String[] emailData = NotificationFormat.createEmailNotification(notificationList);
-              String subject = emailData[0];
-              String content = emailData[1];
-      
-              emailSender.send(recipientEmail, subject, content);
-```
-
-</details>
-
-<details>
-<summary> 4. 발송된 알림 상태를 false에서 true로 변경 </summary>
-
-```java
-              notificationList.forEach(notification -> {
-                  notification.markEmailAsSent();
-                  notificationRepository.save(notification);
-              });
-      
-          } catch (IOException e) {
-              log.error("이메일 전송 실패: {}", recipientEmail, e);
-          }
-        }
-      }
-```
-</details>
-
-  ---
-    
-  ### 6. 향후 고려 사항
-    
-  - **기술 요건이 겹치는 순 적용**: 시간 복잡도를 줄인 로직 구현
-
-<details>
-<summary> 코드 펼치기 </summary>
-            
-```java
-            private Map<String, Set<Long>> invertKeywordIdToUrlList(
-                Map<Long, List<String>> keywordIdToUrlList) {
-                Map<String, Set<Long>> urlToKeywordIdSet = new HashMap<>();
-            
-                keywordIdToUrlList.forEach((keywordId, urlList) -> {
-                    for (String url : urlList) {
-                        urlToKeywordIdSet
-                            .computeIfAbsent(url, urlAsKey -> new HashSet<>())
-                            .add(keywordId);
-                    }
-                });
-            
-                return urlToKeywordIdSet;
-            }
-            
-            private Map<String, Set<Long>> invertEmailToKeywordIdList(
-                List<NotificationRecipientDto> notificationRecipientDtoList) {
-                Map<String, Set<Long>> emailToKeywordIdSet = new HashMap<>();
-            
-                notificationRecipientDtoList.forEach(dto -> {
-                    emailToKeywordIdSet
-                        .computeIfAbsent(dto.email(), emailAsKey -> new HashSet<>())
-                        .add(dto.keywordId());
-                });
-            
-                return emailToKeywordIdSet;
-            }
-            
-            private Map<String, Map<String, Long>> compareKeywordOverlap(
-                Map<String, Set<Long>> emailToKeywordIdSet,
-                Map<String, Set<Long>> urlToKeywordIdSet
-            ) {
-                Map<String, Map<String, Long>> emailToUrlToOverlapCount = new HashMap<>();
-            
-                Set<String> emailSet = emailToKeywordIdSet.keySet();
-                Set<String> urlSet = urlToKeywordIdSet.keySet();
-            
-                for (String email : emailSet) {
-                    Set<Long> userKeywords = emailToKeywordIdSet.get(email);
-            
-                    for (String url : urlSet) {
-                        Set<Long> jobOpeningKeywords = urlToKeywordIdSet.get(url);
-            
-                        long overlapCount = userKeywords.stream()
-                            .filter(jobOpeningKeywords::contains)
-                            .count();
-            
-                        if (overlapCount > 0) {
-                            emailToUrlToOverlapCount
-                                .computeIfAbsent(email, emailAsKey -> new HashMap<>())
-                                .put(url, overlapCount);
-                        }
-                    }
-                }
-            
-                return emailToUrlToOverlapCount;
-            }
-```
-</details>
-
-  - **AI 적용**: 연봉이나 지역, 경력 같은 필터링 기준을 도입
+### 결과 
+- 사용자가 선택한 기술 요건이 많이 겹치는 순으로 상위 20개 알림을 이메일 한 개로 발송하는 데 성공함 
 </details>
 </aside>
 
