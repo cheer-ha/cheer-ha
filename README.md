@@ -798,7 +798,7 @@ erDiagram
 </details>
 
 <details>
-<summary><strong>🔩  많은 사용자가 동시에 채용 공고를 조회할 때 응답 시간이 너무 다릅니다!</strong>></summary>
+<summary><strong>🔩  많은 사용자가 동시에 채용 공고를 조회할 때 응답 시간이 너무 다릅니다!</strong></summary>
     
 ### 문제 정의
 
