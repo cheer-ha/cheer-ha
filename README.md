@@ -636,7 +636,7 @@ erDiagram
 </details>
 
 <details>
-    <summary> <strong>💡데이터베이스에는 어떤 알림 정보를 저장해야 할까요?</strong> </summary>
+    <summary> <strong>💡 데이터베이스에는 어떤 알림 정보를 저장해야 할까요?</strong> </summary>
 
 ### 요구사항
 - **발송 상태 추적 시 필요**: 알림의 발송 상태를 추적할 때 필요해야 함
@@ -692,7 +692,7 @@ erDiagram
 </details>
 
 <details>
-    <summary><strong> 💡모니터링과 로깅이 필요한 순간이 찾아왔습니다! 필요한 이유와 적절한 기술은 무엇일까요?</strong> </summary>
+    <summary><strong> 💡 모니터링과 로깅이 필요한 순간이 찾아왔습니다! 필요한 이유와 적절한 기술은 무엇일까요?</strong> </summary>
 
 ### 요구사항
   - **비용 최소화**: 모니터링-로깅이 프로젝트 전체의 비용을 높여선 안 됨
