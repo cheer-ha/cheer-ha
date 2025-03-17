@@ -1,15 +1,5 @@
 # 3조 - 👑 취하여 (Cheer-ha)
 
-## 🗂️ CONTENTS
-[**⚡ 성능 개선, 어디까지 해봤니?**](#성능-개선-어디까지-해봤니)  
-[**🏗️ System Architecture**](#System-architecture)  
-[**🛠️ 기술 스택**](#기술-스택)  
-[**🔧 기술적 의사결정**](#기술적-의사결정)  
-[**🚨 트러블슈팅**](#트러블슈팅)  
-[**🏦 비즈니스적 의사결정**](#비즈니스적-의사결정)  
-[**🏭 ‘취하여’ 팀의 리팩토링**](#취하여-팀의-리팩토링)  
-[**🧑🏻‍💻 ‘취하여’ 팀 구성원 소개**](#취하여-팀-구성원-소개)
-
 ## 🚀 서비스 소개
 ### ✨ 서비스 개요
 
@@ -25,21 +15,11 @@
 
 ---
 
-### 📝 **기획 배경**
-
+### 🎯 **‘취하여’가 해결하는 세 가지 불편함**
 ![취업 고민 이미지](https://private-user-images.githubusercontent.com/184512169/422827340-2085303c-50f6-431a-8744-79c8c93887d4.jpg?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDE5NjIzMzQsIm5iZiI6MTc0MTk2MjAzNCwicGF0aCI6Ii8xODQ1MTIxNjkvNDIyODI3MzQwLTIwODUzMDNjLTUwZjYtNDMxYS04NzQ0LTc5YzhjOTM4ODdkNC5qcGc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMzE0JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDMxNFQxNDIwMzRaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT03N2NjNjhjZWUyMWViMjJjMDlmNGQ5NTA1MTk1MjU3NTUyZTBlY2RkMjIzZjI5OGNhNzJjZWJkZmE1ZWVmMWQyJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.lDfkKY7rYPmuLEUaNTiJ0bpFe4aNvOM-snXd3Ts5G_Y)
-
-‘취하여’ 서비스는 그동안 취준생으로서 겪은 세 가지 불편함에서 탄생했습니다.
-
-- 첫째, 우리가 가진 기술 역량에 맞는 채용 공고를 찾으려면 **반드시 정확한 단어로 검색해야** 했습니다.
-- 둘째, 인기순으로 채용 공고를 조회해도 **인기 기준이 연령대인지 기술 요건인지 확인해야** 했습니다.
-- 셋째, 채용 공고를 찾을 때마다 **같은 기술 역량을 반복적으로 입력해야** 하는 번거로움이 있었습니다.
-
-‘취하여’는 이러한 불편함을 겪은 개발자 취준생을 위해 세 가지 기능을 제공하도록 기획되었습니다.
-
-- 첫째, 사용자가 **단어 일부만 입력해도 원하는 채용 공고를 쉽게 검색할 수 있도록 편의 기능을 더해** 주자!
-- 둘째, 조회수 높은 채용 공고뿐만 아니라 **연령대와 기술 요건에 맞춘 인기 채용 공고도 함께 제공해** 주자!
-- 셋째, 사용자가 자신의 **기술 역량을 등록하면 해당 역량으로 지원할 수 있는 공고를 이메일로 보내** 주자!
+🔹 **정확한 단어 검색 필요** ➡️ **단어 일부만 입력해도 검색 가능!** 🔍    
+🔹 **인기 기준 모호** ➡️ **연령대·기술 요건 기반 인기 공고 제공!** 🔥  
+🔹 **반복 입력 불편** ➡️ **기술 역량 등록 시 맞춤 공고 이메일 발송!** 📩  
 
 ---
 
@@ -56,13 +36,13 @@
 
 ### 👤 사용자 이용 흐름
 
-![사용자 이용 흐름 이미지](https://private-user-images.githubusercontent.com/184512169/422826387-e64bf3e9-a46f-4246-b268-066095269809.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDE5NjIxNzgsIm5iZiI6MTc0MTk2MTg3OCwicGF0aCI6Ii8xODQ1MTIxNjkvNDIyODI2Mzg3LWU2NGJmM2U5LWE0NmYtNDI0Ni1iMjY4LTA2NjA5NTI2OTgwOS5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMzE0JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDMxNFQxNDE3NThaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT01YmE5NjdmZDQ0OTYyZmY3MDZhNDc3OGUzMTkzZGVjMzllODc1ZGVlODI0MDc3NWI0YTNiZGViNjlhNDAyNjUwJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.YuPYfyzLwiZLzTOtiTo5FwVkl6Jxm4HNNA8ht5c9oZk)
+![사용자 이용 흐름 이미지](https://private-user-images.githubusercontent.com/184512169/422764291-00bee324-badb-425b-8637-606b2a181a13.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDIxNzIwNjEsIm5iZiI6MTc0MjE3MTc2MSwicGF0aCI6Ii8xODQ1MTIxNjkvNDIyNzY0MjkxLTAwYmVlMzI0LWJhZGItNDI1Yi04NjM3LTYwNmIyYTE4MWExMy5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMzE3JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDMxN1QwMDM2MDFaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT02YWNmZjYwYzFlNDk4Y2IxMWQ2MTE4OWVlZjI3ZTgyYWZiM2NmMDAxYzdmMGE0Njk5Yjc5NWJlNmMwYWU2MGJhJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.hCaFD9KXYEsdYWbHYbFTacsi5-aCaeV74KhtNQDyYms)
 
 ---
 
 ### 🔄 서비스 작동 흐름
 
-![서비스 작동 흐름 이미지](https://private-user-images.githubusercontent.com/184512169/422829456-4a6f198a-907f-464d-a1b6-6c685af2c836.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDE5NjI2ODcsIm5iZiI6MTc0MTk2MjM4NywicGF0aCI6Ii8xODQ1MTIxNjkvNDIyODI5NDU2LTRhNmYxOThhLTkwN2YtNDY0ZC1hMWI2LTZjNjg1YWYyYzgzNi5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMzE0JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDMxNFQxNDI2MjdaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT0wNzM3NWEwMTJkMmY1NTc2NDM2NTc0MzJhNGI3MGJhNmU2YWY5MWY2NTc0Zjg0ZmUzZDY0MzI2MWI1OTMxNWZkJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.sUt9hWkcws7xUGrjhq03rEyYBbrLnOiDyRoEarFgxZY)
+![서비스 작동 흐름 이미지](https://private-user-images.githubusercontent.com/184512169/422764274-ffb663ec-e35c-4ec4-bb83-cd612436b751.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDIxNzIwNjEsIm5iZiI6MTc0MjE3MTc2MSwicGF0aCI6Ii8xODQ1MTIxNjkvNDIyNzY0Mjc0LWZmYjY2M2VjLWUzNWMtNGVjNC1iYjgzLWNkNjEyNDM2Yjc1MS5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMzE3JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDMxN1QwMDM2MDFaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT0yNjIxOTE4NWE1OWZkZWIzYzQzZDQyNGVkNzhlYTczZTQwODU3NzA3NWZmM2M4ODMxN2M4YTk4ZmU2N2Q0ODQzJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.2tJSBgXrwDhJZSUxjaYoKxPWKa0H6OqvnyHAKsHOdrU)
 
 ---
 
@@ -71,114 +51,51 @@
 <aside>
 
 #### 🔍 **클린 코드처럼 깔끔한 검색 기능!**
-
-<details>
-  <summary> 반복과 수동은 이제 그만! 자동 완성 & 부분 검색! </summary>
-
-- 한 글자만 입력해도 추천 검색어를 확인할 수 있는 자동 완성 및 부분 검색 지원
-- 오탈자가 포함된 검색어도 정확한 채용 공고 조회 가능
-- 검색어 입력 시 중요도에 따라 `제목 → 회사명 → 키워드` 순으로 검색 우선순위 적용
-- 검색된 채용 공고 개수 함께 표시
-- 검색어와 기간을 설정하여 원하는 채용 공고만 조회 가능
-   <details>
-     <summary> 검색 필터 항목 </summary>
-     <ul>
-       <li>지역</li>
-       <li>채용 형태: 정규직, 계약직, 아르바이트, 인턴, 프리랜서</li>
-       <li>학력: 무관, 고졸, 전문학사, 학사, 석사, 박사</li>
-       <li>채용 시작일 & 채용 마감일</li>
-       <li>최소 경력 & 최고 경력</li>
-       <li>채용 공고 제목</li>
-       <li>회사명</li>
-       <li>기타 자격 요건</li>
-     </ul>
-   </details>
-</details>
-
-<details>
-  <summary> 요즘 채용 시장이 어떤지 보고 싶다면? 전체 채용 공고! </summary>
-
-- 모든 채용 공고를 한곳에서 확인 가능
-- 마감된 채용 공고는 조회 목록에서 제외
-</details>
-
-<details>
-  <summary> 내가 어떤 채용 공고를 검색했더라? 검색 기록 조회! </summary>
-
-- 이전에 검색한 채용 공고 목록을 쉽게 확인
-</details>
-
+- **자동 완성 & 부분 검색 지원** → 한 글자만 입력해도 추천 검색어 제공
+- **오탈자 보정** → 잘못 입력해도 정확한 채용 공고 조회 가능
+- **검색 우선순위 적용** → `제목 → 회사명 → 키워드` 순으로 검색
+  <details>
+    <summary> 필터 항목 보기 </summary>
+    <ul>
+      <li>지역</li>
+      <li>채용 형태: 정규직, 계약직, 아르바이트, 인턴, 프리랜서</li>
+      <li>학력: 무관, 고졸, 전문학사, 학사, 석사, 박사</li>
+      <li>채용 시작일 & 마감일</li>
+      <li>최소 경력 & 최고 경력</li>
+      <li>채용 공고 제목, 회사명, 기타 자격 요건</li>
+    </ul>
+  </details>
+- **전체 채용 공고 조회** → 요즘 채용 시장이 어떤지 한눈에 확인!
+- **검색 기록 조회** → 내가 찾았던 채용 공고를 다시 확인!
 
 <aside>
 
 #### 🔥 **HOT한 채용 공고만 모아 모아!**
-
-<details>
-  <summary> 채용 공고 검색이 어려운 주니어 개발자를 위한, 조회수 Top 100 인기 채용 공고! </summary>
-
-- 조회수가 높은 순으로 인기 채용 공고 100건 제공
-- 각 공고의 조회수 함께 표시
-</details>
-
-<details>
-  <summary> 내 연령대 개발자들은 어떤 공고를 즐겨 찾을까? 연령대별 인기 즐겨찾기 Top 10! </summary>
-
-- 연령대마다 가장 많이 즐겨찾기로 등록한 채용 공고 10건 제공
-- 즐겨찾기로 등록한 사용자 수 함께 표시
-</details>
-
-<details>
-  <summary> 내 연령대 개발자들이 지닌 기술 역량이 궁금하다면? 연령대별 인기 키워드 Top 10! </summary>
-
-- 연령대별로 많이 등록된 키워드 10개 제공
-- 키워드로 등록한 사용자 수 함께 표시
-</details>
-</aside>
+- **조회수 Top 100 인기 채용 공고** → 조회수가 높은 순으로 인기 채용 공고 100건 제공 
+- **연령대별 인기 즐겨찾기 Top 10** → 연령대마다 가장 많이 즐겨찾기로 등록한 채용 공고 10건 제공 
+- **연령대별 인기 키워드 Top 10** → 연령대별로 많이 등록된 키워드 10개 제공 
 
 <aside>
 
 #### **🔖 즐겨찾기와 이메일 알림으로 취업을 위하여!**
-
-<details>
-  <summary> 나만의 기술 역량을 쉽게 관리하고 싶다면, 키워드 등록! </summary>
-
-- 관심 있거나 사용자 자신의 기술 역량을 키워드로 등록, 조회, 삭제하는 기능 제공
-- 등록한 키워드는 이메일 알림 발송 시 사용됨
-</details>
-
-<details>
-  <summary> 내 기술 역량만 등록하면 끝! 맞춤형 채용 공고 이메일 알림! </summary>
-
-- 사용자가 등록한 키워드를 기반으로 `하루 1회` 맞춤형 채용 공고 20건을 이메일 알림으로 발송
-    - 이메일 인증을 완료한 사용자에게만 제공
-</details>
-
-<details>
-  <summary> 놓칠 수 없는 채용 공고는 콕콕 찜할 수 있도록, 즐겨찾기! </summary>
-
-- 관심 있는 채용 공고를 즐겨찾기에 등록, 조회, 삭제하는 기능 제공
-- 최대 200개까지 즐겨찾기 등록 가능
-    - 200개 초과 시, 가장 오래된 즐겨찾기부터 자동 삭제
-        - 예시) 201번째 즐겨찾기 추가 시, ID 1번 즐겨찾기가 삭제됨
-- 마감 공고도 즐겨찾기에서 다시 볼 수 있도록 지원
-</details>
-</aside>
-
+- **키워드 등록** → 관심 있거나 자신의 기술 역량을 키워드로 등록, 조회, 삭제 가능
+- **맞춤형 채용 공고 이메일 알림** → 등록한 키워드를 기반으로 `하루 1회` 맞춤형 채용 공고 20건 이메일 발송
+    - 이메일 인증 필수
+    - 20건 선정 기준: 사용자가 등록한 키워드가 많이 겹치는 순 내림차순
+- **즐겨찾기 기능** → 관심 있는 채용 공고를 즐겨찾기에 등록, 조회, 삭제 가능
+    - 최대 200개 등록 가능: 초과 시 가장 오래된 항목 자동 삭제
+    - 마감된 공고도 즐겨찾기에서 확인 가능
+  
 <aside>
+
+--- 
 
 ## ⚡ 성능 개선, 어디까지 해봤니?
 
 <details>
   <summary> 🏎️ MySQL vs Elasticsearch, 채용 공고 검색 시 무엇을 사용할까요? </summary>
 
-### 1️⃣ 테스트 개요
-
-이 테스트는 MySQL과 Elasticsearch를 사용한 채용 공고 조회 성능을 비교하고 분석하는 데 초점을 두었습니다.
-
-두 성능을 비교할 때에는 검색 방식의 응답 시간, 처리량, 데이터 수신량 등을 기준으로 삼았습니다.
-
-### 2️⃣ 테스트 환경 및 조건
-
+### 환경
 - **Elasticsearch 버전**: 8.17.2
 - **QueryDSL**: MySQL을 이용한 데이터 조회
 - **테스트 도구**: Apache JMeter
@@ -187,56 +104,30 @@
 - **서버 환경**: 로컬 서버 (localhost)
 - **클라이언트 환경**: JMeter 클라이언트
 
-### 3️⃣ 성능 비교
+### 비교
+| **테스트 항목**    | **MySQL 조회 (QueryDSL)**  | **Elasticsearch 조회**  | **성능 향상률**  |
+|---------------|--------------------------|-----------------------|-------------|
+| **평균 응답 시간**  | 48ms                     | 14ms                  | 70.83%      |
+| **최소 응답 시간**  | 39ms                     | 9ms                   | 77%         |
+| **최대 응답 시간**  | 117ms                    | 41ms                  | 65%         |
+| **표준편차**      | 9.37ms                   | 3.28ms                | 64%         |
+| **TPS**       | 8.63/sec                 | 9.5/sec               | +10.1%      |
+| **수신량**       | 8.63KB/sec               | 65.01KB/sec           | +653.5%     |
+| **전송된 데이터**   | 0.57KB                   | 3.94KB                | +591.2%     |
+| **평균 바이트**    | 6300.9 Byte              | 6971.9 Byte           | +10.7%      |
 
-- 요약
-
-| **테스트 항목** | **MySQL 조회 (QueryDSL)** | **Elasticsearch 조회** | **성능 향상률** |
-| --- | --- | --- | --- |
-| **평균 응답 시간** | 48ms | 14ms | 70.83% |
-| **최소 응답 시간** | 39ms | 9ms | 77% |
-| **최대 응답 시간** | 117ms | 41ms | 65% |
-| **표준편차** | 9.37ms | 3.28ms | 64% |
-| **TPS** | 8.63/sec | 9.5/sec | +10.1% |
-| **수신량** | 8.63KB/sec | 65.01KB/sec | +653.5% |
-| **전송된 데이터**  | 0.57KB | 3.94KB | +591.2% |
-| **평균 바이트**  | 6300.9 Byte | 6971.9 Byte | +10.7% |
-
-### 4️⃣ 테스트 결과 분석
-
+### 결론
 - **응답 시간**: 최소 응답 시간은 77%, 최대 응답 시간은 65% 향상됨
 - **표준편차**: 약 64% 향상됨
 - **TPS**: 약 10% 증가함
 - **수신량 및 전송량**: 수신량은 653.5%, 전송량은 591.2% 증가함
-
-### 5️⃣ 결론
-
-- lasticsearch는 MySQL에 비해 빠르고 일관된 성능을 보였습니다.
-
-- 특히 대규모 데이터 처리 및 조회에서 뛰어난 성능을 보였으며, 수신 및 전송량이 크게 향상되었습니다. MySQL은 복잡한 트랜잭션 처리에는 유리하지만, 대규모 데이터 조회에서는 Elasticsearch가 훨씬 유리했습니다.
-
-- 따라서, 대규모 데이터 조회 성능 개선이 필요할 때는 Elasticsearch를 사용해야 적합하다는 의사결정을 내릴 수 있었습니다.
-
-### 6️⃣ 추가 테스트 계획
-
-- **다양한 쿼리 테스트**: 다양한 복잡도를 가진 쿼리를 적용하여 성능 비교
-- **대규모 데이터셋 테스트**: 실제 운영 환경을 고려하여 더 큰 규모의 데이터셋으로 테스트 및 성능 검증
-- **장기 성능 테스트**: 지속적인 부하 테스트로 장시간의 성능 안정성 및 자원 소모 점검
-- **보안 및 데이터 일관성 검증**: 실제 서비스에 적용할 수 있는지 검토
-
+- **대규모 데이터 조회 성능 개선이 필요할 때는 Elasticsearch 사용**
 </details>
 
 <details>
   <summary> 🏎️ 채용 공고를 조회할 때 스레드 수는 얼마나 늘릴 수 있을까요? </summary>
 
-### 1️⃣ 테스트 개요
-
-이 테스트는 채용 공고 조회 시스템에서 스레드 수가 증가함에 따라 시스템 성능, 특히 응답 시간과 TPS의 변화를 분석하는 데 초점을 두었습니다.
-
-특히 해당 테스트 결과를 바탕으로 성능 한계에 도달하는 지점과 최적화 방안을 도출하고자 하였습니다.
-
-### 2️⃣ 테스트 환경 및 조건
-
+###  환경
 - **Elasticsearch 버전**: 8.17.2
 - **Elasticsearch QueryDSL**: Elasticsearch에서 데이터를 직접 조회하여 처리
 - **테스트 도구**: Apache JMeter
@@ -245,15 +136,11 @@
 - **서버 환경**: 로컬 서버 (localhost)
 - **클라이언트 환경**: JMeter 클라이언트
 
-### 3️⃣ 테스트 결과 분석
+### 비교 
+![키바나 모니터링 그래프 이미지](https://private-user-images.githubusercontent.com/184512169/422768573-f1d89340-26da-4210-b284-cf1840cf814e.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDE5NTMwMzksIm5iZiI6MTc0MTk1MjczOSwicGF0aCI6Ii8xODQ1MTIxNjkvNDIyNzY4NTczLWYxZDg5MzQwLTI2ZGEtNDIxMC1iMjg0LWNmMTg0MGNmODE0ZS5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMzE0JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDMxNFQxMTQ1MzlaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT1jOTk5OGUzNjAwY2FiYzI2MTcxOTQ4YjllYjE0ODFjZDNkYjBmZGMxYWE4ZDhjMjI0MDhkM2JkNDk5OWJkMDBkJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.hCerJMAZPVrU49W0ufo9c0TStWiiinMfWlQxnuNpQB4)
+)
 
-- 테스트 결과, 스레드 수가 증가함에 따라 응답 시간과 TPS에 명확한 변화를 확인할 수 있었습니다.
-
-- **요청 급증의 원인 분석**
-    - 시스템의 자원이 부족해지면서 요청을 처리하는 데 시간이 더 걸렸습니다.
-    - 처리해야 할 요청들이 몰리며 급격히 처리량이 증가하는 현상이 발생했습니다.
-    - 이는 병목 현상이 발생한 결과로 볼 수 있습니다.
-- **스레드 수에 따른 시스템 변화 요약**
+![2100 스레드 jmeter 이미지](https://private-user-images.githubusercontent.com/184512169/422768578-a006aab8-a4e1-446f-925e-851d7422a93a.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDE5NTI3ODksIm5iZiI6MTc0MTk1MjQ4OSwicGF0aCI6Ii8xODQ1MTIxNjkvNDIyNzY4NTc4LWEwMDZhYWI4LWE0ZTEtNDQ2Zi05MjVlLTg1MWQ3NDIyYTkzYS5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMzE0JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDMxNFQxMTQxMjlaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT05N2FjMmYxMzU4M2YxNmNlNTZlZWQwMDY1N2I2NzE2ZDBiOGJhZjAxZGNiNjMzMjRiNjYwZjU5MWIyMGQ1YmQ5JlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.VHjtiv6DaCJ8Gbe3Z2VJ_zVpaiLImUnwMYSYGZ_QjmI)
 
 | **요청 개수**      | **시스템 상태**          | **응답 시간**            | **TPS**             | **기타 영향**       |
 |-----------------|-------------------|--------------------|----------------|--------------|
@@ -261,68 +148,28 @@
 | 🟡 **1600개 이상** | 시스템 자원이 부족해짐   | ⏳ 일정하게 유지 (8-7ms)  | 📉 일부 구간 정체   | 성능 저하 발생  |
 | 🔴 **2100개 이상** | 시스템 한계 초과       | ⏳ 느려짐 (11ms)         | 📉 처리량 감소     | 심각한 성능 저하  |
 
-
-
-![키바나 모니터링 그래프 이미지](https://private-user-images.githubusercontent.com/184512169/422768573-f1d89340-26da-4210-b284-cf1840cf814e.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDE5NTMwMzksIm5iZiI6MTc0MTk1MjczOSwicGF0aCI6Ii8xODQ1MTIxNjkvNDIyNzY4NTczLWYxZDg5MzQwLTI2ZGEtNDIxMC1iMjg0LWNmMTg0MGNmODE0ZS5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMzE0JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDMxNFQxMTQ1MzlaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT1jOTk5OGUzNjAwY2FiYzI2MTcxOTQ4YjllYjE0ODFjZDNkYjBmZGMxYWE4ZDhjMjI0MDhkM2JkNDk5OWJkMDBkJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.hCerJMAZPVrU49W0ufo9c0TStWiiinMfWlQxnuNpQB4)
-)
-
-![2100 스레드 jmeter 이미지](https://private-user-images.githubusercontent.com/184512169/422768578-a006aab8-a4e1-446f-925e-851d7422a93a.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDE5NTI3ODksIm5iZiI6MTc0MTk1MjQ4OSwicGF0aCI6Ii8xODQ1MTIxNjkvNDIyNzY4NTc4LWEwMDZhYWI4LWE0ZTEtNDQ2Zi05MjVlLTg1MWQ3NDIyYTkzYS5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMzE0JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDMxNFQxMTQxMjlaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT05N2FjMmYxMzU4M2YxNmNlNTZlZWQwMDY1N2I2NzE2ZDBiOGJhZjAxZGNiNjMzMjRiNjYwZjU5MWIyMGQ1YmQ5JlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.VHjtiv6DaCJ8Gbe3Z2VJ_zVpaiLImUnwMYSYGZ_QjmI)
-
-
-### 4️⃣ 결론
-
-스레드 수가 1600개일 때까지는 시스템이 원활하게 요청을 처리하지만, 2100개 이상 늘어나면 성능이 저하된다는 점을 파악했습니다.
-
-이를 바탕으로 적절한 자원 관리 및 최적화가 얼마나 중요한지 깨달았습니다.
-
-### 5️⃣ 추가 테스트 계획
-
-- **자원 확장 및 최적화**: 시스템 자원을 확장하거나 로드 밸런싱으로 스레드를 분배하여 성능 한계 완화
-- **스레드 풀 조정**: 스레드 수를 동적으로 조절하거나 적절한 스레드 풀 크기를 설정하여 성능 최적화
-- **장기 부하 테스트**: 다양한 시간대에 걸쳐 부하 테스트를 진행하여, 시스템의 장기 성능 및 자원 소모 패턴 분석
-
+### 결론
+- 스레드 수가 증가함에 따라 응답 시간과 TPS가 명확하게 변화함 
+- 스레드 수가 1600개일 때까지는 시스템이 원활하게 요청을 처리 
+- 스레드 수가 2100개 이상 늘어나면 성능이 저하됨 
+- **성능 한계 전에 자원을 효율적으로 관리하고 병목을 예방해야 함**
 </details>
 
 <details>
   <summary>🏎️ 연령대별 인기 키워드 조회 기능의 속도와 처리량을 어떻게 늘릴까요?</summary>
 
-### 1️⃣ 테스트 개요
+### 환경
+- **서버:** 로컬 환경 및 배포 서버에서 테스트 수행
+- **사용된 도구:** Postman, JMeter, QueryDSL
+- **연령대:** 취업 연령층이 가장 많은 25세에서 40세로 고정
+- JMeter를 활용하여 100 스레드로 고정
 
-이번 테스트는 연령대별 인기 키워드 조회 쿼리의 성능 개선을 목표로 진행되었습니다.
+### 비교
 
-쿼리 실행 속도를 단축하고 시스템 부하를 줄이는 데 중점을 두었습니다.
-
-초기 쿼리 성능이 저조했기 때문에 최적화 과정에서 실제 서비스에 미치는 영향을 평가하였습니다.
-
-### 2️⃣ 테스트 환경 및 조건
-
-- **환경**
-    - **서버:** 로컬 환경 및 배포 서버에서 테스트 수행
-    - **사용된 도구:** Postman, JMeter, QueryDSL
-- **조건**
-    - **연령대:** 취업 연령층이 가장 많은 25세에서 40세로 고정
-- **부하 테스트**
-    - JMeter를 활용하여 100 스레드로 고정
-    - 다양한 설정을 적용하여 부하 테스트 진행
-- 이번 테스트에서는 쿼리 실행 시간, 부하 처리 성능, 인덱스 적용에 따른 성능 차이 분석에 중점을 두었습니다.
-
-### 3️⃣ 성능 비교
-
-성능을 개선할 때에는 두 가지 방법을 적용하였습니다.
-
-**1. 서브 쿼리 최적화**
-- QueryDSL을 사용하여 서브 쿼리를 제거한 다음, 단일 쿼리 안에서 **`count`**를 바로 계산하여 불필요한 연산을 줄였습니다.
-
-    - 기존 코드
-
-      ![서브 쿼리를 활용한 코드](https://private-user-images.githubusercontent.com/184512169/423214014-8f75f6ae-98ab-4398-a3e6-966b9c124200.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDIxMjg2NTAsIm5iZiI6MTc0MjEyODM1MCwicGF0aCI6Ii8xODQ1MTIxNjkvNDIzMjE0MDE0LThmNzVmNmFlLTk4YWItNDM5OC1hM2U2LTk2NmI5YzEyNDIwMC5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMzE2JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDMxNlQxMjMyMzBaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT05N2IzOTVmNmNiZDBjYzU4YjZiZDAwNGE4ZjNjMWUwNDNjNmZjMzc0ZjBmMDg1MjI3MmFjZDA4YTBjY2JjYzAwJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.kZaodISWMTrJ2Z07WJv5uhLzdB2czlPqZHNH-I-AxQ4)
-
-    - 변경한 코드
-
-      ![단일쿼리로 변경한 코드](https://private-user-images.githubusercontent.com/184512169/423214015-ebcf6b36-b745-469a-9742-74a901d07907.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDIxMjg2NTAsIm5iZiI6MTc0MjEyODM1MCwicGF0aCI6Ii8xODQ1MTIxNjkvNDIzMjE0MDE1LWViY2Y2YjM2LWI3NDUtNDY5YS05NzQyLTc0YTkwMWQwNzkwNy5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMzE2JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDMxNlQxMjMyMzBaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT0zYjU3MmI5ZjEzZDExZTM4ZjQ0NDg3MGViYjYyMjRiMGI0NjQ2YTNmZGM2ZDQ5OTBjMDFkNjQ3MmUwY2U3N2YwJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.91kSb7c63J50y7SH9xAwrb3Lk2dKDenTWp8HC6BYLWQ)
-
-- 쿼리 변경 전후 비교 결과
-   - 스레드 100개를 10초로 나누어서 요청을 처리했을 때
+**1. 쿼리 변경 전후 비교 결과**
+- QueryDSL을 사용하여 서브 쿼리 제거
+- 단일 쿼리 안에서 **`count`**를 바로 계산
+- 스레드 100개를 10초로 나누어서 요청 처리 시
 
 | **비교 항목**         | **서브 쿼리 적용 시** | **단일 쿼리 적용 시** | **성능 향상률** | **배율** |
 |----------------------|----------------------|----------------------|----------------|----------|
@@ -333,7 +180,7 @@
 | **에러 발생 비율**    | 90.00%               | 0.00%                | 100.0%         | 완전 개선 |
 | **처리량**            | 41.2/min             | 606/min              | 1370.87%       | 14.71배  |
 
-  - 스레드 100개를 120초로 나누어서 요청을 처리했을 때
+- 스레드 100개를 120초로 나누어서 요청 처리 시 
 
 | **비교 항목**         | **서브 쿼리 적용 시** | **단일 쿼리 적용 시** | **성능 향상률** | **배율** |
 |----------------------|----------------------|----------------------|----------------|----------|
