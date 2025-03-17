@@ -958,547 +958,136 @@ erDiagram
 ## 🏦비즈니스적 의사결정
 
 <details>
-<summary> 사용자 관리를 어떻게 하면 좋을까요? 이메일 인증과 밴 기능을 추가합시다! </summary>
+<summary><strong>💰 사용자 관리를 어떻게 하면 좋을까요? 이메일 인증과 밴 기능을 추가합시다! </strong></summary>
     
-  ---
+### 문제 정의
+- 현재 서비스의 회원가입 및 로그인 절차가 너무 간단하여 누구나 쉽게 가입 및 로그인 가능 
+- 서비스에서 사용자의 나이와 경력처럼 민감한 정보를 다루기 때문에, 무분별한 아이디-비밀번호 입력 시도를 방지하는 보안 조치가 필요함
 
-  ### 1. 문제 정의
+### 설계 및 구현
+- 이메일 알림 인증을 받은 사용자에게만 이메일 알림을 발송하도록 개선
+- 이메일 서비스 남용 방지 차원에서 한 이메일 당 하루 최대 3번으로 제한
+- 인증코드 실패 횟수 체크 및 3회 이상 실패 시 코드 무효화
+- 밴 당한 IP는 모든 API를 사용할 수 없도록 전체 차단
+- 아이피 밴
+  - 한 IP에서 4개 이상의 계정에 로그인 시도 시 밴, 시도 실패 정보는 Redis에 저장
+  - IPv6을 우선적으로 수집
+  - 공유 네트워크를 고려하여 30초만 Redis에 밴 정보 저장
+- 이메일 밴
+  - 3일 내에 로그인 5회 이상 실패하면 해당 이메일 밴
+  - 실패 정보는 Redis, 밴 정보는 DB에 저장
 
-  현재 서비스의 회원가입 및 로그인 절차가 너무 간단하여, 누구나 쉽게 가입하고 로그인할 수 있습니다.
-
-  이는 애플리케이션 성능에도 직접적인 영향을 미칠 수 있습니다.
-
-  한 가지 예시를 들자면, 서비스에서 제공하는 이메일 알림 기능은 비동기 **`AsyncAwait`** 메커니즘을 활용하여 진행됩니다.
-
-  가입된 모든 사용자에게 알림을 보내면 ‘비동기 + 블로킹 i/o (네트워크 i/o)’ 작업 때문에 가용 스레드가 고갈될 수 있습니다.
-
-  또한, 서비스에서 사용자의 나이와 경력처럼 민감한 정보를 다루기 때문에, 무분별한 아이디-비밀번호 입력 시도를 방지하는 보안 조치도 필요합니다.
-    
-  ---
-
-  ### 2. 기능 설계, 구현
-
-1. 조건 없는 이메일 알림 발송 → 이메일 알림 인증을 받은 사용자에게만 발송하도록 개선
-        - 유효하지 않은 이메일로 발송하는 경우를 차단
-2. 회원가입/로그인이 너무 쉬운 구조 → 회원가입 시 이메일 인증을 받도록 개선
-        - 이메일 서비스 남용 방지 위해 한 이메일 당 하루 최대 3번으로 제한
-        - 인증코드 실패 횟수도 체크하고, 3회 이상 실패 시 코드 무효화
-3. 해커의 무분별한 아이디/비밀번호 입력 시도 → 아이피 밴, 이메일 밴 도입
-        - 아이피 밴
-            - 한 IP에서 4개 이상의 계정에 로그인 시도 시 밴, 시도 실패 정보는 Redis에 저장
-            - IPv6을 우선적으로 수집
-            - 공유 네트워크를 고려하여 30초만 Redis에 밴 정보 저장
-<details>
-<summary> AOP 코드 </summary>
-
-```java
-                @Slf4j
-                @Aspect
-                @Component
-                @RequiredArgsConstructor
-                public class IpBlockingAspect {
-                
-                    private final KeyValueCommandRepository keyValueCommandRepository;
-                    private final KeyValueQueryRepository keyValueQueryRepository;
-                
-                    private static final String BLOCK_PREFIX = "block:ip:";
-                    private static final String LOGIN_ATTEMPT_PREFIX = "attempt:ip:";
-                    private static final long IP_BLOCK_DURATION = 30;  //ip 30초 차단
-                    private static final long ATTEMPT_TTL = 15;        //15분 동안 시도 기록 유지
-                    private static final int MAX_DIFFERENT_EMAILS = 3; //서로 다른 이메일 4개 이상 감지되면 차단(3개까지 허용)
-                
-                    /**
-                     * 서로 다른 이메일 4개 이상 로그인 시도 시 해당 사용자의 ip 를 차단합니다.
-                     * 로그인 성공 시에도 시도 기록이 남아있습니다.(로그인 후 재로그인 악용 방지)
-                     */
-                    @Around("execution(* com.project.cheerha.domain.auth.controller.AuthController.login(..))")
-                    public Object blockAbnormalIp(ProceedingJoinPoint joinPoint) throws Throwable {
-                        HttpServletRequest request = getRequest();
-                        if (request == null) {
-                            return joinPoint.proceed();
-                        }
-                
-                        Object[] args = joinPoint.getArgs();
-                        CreateLoginRequestDto dto = (CreateLoginRequestDto) args[0];
-                        String email = dto.email();
-                
-                        String ip = IpUtil.getClientIp(request);
-                        String redisBlockKey = BLOCK_PREFIX + ip;
-                        String redisAttemptKey = LOGIN_ATTEMPT_PREFIX + ip;
-                
-                        try {
-                            return joinPoint.proceed();
-                        } catch (Exception e) {
-                            //해당 ip 에서 로그인 시도한 이메일 리스트 가져오기
-                            List<String> attemptedEmails = keyValueQueryRepository.getListRange(redisAttemptKey, 0, -1);
-                            if (attemptedEmails == null || !attemptedEmails.contains(email)) {
-                                keyValueCommandRepository.pushToListLeft(redisAttemptKey, email);
-                            }
-                
-                            //추가 시 ttl 설정
-                            keyValueCommandRepository.expireValue(redisAttemptKey, ATTEMPT_TTL, TimeUnit.MINUTES);
-                
-                            //서로 다른 이메일이 3개 이상이면 차단
-                            if (!Objects.requireNonNull(attemptedEmails).contains(email) && attemptedEmails.size() >= MAX_DIFFERENT_EMAILS) {
-                                keyValueCommandRepository.setValue(redisBlockKey, "blocked", IP_BLOCK_DURATION, TimeUnit.SECONDS);
-                                log.warn("IP {} 차단됨 (서로 다른 {}개 이메일 감지됨)", ip, MAX_DIFFERENT_EMAILS + 1);
-                                keyValueCommandRepository.removeValue(redisAttemptKey);
-                            }
-                            throw e;
-                        }
-                    }
-                
-                    private HttpServletRequest getRequest() {
-                        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-                        return attributes != null ? attributes.getRequest() : null;
-                    }
-                
-                }
-                
-```
-</details>
-
- - 이메일 밴
-            - 3일 내에 로그인 5회 이상 실패하면 해당 이메일 밴
-            - 실패 정보는 Redis, 밴 정보는 DB에 저장
-<details>
-<summary> AOP 코드 </summary>
-
-```java
-                @Slf4j
-                @Aspect
-                @Component
-                @RequiredArgsConstructor
-                public class EmailBlockingAspect {
-                
-                    private final KeyValueCommandRepository keyValueCommandRepository;
-                    private final BannedEmailRepository bannedEmailRepository;
-                
-                    private static final String FAIL_PREFIX = "fail:email:";
-                    private static final long EMAIL_FAIL_DURATION = 3;    //로그인 실패 시 실패데이터 3일간 유지
-                    private static final int MAX_FAILED_COUNT = 5;  //5회 실패 시 차단
-                    private static final String BAN_MASSAGE = "비밀번호 입력 5회 실패";    //db에 저장되고, 로그에 출력되는 메세지
-                
-                    /**
-                     * 같은 이메일로 5회 이상 로그인 실패한 경우 밴하는 메서드입니다.
-                     */
-                    @Around("execution(* com.project.cheerha.domain.auth.controller.AuthController.login(..))")
-                    public Object blockAbnormalEmail(ProceedingJoinPoint joinPoint) throws Throwable {
-                        Object[] args = joinPoint.getArgs();
-                        CreateLoginRequestDto dto = (CreateLoginRequestDto) args[0];
-                        String email = dto.email();
-                        String failCountKey = FAIL_PREFIX + email;
-                
-                        //차단된 이메일인지 확인
-                        if (bannedEmailRepository.existsByEmail(email)) {
-                            log.warn("임시차단된 사용자의 로그인 요청: {}", email);
-                            throw new UnAuthorizedException(AuthErrorCode.BANNED_EMAIL);
-                        }
-                
-                        try {
-                            Object result = joinPoint.proceed(args);
-                            //로그인 성공 시 failCount 삭제
-                            keyValueCommandRepository.removeValue(failCountKey);
-                            return result;
-                        } catch (Exception e) {
-                            if(Objects.equals(e.getMessage(), "패스워드가 잘못되었습니다.")){
-                                //잘못된 비밀번호 입력 시 count 1회 추가, 첫 추가 시 ttl 설정
-                                long failedAttempts = keyValueCommandRepository.incrementValue(failCountKey);
-                                if (failedAttempts == 1) {
-                                    keyValueCommandRepository.expireValue(failCountKey, EMAIL_FAIL_DURATION, TimeUnit.DAYS);
-                                }
-                
-                                //잘못된 시도 5회 시 이메일 차단
-                                if (failedAttempts >= MAX_FAILED_COUNT) {
-                                    String message = BAN_MASSAGE;
-                                    BannedEmail bannedEmail = BannedEmail.toEntity(
-                                            email,
-                                            message
-                                    );
-                                    log.warn("email {} 차단 완료 : {}", email, message);
-                                    bannedEmailRepository.save(bannedEmail);
-                                    keyValueCommandRepository.removeValue(failCountKey);
-                                }
-                            }
-                            throw e;
-                        }
-                    }
-                }
-                
-```
-</details>
-
-4. 이메일 밴을 당한 사용자는 어떻게 재접근할 수 있을까? → 비밀번호 리셋 기능 도입
-        - 이메일 인증을 통해 비밀번호 리셋 가능
-5. 밴 당한 IP는 모든 API를 사용할 수 없게 전체 차단
-
-    ---
-
-  ### 3. 기능 구현 시 트러블슈팅
-
-  **[문제 발생]** IP 전역 밴을 **`Interceptor`**로 구현하다가 문제가 발생함
-
-![image.png](https://github.com/llRosell/sparta/blob/main/50.png?raw=true)
-
-![image.png](https://github.com/llRosell/sparta/blob/main/52.png?raw=true)
-
-- JWT토큰 관련 필터가 걸린 API에서는 토큰 Exception이 먼저 출력됨
-
-   -. JWT Filter가 인터셉터보다 앞단에 있음을 의미함
-
-
-![image.png](https://github.com/llRosell/sparta/blob/main/51.png?raw=true)
-    
-  **[해결 방법]** IP Blocking은 필터체인 사용
-    
-  - 해당 문제는 **`filter`**는 웹MVC에 존재하고 스프링MVC에 존재하는 **`Interceptor`**보다 전방에 위치했기 때문에 발생함
-    
-  → IP Blocking을 필터체인에서 가장 우선순위에 두어서 문제를 해결함 
-
-<details>
-<summary> IP Blocking Filter </summary>
-        
-```java
-        @Slf4j
-        @Component
-        @RequiredArgsConstructor
-        public class IpBlockingFilter implements Filter {
-        
-            private final FilterExceptionHandler filterExceptionHandler;
-            private final KeyValueQueryRepository keyValueQueryRepository;
-        
-            private static final String BLOCK_PREFIX = "block:ip:";
-        
-            @Override
-            public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-                    throws IOException, ServletException {
-        
-                HttpServletRequest httpRequest = (HttpServletRequest) request;
-                HttpServletResponse httpResponse = (HttpServletResponse) response;
-                String ip = IpUtil.getClientIp(httpRequest);
-                String redisBlockKey = BLOCK_PREFIX + ip;
-        
-                if (Boolean.TRUE.equals(keyValueQueryRepository.hasKey(redisBlockKey))) {
-                    log.warn("차단된 IP 로그인 시도: {}", ip);
-                    filterExceptionHandler.sendErrorResponse(httpResponse, HttpStatus.FORBIDDEN, "30초간 차단된 IP입니다.");
-                    return;
-                }
-        
-                chain.doFilter(request, response);
-            }
-        }
-        
-```
-</details>
-    
----
-    
-### 4. 구현 완료
-    
-1. 이메일 인증으로 회원가입, 이메일 알림 구독, 비밀번호 리셋 가능
-    
-![스크린샷 2025-03-12 오후 11.16.03.png](https://github.com/llRosell/sparta/blob/main/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202025-03-12%20%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE%2011.16.03.png?raw=true)
-    
-2. Kibana의 로그 대시보드로 이상 사용자의 IP를 확인하고, 지속적으로 올바르지 않은 요청을 보낸 IP는 WAF(Web Application Firewall)에서 차단 가능
-    
+### 결과
+- 이메일 인증으로 회원가입, 이메일 알림 구독, 비밀번호 리셋 가능  
+![스크린샷 2025-03-12 오후 11.16.03.png](https://github.com/llRosell/sparta/blob/main/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202025-03-12%20%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE%2011.16.03.png?raw=true) 
+- Kibana의 로그 대시보드로 이상 사용자의 IP를 확인하고, 지속적으로 올바르지 않은 요청을 보낸 IP는 WAF에서 차단 가능  
 ![스크린샷 2025-03-12 오후 10.35.06.png](https://github.com/llRosell/sparta/blob/main/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202025-03-12%20%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE%2010.35.06.png?raw=trueE)
-    
----
-    
-### 5. 영향
-    
-- **긍정적 영향**
-        - **무분별한 공격에 대응 가능 →** 완벽하지는 않으나, 해커의 무분별한 공격을 막을 수 있음
-        - **SendGrid API 횟수 조절 가능 →** SendGrid API 사용 횟수를 합리적으로 조절할 수 있음
-- **부정적 영향**
-        - **단체 IP 밴 가능성 존재 →** 공용 IP에서 동시에 4명 이상 접속 시 단체로 IP 밴에 걸릴 수 있음
-    
-### **6. 향후 고려 사항**
-    
-    - **추가 대책 마련:** IP 밴은 30초밖에 안 되므로, 해커가 공용 IP를 사용할 때 대응책 마련 필요
-
+ 
 </details>
 
 <details>
-<summary> 채용 공고에서 중요한 제목을 최우선으로, 검색순위를 설정하면 어떨까요? </summary> 
-    
-  ---
+<summary><strong>💰 채용 공고에서 중요한 제목을 최우선으로, 검색순위를 설정하면 어떨까요?</strong> </summary> 
 
-  ### 1. 배경
+### 배경
+- 채용 공고의 제목, 회사명, 자격 요건 등의 필드에 동일한 우선순위가 적용되어 사용자가 원하는 결과를 빠르게 찾기 어려움
 
-  기존 채용 공고 검색 시스템에서는 채용 공고의 제목, 회사명, 자격요건 등의 필드에 동일한 우선순위가 적용되어 있었습니다.
+### 요구사항
+- **검색 결과의 우선순위 설정**: 채용 공고 검색 시, 중요한 필드인 제목을 가장 높은 우선순위로 설정
+- **검색 품질 향상**: 중요한 필드들이 상위에 노출되어 사용자가 보다 빠르게 원하는 검색 결과를 찾을 수 있도록 함
 
-  이로 인해 검색 결과에서 중요한 정보인 제목이 검색 우선순위에서 낮아질 수 있었고, 사용자가 원하는 결과를 빠르게 찾기 어려웠습니다.
+### 고려한 대안
 
-  따라서 검색 결과에서 중요한 정보인 제목을 더 높은 우선순위로 설정하여, 사용자가 보다 효율적으로 원하는 정보를 찾을 수 있도록 개선이 필요했습니다.
-    
-  ---
+  | **비교 항목**   | **기존 검색 시스템**               | **Boost 기능 적용 후**              |
+  |-------------|-----------------------------|--------------------------------|
+  | **우선순위 설정** | ❌ 모든 필드에 동일한 우선순위 적용        | ✅ 각 필드에 점수를 부여하여 우선순위 적용       |
+  | **검색 품질**   | ❌ 동일한 우선순위로 인해 중요한 정보 노출 부족 | ✅ 중요한 정보(제목)가 먼저 노출되어 검색 품질 향상 |
 
-  ### 2. 요구사항
+### 결정 및 근거
+✅Elasticsearch의 Boost 기능을 적용
+- Title 필드: `boost(2.0f)`를 사용하여 다른 필드들보다 더 높은 우선순위 부여
+- Company 필드: `boost(1.5f)`를 적용하여 제목 다음으로 높은 우선순위 부여
+- RequiredSkills 필드:`boost(1.0f)`를 설정하여 회사명보다 낮은 우선순위 부여
 
-  - 검색 결과의 우선순위 설정: 채용 공고 검색 시, 중요한 필드인 제목을 가장 높은 우선순위로 설정
-  - 검색 품질 향상: 중요한 필드들이 상위에 노출되어 사용자가 보다 빠르게 원하는 검색 결과를 찾을 수 있도록 함
-
-    ---
-
-  ### 3. 고려한 대안
-
-  | **비교 항목** | **기존 검색 시스템** | **Boost 기능 적용 후** |
-  | --- | --- | --- |
-  | **우선순위 설정** | ❌ 모든 필드에 동일한 우선순위 적용 | ✅ 각 필드에 점수를 부여하여 우선순위 적용 |
-  | **검색 품질** | ❌ 동일한 우선순위로 인해 중요한 정보 노출 부족 | ✅ 중요한 정보(제목)가 먼저 노출되어 검색 품질 향상 |
-    
-  ---
-
-  ### 4. 결정 및 근거
-
-  ✅Elasticsearch의 Boost 기능을 적용
-
-  - Title 필드
-        - `boost(2.0f)`를 사용하여 다른 필드들보다 더 높은 우선순위를 부여했습니다.
-        - 제목이 가장 중요한 정보로 취급되도록 설정했습니다.
-  - Company 필드
-        - `boost(1.5f)`를 적용하여 제목보다 낮지만 여전히 중요한 역할을 할 수 있도록 했습니다.
-        - 회사명이 검색에 포함될 때 해당 필드는 중요한 정보를 제공하게 됩니다.
-  - RequiredSkills 필드
-        - `boost(1.0f)`를 설정하여 회사명보다 낮은 우선순위지만 여전히 검색에 중요한 요소로 취급되도록 했습니다.
-<details>
-<summary> 우선순위 검색 예시 사진 </summary>
-
+### 결과
+- Spring 으로 검색 시 ⬇️ 
 ![Spring 으로 검색 시](https://github.com/llRosell/sparta/blob/main/Spring%20%E1%84%8B%E1%85%B3%E1%84%85%E1%85%A9%20%E1%84%80%E1%85%A5%E1%86%B7%E1%84%89%E1%85%A2%E1%86%A8%20%E1%84%89%E1%85%B5.png?raw=true)
 
-Spring 으로 검색 시
-
+- Java 로 검색 시 ⬇️
 ![Java 로 검색 시](https://github.com/llRosell/sparta/blob/main/Java%20%E1%84%85%E1%85%A9%20%E1%84%80%E1%85%A5%E1%86%B7%E1%84%89%E1%85%A2%E1%86%A8%20%E1%84%89%E1%85%B5.png?raw=true)
-
-Java 로 검색 시
-
-</details>
-
-  ---
-    
-  ### 5. 코드
-    
-   - 1순위 제목/ 2순위 회사명/3순위 자격요건 순으로 우선순위를 처리했습니다.
-        
-![수정 전 서치텀에서 제목만 검색이 되는 코드](https://github.com/llRosell/sparta/blob/main/%E1%84%89%E1%85%AE%E1%84%8C%E1%85%A5%E1%86%BC%20%E1%84%8C%E1%85%A5%E1%86%AB%20%E1%84%89%E1%85%A5%E1%84%8E%E1%85%B5%E1%84%90%E1%85%A5%E1%86%B7%E1%84%8B%E1%85%A6%E1%84%89%E1%85%A5%20%E1%84%8C%E1%85%A6%E1%84%86%E1%85%A9%E1%86%A8%E1%84%86%E1%85%A1%E1%86%AB%20%E1%84%80%E1%85%A5%E1%86%B7%E1%84%89%E1%85%A2%E1%86%A8%E1%84%8B%E1%85%B5%20%E1%84%83%E1%85%AC%E1%84%82%E1%85%B3%E1%86%AB%20%E1%84%8F%E1%85%A9%E1%84%83%E1%85%B3.png?raw=true)
-        
-   수정 전 서치텀에서 제목만 검색이 되는 코드
-        
-![수정 후 우선순위를 매겨 서치텀에서 제목, 회사명, 자격요건이 함께 검색되도록 함](https://github.com/llRosell/sparta/blob/main/%E1%84%89%E1%85%AE%E1%84%8C%E1%85%A5%E1%86%BC%20%E1%84%92%E1%85%AE%20%E1%84%8B%E1%85%AE%E1%84%89%E1%85%A5%E1%86%AB%E1%84%89%E1%85%AE%E1%86%AB%E1%84%8B%E1%85%B1%E1%84%85%E1%85%B3%E1%86%AF%20%E1%84%86%E1%85%A2%E1%84%80%E1%85%A7%20%E1%84%89%E1%85%A5%E1%84%8E%E1%85%B5%E1%84%90%E1%85%A5%E1%86%B7%E1%84%8B%E1%85%A6%E1%84%89%E1%85%A5%20%E1%84%8C%E1%85%A6%E1%84%86%E1%85%A9%E1%86%A8,%20%E1%84%92%E1%85%AC%E1%84%89%E1%85%A1%E1%84%86%E1%85%A7%E1%86%BC,%20%E1%84%8C%E1%85%A1%E1%84%80%E1%85%A7%E1%86%A8%E1%84%8B%E1%85%AD%E1%84%80%E1%85%A5%E1%86%AB%E1%84%8B%E1%85%B5%20%E1%84%92%E1%85%A1%E1%86%B7%E1%84%81%E1%85%A6%20%E1%84%80%E1%85%A5%E1%86%B7%E1%84%89%E1%85%A2%E1%86%A8%E1%84%83%E1%85%AC%E1%84%83%E1%85%A9%E1%84%85%E1%85%A9%E1%86%A8%20%E1%84%92%E1%85%A1%E1%86%B7.png?raw=true)
-        
-  수정 후 우선순위를 매겨 서치텀에서 제목, 회사명, 자격요건이 함께 검색되도록 함
-        
-    
-  ---
-    
-  ### 6. 향후 고려 사항
-    
-  - 추가 필드 확장: 다른 필드들에 대해 우선순위를 추가로 설정하여 검색 정확도와 효율성을 높일 수 있습니다. 예를 들어, 채용 공고 날짜나 급여 조건을 필터링하여 우선순위를 설정할 수 있습니다.
-
 </details>
 
 <details>
-<summary> 비정형 데이터로도 정확한 검색 결과를 얻을 수 있으면 어떨까요? </summary> 
+<summary><strong>💰 비정형 데이터로도 정확한 검색 결과를 얻을 수 있으면 어떨까요?</strong> </summary> 
     
-  ---
+### 배경
+- MySQL 기반의 채용 공고 검색 시스템은 오탈자 입력 시 제대로 된 검색 결과를 제공하지 못하여 사용자 경험이 저하됨
 
-  ### 1. 배경
+### 요구사항
+- **오타 처리 기능:** 사용자가 오타가 포함된 검색어를 입력해도 정확한 검색 결과를 제공할 수 있어야 함
+- **검색 편의성 향상:** 오타나 변형된 단어를 포함한 유사 단어도 검색 결과에 포함시킬 수 있어야 함
+- **사용자 편의성:** 사용자가 오타나 변형된 단어를 포함한 검색어로도 원하는 결과를 빠르게 얻을 수 있도록 해야 함
 
-  MySQL 기반의 채용 공고 검색 시스템은 잘못된 단어를 입력하면 제대로 된 검색 결과를 제공하지 못하는 문제가 발생하여 사용자 경험이 저하되었습니다.
+### 고려한 대안
 
-  따라서 오타(철자 오류, 띄어쓰기 실수)나 변형된  단어(복수형, 어미 변화) 등의 비정형 데이터도 검색이 되도록 하여 사용자 편의를 개선할 필요가 있었습니다.
-    
-  ---
+  | **비교 항목**       | **기존 검색 시스템 (정확한 일치)**        | **Fuzzy 기능 적용 (오타 검색)**              |
+  |-----------------|-------------------------------|--------------------------------------|
+  | **비정형 데이터 처리**  | ❌ 오타나 변형된 단어가 있으면 검색 결과 미제공   | ✅ 오타나 변형된 단어가 있어도 유사한 단어로 검색 가능      |
+  | **검색 편의성**      | ❌ 정확한 일치만 처리, 편의성 저하          | ✅ 오타 및 변형된 단어와 유사한 단어를 포함한 검색 결과 제공  |
+  | **사용자 편의성**     | ❌ 오타나 복수형 데이터를 검색 결과에 포함하지 못함 | ✅ 오타나 복수형 단어를 검색어에 포함하여 정확한 검색 결과 제공 |
 
-  ### 2. 요구사항
+### 결정 및 근거
+**✅Elasticsearch의 Fuzzy 기능 적용**
+- 사용자가 실수로 오타(철자 오류, 띄어쓰기 실수)를 입력해도 원하는 결과를 얻을 수 있음
+- 사용자가 변형된 단어(복수형, 어미변화)를 입력해도 원하는 결과를 얻을 수 있음
 
-  - **오타 처리 기능:** 사용자가 오타가 포함된 검색어를 입력해도 정확한 검색 결과를 제공할 수 있어야 함
-  - **검색 편의성 향상:** 오타나 변형된 단어를 포함한 유사 단어도 검색 결과에 포함시킬 수 있어야 함
-  - **사용자 편의성:** 사용자가 오타나 변형된 단어를 포함한 검색어로도 원하는 결과를 빠르게 얻을 수 있도록 해야 함
-
-    ---
-
-  ### 3. 고려한 대안
-
-  | **비교 항목** | **기존 검색 시스템 (정확한 일치)** | **Fuzzy 기능 적용 (오타 검색)** |
-  | --- | --- | --- |
-  | **비정형 데이터 처리** | ❌ 오타나 변형된 단어가 있으면 검색 결과 미제공 | ✅ 오타나 변형된 단어가 있어도 유사한 단어로 검색 가능 |
-  | **검색 편의성** | ❌ 정확한 일치만 처리, 편의성 저하 | ✅ 오타 및 변형된 단어와 유사한 단어를 포함한 검색 결과 제공 |
-  | **사용자 편의성** | ❌ 오타나 복수형 단어의 데이터를 검색 결과에 포함시키지 못함 | ✅ 오타나 복수형 단어를 검색어에 포함시켜 정확한 검색 결과 제공 |
-    
-  ---
-
-  ### 4. 결정 및 근거
-
-  **✅Elasticsearch의 Fuzzy 기능 적용**
-
-  - 사용자가 실수로 오타(철자 오류, 띄어쓰기 실수)를 입력해도 원하는 결과를 얻을 수 있음
-  - 사용자가 변형된 단어(복수형, 어미변화)를 입력해도 원하는 결과를 얻을 수 있음
-
-<details>
-<summary> 예시 사진 모음 </summary>
-
-   (1) 머비스로 검색 시 모비스를 찾아옴
-
+### 결과 
+- `머비스`로 검색 시 `모비스`를 찾아옴 ⬇️
 ![](https://github.com/llRosell/sparta/blob/main/11.png?raw=true)
 
-   (2) 모부스로 검색 시 모비스를 찾아옴
-
-![](https://github.com/llRosell/sparta/blob/main/12.png?raw=true)
-
-   (3) 쿠카오로 검색 시 카카오를 찾아옴
-
+- `쿠카오`로 검색 시 `카카오`를 찾아옴 ⬇️
 ![](https://github.com/llRosell/sparta/blob/main/13.png?raw=true)
 
-   (4) 나이버로 검색 시 네이버를 찾아옴
-
+- `나이버`로 검색 시 `네이버`를 찾아옴 ⬇️
 ![](https://github.com/llRosell/sparta/blob/main/14.png?raw=true)
-
-   (5) 네이바로 검색 시 네이버를 찾아옴
-
-![](https://github.com/llRosell/sparta/blob/main/15.png?raw=true)
-
-</details>
-
-  ---
-    
-  ### 5. 코드
-    
-  - 기본 검색 (must 사용)
-        
-![](https://github.com/llRosell/sparta/blob/main/16.png?raw=true)
-        
-  - **`Fuzzy`** 기능 사용
-        - **`fuzziness`**: 자동으로 오타 및 변형된 단어를 감지하고 유사한 단어를 검색 결과에 포함하도록 설정
-        - **`should`** 조건: 하나 이상의 조건이 만족되면 결과가 반환되도록 조건 추가
-        
-![](https://github.com/llRosell/sparta/blob/main/17.png?raw=true)
-        
-    
-  ---
-    
-  ### 6. 향후 고려 사항
-    
-  - **고급 오타 분석:** 사용자의 오타 유형을 분석하여 검색 성능 개선 방법 마련
-        - 예시) 특정 단어의 오타 패턴을 미리 정의
-  - **다양한 언어 지원 고려:** 다국어 형태소 분석 및 언어별 오타 처리 고려
-
 </details>
 
 <details>
-<summary> 자동 완성 기능을 분리하면 원하는 채용 공고만 조회할 수 있을까요? </summary> 
+<summary><strong>💰 자동 완성 기능을 분리하면 원하는 채용 공고만 조회할 수 있을까요? </strong>></summary> 
 
-  ---
+### 배경
+- 부분 검색과 자동 완성 검색이 동일한 로직에서 수행되면서 불필요한 검색 결과가 반환됨
+
+### 요구사항
+- **검색 성능 최적화**: 불필요한 검색 결과 제거해야 함
+- **자동 완성 기능 개선**: 입력된 검색어와 관련된 검색 결과를 빠르게 제공해야 함
+- **사용자 경험 개선**: 정확한 검색어를 입력하지 않아도 원하는 검색 결과를 제공해야 함
+
+### 고려한 대안
     
-  ### 1. 배경
-    
-  부분 검색과 자동 완성 검색이 동일한 로직에서 수행되면서 불필요한 검색 결과가 반환되었습니다. 
-  사용자의 의도와 맞지 않는 검색 결과가 포함되었습니다.
-  자동 완성 검색을 독립적인 API로 분리하여 더 정확한 검색 결과를 제공할 필요가 있었습니다.
-    
-  ---
-    
-  ### 2. 요구사항
-    
-  - **검색 성능 최적화**: 불필요한 검색 결과 제거해야 함
-  - **자동 완성 기능 개선**: 입력된 검색어와 관련된 검색 결과를 빠르게 제공해야 함
-  - **사용자 경험 개선**: 정확한 검색어를 입력하지 않아도 원하는 검색 결과를 제공해야 함
-    
-  ---
-    
-   ### 3. 고려한 대안
-    
-   | **비교 항목** | **현재 로직 유지** | **자동 완성 검색 로직 분리** |
-   | --- | --- | --- |
-   | **검색 성능 최적화** | ❌ 부분 검색과 자동 완성이 동일한 로직에서 수행되어 불필요한 결과 포함 | ✅ 자동 완성 전용 API를 통해 더 정확한 검색 결과 제공 |
-   | **자동 완성 기능 개선** | ❌ 자동 완성 기능이 부분 검색과 섞여 있어 추천 정확도 낮음 | ✅ 검색어 입력하면 적절한 자동 완성 검색 결과 제공 |
-   | **사용자 경험 개선** | ❌ 검색어 입력 시 원하는 결과를 찾기 어려움 | ✅ 검색어를 입력하면 적절한 자동 완성 검색 결과 제공 가능 |
-    
-  ---
-    
-  ### 4. 결정 및 근거
-    
-  **✅ 자동 완성 검색 로직 분리 결정**
-    
+   | **비교 항목**       | **현재 로직 유지**                             | **자동 완성 검색 로직 분리**                |
+   |-----------------|------------------------------------------|-----------------------------------|
+   | **검색 성능 최적화**   | ❌ 부분 검색과 자동 완성이 동일한 로직에서 수행되어 불필요한 결과 포함 | ✅ 자동 완성 전용 API를 통해 더 정확한 검색 결과 제공 |
+   | **자동 완성 기능 개선** | ❌ 자동 완성 기능이 부분 검색과 섞여 있어 추천 정확도 낮음       | ✅ 검색어 입력하면 적절한 자동 완성 검색 결과 제공     |
+   | **사용자 경험 개선**   | ❌ 검색어 입력 시 원하는 결과를 찾기 어려움                | ✅ 검색어를 입력하면 적절한 자동 완성 검색 결과 제공 가능 |
+
+### 결정 및 근거
+**✅ 자동 완성 검색 로직 분리 결정**
   - 자동 완성 기능 개선으로 검색 시 적절한 자동 완성 검색 결과 제공 가능
   - 검색어 입력 시 적절한 검색 결과를 제공으로 사용자 경험 개선 가능
-<details>
-<summary> 예시 사진 모음 </summary>
-            
-   (1) “구”로 검색 시 “구”로 시작하는 채용 공고를 찾아옴
-            
+
+### 결과 
+- `구`로 검색 시 `구`로 시작하는 채용 공고를 찾아옴 ⬇️  
 ![image.png](https://github.com/llRosell/sparta/blob/main/18.png?raw=true)
-            
-   (2) “하”로 검색 시 “하”로 시작하는 채용 공고를 찾아옴
-            
+- `하`로 검색 시 `하`로 시작하는 채용 공고를 찾아옴 ⬇️ 
 ![image.png](https://github.com/llRosell/sparta/blob/main/19.png?raw=true)
-
-</details>
-  ---
-    
-  ### 5. 코드
-
-<details>
-<summary> JobOpeningDocumentController </summary>
-        
-```java
-        // 부분 검색 API
-        @GetMapping("/search/elastic/filters")
-        public ResponseEntity<ApiResponseDto<Page<ReadJobOpeningElasticResponseDto>>> readJobOpeningElasticsearch(
-            @ModelAttribute ReadJobOpeningElasticRequestDto requestDto,
-            @Auth AuthUser authUser,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size
-        ) {
-            Pageable pageable = validatePageSize(page, size);
-            Long userId = authUser.id();
-        
-            Page<ReadJobOpeningElasticResponseDto> jobOpeningElasticResponseDtoPage = jobOpeningDocumentService.readJobOpeningUsingElasticSearchFilter(requestDto, userId, pageable);
-        
-            return ApiResponseDto.success(jobOpeningElasticResponseDtoPage);
-        }
-        
-        // 자동 완성 검색 API
-        @GetMapping("/search/elastic/auto")
-        public ResponseEntity<ElasticApiResponseDto<Page<ReadJobOpeningElasticAutoResponseDto>>> readJobOpeningElasticAuto(
-            @ModelAttribute ReadJobOpeningElasticAutoRequestDto requestDto,
-            @Auth AuthUser authUser,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size
-        ) {
-            Pageable pageable = validatePageSize(page, size);
-            Long userId = authUser.id();
-            Page<ReadJobOpeningElasticAutoResponseDto> jobOpeningElasticResponseDtoPage = jobOpeningDocumentService.readJobOpeningElasticAuto(requestDto, userId, pageable);
-            int totalItems = (int) jobOpeningElasticResponseDtoPage.getTotalElements();
-            String message = "채용공고 " + totalItems + "개가 조회되었습니다.";
-            return ElasticApiResponseDto.success(jobOpeningElasticResponseDtoPage, message);
-        }
-```
-</details>
-    
-   ---
-    
-   ### 6. 향후 고려 사항
-    
-  - **`edge n-gram` 분석기의 최적 범위 조정:** 불필요한 토큰이 생성되지 않도록 적절한 크기 설정
-
 </details>
 
 <details>
-<summary> 스팸처럼 보이지 않도록 채용 공고는 딱 20개만! 선정 기준은 무엇이 좋을까요? </summary>
+<summary><strong>💰 스팸처럼 보이지 않도록 채용 공고는 딱 20개만! 선정 기준은 무엇이 좋을까요?</strong> </summary>
 
-  ### 1. 배경
+###  배경
+- 기존 로직은 기술 요건이 하나라도 일치하는 채용 공고를 전부 이메일 안에 포함하여 사용자 맞춤화가 약함
 
-  기존 로직은 기술 요건이 하나라도 일치하는 채용 공고를 전부 이메일 안에 포함하여 사용자가 이메일을 읽을 때 불편함을 느낄 수 있었습니다.
-
-  채용 공고 목록이 지나치게 길어질수록 이메일이 스팸으로 여겨질 위험이 커졌습니다.
-
-  사용자에게 의미 있는 이메일 알림을 발송할 수 있도록 채용 공고 수를 제한해야 했습니다.
-
-  이러한 이유로 시간 복잡도, 수치화 가능 여부, 사용자 맞춤화 정도를 고려하여 선정 기준을 정했습니다.
-    
-  ---
 
   ### 2. 요구사항
 
