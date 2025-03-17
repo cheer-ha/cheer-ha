@@ -17,6 +17,7 @@
 
 ### 🎯 **‘취하여’가 해결하는 세 가지 불편함**
 ![취업 고민 이미지](https://private-user-images.githubusercontent.com/184512169/422827340-2085303c-50f6-431a-8744-79c8c93887d4.jpg?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDE5NjIzMzQsIm5iZiI6MTc0MTk2MjAzNCwicGF0aCI6Ii8xODQ1MTIxNjkvNDIyODI3MzQwLTIwODUzMDNjLTUwZjYtNDMxYS04NzQ0LTc5YzhjOTM4ODdkNC5qcGc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMzE0JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDMxNFQxNDIwMzRaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT03N2NjNjhjZWUyMWViMjJjMDlmNGQ5NTA1MTk1MjU3NTUyZTBlY2RkMjIzZjI5OGNhNzJjZWJkZmE1ZWVmMWQyJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.lDfkKY7rYPmuLEUaNTiJ0bpFe4aNvOM-snXd3Ts5G_Y)
+
 🔹 **정확한 단어 검색 필요** ➡️ **단어 일부만 입력해도 검색 가능!** 🔍    
 🔹 **인기 기준 모호** ➡️ **연령대·기술 요건 기반 인기 공고 제공!** 🔥  
 🔹 **반복 입력 불편** ➡️ **기술 역량 등록 시 맞춤 공고 이메일 발송!** 📩  
