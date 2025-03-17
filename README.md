@@ -140,8 +140,6 @@
 ### 비교 
 ![키바나 모니터링 그래프 이미지](https://private-user-images.githubusercontent.com/184512169/422768573-f1d89340-26da-4210-b284-cf1840cf814e.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDIxNzQwNTgsIm5iZiI6MTc0MjE3Mzc1OCwicGF0aCI6Ii8xODQ1MTIxNjkvNDIyNzY4NTczLWYxZDg5MzQwLTI2ZGEtNDIxMC1iMjg0LWNmMTg0MGNmODE0ZS5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMzE3JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDMxN1QwMTA5MThaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT1mY2IyNTBhNjk5MTU3YzQxZjMzZTVkNmEwNzdlNDY4NmIxMTc4M2FmMzRmOTZkNjBmNDNjYWI4YTExMzk1N2NiJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.5uYGgZG_Hk69TkxlEFJdJvUwqTQ6Qptrb2miEHfUSOk)
 
-![2100 스레드 jmeter 이미지](https://private-user-images.githubusercontent.com/184512169/422768573-f1d89340-26da-4210-b284-cf1840cf814e.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDIxNzQwNTgsIm5iZiI6MTc0MjE3Mzc1OCwicGF0aCI6Ii8xODQ1MTIxNjkvNDIyNzY4NTczLWYxZDg5MzQwLTI2ZGEtNDIxMC1iMjg0LWNmMTg0MGNmODE0ZS5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMzE3JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDMxN1QwMTA5MThaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT1mY2IyNTBhNjk5MTU3YzQxZjMzZTVkNmEwNzdlNDY4NmIxMTc4M2FmMzRmOTZkNjBmNDNjYWI4YTExMzk1N2NiJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.5uYGgZG_Hk69TkxlEFJdJvUwqTQ6Qptrb2miEHfUSOk)
-
 | **요청 개수**      | **시스템 상태**          | **응답 시간**            | **TPS**             | **기타 영향**       |
 |-----------------|-------------------|--------------------|----------------|--------------|
 | 🟢 **1600개 이하** | 안정적으로 처리 가능     | ⏳ 일정하게 유지 (8-7ms)  | 📈 일정하게 증가   | -            |
@@ -532,15 +530,13 @@ erDiagram
 
 <aside>
 
-## 🛠️ 기술 스택
-
-| **분류**                     | **이미지**                                                                                                                                                                                                                                      | **사용 기술 및 도구**                                                                                                                                                                                                                             |
+## 🛠️ 기술 스택                                                                          
 
 **🖥 Language**    
 ![Java](https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white) [Kotlin](https://img.shields.io/badge/kotlin-7f52ff?style=for-the-badge&logo=kotlin&logoColor=white)
 
 **📲 Interface Description Language** 
-![IntelliJ IDEA](https://img.shields.io/badge/IntelliJ_IDEA-000000?style=for-the-badge&logo=intellijidea&logoColor=white)        |                                                                                                                     
+![IntelliJ IDEA](https://img.shields.io/badge/IntelliJ_IDEA-000000?style=for-the-badge&logo=intellijidea&logoColor=white)                                                                                                                     
 **🧑🏻‍💻 Backend** 
 ![Spring Framework](https://img.shields.io/badge/Spring_Framework-6DB33F?style=for-the-badge&logo=spring&logoColor=white) [Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
  
