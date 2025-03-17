@@ -900,63 +900,20 @@ erDiagram
 </details>
 
 <details>
-<summary> 이메일 알림으로 보낼 채용 공고가 중복되어 조회됩니다! </summary> 
-    
-  ---
+<summary><strong>🔩  이메일 알림으로 보낼 채용 공고가 중복되어 조회됩니다!</strong> </summary> 
 
-  ### 1. **문제 정의**
+### 문제 정의
+- 채용 공고가 중복 조회를 방지하고자 생성일을 **`ZonedDateTime`**으로 추가했는데도 여전히 중복으로 조회되는 문제 발생
 
-- 채용 공고가 중복 조회를 방지하고자 생성일을 **`ZonedDateTime`**으로 추가했는데도 여전히 중복으로 조회되었습니다.
-- 로그를 확인한 결과, 조회 시간은 **`한국 표준시 KST`** 기준으로 출력되지만, 생성일은 **`협정 세계시 UTC`** 기준으로 저장되는 문제가 발생했습니다.
-
----
-
-### 2. **원인 파악**
-
+### 원인 파악
  - **`ZonedDateTime`** 사용 시 MySQL에서 서버 시간과 무관하게 자동으로 **`UTC`**로 저장함
     - MySQL은 **`TIMESTAMP`** 값을 현재 시간대에서 **`UTC`**로 변환하여 저장하고, 저장된 값을 다시 **`UTC`**에서 현재 시간대로 변환하여 조회함
-<details>
-<summary> 공식 문서 설명 펼치기 </summary> 
 
-> *MySQL converts TIMESTAMP values from the current time zone to UTC for storage, and back from UTC to the current time zone for retrieval.*
->
-</details>
-
----
-
-### 3. **해결 과정**
-
+### 해결 과정
 - 조회 시간을 UTC로 변경함
-
-```java
-        ZonedDateTime referenceTime = ZonedDateTime.now()
-            .minusSeconds(30L)
-            **.withZoneSameInstant(ZoneId.of("UTC"));**
-```
-
 - 이전 조회 시간 이후에 올라온 채용 공고만 조회하는 로직은 변경하지 않음
 
-```java
-        @Override
-        public Map<Long, List<String>> findKeywordIdToUrlList(
-            ZonedDateTime referenceTime
-        ) {
-            return queryFactory
-                .from(jobOpeningKeyword)
-                .join(jobOpeningKeyword.jobOpening, jobOpening)
-                **.where(jobOpening.createdAt.after(referenceTime))** 
-                .transform(
-                    groupBy(jobOpeningKeyword.keyword.id) 
-                        .as(list(jobOpening.jobOpeningUrl)) 
-                );
-        }
-```
-
-
----
-    
 ### 4. 결과
-
 - 조회 시간이 **`UTC`**로 변환되어 출력됨
 - 한 번 조회된 채용 공고가 중복으로 조회되지 않음
     
@@ -965,54 +922,20 @@ erDiagram
 </details>
 
 <details>
-<summary> 이메일 알림을 발송하려는데 ‘Too many login attempts’ 오류가 발생했습니다! </summary> 
-    
----
+<summary><strong>🔩  이메일 알림을 발송하려는데 ‘Too many login attempts’ 오류가 발생했습니다!</strong> </summary> 
 
-### 1. **문제 정의**
-
-- **`Gmail`**로 이메일 알림을 발송하려고 할 때, 대량 발송이 아니었는데도 **`Too many login attempts`** 오류가 발생하여 서버 운영에 차질이 생겼습니다.
+### 문제 정의
+- **`Gmail`**로 이메일 알림을 발송하려고 할 때, 대량 발송이 아니었는데도 **`Too many login attempts`** 오류가 발생함
 
 ![다운로드 (8) (1).png](https://github.com/llRosell/sparta/blob/main/%E1%84%83%E1%85%A1%E1%84%8B%E1%85%AE%E1%86%AB%E1%84%85%E1%85%A9%E1%84%83%E1%85%B3%20(8)%20(1).png?raw=true)
 
 ![다운로드 (9) (1).png](https://github.com/llRosell/sparta/blob/main/%E1%84%83%E1%85%A1%E1%84%8B%E1%85%AE%E1%86%AB%E1%84%85%E1%85%A9%E1%84%83%E1%85%B3%20(9)%20(1).png?raw=true)
 
+### 원인 파악 
+- 이메일 알림을 짧은 시간 안에 여러 번 발송하면, **`Gmail`** 서버가 이를 무차별 대입 공격으로 간주함
 
----
-    
-### 2. **원인 파악**
-    
-- 이메일 알림을 짧은 시간 안에 여러 번 발송하면, **`Gmail`** 서버가 이를 무차별 대입 공격으로 간주하여 **`Too many login attempts`** 오류가 발생함
-    
----
-    
-### 3. **해결 과정**
-    
-- 일주일 동안 이메일을 총 200개 미만 보냈는데도 해당 오류가 발생하여, 서버 변경이 불가피해짐
-- **`Gmail`**을 **`SendGrid`**로 대체함
-    - SendGrid 설정 및 빈(Bean) 등록
-<details>
-<summary> SendGridConfig 펼치기 </summary>
-                
- ```java
-                @Configuration
-                public class SendGridConfig {
-                
-                    @Value("${SENDGRID_API_KEY}")
-                    private String sendGridApiKey;
-                
-                    @Bean
-                    public SendGrid sendGrid() {
-                        return new SendGrid(sendGridApiKey);
-                    }
-                }
- ```
-</details>
-                
+### 해결 과정
 - 기존의 **`Gmail SMTP`**를 **`SendGrid API`**로 대체
-<details>
-<summary> 대체된 네 가지 주요 부분 펼치기 </summary>
-
 ![다운로드 (11) (1).png](https://github.com/llRosell/sparta/blob/main/%E1%84%83%E1%85%A1%E1%84%8B%E1%85%AE%E1%86%AB%E1%84%85%E1%85%A9%E1%84%83%E1%85%B3%20(11)%20(1).png?raw=true)
                 
 ![다운로드 (12) (1).png](https://github.com/llRosell/sparta/blob/main/%E1%84%83%E1%85%A1%E1%84%8B%E1%85%AE%E1%86%AB%E1%84%85%E1%85%A9%E1%84%83%E1%85%B3%20(12)%20(1).png?raw=true)
@@ -1021,13 +944,8 @@ erDiagram
                 
 ![다운로드 (14) (1).png](https://github.com/llRosell/sparta/blob/main/%E1%84%83%E1%85%A1%E1%84%8B%E1%85%AE%E1%86%AB%E1%84%85%E1%85%A9%E1%84%83%E1%85%B3%20(14)%20(1).png?raw=true)
 
-</details>
-    
----
-    
-### 4. 결과
-    
-- **`Too many login attempts`** 오류 없이 이메일 알림 발송 성공
+### 결과
+- **`Too many login attempts`** 오류 없이 이메일 알림 발송에 성공함
         
 ![다운로드 (15) (1).png](https://github.com/llRosell/sparta/blob/main/%E1%84%83%E1%85%A1%E1%84%8B%E1%85%AE%E1%86%AB%E1%84%85%E1%85%A9%E1%84%83%E1%85%B3%20(15)%20(1).png?raw=true)
 
