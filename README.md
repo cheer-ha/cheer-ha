@@ -766,651 +766,137 @@ erDiagram
 ## 🚨 트러블슈팅
 
 <details>
-<summary> Elasticsearch를 적용해서 응답 속도는 빨라졌는데, TPS는 감소했습니다!</summary> 
-    
----
+<summary><strong>🔩  Elasticsearch를 적용해서 응답 속도는 빨라졌는데, TPS는 감소했습니다!</strong> </summary> 
 
-### 1. **문제 정의**
+### 문제 정의
 
-- Elasticsearch를 도입한 다음, 스레드를 5,000개로 설정했을 때 평균 응답 속도는 단축되었으나, TPS는 오히려 감소하는 문제가 발생했습니다.
+- Elasticsearch를 도입한 다음, 스레드를 5,000개로 설정했을 때 평균 응답 속도는 단축되었으나, TPS는 오히려 감소하는 문제 발생
 
-| **비교 항목** | **Elasticsearch 적용 전** | **Elasticsearch 적용 후** | **배율** |
-| --- | --- | --- | --- |
-| **응답 속도** | 28ms | 7ms | **4배 단축** |
-| **TPS** | 249.1건/sec | 35.1건/sec | **7.1배 감소** |
+| **비교 항목**  | **Elasticsearch 적용 전**  | **Elasticsearch 적용 후**  | **배율**       |
+|------------|-------------------------|-------------------------|--------------|
+| **응답 속도**  | 28ms                    | 7ms                     | **4배 단축**    |
+| **TPS**    | 249.1건/sec              | 35.1건/sec               | **7.1배 감소**  |
 
 ![초당처리량 감소 이미지](https://github.com/llRosell/sparta/blob/main/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202025-03-16%20%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE%207.22.01.png?raw=true)
 
----
-
-### 2. **원인 파악**
-
+### 원인 파악
 - 너무 많은 동시 요청이 들어와서 CPU와 메모리 같은 자원이 한계에 도달하는 병목 현상이 발생함
 
----
-
-### 3. **해결 과정**
-
+### 해결 과정
 - 스레드 수를 5,000개에서 200개로 줄인 다음 테스트를 다시 진행함
 
----
-
-### 4. 결과
-
+### 결과
 - 스레드 수를 200개로 조정하여 성능이 안정되면서 TPS가 증가함
 
 ![초당처리량 증가 이미지](https://github.com/llRosell/sparta/blob/main/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202025-03-12%20%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE%207.14.59.png?raw=true)
 
-| **비교 항목** | **Elasticsearch 적용 전** | **Elasticsearch 적용 후** | **배율** |
-| --- | --- | --- | --- |
-| **응답 속도** | 48ms | 14ms | **3.4배 단축** |
-| **TPS** | 1.4건/sec | 9.5건/sec | **6.8배 증가** |
+| **비교 항목**  | **Elasticsearch 적용 전**  | **Elasticsearch 적용 후**  | **배율**       |
+|------------|-------------------------|-------------------------|--------------|
+| **응답 속도**  | 48ms                    | 14ms                    | **3.4배 단축**  |
+| **TPS**    | 1.4건/sec                | 9.5건/sec                | **6.8배 증가**  |
 
 </details>
 
 <details>
-<summary> 많은 사용자가 동시에 채용 공고를 조회할 때 응답 시간이 너무 다릅니다!</summary>
+<summary><strong>🔩  많은 사용자가 동시에 채용 공고를 조회할 때 응답 시간이 너무 다릅니다!</strong>></summary>
     
----
+### 문제 정의
 
-### 1. 문제 정의
-
-채용 공고 페이지 조회 API에서 동시에 다수의 사용자가 페이지를 조회할 때 조회수 집계 과정에서 동시성 문제가 발생했습니다.
-
-이러한 동시성 문제를 해결하고자 집계 테이블을 별도로 작성하여 비관적 락을 적용하였는데도, 충돌이 발생하면 사용자마다 응답 시간의 변동 폭이 크다는 문제를 추가로 발견했습니다.
-
-부하 테스트를 진행한 결과, 스레드가 늘어나면서 응답 시간도 증가했는데 이때 응답 시간 변동성이 매우 커진다는 점을 파악했습니다.
+채용 공고 페이지 조회 API에서 동시에 다수의 사용자가 페이지를 조회할 때 조회수 집계 과정에서 동시성 문제가 발생함
 
 ![image.png](https://github.com/llRosell/sparta/blob/main/%E1%84%8C%E1%85%B5%E1%84%80%E1%85%B3%E1%84%8C%E1%85%A2%E1%84%80%E1%85%B3.png?raw=true)
 
----
-
-### 2. 원인 파악
-
+### 원인 파악
 - 비관적 락 때문에 병목 현상 또는 경쟁 상태(Race Condition) 발생
-    - 집계 테이블에서 비관적 락 때문에 대기가 발생하여 병목 현상이 발생했을 가능성 존재
-    - 메인테이블과 분리했는데도 비관적 락을 사용해서 경쟁 상태가 발생했을 수 있음
 
----
-### 3 해결 과정
-
-- 비관적 락을 배제한 동시성 제어 방법을 검토
-
-  (1) Redis의 원자적 연산을 이용하여 동시성 제어 시도
-
-  (2) Elasticsearch에 Post 요청을 보내 Document를 전송하여 동시성 제어 시도
-
-
-→ Redis로 원자적 연산 적용
-
-- Elasticsearch 사용 시, 조회수 관련 검색은 Elasticsearch만 사용해야 하는 단점 존재
-    - 유지 보수 시 접근성이 낮아짐
-    - 유지 보수 복잡도가 증가함
+### 해결 과정
 - Redis를 집계 테이블처럼 사용하면서, 분산 락이 적용된 작업 스케줄러로 조회수를 정기적으로 채용 공고 테이블에 업데이트하는 방식 적용
-<details>
-<summary> increaseViewCount 메서드 펼치기 </summary> 
 
-![image.png](https://github.com/llRosell/sparta/blob/main/image%20(3).png?raw=true)
-</details>
+### 결과
 
----
-
-### 4 . 결과
-
-- 레디스 적용 후, 응답 속도가 매우 안정적으로 바뀜
-<details>
-<summary> 부하 테스트 결과 그래프 펼치기 </summary> 
-        - 스레드 증가에 따라 응답 시간이 늘어나지만, 변동 폭이 매우 규칙적으로 바뀜
-
-![image.png](https://github.com/llRosell/sparta/blob/main/image%20(4).png?raw=true)
-
-- 응답 시간이 대폭 감소하면서 TPS도 대폭 상승함
-</details>
-
-<details>
-<summary> 테스트 결과 사진 펼치기 </summary> 
-
-![image.png](https://github.com/llRosell/sparta/blob/main/image%20(5).png?raw=true)
-
-![image.png](https://github.com/llRosell/sparta/blob/main/image%20(6).png?raw=true)
-</details>
-
-| **비교 항목** | **Redis 적용 전** | **Redis 적용 후** | **배율** |
-| --- | --- | --- | --- |
-| **평균 응답 시간** | 431.42ms | 4.28ms | 약 100배 단축 |
-| **최악 응답 시간** | 1s 153.94ms | 6.00ms | 약 192배 단축 |
-| **TPS** | 210.66  | 398.33  | 약 1.89배 증가 |
+| **비교 항목**     | **Redis 적용 전**  | **Redis 적용 후**  | **배율**      |
+|---------------|-----------------|-----------------|-------------|
+| **평균 응답 시간**  | 431.42ms        | 4.28ms          | 약 100배 단축   |
+| **최악 응답 시간**  | 1s 153.94ms     | 6.00ms          | 약 192배 단축   |
+| **TPS**       | 210.66          | 398.33          | 약 1.89배 증가  |
 
 </details>
 
 <details>
-<summary> 다중 인스턴스 환경에서 스케줄러가 인스턴스 개수만큼 실행됩니다!</summary> 
-    
----
+<summary><strong>🔩  다중 인스턴스 환경에서 스케줄러가 인스턴스 개수만큼 실행됩니다!</strong></summary> 
 
-### 1. **문제 정의**
+### 문제 정의
+인스턴스 내부 애플리케이션별로 스케줄러가 실행되는데, 다중 인스턴스 환경이라면 이메일 알림 발송 스케줄러가 동시에 실행될 수 있는 위험 존재
 
-현재는 단일 인스턴스로 운용되고 있지만, 단일 인스턴스만을 사용한다고 단정 지을 수 없었습니다.
-
-서버에 일정 수준 이상의 부하가 감지되면, Auto Scaling Group이 자동으로 인스턴스를 추가로 생성하고 롤링 업데이트 시에도 신버전과 구버전이 혼재했기 때문입니다.
-
-이러한 이유로 다중 인스턴스 환경을 가정하고 개발을 진행해야 했습니다.
-
-여기서 문제가 발생했습니다.
-
-인스턴스 내부 애플리케이션별로 스케줄러가 실행되는데, 다중 인스턴스 환경이라면 이메일 알림 발송 스케줄러가 동시에 실행될 수 있었습니다.
-
-같은 이메일 알림이 중복으로 발송된다면 사용자 경험도 떨어지고 DB 서버 부하도 피할 수 없었습니다.
-
-따라서 다중 인스턴스 환경용 스케줄러를 개발해야 했습니다.
-    
----
-
-### 2. **원인 파악**
-
+### 원인 파악
 - 애플리케이션에 등록된 스케줄러가 인스턴스의 개수만큼 실행됨
 
 ![스크린샷 2025-03-12 오후 5.19.12.png](https://github.com/llRosell/sparta/blob/main/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202025-03-12%20%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE%205.19.12.png?raw=true)
 
-
----
-
-### 3. **해결 과정**
-
-1. 일반적인 분산 락으로는 해결이 불가능
-    - 분산 락, DB 락 → ‘동시성 문제’를 해결하기 위한 ‘순차 실행 플랜’
-    - 순차 실행이 필요한 게 아니라, 중복 실행 방지 대책이 필요
-2. Redis 캐시를 일종의 분산 락처럼 사용
-
-    ```java
-    @Slf4j
-    @Component
-    @RequiredArgsConstructor
-    public class SchedulerLockUtil {
-    
-        private final RedisTemplate<String, String> redisTemplate;
-    
-        private static final String LOCK_VALUE = InstanceUtil.getInstanceId();
-    
-        /**
-         * 인스턴스 단위로 스케줄링을 관리하는 유틸메서드입니다.
-         * key 와 ttl 을 인자로 받아 redis 에서 관리합니다.
-         */
-        public void lock(String keyName, long ttl) {
-            //setIfAbsent 로 원자적으로 락을 잡으려 시도
-            Boolean acquired = redisTemplate
-                    .opsForValue()
-                    .setIfAbsent(keyName, LOCK_VALUE, ttl, TimeUnit.MINUTES);
-    
-            //락을 못 잡았다면 내 인스턴스의 락인지 확인
-            if (Boolean.FALSE.equals(acquired)) {
-                String currentValue = redisTemplate.opsForValue().get(keyName);
-                //다른 인스턴스의 소유라면 그냥 리턴
-                if (!LOCK_VALUE.equals(currentValue)) {
-                    log.info("다른 인스턴스에서 실행중인 스케줄러입니다.");
-                    throw new IllegalStatusException(ServerErrorCode.ALREADY_RUNNING_SCHEDULER);
-                }
-                //만약 내 인스턴스라면 이전 스케줄이 남긴 락이거나 ttl 이 안 끝난 상황일 수 있으므로 ttl 재갱신
-                redisTemplate.expire(keyName, ttl, TimeUnit.MINUTES);
-            }
-        }
-    }
-    ```
-
-    - 스케줄러의 식별자를 key로 사용 (email_scheduler, …)
-    - 현재 실행 중인 jvm의 고유 아이디를 value로 사용
-    - keyname과 ttl을 파라미터로, 유틸 메서드로 분리해 어디에서든 재사용하게끔 설계
-
----
-
-### 4. 새로운 문제 발생
-
-![스크린샷 2025-03-12 오후 5.36.12.png](https://github.com/llRosell/sparta/blob/main/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202025-03-12%20%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE%205.36.12.png?raw=true)
-
-- 롤링 업데이트 시 새로운 인스턴스가 생성되고 기존 인스턴스는 삭제되는데, 기존 인스턴스에서의 스케줄링 텀을 그대로 이어나가지 못하는 문제가 발생함
-- 최악의 상황에서는, 이메일 알림, elasticsearch migration 등의 작업을 한 텀 건너뛰게 됨
-
----
-
-### 5. 문제 해결
-
-1. **Redis 활용**
+### 해결
+- **Redis 활용**
     - 스케줄링 실행 자체를 ‘단일 인스턴스 환경’에 맡겨서, 중앙에서 제어하는 방식이 필요
     - Redis를 이용하여 작업들을 queue에 넣고, 하나의 인스턴스만 실행되는 구조로 변경
     - 스케줄링을 짧은 주기로 확인해야 하는 만큼, 빠른 읽기 I/O가 요구되는 구조이므로 Redis 사용
-2. **다중 인스턴스용 스케줄러 아키텍처 적용**
-
+- **다중 인스턴스용 스케줄러 아키텍처 적용**
 ![스크린샷 2025-03-12 오후 5.38.37.png](https://github.com/llRosell/sparta/blob/main/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202025-03-12%20%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE%205.38.37.png?raw=true)
-
-   (1) 애플리케이션이 최초 실행되면, 모든 스케줄러가 자동으로 실행됨
-
-   (2) Redis에서 해당 스케줄러의 고유 Key와 실행된 시간을 기록
-
-   (3) 일정 주기마다 애플리케이션에 등록된 스케줄러 주기와 이전 실행 시간을 비교
-
-   (4) 주기 및 이전 실행 시간을 더한 값이 현재 시간보다 같거나 크다면 해당 작업을 queue에 등록
-
-    ```java
-    /**
-     * 5초에 한번 새 작업을 스케줄링(등록)합니다.
-     */
-    @Scheduled(fixedDelay = 5000)
-    public void scheduleTasks() {
-           instanceManager.updateLatestInstance();
-           if (!instanceManager.isLatestInstance()) {
-               return;
-           }
-           for (TaskHandler handler : schedulerTaskHandlers) {
-               taskRegister.register(handler);
-           }
-    }
-    ```
-
-   (5) queue에 등록되어 있는 작업 또한 일정 주기 마다 확인하여 하나씩 꺼내 실행
-
-   → 실행 시 락 획득하여 원자성 보장
-
-    ```java
-    @Scheduled(fixedDelay = 5000)
-    public void processDueTasks() {
-        instanceManager.updateLatestInstance();
-        //최신 인스턴스가 아니면 작업 실행을 건너뛰기
-        if (!instanceManager.isLatestInstance()) {
-            return;
-        }
-        if (!isRunning) return;
-    
-        String taskDataString = taskRepository.getDueTask(SORTED_SET_KEY);
-            if (taskDataString == null) {
-                return;
-            }
-    
-        try {
-            Map<String, Object> taskData = objectMapper.readValue(taskDataString, Map.class);
-            String taskType = (String) taskData.get("taskType");
-            Map<String, Object> payload = (Map<String, Object>) taskData.get("payload");
-    
-            TaskHandler handler = handlers.get(taskType);
-            if (handler != null) {
-                long scheduleIntervalMillis = handler.getScheduleIntervalMillis();
-                if (scheduleIntervalMillis <= 0) return;
-                String lockKey = "scheduler:lock:consumer" + handler.getTaskType();
-                try {
-                    if (redissonRepository.tryLock(lockKey, Math.min(2000, scheduleIntervalMillis / 2), scheduleIntervalMillis / 2, TimeUnit.MILLISECONDS)) {
-                        try {
-                            handler.handle(payload);
-                            log.info("TaskConsumer: 작업 완료: {} at {}", taskType, Instant.now());
-                        } catch (Exception e) {
-                            log.error("TaskConsumer: 작업 실행 중 오류: {}", e.getMessage(), e);
-                        } finally {
-                            redissonRepository.unlock(lockKey);
-                        }
-                    } else {
-                        log.warn("TaskConsumer: 락 획득 실패, 작업 스킵: {}", taskType);
-                    }
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    log.error("TaskConsumer: 락 획득 중 인터럽트 발생: {}", e.getMessage());
-                }
-           }
-        } catch (Exception e) {
-            log.error("TaskConsumer: 데이터 파싱 중 오류: {}", e.getMessage(), e);
-        }
-    }
-    ```
-
-   (6) 작업을 queue에 등록하거나, queue에 등록된 작업을 확인하는 작업은 ‘최신의 인스턴스’만 실행
-
-   Q. 왜 ‘최신의 인스턴스’에서만 실행되도록 했는가?
-
-   → 기존 인스턴스는 롤링 업데이트 과정 때문에 작업이 종료될 수 있음
-
-   → 작업을 등록 및 확인할 때 어떤 인스턴스가 가장 최신인지 판단함
-
-   → 빈(Bean) 생성 후 초기화 시 애플리케이션의 시작 시간을 final로 기록
-
-   → 최신 인스턴스가 ‘unhealthy’하여 롤백해야 하는 상황도 고려하여 설계함
-
-    ```java
-    /**
-     * 현재 인스턴스의 헬스 체크를 수행해서 actuator/health 가 UP 상태인지 확인
-     */
-    public static boolean isInstanceHealthy() {
-        try {
-            RestTemplate restTemplate = new RestTemplate();
-            String healthUrl = "http://localhost:8080/actuator/health";
-            ResponseEntity<Map> response = restTemplate.getForEntity(healthUrl, Map.class);
-            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                Object statusObj = response.getBody().get("status");
-                if (statusObj != null && "UP".equalsIgnoreCase(statusObj.toString())) {
-                    return true;
-                }
-            }
-        } catch (Exception e) {
-            log.error("헬스 체크 실패", e);
-        }
-        return false;
-    }
-    ```
-
-   (7) ‘일정한 시간에만’ 실행되는 스케줄러를 추가로 구현
-
-    - 전략패턴을 사용하여 고정 주기 및 특정 시간에 실행하는 스케줄러 두 가지 구현
-
-    ```java
-    public class SpecificTimeStrategy implements ScheduleStrategy {
-    
-        private final LocalTime specificTime;
-    
-        /**
-         * @param specificTime 매일 실행할 특정 시간
-         */
-        public SpecificTimeStrategy(LocalTime specificTime) {
-            this.specificTime = specificTime;
-        }
-    
-        @Override
-        public Instant getNextExecutionTime(Instant lastExecutionTime, long scheduleIntervalMillis) {
-            ZoneId zone = ZoneId.of("Asia/Seoul");
-            LocalDateTime now = LocalDateTime.now(zone);
-            LocalDateTime candidate = LocalDateTime.of(now.toLocalDate(), specificTime);
-            if (candidate.isBefore(now) || candidate.isEqual(now)) {
-                candidate = candidate.plusDays(1);
-            }
-            return candidate.atZone(zone).toInstant();
-        }
-    }
-    ```
-
-    - Redis에 저장되는 최종 형태
-        - 예악된 작업은 ScoredSortedSet에 들어감
-        - 특정 시간대에 실행되는 스케줄러는 항상 다음 스케줄링 시간을 Score로 가지고 예약 상태로 존재
-
-          ![스크린샷 2025-03-12 오후 8.27.50.png](attachment:82080312-6d25-4349-8906-24adc1cfa702:스ᄏ린샷_2025-03-12_오후_8.27.50.png)
-
-3. **누구나 쉽게 사용할 수 있도록 인터페이스 구현**
-<details>
-<summary> TaskHandler 인터페이스 펼치기 </summary>
-
-```java
-    public interface TaskHandler {
-    
-        String getTaskType(); //처리할 작업 유형
-        void handle(Map<String, Object> payload); //작업 실행 로직
-    
-        //스케줄링 주기(고정 주기 예약일 경우에만 구현)
-        default long getScheduleIntervalMillis() {
-            return 60000L;
-        }
-    
-        /**
-         *  예약 전략(특정 주기 예약하고 싶은 경우 new SpecificTimeStrategy(); 로 구현)
-         *  예시: @Override
-         *  public ScheduleStrategy getScheduleStrategy() {
-         *      return new SpecificTimeStrategy(LocalTime.of(00, 00, 0)); 매일 자정에 실행
-         *  }
-         */
-        default ScheduleStrategy getScheduleStrategy() {
-            return new FixedIntervalStrategy();
-        }
-    
-        //스케줄러에 사용하는 변수(default 는 변수 없음)
-        default Map<String, Object> getDefaultPayload() {
-            return null;
-        }
-    }
-```
-</details>
-
-### 5. **회고**
-    
-- **긍정적 영향**
-    - **문제 해결 완료 →** 다중 인스턴스 환경에서 스케줄러가 인스턴스 개수만큼 실행되는 문제 해결
-    - **구현이 편리한 구조 구축 →**  누구나 인터페이스만 구현하면 쉽게 구현할 수 있음
-- **부정적 영향**
-    - **리소스 낭비 →** Redis에 5초마다 읽기 요청을 보내기 때문에 꾸준한 모니터링이 필수적임
-    - **스케줄러가 동작하지 않을 수 있음 →** Redis가 다운되면 스케줄러가 동작하지 않을 수 있음
-    
-### **6. 향후 고려 사항**
-    
-- **Quartz 라이브러리 사용 고려:** 현재 오버엔지니어링이라 판단되어 도입하지 않았지만, 추후 활용하여 다중 인스턴스 환경에서 스케줄러를 더 강력하게 제어할 수 있음
-- 오버엔지니어링 판단 근거: RDBMS에 quartz 클러스터링 전용 테이블이 10개 이상 필요
-    
----
+- **누구나 쉽게 사용할 수 있도록 인터페이스 구현**
 </details>
 
 <details>
-<summary> 채용 공고 데이터 크롤링 시 마주한 문제를 소개합니다! </summary> 
+<summary><strong>🔩  사이트마다 프론트도 데이터 형식도 다른데 어떻게 채용 공고 데이터를 크롤링할 수 있을까요?</strong> </summary> 
 
-<details>
-<summary> 사이트마다 프론트도 데이터 형식도 다른데 어떻게 하나로 모을 수 있을까요? </summary>
-        
----
+### 문제 정의
+- 크롤링에는 Kotlin 사용  
+- 두 채용 공고 사이트 **`사람인`**과 **`잡코리아`**를 크롤링했을 때, 두 사이트의 html 태그와 Javascript 형식, 데이터 생김새가 크게 달랐음  
 
-### 1. **문제 정의**
-
-문제 소개에 앞서, 크롤링에는 Kotlin을 사용했습니다.
-
-따라서 크롤링 탭에서 보여드릴 코드는 모두 Kotlin 코드입니다.
-
-두 채용 공고 사이트 **`사람인`**과 **`잡코리아`**를 크롤링했을 때, 두 사이트의 html 태그와 Javascript 형식, 데이터 생김새가 너무나 달라서 해당 문제가 발생했습니다.
-
-Kotlin의 **`Coroutine`**을 사용해 크롤링과 데이터 정형화를 빠르게 하고 싶었으나, 크롤링 트러블슈팅에서 후술할 문제들 때문에 **`Coroutine`**을 사용하지 못했습니다.
-        
----
-
-### 2. **원인**
+### 원인
 
 - 잡코리아의 개발자 채용 공고 목록 페이지를 **`RequestParam`**으로 접근할 수 없음
 - 사람인의 페이지가 Javascript 랜더링을 사용함
 - 학력, 회사 이름 등 데이터가 정리되지 않음
 
 ![image.png](https://github.com/llRosell/sparta/blob/main/image%20(7).png?raw=true)
-        
----
 
-### 3. **해결 과정**
-
-1. 잡코리아
-- 목록에서는 **`Selenium`**으로 버튼을 클릭하여 ‘개발자 채용 공고’ 탭으로 접근 후 URL 크롤링 진행
-<details>
-<summary> 버튼 클릭용 Filter 코드 </summary> 
-
-```kotlin
-                    object JobKoreaFilters {
-                        fun apply(wait: WebDriverWait) {
-                            //"직무" 필터 클릭
-                            wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("p.btn_tit")))
-                                .apply { click() }
-                                .also { Thread.sleep(3000) }
-                    
-                            //"개발 / 데이터" 필터 클릭
-                            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("label[for='duty_step1_10031']")))
-                                .also { element ->
-                                    wait.until(ExpectedConditions.elementToBeClickable(element)).click()
-                                }
-                                .also { Thread.sleep(3000) }
-                    
-                            //세부 직무에서 요소 체크
-                            listOf("1000229", "1000230", "1000231", "1000232").forEach { jobValue ->
-                                wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("label[for='duty_step2_$jobValue']")))
-                                    .also { wait.until(ExpectedConditions.elementToBeClickable(it)).click() }
-                                Thread.sleep(1000)
-                            }
-                    
-                            //"검색" 버튼 클릭
-                            wait.until(ExpectedConditions.elementToBeClickable(By.id("dev-btn-search")))
-                                .apply { click() }
-                                .also { Thread.sleep(3000) }
-                    
-                            //정렬 기준 선택 "최신업데이트순"
-                            wait.until(ExpectedConditions.presenceOfElementLocated(By.id("orderTab")))
-                                .let { Select(it) }
-                                .apply { selectByValue("3") }
-                                .also { Thread.sleep(3000) }
-                        }
-                    }
-```
-</details>
-
-- 세부 페이지는 목록에서 가져온 URL로 **`jsoup`** 크롤링 진행
-2. 사람인
-- 사용할 모든 페이지에 Javascript 렌더링이 걸림
-- 목록에서는 **`selenium`**으로 페이지 끝까지 스크롤 후 URL 크롤링 진행
-<details>
-<summary> 페이지 스크롤러 코드 </summary> 
-
-```kotlin
-                    object SaraminScroller {
-                    
-                        fun toBottom(driver: WebDriver) {
-                            val js = driver as JavascriptExecutor
-                            var prevHeight = js.executeScript("return document.body.scrollHeight") as Long
-                            while (true) {
-                                js.executeScript("window.scrollTo(0, document.body.scrollHeight);")
-                                Thread.sleep(2000)
-                                val newHeight = js.executeScript("return document.body.scrollHeight") as Long
-                                if (newHeight == prevHeight) break
-                                prevHeight = newHeight
-                            }
-                        }
-                    }
-```
-</details>
-
-- 세부 페이지 또한 **`selenium`**으로 크롤링 진행
-3. 데이터 정형화
-- 데이터 분석 전문 분야이므로, 기술적인 한계로 제대로 된 정형화는 불가능
-
- → OpenAI API 사용
+### 해결 과정  
+- 잡코리아
+  - 목록에서는 **`Selenium`**으로 버튼을 클릭하여 ‘개발자 채용 공고’ 탭으로 접근 후 URL 크롤링 진행
+  - 세부 페이지는 목록에서 가져온 URL로 **`jsoup`** 크롤링 진행
+- 사람인  
+  - 사용할 모든 페이지에 Javascript 렌더링이 걸림
+  - 목록에서는 **`selenium`**으로 페이지 끝까지 스크롤 후 URL 크롤링 진행  
+  - 세부 페이지 또한 **`selenium`**으로 크롤링 진행  
+- 데이터 정형화  
+  - OpenAI API 사용
 
 ![스크린샷 2025-03-12 오후 9.20.19.png](https://github.com/llRosell/sparta/blob/main/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202025-03-12%20%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE%209.20.19.png?raw=true)
 
----
-
-### 4. 결과
-
+### 결과
 ![스크린샷 2025-03-12 오후 8.55.40.png](https://github.com/llRosell/sparta/blob/main/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202025-03-12%20%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE%208.55.40%20(1).png?raw=true)
 
 </details>
 
 <details>
-<summary> 크롤링하다가 오류가 생기면 채용 공고가 하나도 저장되지 않습니다! </summary> 
+<summary><strong>🔩  크롤링하다가 오류가 생기면 채용 공고가 하나도 저장되지 않습니다!</strong> </summary> 
+
+### 문제 정의
+- ‘오류 이전의 데이터는 저장이 되었으려나?’ 하였지만 반복문 전체에 트랜잭션을 걸어버린 탓에 데이터가 모두 유실됨
+ 
+### 원인
+- 페이지를 순회하는 **`forEach`**문 전체를 한 트랜잭션으로 감싸버림  
+  - 오류 원인 자체는 트랜잭션과 상관없지만, 오류에 대응할 수 있는 코드가 필요해짐  
+- 긴 트랜잭션은 다양한 문제를 일으킬 수 있었음  
+  - 긴 트랜잭션은 데이터에 오랜 시간 락을 유지하여 동시성 저하와 처리량 감소 가능성 존재  
+  - 대기 중인 트랜잭션들은 여전히 시스템 리소스를 점유함
+  - 긴 트랜잭션이 더 많은 자원을 더 오래 점유하기 때문에 데드락이 발생할 수 있음
+  - 긴 트랜잭션이 많은 수의 행에 락을 설정해서 락 에스컬레이션 발생 확률이 높아짐
         
----
-        
-### 1. **문제 정의**
-        
-크롤링을 진행하다가 네트워크 문제로 예상치 못한 오류가 발생했습니다.
-        
-‘오류 이전의 데이터는 저장이 되었으려나?’ 하였지만 반복문 전체에 트랜잭션을 걸어버린 탓에 데이터가 모두 유실되었습니다.
-        
-원래는 데이터 전체의 원자성을 보장하고자 반복문 전체에 트랜잭션을 걸었는데, 이 때문에 데이터가 모두 유실되는 문제가 발생했습니다. 
-        
-크롤링을 최대한 윤리적으로 하려다 보니 몇 시간 단위의 작업이 되었고, 이는 곧 서비스 불안정으로 이어졌습니다.
-        
----
-        
-### 2. **원인**
-        
-- 트랜잭션 범위가 너무 큼 ▼
-        
-```kotlin
-        @Transactional
-        override fun crawl(maxPages: Int) {
-            val driver = webDriverFactory.createDriver()
-            val wait = WebDriverWait(driver, Duration.ofSeconds(5))
-            val baseUrl = "https://www.jobkorea.co.kr/recruit/joblist?menucode=search#anchorGICnt_1"
-        
-            driver.get(baseUrl)
-            try {
-                JobKoreaFilters.apply(wait)
-        
-                (1..maxPages).forEach { currentPage ->
-                    val pageUrl = "https://www.jobkorea.co.kr/recruit/joblist?menucode=search#anchorGICnt_$currentPage"
-                    driver.get(pageUrl)
-                    println("현재 페이지: $currentPage")
-        
-                    wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("strong a.link.normalLog")))
-                    val jobListings = driver.findElements(By.cssSelector("strong a.link.normalLog")).take(40)
-                    if (jobListings.isEmpty()) {
-                        println("채용 공고를 찾을 수 없으므로 크롤링 종료")
-                        return@crawl
-                    }
-```
-        
- **[문제 1]** 페이지를 순회하는 **`forEach`**문 전체를 한 트랜잭션으로 감싸버림
-        
-→ 오류 원인 자체는 트랜잭션과 상관없지만, 오류에 대응할 수 있는 코드가 필요해짐 
-        
-**[문제 2]** 긴 트랜잭션은 다양한 문제를 일으킬 수 있음 
-        
-(1) 동시성 저하와 처리량 감소
-        
-   - 긴 트랜잭션은 데이터에 오랜 시간 락을 유지
-            
-       → 다른 트랜잭션들은 필요한 데이터에 접근하지 못하고 대기 상태에 놓임
-            
-       → 대기 상태가 길어질수록 시스템의 전체 처리량(throwghput)이 감소함
-            
-   1. 시스템 리소스 낭비
-       - 대기 중인 트랜잭션들은 여전히 시스템 리소스를 점유함
-   2. 데드락 발생 가능성 존재
-       - 긴 트랜잭션이 더 많은 자원을 더 오래 점유하기 때문에 데드락이 발생할 수 있음
-   3. 락 에스컬레이션 발생 가능성 존재 
-       - 긴 트랜잭션이 많은 수의 행에 락을 설정해서 락 에스컬레이션 발생 확률이 높아짐
-       - 테이블 전체에 락이 설정되어 동시성이 저하될 수 있음
-        
----
-        
-### 3. **해결 과정**
-        
+### 해결
 - 트랜잭션 전파 속성을 사용함
 - forEach문 내부의 반복되는 코드를 메서드로 분리
 - 트랜잭션 전파 속성 중 하나인 **`REQUIRES_NEW`** 사용
 - 페이지마다 새로운 트랜잭션이 생성되도록 리팩토링 진행
-        
-    → 한 페이지에서 예외 발생 시
-        
-    - 해당 페이지의 작업만 롤백됨
-    - 다른 페이지의 크롤링 작업은 정상적으로 진행되도록 함
-        
-```kotlin
-        @Transactional(propagation = Propagation.REQUIRES_NEW)
-        fun processPage(currentPage: Int, driver: org.openqa.selenium.WebDriver, wait: WebDriverWait) {
-            val pageUrl = "https://www.jobkorea.co.kr/recruit/joblist?menucode=search#anchorGICnt_$currentPage"
-            driver.get(pageUrl)
-        
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("strong a.link.normalLog")))
-            val jobListings = driver.findElements(By.cssSelector("strong a.link.normalLog")).take(40)
-            if (jobListings.isEmpty()) {
-                return
-            }
-        
-            jobListings.forEach { job ->
-                processJob(job)
-            }
-        }
-```
-        
----
-        
-### 4. **회고**
-        
-- 페이지 단위로 안정성이 보장되나, 전체 작업의 원자성이 떨어지는 문제 존재
-            
-     → 윤리적인 문제로 프록시, VPN을 사용하여 크롤링을 아주 빠르게 진행하기는 불가능
-            
-     → 어쩔 수 없이 네트워크 연결을 아주 오랫동안 유지해야 하므로, 현재 방식이 피해를 최소화한다고 판단됨
-            
-- 아쉬운 점: 다른 웹사이트의 리소스를 사용하여 성능 테스트를 진행하기 어려움
-     - 예시) 페이지마다 새로운 트랜잭션을 생성하고, 커밋/롤백하는 과정에서 성능 오버헤드가 있을 듯한데, 이를 네트워크 i/o까지 고려하여 테스트하기는 쉽지 않음
-        
-     → 이러한 이유로 안정성이 보장되지 않은 시스템은 서버에 업로드할 수 없다고 판단함
-        
-     → 크롤링 작업은 로컬DB, 로컬 서버 환경에서 진행함
-
-</details>
+  - 한 페이지에서 예외 발생 시 해당 페이지의 작업만 롤백되고 다른 페이지의 크롤링 작업은 정상적으로 진행되도록 함
 </details>
 
 <details>
