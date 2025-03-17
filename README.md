@@ -260,13 +260,13 @@
 <details>
   <summary> 🏎️ 21초에서 9초, 이메일 알림 발송 속도를 어떻게 개선할 수 있을까요? </summary>
 
-### 환경
-- **서버 환경**: 로컬 서버 (localhost)
-- **이메일 발송 방식**: Gmail SMTP
-- **SMTP 설정**: Gmail SMTP (포트 587)
-- **이메일 발송 요청 방식**: Spring Boot MailSender 사용
-- **총 이메일 발송 건수**: 9건 (3명 × 3회)
-- **데이터 ⬇️**  
+### 환경  
+- **서버 환경**: 로컬 서버 (localhost)  
+- **이메일 발송 방식**: Gmail SMTP  
+- **SMTP 설정**: Gmail SMTP (포트 587)  
+- **이메일 발송 요청 방식**: Spring Boot MailSender 사용  
+- **총 이메일 발송 건수**: 9건 (3명 × 3회)  
+- **데이터 ⬇️**    
    (1) 사용자 
 
   | **사용자 ID (user_id)**    | **키워드 ID (keyword_id)**   | **이메일 (email)**      |
@@ -295,21 +295,21 @@
 
 (1) 개선 전 테스트 (채용 공고 및 사용자 조회는 2회차부터 데이터베이스 캐싱이 적용되므로, 해당 값 반영 ❌)
 
-| **회차** | **채용 공고 조회** | **사용자 조회**  | **전체 발송**       | **전체 작업**       | **메일 발송 1** | **이메일 발송 2** | **이메일 발송 3** |
-|-------|--------------|-------------|-----------------|-----------------|-------------|--------------|--------------|
-| **1** | 150 ms       | 3 ms        | 22 s 490 ms     | 22 s 644 ms     | 9 s 58 ms   | 4 s 199 ms   | 9 s 231 ms   |
-| **2** | - ms         | - ms        | 21 s 550 ms     | 21 s 556 ms     | 8 s 419 ms  | 4 s 113 ms   | 9 s 17 ms    |
-| **3** | - ms         | - ms        | 21 s 458 ms     | 21 s 470 ms     | 8 s 808 ms  | 3 s 415 ms   | 9 s 95 ms    |
+| **회차** | **채용 공고 조회** | **사용자 조회**  | **전체 발송**       | **전체 작업**       | **발송 1** | **발송 2** | **발송 3** |
+|-------|--------------|-------------|-----------------|-----------------|----------|----------|----------|
+| **1** | 150 ms       | 3 ms        | 22 s 490 ms     | 22 s 644 ms     | 9 s 58 ms | 4 s 199 ms | 9 s 231 ms |
+| **2** | - ms         | - ms        | 21 s 550 ms     | 21 s 556 ms     | 8 s 419 ms | 4 s 113 ms | 9 s 17 ms |
+| **3** | - ms         | - ms        | 21 s 458 ms     | 21 s 470 ms     | 8 s 808 ms | 3 s 415 ms | 9 s 95 ms |
 | **평균** | **150 ms**   | **3 ms**    | **21 s 832 ms** | **21 s 890 ms** | **8 s 808 ms** | **3 s 909 ms** | **9 s 114 ms** |
 
 
 (2) 개선 후 테스트 (채용 공고 및 사용자 조회는 2회차부터 데이터베이스 캐싱이 적용되므로, 해당 값 반영 ❌)
 
-| **회차** | **채용 공고 조회** | **사용자 조회** | **전체 발송**      | **전체 작업**   | **이메일 발송 1**   | **이메일 발송 2**   | **이메일 발송 3** |
-|--------|--------------|------------|----------------|-------------|----------------|----------------|--------------|
-| **1**  | 100 ms       | 3 ms       | 9 s 830 ms     | 9 s 936 ms  | 9 s 829 ms     | 9 s 292 ms     | 9 s 432 ms   |
-| **2**  | - ms         | - ms       | 9 s 615 ms     | 9 s 623 ms  | 8 s 292 ms     | 9 s 614 ms     | 8 s 732 ms   |
-| **3**  | - ms         | - ms       | 9 s 762 ms     | 9 s 771 ms  | 9 s 762 ms     | 9 s 406 ms     | 8 s 553 ms   |
+| **회차** | **채용 공고 조회** | **사용자 조회** | **전체 발송**      | **전체 작업**   | **발송 1**   | **발송 2**   | **발송 3** |
+|--------|--------------|------------|----------------|-------------|------------|------------|----------|
+| **1**  | 100 ms       | 3 ms       | 9 s 830 ms     | 9 s 936 ms  | 9 s 829 ms | 9 s 292 ms | 9 s 432 ms |
+| **2**  | - ms         | - ms       | 9 s 615 ms     | 9 s 623 ms  | 8 s 292 ms | 9 s 614 ms | 8 s 732 ms |
+| **3**  | - ms         | - ms       | 9 s 762 ms     | 9 s 771 ms  | 9 s 762 ms | 9 s 406 ms | 8 s 553 ms |
 | **평균** | **100 ms**   | **3 ms**   | **9 s 736 ms** | **9 s 777 ms** | **9 s 294 ms** | **9 s 437 ms** | **8s 906 ms** |
 
 (3) 개선 전후 비교
@@ -520,39 +520,39 @@ erDiagram
 ![Java](https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white) ![Kotlin](https://img.shields.io/badge/kotlin-7f52ff?style=for-the-badge&logo=kotlin&logoColor=white)
 
 
-**📲 Interface Description Language** 
+**📲 Interface Description Language**     
 ![IntelliJ IDEA](https://img.shields.io/badge/IntelliJ_IDEA-000000?style=for-the-badge&logo=intellijidea&logoColor=white)
 
                                                                                                     
-**🧑🏻‍💻 Backend** 
+**🧑🏻‍💻 Backend**     
 ![Spring Framework](https://img.shields.io/badge/Spring_Framework-6DB33F?style=for-the-badge&logo=spring&logoColor=white) ![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
 
  
-**🗃 Data Base & Optimization**
+**🗃 Data Base & Optimization**    
 ![MySQL](https://img.shields.io/badge/MySQL-00758F?style=for-the-badge&logo=mysql&logoColor=white) ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white) ![Elasticsearch](https://img.shields.io/badge/Elasticsearch-005571?style=for-the-badge&logo=elasticsearch&logoColor=white)
 
  
-**🔐 Security** 
+**🔐 Security**     
 ![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=json-web-tokens&logoColor=white)
 
 
-**🚢 Deployment & Distribution** 
+**🚢 Deployment & Distribution**     
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white) ![AWS](https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white) ![EC2](https://img.shields.io/badge/EC2-FF6C37?style=for-the-badge&logo=amazon&logoColor=white) ![Route 53](https://img.shields.io/badge/Route_53-365E02?style=for-the-badge&logo=amazon&logoColor=white) ![Application Load Balancer](https://img.shields.io/badge/Application_Load_Balancer-00A1E4?style=for-the-badge&logo=amazon&logoColor=white) ![ASG](https://img.shields.io/badge/ASG-00B4D6?style=for-the-badge&logo=amazon&logoColor=white) ![RDS](https://img.shields.io/badge/RDS-FF6C37?style=for-the-badge&logo=amazon&logoColor=white) ![ElasticCache](https://img.shields.io/badge/ElasticCache-FF9900?style=for-the-badge&logo=amazon&logoColor=white) ![Certificate Manager](https://img.shields.io/badge/Certificate_Manager-FF9900?style=for-the-badge&logo=amazon&logoColor=white)  ![Github Actions](https://img.shields.io/badge/Github_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white) ![Elastic Cloud](https://img.shields.io/badge/Elastic_Cloud-005571?style=for-the-badge&logo=elasticsearch&logoColor=white) ![Ubuntu Linux](https://img.shields.io/badge/Ubuntu-263238?style=for-the-badge&logo=ubuntu&logoColor=white)  ![WAF](https://img.shields.io/badge/WAF-000000?style=for-the-badge&logo=cloudflare&logoColor=white) 
 
  
-**📟 Test**
+**📟 Test**    
 ![JMeter](https://img.shields.io/badge/JMeter-D20C0E?style=for-the-badge&logo=jmeter&logoColor=white) ![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white) 
 
  
-**👥 Collaboration Tool** 
+**👥 Collaboration Tool**     
 ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white) ![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white) ![Jira](https://img.shields.io/badge/Jira-0052CC?style=for-the-badge&logo=jira&logoColor=white) ![Slack](https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white) ![Notion](https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white) ![Figma](https://img.shields.io/badge/Figma-000000?style=for-the-badge&logo=figma&logoColor=white) ![Canva](https://img.shields.io/badge/Canva-00C4CC?style=for-the-badge&logo=canva&logoColor=white) ![ERD Cloud](https://img.shields.io/badge/ERD_Cloud-00B8D9?style=for-the-badge&logo=cloud&logoColor=white)
 
 
-**📧 Notification Service**
+**📧 Notification Service**    
 ![SendGrid](https://img.shields.io/badge/SendGrid-00B3E6?style=for-the-badge&logo=sendgrid&logoColor=white) 
 
 
-**📈 Logging & Monitoring & Analytics** 
+**📈 Logging & Monitoring & Analytics**     
 ![Kibana](https://img.shields.io/badge/Kibana-005571?style=for-the-badge&logo=kibana&logoColor=white) ![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white) ![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white) ![Fluentd](https://img.shields.io/badge/Fluentd-2B64B0?style=for-the-badge&logo=fluentd&logoColor=white) 
 
 ---
