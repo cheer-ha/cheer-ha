@@ -890,7 +890,7 @@ erDiagram
 
 ## 🎬 **보러 가기**
 - [최종 발표 PPT](https://www.canva.com/design/DAGhg82nibo/w6wIMRrulPlgRl9aj5KqSA/view?utm_content=DAGhg82nibo&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=haeeb4a3bb7)
-- [최종 발표 시연 영상]()
+- [최종 발표 시연 영상](https://www.youtube.com/watch?v=E0VavxZ8v5A)
 
 ---
 
