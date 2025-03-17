@@ -1122,7 +1122,7 @@ erDiagram
 <details>
 <summary>  이메일 발송 서비스 리팩토링! </summary>
 
-## 1. 리팩토링 전
+### 리팩토링 전
 
 <details>
 <summary> 리팩토링 전 코드 </summary>
@@ -1243,29 +1243,21 @@ erDiagram
  ```
 </details>
 
- ---
+### 현재 코드의 문제점
         
-## 2. 현재 코드의 문제점
+#### ⚠️**SRP 위반!**
+- 이메일 알림 생성, SendGrid API 호출 등 한 클래스가 너무 많은 책임을 집니다.
+- 알림 발송용과 사용자 인증용 이메일 발송을 한 클래스에서 동시에 수행합니다.
         
-### ⚠️**SRP 위반!**
+#### ⚠️**OCP 위반!**
+- 다른 이메일 서비스를 추가하기 어렵습니다.
         
-        - 이메일 알림 생성, SendGrid API 호출 등 한 클래스가 너무 많은 책임을 집니다.
-        - 알림 발송용과 사용자 인증용 이메일 발송을 한 클래스에서 동시에 수행합니다.
-        
-### ⚠️**OCP 위반!**
-        
-        - 다른 이메일 서비스를 추가하기 어렵습니다.
-        
-### ⚠️**DIP 위반!**
-        
-        - SendGrid와 강하게 결합되어 다른 서비스로 이전하기 힘듭니다.
-        
----
-        
- ## 3. 리팩토링 과정
+#### ⚠️**DIP 위반!**
+- SendGrid와 강하게 결합되어 다른 서비스로 이전하기 힘듭니다.
+ 
+### 리팩토링 과정
         
 ♻️책임을 분리합시다!
-        
 - Notification, Verification Email Sender를 분리합시다!
 
 <details>
@@ -1314,8 +1306,8 @@ erDiagram
 </details>                
         
 ♻️다른 이메일 API를 사용해야 한다면?
-        
-- 이메일을 실제 발송하는 클래스를 추상화하고, 이를 API가 구현하게 해볼까요?
+- 이메일을 실제 발송하는 클래스를 추상화하고, 이를 API가 구현하게 해볼까요?  
+
 <details>
 <summary> SendGridEmailSender </summary>
                 
@@ -1337,7 +1329,6 @@ erDiagram
                      * @param recipientEmail 수신자 이메일
                      * @param subject        이메일 제목
                      * @param content        이메일 본문 (HTML)
-                     * @throws IOException 이메일 전송 시 발생할 수 있는 예외
                      */
                     @Override
                     public void send(String recipientEmail, String subject, String content) throws IOException {
@@ -1375,16 +1366,11 @@ erDiagram
             
 ```
 </details>        
-        
----
-        
-## 4. 리팩토링 결과
-        
-✅새로운 이메일 서비스를 추가하기도, 다른 API를 사용하기도 쉬운 구조가 되었어요!
-        
-✅코드의 가독성이 좋아졌어요!
-        
-✅단위 테스트를 수행하기 편해졌어요!
+
+### 리팩토링 결과
+✅새로운 이메일 서비스를 추가하기도, 다른 API를 사용하기도 쉬운 구조가 되었어요!  
+✅코드의 가독성이 좋아졌어요!  
+✅단위 테스트를 수행하기 편해졌어요!  
 
 </details>
 
