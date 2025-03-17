@@ -1222,6 +1222,8 @@ erDiagram
        }
      }
    }
+    ```
+   
 </details>
     
 <details>
@@ -2585,7 +2587,7 @@ erDiagram
         - 예악된 작업은 ScoredSortedSet에 들어감
         - 특정 시간대에 실행되는 스케줄러는 항상 다음 스케줄링 시간을 Score로 가지고 예약 상태로 존재
 
-          ![스크린샷 2025-03-12 오후 8.27.50.png](attachment:82080312-6d25-4349-8906-24adc1cfa702:스ᄏ린샷_2025-03-12_오후_8.27.50.png)
+          ![스크린샷 2025-03-12 오후 8.27.50.png](https://private-user-images.githubusercontent.com/184512169/423204324-8cb7973d-4137-484f-bfc1-8b7ff4dfa354.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDIxNzA1MTMsIm5iZiI6MTc0MjE3MDIxMywicGF0aCI6Ii8xODQ1MTIxNjkvNDIzMjA0MzI0LThjYjc5NzNkLTQxMzctNDg0Zi1iZmMxLThiN2ZmNGRmYTM1NC5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMzE3JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDMxN1QwMDEwMTNaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT05ZGUzOGQ4ZThlOWUzZmJkMjhhMTUxNmNlMzYxMDZhMzExMWY2NjhhMTQ5OGU0MDQ5OTdmMDQ2YTBjYzY4OWJjJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.6tL_Xkax2mXBEd_IHR0j714GIbAVa_nSQlkqXYqOzJA)
 
 3. **누구나 쉽게 사용할 수 있도록 인터페이스 구현**
 <details>
@@ -3489,6 +3491,7 @@ Java 로 검색 시
    ![image.png](https://private-user-images.githubusercontent.com/184512169/423209122-46eb978a-4264-4dba-aad0-152c49aeb248.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDIxMjUyOTIsIm5iZiI6MTc0MjEyNDk5MiwicGF0aCI6Ii8xODQ1MTIxNjkvNDIzMjA5MTIyLTQ2ZWI5NzhhLTQyNjQtNGRiYS1hYWQwLTE1MmM0OWFlYjI0OC5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMzE2JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDMxNlQxMTM2MzJaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT05ZTIxMzYzZjkwM2FjNjk4ZGRiZTZiNzQ1NGQyMzM3MzJhZWRmNjEwNmNlN2EyM2ZhMmNlMGFkYjNjYzg4MDFjJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.z5mhg4fS4PmeT_998LytoQrRJISJeneKTdrE2Jh5mEk)
 
 </details>
+
   ---
     
   ### 5. 코드
@@ -5150,5 +5153,7 @@ Java 로 검색 시
 | 이승찬 | 🏅팀원  | 👂 경청의 대가<br> 🏆 노력 끝판왕<br> ✍️ 글의 조각가       | [https://github.com/tmdcksdl](https://github.com/tmdcksdl)  | https://carrot0911.tistory.com](https://carrot0911.tistory.com)                                                                              | ✅ 사용자 최근 검색어 CRD 구현<br>✅ 채용 공고 조회 구현<br>✅ 채용 공고 조회 사용자 편의 및 성능 개선<br>✅ 검색어 조회 성능 개선<br>✅ 검색어 키워드 조정 기능<br>✅ 중간 발표회 및 최종 발표회 발표 |
 | 진주앙 | 🥇팀원  | ❄️ 아이스 브레이커<br> 🔥 레벨업 장인<br> 📅 1일1득       | [https://github.com/juyangjin](https://github.com/juyangjin) | [https://velog.io/@wndid2008/posts](https://velog.io/@wndid2008/posts)                                                                            | ✅ Redis 집계 조회 성능 향상<br>✅ 페이지 리디렉션 API 구현<br>✅ 검색결과 자동 필터링 검색<br>✅ 중간 발표회 및 최종 발표회 PPT 제작                               |
 
-</aside>
+
 ---
+
+</aside>
