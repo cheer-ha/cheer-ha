@@ -1899,7 +1899,7 @@ erDiagram
 | **응답 속도** | 28ms | 7ms | **4배 단축** |
 | **TPS** | 249.1건/sec | 35.1건/sec | **7.1배 감소** |
 
-![초당처리량 감소 이미지](https://private-user-images.githubusercontent.com/184512169/423204465-8e05aa97-1887-42d3-ab83-84e8ed2b00ef.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDIxNzQ5ODUsIm5iZiI6MTc0MjE3NDY4NSwicGF0aCI6Ii8xODQ1MTIxNjkvNDIzMjA0NDY1LThlMDVhYTk3LTE4ODctNDJkMy1hYjgzLTg0ZThlZDJiMDBlZi5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMzE3JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDMxN1QwMTI0NDVaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT1jMTgxMjQ0Y2Q5ZGY4MmNkZWJiNzA5ZTRjNzE4MjkwYTQ4ZDA4NTZmZDQ3MTg3YjRjYzg0Njg5N2MyODk0NzViJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.vf0_uSV-BNFNNPbxZlLDsIOsKbQajbx7XGyj1fZcyTM)
+![초당처리량 감소 이미지](https://github.com/llRosell/sparta/blob/main/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202025-03-16%20%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE%207.22.01.png?raw=true)
 
 ---
 
@@ -1919,7 +1919,7 @@ erDiagram
 
 - 스레드 수를 200개로 조정하여 성능이 안정되면서 TPS가 증가함
 
-![초당처리량 증가 이미지](https://github.com/llRosell/sparta/blob/main/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202025-03-16%20%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE%207.22.01.png?raw=true)
+![초당처리량 증가 이미지](https://github.com/llRosell/sparta/blob/main/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202025-03-12%20%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE%207.14.59.png?raw=true)
 
 | **비교 항목** | **Elasticsearch 적용 전** | **Elasticsearch 적용 후** | **배율** |
 | --- | --- | --- | --- |
@@ -1941,7 +1941,7 @@ erDiagram
 
 부하 테스트를 진행한 결과, 스레드가 늘어나면서 응답 시간도 증가했는데 이때 응답 시간 변동성이 매우 커진다는 점을 파악했습니다.
 
-![image.png](https://github.com/llRosell/sparta/blob/main/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202025-03-12%20%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE%207.14.59.png?raw=true)
+![image.png](https://github.com/llRosell/sparta/blob/main/%E1%84%8C%E1%85%B5%E1%84%80%E1%85%B3%E1%84%8C%E1%85%A2%E1%84%80%E1%85%B3.png?raw=true)
 
 ---
 
