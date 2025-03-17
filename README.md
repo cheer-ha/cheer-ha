@@ -160,17 +160,19 @@
   <summary>🏎️ 연령대별 인기 키워드 조회 기능의 속도와 처리량을 어떻게 늘릴까요?</summary>
 
 ### 환경
-- **서버:** 로컬 환경 및 배포 서버에서 테스트 수행
-- **사용된 도구:** Postman, JMeter, QueryDSL
-- **연령대:** 취업 연령층이 가장 많은 25세에서 40세로 고정
-- JMeter를 활용하여 100 스레드로 고정
+- **서버**: 로컬 환경 및 배포 서버에서 테스트 수행
+- **사용된 도구**: Postman, JMeter, QueryDSL
+- **연령대**: 취업 연령층이 가장 많은 25세에서 40세로 고정
+- **테스트 도구**: Apache JMeter
+- **스레드**: 100 스레드로 고정
 
 ### 비교
 
 **1. 쿼리 변경 전후 비교 결과**
 - QueryDSL을 사용하여 서브 쿼리 제거
 - 단일 쿼리 안에서 **`count`**를 바로 계산
-- 스레드 100개를 10초로 나누어서 요청 처리 시
+
+(1) 스레드 100개를 10초로 나누어서 요청 처리 시 ⬇️
 
 | **비교 항목**         | **서브 쿼리 적용 시** | **단일 쿼리 적용 시** | **성능 향상률** | **배율** |
 |----------------------|----------------------|----------------------|----------------|----------|
@@ -181,7 +183,7 @@
 | **에러 발생 비율**    | 90.00%               | 0.00%                | 100.0%         | 완전 개선 |
 | **처리량**            | 41.2/min             | 606/min              | 1370.87%       | 14.71배  |
 
-- 스레드 100개를 120초로 나누어서 요청 처리 시 
+  (2) 스레드 100개를 120초로 나누어서 요청 처리 시 ⬇️
 
 | **비교 항목**         | **서브 쿼리 적용 시** | **단일 쿼리 적용 시** | **성능 향상률** | **배율** |
 |----------------------|----------------------|----------------------|----------------|----------|
@@ -192,10 +194,8 @@
 | **에러 발생 비율**    | 83.00%               | 0.00%                | 100.0%         | 완전 개선 |
 | **처리량**            | 23.9/min             | 50.5/min             | 111.3%         | 2.11배   |
 
-**2. 인덱스 적용**
-- **`user`** 테이블의 **`age`** 컬럼에 인덱스를 추가하였습니다.
-
-  - 인덱스 적용 전후 **`EXPLAIN`** 비교
+**2. **`user`** 테이블의 **`age`** 컬럼에 인덱스 추가**
+(1) 인덱스 적용 전후 **`EXPLAIN`** 비교
 
 | **비교 항목**             | **인덱스 적용 전**      | **인덱스 적용 후**        | **개선 사항**                               |
 |--------------------------|------------------------|--------------------------|--------------------------------------------|
@@ -207,7 +207,7 @@
 | **Extra**                 | Using temporary; Using filesort | Using where; Using index; Using temporary | ✅ 파일 정렬 제거, ✅ 인덱스 활용 증가 |
 | **Possible Keys**         | PRIMARY                | PRIMARY, idx_user_age    | ✅ 추가 인덱스 활용 가능                  |
 
-- 인덱스 적용 전후 **`EXPLAIN ANALYZE`** 비교
+(2) 인덱스 적용 전후 **`EXPLAIN ANALYZE`** 비교
 
 | **비교 항목**             | **인덱스 적용 전** | **인덱스 적용 후** | **개선 사항**           |
 |--------------------------|-------------------|-------------------|------------------------|
@@ -216,43 +216,22 @@
 | **Using Index 적용 여부** | No                | Yes               | ✅ Covering Index Scan 활용 |
 | **실행 시간**             | 62.5ms            | 52.4ms            | ✅ 약 16% 속도 개선     |
 
-### 4️⃣ 테스트 결과 분석
+### 결론 
 
-1. **서브 쿼리 최적화 후 성능 개선**
-   - 실행 시간: 31.49s → 146ms로 99.5% 단축됨
-   - 에러 발생 비율: 90% → 0%로 완전히 개선됨
-   - 응답 시간: 평균 50ms로 안정적으로 유지됨
-2. **인덱스 적용 후 성능 비교**
-   - 실행 시간: 62.5ms → 52.4ms로 약 16% 향상됨
-
-### 5️⃣ 결론
-
-서브 쿼리를 제거한 최적화가 성능에 가장 큰 영향을 주었습니다.
-
-반면, **`user`** 테이블의 **`age`** 컬럼에 인덱스를 적용한 결과는 성능 개선이 크게 이루어지지 않았습니다.
-
-또한, 인덱스를 적용하면 쓰기 성능에 영향을 미치는 만큼, 인덱스를 적용하지 않기로 결정했습니다.
-
-### 6️⃣ 추가 테스트 계획
-
-- **서버 측 캐싱 적용:** 쿼리 결과를 캐싱하여 반복 조회 시 성능을 더욱 향상시킬 수 있는지 확인
-- **다양한 연령대의 조회 성능 비교**: 25~40세 외의 다른 연령대에서도 성능 비교
-- **다양한 부하 시나리오 테스트 검토**: 실시간 트래픽을 반영하여 스레드 수와 부하 조건을 늘리고 모니터링
-
+- **서브 쿼리 최적화 후 성능 개선**
+   - 실행 시간: 31.49s → 146ms로 **99.5% 단축**
+   - 에러 발생 비율: 90% → **0%로 완전 개선**
+   - 응답 시간: 평균 50ms로 안정적 유지 
+- **인덱스 적용 후 성능 비교**
+   - 실행 시간: 62.5ms → 52.4ms로 *8약 16% 개선**
+   - 인덱스를 적용한 결과는 성능 개선이 크게 이루어지지 않음 
+   - 또한, 인덱스를 적용하면 쓰기 성능에 영향을 미치는 만큼, 인덱스 적용 ❌
 </details>
 
 <details>
   <summary> 🏎️ 서브 쿼리 vs 단일 쿼리, 연령대별 인기 즐겨찾기 조회에는 무엇이 좋을까요? </summary> 
 
-### 1️⃣ 테스트 개요
-
-이번 테스트는 연령대별 인기 즐겨찾기 조회 쿼리의 성능을 최적화하고자 진행되었습니다.
-
-쿼리 리팩토링을 적용하여 성능을 개선하는 데 초점을 두었습니다.
-
-특히 쿼리 성능이 매우 저조했기에 이를 최적화하는 과정에서 실제 서비스에 미치는 영향을 평가하였습니다.
-
-### 2️⃣ 테스트 환경 및 조건
+### 2️⃣ 환경 
 
 - **테스트 도구**: Apache JMeter
 - **테스트 요청**: HTTP 요청 (GET)
@@ -262,7 +241,7 @@
 - **데이터베이스**: MySQL
 - **쿼리 처리 도구**: MySQL QueryDSL
 
-### 3️⃣ 성능 비교
+### 비교
 
 | **비교 항목** | **서브쿼리로 조회 시** | **단일쿼리로 조회 시** | **성능 개선 비율**  |
 | --- | --- | --- | --- |
@@ -273,130 +252,26 @@
 | **에러 비율** | 70.00% | 0.00% | 100.00% |
 | **처리량** | 2.4/sec | 9.5/sec | 295.83% |
 
-### 4️⃣ 테스트 결과 분석
-
-1. **단일쿼리로 변경 후 결과**
-    - 평균 응답 시간: 97.36% 개선됨
-    - 처리량: 295.83% 향상됨
-    - 에러 비율: 70%에서 0%로 완전히 개선됨
-2. **응답 시간 비교**
-    - 응답 시간: 서브쿼리 → 단일쿼리
-        - Postman 로컬 서버에서 조회: 3s 62ms → 376ms로 87.76% 향상됨
-        - Postman 배포 서버에서 조회: 11s 13ms → 50ms로 99.55% 향상됨
-        - Jmeter 테스트: 29s 737ms → 787ms로 97.36% 향상됨
-        -  ![서브쿼리 이용 연령대별 인기 즐겨찾기 10개 조회 3초62ms](https://blog.kakaocdn.net/dn/cP91s9/btsMFIkjxSM/RUmZJPHkSoQ7CHKoqT1KK1/img.png)
-           
-            서브쿼리 이용 연령대별 인기 즐겨찾기 10개 조회 3초62ms
-
-
-<details>
-  <summary> 개선된 코드 확인 </summary>
-
-- COUNT(*)와 GROUP BY를 단일 쿼리 내에서 동시에 처리하여 성능을 개선합니다.
-
-  <br>
-  <img src="https://blog.kakaocdn.net/dn/6IUJz/btsMEyb40Mz/lHjKI3fTKKrI0u93zesV41/img.png" alt="서브쿼리를 사용하여 즐겨찾기를 카운트 함">
-  <p>서브쿼리를 사용하여 즐겨찾기를 카운트 함</p>
-
-  <br>
-  <img src="https://blog.kakaocdn.net/dn/cvW6XB/btsMFJXHCFB/K8l69oQp2z8OnHfDN35fpk/img.png" alt="단일쿼리로 변경된 코드">
-  <p>단일쿼리로 변경된 코드</p>
-
-</details>
-
-<details>
-  <summary> 테스트 결과 확인 </summary>
-
-  처음 위 코드로 연령별 인기 즐겨찾기 10개를 조회했을 때 postman으로 조회시 (25-40세 기준)
-
-  아래와 같이 3초62ms가 나왔습니다.
-
-  ![서브쿼리 이용 연령대별 인기 즐겨찾기 10개 조회 3초62ms](https://blog.kakaocdn.net/dn/cP91s9/btsMFIkjxSM/RUmZJPHkSoQ7CHKoqT1KK1/img.png)
-
-  서브쿼리 이용 연령대별 인기 즐겨찾기 10개 조회 3초62ms
-
-  배포 서버에서 조회시에는 11초13ms가 나왔습니다.
-
-  ![배포 서버에서 서브쿼리 이용 연령대별 인기 즐겨찾기 10개 조회 11초13ms](https://blog.kakaocdn.net/dn/4kYEz/btsMENtkX0r/RfFjJTPhtiG3cz2jIFov2K/img.png)
-
-  배포 서버에서 서브쿼리 이용 연령대별 인기 즐겨찾기 10개 조회 11초13ms
-
-  너무 느려서인지 100스레드 10초로 jmeter에서 성능테스트 시 에러율 70%로 제대로 테스트가 되지 않았습니다.
-
-  ![서브쿼리 이용 연령대별 인기 즐겨찾기 10개 조회 29초 에러율 70%](https://blog.kakaocdn.net/dn/bW32Kw/btsME7rtfkt/DThTVbCD6UilpAd8yYo7eK/img.png)
-
-  서브쿼리 이용 연령대별 인기 즐겨찾기 10개 조회 29초 에러율 70%
-
-  그래서 Ramp-up period를 10초에서 120초로 넉넉히 설정했습니다.
-
-  그랬더니 분당 처리량이 47.8개입니다.
-
-  ![서브쿼리 이용 연령대별 인기 즐겨찾기 10개 조회 TPM 47.8개](https://blog.kakaocdn.net/dn/ZMhzO/btsMEzaYhrv/bMn8z42yiHzQ1CZ1nPOZ7K/img.png)
-
-  서브쿼리 이용 연령대별 인기 즐겨찾기 10개 조회 TPM 47.8개
-
-  서브쿼리를 없애고,
-
-  **단일 쿼리**내에서 COUNT를 바로 계산하도록 개선했습니다.
-
-  ![단일쿼리 이용 연령대별 인기 즐겨찾기 10개 조회 - 로컬 376ms](https://blog.kakaocdn.net/dn/GFIai/btsMFisMfzu/v5EDuvMGdQYUim2O8Xl8G1/img.png)
-
-  단일쿼리 이용 연령대별 인기 즐겨찾기 10개 조회 - 로컬 376ms
-
-  postman으로 테스트 시 로컬에서 376ms가 나왔습니다!
-
-  서브쿼리 로컬에서 조회 시 3초62ms였던 것에 비하면 응답속도가 약**89.74%**나 개선되었습니다!!
-
-  ![단일쿼리 이용 연련대별 인기 즐겨찾기 10개 조회 - 배포 서버 50ms](attachment:235ee588-2c74-4b9a-b8a0-ece4a6956b99:스크린샷_2025-03-13_오후_12.02.02.png)
-
-  단일쿼리 이용 연련대별 인기 즐겨찾기 10개 조회 - 배포 서버 50ms
-
-  postman으로 테스트 시 배포 서버에서 50ms가 나왔습니다!
-
-  ![단일쿼리 이용 연령대별 인기 즐겨찾기 10개 조회 100스레드 787ms](https://blog.kakaocdn.net/dn/bgIatP/btsMD43zvC9/ZfF14QakoiwFkF1xuZDdkK/img.png)
-
-  단일쿼리 이용 연령대별 인기 즐겨찾기 10개 조회 100스레드 787ms
-
-  Jmeter에서 부하테스트 시 787msr가 나왔습니다.
-
-</details>
-
-### 5️⃣ 결론
-
-서브쿼리를 제거한 최적화가 성능에 가장 큰 영향을 미친 것으로 분석되었습니다.
-
-단일쿼리에서 바로 집계하는 방식으로 변경하자, 응답 속도가 크게 개선되었습니다.
-
-또한, 부하 테스트에서도 에러율이 0%로 안정적인 성능을 보였습니다.
-
-### 6️⃣ 추가 테스트 계획
-
-- **서버 측 캐싱 적용**: 쿼리 결과를 캐싱하여 최적화 가능성 탐색
-- **다양한 연령대에서 성능 비교**: 41~60세 등에서도 성능을 비교하여 최적화 방법 탐색
+### 결론
+- 평균 응답 시간: **97.36% 개선**
+- 처리량: **295.83% 향상**
+- 에러 비율: **70%에서 0%로 완전 개선**
+- Postman 로컬 서버에서 조회: 3s 62ms → 376ms로 **87.76% 향상**
+- Postman 배포 서버에서 조회: 11s 13ms → 50ms로 **99.55% 향상**
+- Jmeter 테스트: 29s 737ms → 787ms로 **97.36% 향상**
 
 </details>
 
 <details>
   <summary> 🏎️ 21초에서 9초, 이메일 알림 발송 속도를 어떻게 개선할 수 있을까요? </summary>
 
-### 1️⃣ 테스트 개요
+### 환경
 
-본 테스트는 이메일 알림 발송 속도를 개선하고자 진행되었습니다.
-
-테스트는 로컬 환경에서 사용자 3명에게 이메일을 3번씩 전송하는 시나리오를 가정하에 수행되었습니다.
-
-### 2️⃣ 테스트 환경 및 조건
-
-- 환경 및 조건
-    - **서버 환경:** 로컬 서버 (localhost)
-    - **이메일 발송 방식:** Gmail SMTP
-    - **SMTP 설정:** Gmail SMTP (포트 587)
-    - **이메일 발송 요청 방식:** Spring Boot MailSender 사용
-    - **총 이메일 발송 건수:** 9건 (3명 × 3회)
-
-<details>
-  <summary>테스트 데이터</summary>
-
+- **서버 환경**: 로컬 서버 (localhost)
+- **이메일 발송 방식**: Gmail SMTP
+- **SMTP 설정**: Gmail SMTP (포트 587)
+- **이메일 발송 요청 방식**: Spring Boot MailSender 사용
+- **총 이메일 발송 건수**: 9건 (3명 × 3회)
 - **사용자**
 
   | **사용자 ID (user_id)**    | **키워드 ID (keyword_id)**   | **이메일 (email)**      |
@@ -423,86 +298,11 @@
   | **1, 2, 3**                | 1                                | 1, 3                    |
   | **4, 5**                   | 2                                | 1, 2                    |
 
-</details>
+### 비교
+- `transform()` 메서드로 불필요한 연산 제거 
+- `ThreadPoolTaskScheduler`를 10개로 설정하여 발송 작업을 비동기로 처리
 
-### 3️⃣ 성능 비교
-
-`Gmail SMTP` 서버 속도를 직접 해결하기는 어려웠기에 두 가지 방식으로 성능 개선을 시도했습니다.
-
-1. `transform()` 메서드로 불필요한 연산을 제거하여 발송 전 로직 개선
-<details>
-  <summary> [수정 전] findAllJobOpeningKeywords() 메서드 펼치기 </summary>
-
-```java
-            public List<JobOpeningKeywordDto> findAllJobOpeningKeywords(ZonedDateTime referenceTime) {
-                QJobOpeningKeyword jobOpeningKeyword = QJobOpeningKeyword.jobOpeningKeyword;
-                QJobOpening jobOpening = QJobOpening.jobOpening;
-        
-                return queryFactory
-                    .select(
-                        new QJobOpeningKeywordDto(
-                            jobOpeningKeyword.jobOpening.id,
-                            jobOpeningKeyword.keyword.id,
-                            jobOpening.jobOpeningUrl
-                        )
-                    ).from(jobOpeningKeyword)
-                    .join(jobOpeningKeyword.jobOpening, jobOpening)
-                    .where(jobOpening.createdAt.after(referenceTime))
-                    .fetch();
-            }
-```
-</details>
-
-<details>
-  <summary> [수정 후] findKeywordIdToUrlList() 메서드 펼치기 </summary>
-
-```java
-            /**
-             * 주어진 시간(referenceTime) 이후에 생성된 채용 공고들의 키워드와 URL 목록을 조회하는 메서드
-             *
-             * @param referenceTime 조회 시간
-             * @return 채용 공고 키워드와 해당 키워드에 매칭되는 URL 목록을 매핑한 맵
-             *         (Key: KeywordId, Value: 해당 키워드에 매칭되는 URL 목록)
-             */
-            @Override
-            public Map<Long, List<String>> findKeywordIdToUrlList(ZonedDateTime referenceTime) {
-                return queryFactory
-                    .from(jobOpeningKeyword)
-                    .join(jobOpeningKeyword.jobOpening, jobOpening)
-                    .where(jobOpening.createdAt.after(referenceTime)) // 조회 시간 이후 생성된 채용 공고
-                    .transform(
-                        groupBy(jobOpeningKeyword.keyword.id) // 키워드 ID별로 그룹화
-                            .as(list(jobOpening.jobOpeningUrl)) // URL 목록을 그룹에 매핑
-                    );
-            }
-```
-</details>
-
-2.  `ThreadPoolTaskScheduler`를 10개로 설정하여 발송 작업을 비동기로 처리
-
-<details>
-  <summary> SchedulerConfig 클래스 펼치기 </summary>
-
-```java
-        @Configuration
-        public class SchedulerConfig {
-            @Bean
-            public ThreadPoolTaskScheduler emailTaskScheduler() {
-            
-                ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-                
-                scheduler.setPoolSize(10);
-                
-                scheduler.setThreadNamePrefix("$$$-Email-Scheduler-thread-");
-                
-                return scheduler;
-            }
-        }
-```
-
-이후 테스트를 진행하여 성능을 비교했습니다.
-
-**[개선 전 테스트]**
+(1) 개선 전 테스트
 
 | **회차** | **채용 공고 조회** | **사용자 조회** | **전체 이메일 전송** | **전체 작업 완료** | **개별 이메일 전송 (1)** | **개별 이메일 전송 (2)** | **개별 이메일 전송 (3)** |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -510,7 +310,7 @@
 | **2회차** | - ms | - ms | 21 s 550 ms | 21 s 556 ms | 8 s 419 ms | 4 s 113 ms | 9 s 17 ms |
 | **3회차** | - ms | - ms | 21 s 458 ms | 21 s 470 ms | 8 s 808 ms | 3 s 415 ms | 9 s 95 ms |
 | **평균** | **150 ms** | **3 ms** | **21 s 832 ms** | **21 s 890 ms** | **8 s 808 ms** | **3 s 909 ms** | **9 s 114 ms** |
-- 채용 공고 및 사용자 조회는 2회차부터 데이터베이스 캐싱이 적용되므로, 해당 값을 반영하지 않았습니다.
+- 채용 공고 및 사용자 조회는 2회차부터 데이터베이스 캐싱이 적용되므로, 해당 값 반영 
 
 **[개선 후 테스트]**
 
