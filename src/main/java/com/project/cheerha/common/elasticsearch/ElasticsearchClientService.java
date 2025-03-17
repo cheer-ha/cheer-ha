@@ -7,13 +7,13 @@ import com.project.cheerha.domain.elasticsearch.entity.JobOpeningDocument;
 import com.project.cheerha.common.exception.data.ElasticsearchQueryException;
 import com.project.cheerha.common.exception.data.DataErrorCode;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+@Repository
 @RequiredArgsConstructor
 public class ElasticsearchClientService {
 

@@ -1,17 +1,16 @@
 package com.project.cheerha.domain.searchhistory.service;
 
+import com.project.cheerha.common.repository.KeyValueCommandRepository;
+import com.project.cheerha.common.repository.KeyValueQueryRepository;
 import com.project.cheerha.domain.searchhistory.entity.SearchHistory;
 import com.project.cheerha.domain.searchhistory.repository.SearchHistoryRepository;
 import com.project.cheerha.domain.user.entity.User;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
@@ -31,20 +30,15 @@ public class SearchHistoryServiceTest {
     private SearchHistoryService searchHistoryService;
 
     @Mock
-    private RedisTemplate<String, String> redisTemplate;
+    private KeyValueCommandRepository keyValueCommandRepository;
 
     @Mock
-    private ZSetOperations<String, String> zSetOperations;
+    private KeyValueQueryRepository keyValueQueryRepository;
 
     @Mock
     private SearchHistoryRepository searchHistoryRepository;
 
     private static final long EXPIRATION_TIME = 3600;
-
-    @BeforeEach
-    void setUp() {
-        when(redisTemplate.opsForZSet()).thenReturn(zSetOperations);
-    }
 
     @Test
     @DisplayName("검색어가 Redis에 정상적으로 저장")
@@ -58,8 +52,8 @@ public class SearchHistoryServiceTest {
         searchHistoryService.saveSearchTerm(userId, searchTerm);
 
         // then
-        verify(zSetOperations, times(1)).add(eq(key), eq(searchTerm), anyDouble());
-        verify(redisTemplate, times(1)).expire(eq(key), eq(EXPIRATION_TIME), eq(TimeUnit.SECONDS));
+        verify(keyValueCommandRepository, times(1)).addToZSet(eq(key), eq(searchTerm), anyLong());
+        verify(keyValueCommandRepository, times(1)).expireValue(eq(key), eq(EXPIRATION_TIME), eq(TimeUnit.SECONDS));
     }
 
     @Test
@@ -70,15 +64,15 @@ public class SearchHistoryServiceTest {
         String searchTerm = "Redis";
         String key = "user:" + userId + ":search_history";
 
-        when(zSetOperations.zCard(key)).thenReturn(11L);
+        when(keyValueQueryRepository.getZSetCard(key)).thenReturn(11L);
 
         // when
         searchHistoryService.saveSearchTerm(userId, searchTerm);
 
         // then
-        verify(zSetOperations, times(1)).add(eq(key), eq(searchTerm), anyDouble());
-        verify(zSetOperations, times(1)).removeRange(eq(key),eq(0L), eq(0L));
-        verify(redisTemplate, times(1)).expire(eq(key), eq(EXPIRATION_TIME), eq(TimeUnit.SECONDS));
+        verify(keyValueCommandRepository, times(1)).addToZSet(eq(key), eq(searchTerm), anyLong());
+        verify(keyValueCommandRepository, times(1)).removeFromZSetRange(eq(key),eq(0L), eq(0L));
+        verify(keyValueCommandRepository, times(1)).expireValue(eq(key), eq(EXPIRATION_TIME), eq(TimeUnit.SECONDS));
     }
 
     @Test
@@ -89,7 +83,7 @@ public class SearchHistoryServiceTest {
         String key = "user:" + userId + ":search_history";
         Set<String> searchTermSet = new LinkedHashSet<>(List.of("Java", "Spring"));
 
-        when(zSetOperations.reverseRange(key, 0, 9)).thenReturn(searchTermSet);
+        when(keyValueQueryRepository.getZSetReverseRange(key, 0, 9)).thenReturn(searchTermSet);
 
         // when
         List<String> searchTermList = searchHistoryService.getRecentSearchTerms(userId);
@@ -108,7 +102,7 @@ public class SearchHistoryServiceTest {
         String key = "user:" + userId + ":search_history";
         User mockUser = User.toEntity("test@gmail.com", "사용자1", 27, 1, "password123");
 
-        when(zSetOperations.reverseRange(key, 0, 9)).thenReturn(Collections.emptySet());
+        when(keyValueQueryRepository.getZSetReverseRange(key, 0, 9)).thenReturn(Collections.emptySet());
 
         SearchHistory history1 = SearchHistory.toEntity(mockUser, "Elasticsearch");
         SearchHistory history2 = SearchHistory.toEntity(mockUser, "Kafka");
@@ -128,7 +122,7 @@ public class SearchHistoryServiceTest {
 
         verify(searchHistoryRepository, times(1)).findTop10ByUserIdOrderByCreatedAtDesc(userId);
 
-        verify(zSetOperations, times(1)).add(eq(key), eq("Elasticsearch"), anyDouble());
-        verify(zSetOperations, times(1)).add(eq(key), eq("Kafka"), anyDouble());
+        verify(keyValueCommandRepository, times(1)).addToZSet(eq(key), eq("Elasticsearch"), anyLong());
+        verify(keyValueCommandRepository, times(1)).addToZSet(eq(key), eq("Kafka"), anyLong());
     }
 }

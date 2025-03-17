@@ -3,6 +3,8 @@ package com.project.cheerha.aspect;
 import com.project.cheerha.common.aop.block.IpBlockingAspect;
 import com.project.cheerha.common.exception.auth.AuthErrorCode;
 import com.project.cheerha.common.exception.auth.UnAuthorizedException;
+import com.project.cheerha.common.repository.KeyValueCommandRepository;
+import com.project.cheerha.common.repository.KeyValueQueryRepository;
 import com.project.cheerha.common.util.IpUtil;
 import com.project.cheerha.domain.auth.dto.request.CreateLoginRequestDto;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,9 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -32,13 +31,10 @@ class IpBlockingAspectTest {
     private IpBlockingAspect ipBlockingAspect;
 
     @Mock
-    private RedisTemplate<String, String> redisTemplate;
+    private KeyValueCommandRepository keyValueCommandRepository;
 
     @Mock
-    private ValueOperations<String, String> valueOperations;
-
-    @Mock
-    private ListOperations<String, String> listOperations;
+    private KeyValueQueryRepository keyValueQueryRepository;
 
     @Mock
     private ProceedingJoinPoint joinPoint;
@@ -71,8 +67,6 @@ class IpBlockingAspectTest {
         Object result = ipBlockingAspect.blockAbnormalIp(joinPoint);
 
         assertEquals("로그인 성공", result);
-        verify(redisTemplate, never()).opsForValue();
-        verify(redisTemplate, never()).opsForList();
     }
 
     @Test
@@ -81,16 +75,15 @@ class IpBlockingAspectTest {
         when(joinPoint.getArgs()).thenReturn(args);
         when(joinPoint.proceed()).thenThrow(new UnAuthorizedException(AuthErrorCode.INVALID_PASSWORD));
 
-        when(redisTemplate.opsForList()).thenReturn(listOperations);
-        when(listOperations.range(ATTEMPT_KEY, 0, -1)).thenReturn(List.of(EMAIL_1, EMAIL_2));
+        when(keyValueQueryRepository.getListRange(ATTEMPT_KEY, 0, -1)).thenReturn(List.of(EMAIL_1, EMAIL_2));
 
         Exception exception = assertThrows(RuntimeException.class,
                 () -> ipBlockingAspect.blockAbnormalIp(joinPoint));
 
         assertEquals("패스워드가 잘못되었습니다.", exception.getMessage());
 
-        verify(listOperations, times(1)).rightPush(ATTEMPT_KEY, EMAIL_3);
-        verify(redisTemplate, times(1)).expire(ATTEMPT_KEY, 15, TimeUnit.MINUTES);
+        verify(keyValueCommandRepository, times(1)).pushToListLeft(ATTEMPT_KEY, EMAIL_3);
+        verify(keyValueCommandRepository, times(1)).expireValue(ATTEMPT_KEY, 15, TimeUnit.MINUTES);
     }
 
     @Test
@@ -99,16 +92,14 @@ class IpBlockingAspectTest {
         when(joinPoint.getArgs()).thenReturn(args);
         when(joinPoint.proceed()).thenThrow(new UnAuthorizedException(AuthErrorCode.INVALID_PASSWORD));
 
-        when(redisTemplate.opsForList()).thenReturn(listOperations);
-        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-        when(listOperations.range(ATTEMPT_KEY, 0, -1)).thenReturn(List.of(EMAIL_1, EMAIL_2, EMAIL_3));
+        when(keyValueQueryRepository.getListRange(ATTEMPT_KEY, 0, -1)).thenReturn(List.of(EMAIL_1, EMAIL_2, EMAIL_3));
 
         Exception exception = assertThrows(RuntimeException.class,
                 () -> ipBlockingAspect.blockAbnormalIp(joinPoint));
 
         assertEquals("패스워드가 잘못되었습니다.", exception.getMessage());
 
-        verify(valueOperations, times(1)).set(BLOCK_KEY, "blocked", 30, TimeUnit.SECONDS);
-        verify(redisTemplate, times(1)).delete(ATTEMPT_KEY);
+        verify(keyValueCommandRepository, times(1)).setValue(BLOCK_KEY, "blocked", 30, TimeUnit.SECONDS);
+        verify(keyValueCommandRepository, times(1)).removeValue(ATTEMPT_KEY);
     }
 }

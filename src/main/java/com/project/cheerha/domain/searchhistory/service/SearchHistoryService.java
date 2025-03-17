@@ -1,9 +1,10 @@
 package com.project.cheerha.domain.searchhistory.service;
 
+import com.project.cheerha.common.repository.KeyValueCommandRepository;
+import com.project.cheerha.common.repository.KeyValueQueryRepository;
 import com.project.cheerha.domain.searchhistory.entity.SearchHistory;
 import com.project.cheerha.domain.searchhistory.repository.SearchHistoryRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -15,7 +16,8 @@ import java.util.stream.Collectors;
 public class SearchHistoryService {
 
     private final SearchHistoryRepository searchHistoryRepository;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final KeyValueCommandRepository keyValueCommandRepository;
+    private final KeyValueQueryRepository keyValueQueryRepository;
 
     private static final int MAX_SEARCH_HISTORY_SIZE = 10; // 최대 저장 개수
     private static final long EXPIRATION_TIME = 3600; // 1시간(초 단위)
@@ -34,14 +36,14 @@ public class SearchHistoryService {
         String key = "user:" + userId + ":search_history";
         long timestamp = System.currentTimeMillis();
         if(!searchTerm.isBlank()) {
-            redisTemplate.opsForZSet().add(key, searchTerm, timestamp);
+            keyValueCommandRepository.addToZSet(key, searchTerm, timestamp);
         }
-        Long size = redisTemplate.opsForZSet().zCard(key);
+        Long size = keyValueQueryRepository.getZSetCard(key);
         if (size != null && size > MAX_SEARCH_HISTORY_SIZE) {
-            redisTemplate.opsForZSet().removeRange(key, 0, size - MAX_SEARCH_HISTORY_SIZE - 1);
+            keyValueCommandRepository.removeFromZSetRange(key, 0, size - MAX_SEARCH_HISTORY_SIZE - 1);
         }
 
-        redisTemplate.expire(key, EXPIRATION_TIME, TimeUnit.SECONDS);
+        keyValueCommandRepository.expireValue(key, EXPIRATION_TIME, TimeUnit.SECONDS);
     }
 
     /**
@@ -57,7 +59,7 @@ public class SearchHistoryService {
     public List<String> getRecentSearchTerms(Long userId) {
         String key = "user:" + userId + ":search_history";
 
-        Set<String> searchTermSet = redisTemplate.opsForZSet().reverseRange(key, 0, 9);
+        Set<String> searchTermSet = keyValueQueryRepository.getZSetReverseRange(key, 0, 9);
         if (searchTermSet == null || searchTermSet.isEmpty()) {
             return fetchSearchTermListFromDatabase(userId);
         }

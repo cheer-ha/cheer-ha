@@ -1,4 +1,4 @@
-package com.project.cheerha.common.util.variable;
+package com.project.cheerha.common.elasticsearch;
 
 public class IndexName {
 

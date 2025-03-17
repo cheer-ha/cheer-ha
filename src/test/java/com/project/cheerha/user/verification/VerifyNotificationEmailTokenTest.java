@@ -2,7 +2,7 @@ package com.project.cheerha.user.verification;
 
 import com.project.cheerha.common.exception.data.DataErrorCode;
 import com.project.cheerha.common.exception.data.NotFoundException;
-import com.project.cheerha.common.redis.email.EmailTokenService;
+import com.project.cheerha.domain.user.service.EmailTokenService;
 import com.project.cheerha.domain.user.entity.User;
 import com.project.cheerha.domain.user.service.UserEmailVerificationService;
 import com.project.cheerha.domain.user.service.UserFindByService;

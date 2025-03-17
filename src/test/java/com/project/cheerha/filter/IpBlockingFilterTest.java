@@ -2,6 +2,7 @@ package com.project.cheerha.filter;
 
 import com.project.cheerha.common.exception.handler.FilterExceptionHandler;
 import com.project.cheerha.common.filter.IpBlockingFilter;
+import com.project.cheerha.common.repository.KeyValueQueryRepository;
 import com.project.cheerha.common.util.IpUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -14,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
@@ -31,7 +31,7 @@ class IpBlockingFilterTest {
     private FilterExceptionHandler filterExceptionHandler;
 
     @Mock
-    private RedisTemplate<String, String> redisTemplate;
+    private KeyValueQueryRepository keyValueQueryRepository;
 
     @Mock
     private HttpServletRequest request;
@@ -52,7 +52,7 @@ class IpBlockingFilterTest {
 
     @Test
     void 차단되지않은_IP_정상처리() throws IOException, ServletException {
-        when(redisTemplate.hasKey(BLOCK_KEY)).thenReturn(false);
+        when(keyValueQueryRepository.hasKey(BLOCK_KEY)).thenReturn(false);
 
         ipBlockingFilter.doFilter(request, response, filterChain);
 
@@ -62,7 +62,7 @@ class IpBlockingFilterTest {
 
     @Test
     void 차단된_IP_403_응답() throws IOException, ServletException {
-        when(redisTemplate.hasKey(BLOCK_KEY)).thenReturn(true);
+        when(keyValueQueryRepository.hasKey(BLOCK_KEY)).thenReturn(true);
 
         ipBlockingFilter.doFilter(request, response, filterChain);
 
