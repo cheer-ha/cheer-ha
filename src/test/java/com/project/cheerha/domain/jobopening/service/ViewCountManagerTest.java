@@ -1,11 +1,10 @@
-package com.project.cheerha.viewcount;
+package com.project.cheerha.domain.jobopening.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import com.project.cheerha.common.repository.KeyValueCommandRepository;
 import com.project.cheerha.common.repository.KeyValueQueryRepository;
-import com.project.cheerha.domain.jobopening.service.ViewCountManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class RedisViewCountManagerTest {
+public class ViewCountManagerTest {
 
     @Mock
     private KeyValueCommandRepository keyValueCommandRepository;
