@@ -571,10 +571,12 @@ erDiagram
 **📈 Logging & Monitoring & Analytics** 
 - ![Kibana](https://img.shields.io/badge/Kibana-005571?style=for-the-badge&logo=kibana&logoColor=white) ![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white) ![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white) ![Fluentd](https://img.shields.io/badge/Fluentd-2B64B0?style=for-the-badge&logo=fluentd&logoColor=white) 
 
+---
+
 </aside>
 
 <aside>
-
+  
 ## 🔧 기술적 의사결정
 
 ### **💡** 사용자 인증 및 인가를 어떤 방식으로 해야 할까요?
