@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/c5c450b5-aa12-474e-8f20-064605fedb13)# 3조 - 👑 취하여 (Cheer-ha)
+# 3조 - 👑 취하여 (Cheer-ha)
 
 ## 🚀 서비스 소개
 ### ✨ 서비스 개요
