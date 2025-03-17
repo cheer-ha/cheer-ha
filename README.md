@@ -1,4 +1,4 @@
-# 3조 - 👑 취하여 (Cheer-ha)
+![image](https://github.com/user-attachments/assets/c5c450b5-aa12-474e-8f20-064605fedb13)# 3조 - 👑 취하여 (Cheer-ha)
 
 ## 🚀 서비스 소개
 ### ✨ 서비스 개요
@@ -353,11 +353,11 @@
 
 ### ☁️ Cloud Architecture
 
-![Cloud Architecture 이미지](https://github.com/llRosell/sparta/blob/main/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202025-03-13%20%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE%208.53.49.png?raw=true)
+![아키텍쳐 이미지](https://github.com/llRosell/sparta/blob/main/%E1%84%8B%E1%85%A1%E1%84%8F%E1%85%B5%E1%84%90%E1%85%A6%E1%86%A8%E1%84%8E%E1%85%A7.png?raw=true)
 
 ### ⛓️ CI/CD Pipeline
 
-![CI/CD Pipeline 이미지](https://github.com/llRosell/sparta/blob/main/%E1%84%8C%E1%85%A1%E1%84%85%E1%85%AD%20%E1%84%86%E1%85%A9%E1%84%8B%E1%85%B3%E1%86%B7%20(4).jpg?raw=true)
+![CI/CD Pipeline 이미지](https://github.com/llRosell/sparta/blob/main/cicd.jpg?raw=true)
 
 ### 📐 설계 과정
 
