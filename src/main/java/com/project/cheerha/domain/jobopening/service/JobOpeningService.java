@@ -43,9 +43,6 @@ public class JobOpeningService {
         if (!url.startsWith("http")) {
             url = "https://" + url;
         }
-        if (!isValidUrl(url)) {
-            throw new NotFoundException(DataErrorCode.PAGE_NOT_FOUND);
-        }
         return url;
     }
 
@@ -137,26 +134,5 @@ public class JobOpeningService {
 
         // PageRequest를 사용하여 페이지 번호와 페이지 크기 설정
         return PageRequest.of(pageNumber, pageSize);
-    }
-
-
-    /**
-     * 해당 url이 실제로 존재하는지 체크하는 메서드
-     * url에 접속이 불가하거나 문제가 생길 시 false 반환
-     * @param url 채용공고 정보에서 가져온 url
-     * @return url이 실제로 존재하면 true, 존재하지 않거나 예외 발생 시 false
-     */
-    private boolean isValidUrl(String url) {
-        try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-            connection.setRequestMethod("GET");
-            connection.setConnectTimeout(3000);
-            connection.setReadTimeout(3000);
-
-            int statusCode = connection.getResponseCode();
-            return statusCode >= 200 && statusCode < 400; // 200~300대에서는 true 반환
-        } catch (IOException e) {
-            return false; // 페이지가 존재하지 않으면 false 반환
-        }
     }
 }
