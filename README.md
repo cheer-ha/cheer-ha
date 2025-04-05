@@ -325,7 +325,7 @@
 
 ## 🏗️ System Architecture
 ### ☁️ Cloud Architecture
-![아키텍쳐 이미지](https://github.com/llRosell/sparta/blob/main/%E1%84%8B%E1%85%A1%E1%84%8F%E1%85%B5%E1%84%90%E1%85%A6%E1%86%A8%E1%84%8E%E1%85%A7.png?raw=true)
+![아키텍쳐 이미지](https://github.com/llRosell/sparta/blob/main/%E1%84%8F%E1%85%B3%E1%86%AF%E1%84%85%E1%85%A1%E1%84%8B%E1%85%AE%E1%84%83%E1%85%B3%20%E1%84%8B%E1%85%A1%E1%84%8F%E1%85%B5%E1%84%90%E1%85%A6%E1%86%A8%E1%84%8E%E1%85%A7.png?raw=true)
 
 ### ⛓️ CI/CD Pipeline
 ![CI/CD Pipeline 이미지](https://github.com/llRosell/sparta/blob/main/cicd.jpg?raw=true)
@@ -563,7 +563,7 @@ erDiagram
 
 ### 구현
 
-  ![jwt 이미지](https://github.com/llRosell/sparta/blob/main/jwt.png?raw=true)
+  ![jwt 이미지](https://github.com/llRosell/sparta/blob/main/jwt%20%E1%84%83%E1%85%A1%E1%84%8B%E1%85%B5%E1%84%8B%E1%85%A5%E1%84%80%E1%85%B3%E1%84%85%E1%85%A2%E1%86%B7.png?raw=true)
 
   1. **JWT 사용 방식**
       - AccessToken의 유효기간을 짧게 설정하여, 토큰 탈취 시 피해를 최소화 (30분)
@@ -839,7 +839,7 @@ erDiagram
     - Redis를 이용하여 작업들을 queue에 넣고, 하나의 인스턴스만 실행되는 구조로 변경
     - 스케줄링을 짧은 주기로 확인해야 하는 만큼, 빠른 읽기 I/O가 요구되는 구조이므로 Redis 사용
 - **다중 인스턴스용 스케줄러 아키텍처 적용**
-![스크린샷 2025-03-12 오후 5.38.37.png](https://github.com/llRosell/sparta/blob/main/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202025-03-12%20%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE%205.38.37.png?raw=true)
+![스크린샷 2025-03-12 오후 5.38.37.png](https://github.com/llRosell/sparta/blob/main/%E1%84%83%E1%85%A1%E1%84%8C%E1%85%AE%E1%86%BC%E1%84%8B%E1%85%B5%E1%86%AB%E1%84%89%E1%85%B3%E1%84%90%E1%85%A5%E1%86%AB%E1%84%89%E1%85%B3%20%E1%84%89%E1%85%B3%E1%84%8F%E1%85%A6%E1%84%8C%E1%85%B2%E1%86%AF%E1%84%85%E1%85%A5%20%E1%84%83%E1%85%A1%E1%84%8B%E1%85%B5%E1%84%8B%E1%85%A5%E1%84%80%E1%85%B3%E1%84%85%E1%85%A2%E1%86%B7.png?raw=true)
 - **누구나 쉽게 사용할 수 있도록 인터페이스 구현**
 </details>
 
